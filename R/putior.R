@@ -1,5 +1,5 @@
 put_src <- function() {
-  if (!is.null(args[["interactive"]] & rstudioapi::isAvailable()) {
+  if (!is.null(args[["interactive"]] & rstudioapi::isAvailable())) {
     cat("interactive & RStudio\n")
     basename(rstudioapi::documentPath())
   } else {
