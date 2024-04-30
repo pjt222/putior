@@ -5,7 +5,7 @@ args <- R.utils::commandArgs(
 
 args
 
-source("putio.R")
+source(file.path("R", "putior.R"))
 
 put_src()
 
@@ -15,8 +15,8 @@ save(
   test_out,
   file = 
     put(
-      name = file.path("test_out.RData"),
+      name = file.path("test", "out.RData"),
       type = "o",
-      where = file.path("putio.csv")
+      where = file.path("test", "putio.csv")
   )
 )
