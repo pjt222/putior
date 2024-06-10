@@ -1,13 +1,3 @@
-put_src <- function() {
-  if (!is.null(args[["interactive"]] & rstudioapi::isAvailable())) {
-    cat("interactive & RStudio\n")
-    basename(rstudioapi::documentPath())
-  } else {
-    cat("Rscript\n")
-    basename(args[["files"]])
-  }
-}
-
 put <- function(
   name = NULL, # file name / path of input or output
   type = NULL, # input, output
