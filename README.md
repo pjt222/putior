@@ -83,8 +83,7 @@ print(workflow_nodes)
 PUT annotations support arbitrary properties for flexible metadata:
 
 ```r
-#put name:"analyze", label:"Statistical Analysis", node_type:"process", 
-     node_color:"blue", node_group:"statistics", execution_time:"120"
+#put name:"analyze", label:"Statistical Analysis", node_type:"process", node_color:"blue", node_group:"statistics", execution_time:"120"
 ```
 
 ## Documentation
