@@ -4,11 +4,25 @@ Version: 0.0.0.9000
 Authors@R: 
     person("Philipp", "Thoss", , "ph.thoss@gmx.de", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4672-2792"))
-Description: What the package does (one paragraph).
+Description: Provides tools for extracting and processing structured annotations from R 
+    and Python source files to facilitate workflow visualization. The package scans 
+    source files for special 'PUT' annotations that define nodes, connections, and 
+    metadata within a data processing workflow. These annotations can then be used 
+    to generate visual representations of data flows and processing steps across 
+    polyglot software environments.
 License: MIT + file LICENSE
+URL: https://github.com/username/putior
+BugReports: https://github.com/username/putior/issues
+Depends:
+    R (>= 3.5.0)
+Imports:
+    tools
+Suggests: 
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Suggests: 
-    testthat (>= 3.0.0)
 Config/testthat/edition: 3
+VignetteBuilder: knitr
