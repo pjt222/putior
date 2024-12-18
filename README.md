@@ -1,4 +1,4 @@
-# putior <img src="man/figures/logo.png" align="right" height="116" alt="" />
+# putior <img src="man/figures/logo.svg" align="right" height="139" alt="" />
 
 Register In- and Outputs for Workflow Visualization
 
