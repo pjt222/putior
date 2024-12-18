@@ -27,7 +27,7 @@ If you're using renv for package management, you can install putior directly fro
 renv::init()
 
 # Install putior
-renv::install("username/putior")
+renv::install("pjt222/putior")
 
 # Update renv.lock
 renv::snapshot()
@@ -42,7 +42,7 @@ Alternatively, you can install using devtools:
 if (!require("devtools")) install.packages("devtools")
 
 # Install putior
-devtools::install_github("username/putior")
+devtools::install_github("pjt222/putior")
 ```
 
 ## Usage
