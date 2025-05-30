@@ -195,7 +195,7 @@ flowchart TD
     classDef processStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000000
     classDef outputStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000000
     class fetch_data inputStyle
-    class clean_data processStyle  
+    class clean_data processStyle
     class generate_report outputStyle
 ```
 
