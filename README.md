@@ -10,11 +10,11 @@ putior is an R package designed to extract and process structured annotations fr
 
 putior offers comprehensive annotation processing capabilities:
 
-- Extracts structured annotations from both R and Python source files
-- Supports flexible annotation formats (`#put`, `# put`, `#put|`)
-- Captures arbitrary key-value properties for customizable metadata
-- Returns results in a clean, tabular format ready for visualization
-- Handles both single-file and directory-wide scanning
+- **Multi-language support**: Extracts structured annotations from both R and Python source files
+- **Flexible syntax**: Supports multiple annotation formats (`#put`, `# put`, `#put|`)
+- **Arbitrary properties**: Captures custom key-value properties for flexible metadata
+- **Clean output**: Returns results in tabular format ready for visualization
+- **Batch processing**: Handles both single-file and directory-wide scanning
 
 ## Installation
 
@@ -45,71 +45,139 @@ if (!require("devtools")) install.packages("devtools")
 devtools::install_github("pjt222/putior")
 ```
 
-## Usage
+## Quick Start
 
-### Basic Example
-
-Add PUT annotations to your R or Python source files:
+See a complete working example:
 
 ```r
-# In your R script
-#put name:"load_data", label:"Load Dataset", node_type:"input"
-data <- read.csv("data.csv")
-
-#put name:"process", label:"Transform Data", node_type:"process"
-processed_data <- transform(data)
+# Run the built-in example
+source(system.file("examples", "reprex.R", package = "putior"))
 ```
 
+This creates a sample multi-language workflow and demonstrates putior's workflow extraction capabilities.
+
+## Usage
+
+### Basic Workflow
+
+**1. Add PUT annotations to your source files:**
+
+**R script example:**
+```r
+# data_processing.R
+#put name:"load_data", label:"Load Dataset", node_type:"input", output:"raw_data.csv"
+data <- read.csv("raw_data.csv")
+
+#put name:"clean_data", label:"Clean and Transform", node_type:"process", input:"raw_data.csv", output:"clean_data.csv"
+cleaned <- clean_dataset(data)
+write.csv(cleaned, "clean_data.csv")
+```
+
+**Python script example:**
 ```python
-# In your Python script
-#put name:"train_model", label:"Train ML Model", node_type:"process"
+# analysis.py
+#put name:"train_model", label:"Train ML Model", node_type:"process", input:"clean_data.csv", output:"model.pkl"
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+
+data = pd.read_csv("clean_data.csv")
+model = RandomForestClassifier()
 model.fit(X_train, y_train)
 ```
 
-Then use putior to extract these annotations:
+**2. Extract the workflow:**
 
 ```r
 library(putior)
 
-# Process a single directory
-workflow_nodes <- put("./src")
+# Process all R and Python files in a directory
+workflow <- put("./src")
 
-# View the results
-print(workflow_nodes)
+# View the extracted workflow
+print(workflow)
+#>            file_name file_type        input                label         name
+#> 1 data_processing.R         r         <NA>         Load Dataset    load_data
+#> 2 data_processing.R         r raw_data.csv   Clean and Transform   clean_data
+#> 3        analysis.py        py clean_data.csv    Train ML Model  train_model
+#>   node_type        output
+#> 1     input   raw_data.csv
+#> 2   process  clean_data.csv
+#> 3   process     model.pkl
 ```
 
-### Custom Properties
+### Advanced Features
 
-PUT annotations support arbitrary properties for flexible metadata:
+**Custom properties for visualization:**
+```r
+#put name:"analyze", label:"Statistical Analysis", node_type:"process", color:"blue", group:"stats", duration:"5min"
+```
+
+**Multiple annotations per file:**
+```r
+# reporting.R
+#put name:"create_report", label:"Generate Report", node_type:"output", input:"results.csv", output:"report.html"
+#put name:"send_email", label:"Email Results", node_type:"output", input:"report.html"
+```
+
+## PUT Annotation Syntax
 
 ```r
-#put name:"analyze", label:"Statistical Analysis", node_type:"process", node_color:"blue", node_group:"statistics", execution_time:"120"
+#put property1:"value1", property2:"value2", property3:"value3"
 ```
+
+**Common properties:**
+- `name`: Unique identifier for the node
+- `label`: Human-readable description
+- `node_type`: Type of operation (input, process, output)
+- `input`: Input file(s) consumed
+- `output`: Output file(s) produced
+
+**Flexible format:**
+- `#put name:"my_node", label:"My Process"`
+- `# put name:"my_node", label:"My Process"` (space after #)
+- `#put| name:"my_node", label:"My Process"` (pipe separator)
 
 ## Documentation
 
-Access the package documentation within R:
+Access the package documentation:
 
 ```r
+# Main function help
 ?put
-?parse_put_annotation
+
+# See all package functions
+help(package = "putior")
+
+# View examples
+example(put)
 ```
+
+## Use Cases
+
+- **Workflow documentation**: Automatically generate documentation for data science pipelines
+- **Code visualization**: Create flowcharts and diagrams from annotated code
+- **Data lineage tracking**: Track how data flows through processing steps
+- **Project onboarding**: Help new team members understand complex workflows
+- **Quality assurance**: Verify that all workflow steps are properly documented
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
+**Development setup:**
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+2. Create your feature branch: `git checkout -b feature/AmazingFeature`
+3. Make your changes and add tests
+4. Commit your changes: `git commit -m 'Add some AmazingFeature'`
+5. Push to the branch: `git push origin feature/AmazingFeature`
+6. Open a Pull Request
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Author
 
-Philipp Thoss (ph.thoss@gmx.de)
-ORCID: 0000-0002-4672-2792
+**Philipp Thoss**  
+📧 ph.thoss@gmx.de  
+🔗 ORCID: [0000-0002-4672-2792](https://orcid.org/0000-0002-4672-2792)
