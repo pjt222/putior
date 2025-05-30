@@ -1,8 +1,6 @@
 # putior
 
-[![R CMD check](https://github.com/pjt222/putior/workflows/R-CMD-check/badge.svg)](https://github.com/pjt222/putior/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![R CMD check](https://github.com/pjt222/putior/workflows/R-CMD-check/badge.svg)](https://github.com/pjt222/putior/actions) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 
 > **Extract beautiful workflow diagrams from your code annotations**
 
@@ -10,17 +8,17 @@ putior is an R package that extracts structured annotations from R and Python so
 
 ## 🌟 Key Features
 
-- **Simple annotations** - Add structured comments to your existing code
-- **Beautiful diagrams** - Generate professional Mermaid flowcharts
-- **File flow tracking** - Automatically connects scripts based on input/output files  
-- **Multiple themes** - 5 built-in themes including GitHub-optimized
-- **Cross-language support** - Works with R, Python, and more
-- **Flexible output** - Console, file, or clipboard export
-- **Customizable styling** - Control colors, direction, and node shapes
+-   **Simple annotations** - Add structured comments to your existing code
+-   **Beautiful diagrams** - Generate professional Mermaid flowcharts
+-   **File flow tracking** - Automatically connects scripts based on input/output files\
+-   **Multiple themes** - 5 built-in themes including GitHub-optimized
+-   **Cross-language support** - Works with R, Python, and more
+-   **Flexible output** - Console, file, or clipboard export
+-   **Customizable styling** - Control colors, direction, and node shapes
 
 ## 📦 Installation
 
-```r
+``` r
 # Install with devtools
 devtools::install_github("pjt222/putior")
 
@@ -35,7 +33,8 @@ pak::pkg_install("pjt222/putior")
 Add structured annotations to your R or Python scripts using `#'` comments:
 
 **`01_fetch_data.R`**
-```r
+
+``` r
 #' @put name: fetch_sales
 #' @put label: Fetch Sales Data
 #' @put node_type: input
@@ -48,7 +47,8 @@ write_csv(sales_data, "sales_data.csv")
 ```
 
 **`02_clean_data.py`**
-```python
+
+``` python
 # @put name: clean_data  
 # @put label: Clean and Process
 # @put node_type: process
@@ -63,7 +63,7 @@ df.to_csv("clean_sales.csv")
 
 ### Step 2: Extract and Visualize
 
-```r
+``` r
 library(putior)
 
 # Extract workflow from your scripts
@@ -74,7 +74,8 @@ put_diagram(workflow)
 ```
 
 **Result:**
-```mermaid
+
+``` mermaid
 flowchart TD
     fetch_sales([Fetch Sales Data])
     clean_data[Clean and Process]
@@ -91,7 +92,7 @@ flowchart TD
 
 ### Basic Workflow
 
-```r
+``` r
 # Simple three-step process
 workflow <- put("./data_pipeline/")
 put_diagram(workflow)
@@ -102,7 +103,8 @@ put_diagram(workflow)
 Here's how putior handles a complete data science workflow:
 
 **File Structure:**
-```
+
+```         
 data_pipeline/
 ├── 01_fetch_sales.R      # Fetch sales data
 ├── 02_fetch_customers.R  # Fetch customer data  
@@ -113,7 +115,8 @@ data_pipeline/
 ```
 
 **Generated Workflow:**
-```mermaid
+
+``` mermaid
 flowchart TD
     fetch_sales([Fetch Sales Data])
     fetch_customers([Fetch Customer Data])
@@ -142,17 +145,17 @@ flowchart TD
 
 The generated Mermaid code works perfectly in:
 
-- **GitHub README files** (native Mermaid support)
-- **GitLab documentation** 
-- **Notion pages**
-- **Obsidian notes**
-- **Jupyter notebooks** (with extensions)
-- **Sphinx documentation** (with plugins)
-- **Any Markdown renderer** with Mermaid support
+-   **GitHub README files** (native Mermaid support)
+-   **GitLab documentation**
+-   **Notion pages**
+-   **Obsidian notes**
+-   **Jupyter notebooks** (with extensions)
+-   **Sphinx documentation** (with plugins)
+-   **Any Markdown renderer** with Mermaid support
 
 ### Saving and Sharing
 
-```r
+``` r
 # Save to markdown file
 put_diagram(workflow, output = "file", file = "workflow.md")
 
@@ -168,7 +171,7 @@ put_diagram(workflow, output = "file", file = "docs/pipeline.md",
 
 putior provides 5 carefully designed themes optimized for different environments:
 
-```r
+``` r
 # Get list of available themes
 get_diagram_themes()
 ```
@@ -176,7 +179,7 @@ get_diagram_themes()
 ### Theme Overview
 
 | Theme | Best For | Description |
-|-------|----------|-------------|
+|------------------|------------------------|-------------------------------|
 | `light` | Documentation sites, tutorials | Default light theme with bright colors |
 | `dark` | Dark mode apps, terminals | Dark theme with muted colors |
 | `auto` | GitHub README files | GitHub-adaptive theme that works in both modes |
@@ -186,10 +189,12 @@ get_diagram_themes()
 ### Theme Examples
 
 **Light Theme**
-```r
+
+``` r
 put_diagram(workflow, theme = "light")
 ```
-```mermaid
+
+``` mermaid
 flowchart TD
     fetch_data([Fetch API Data])
     clean_data[Clean and Validate]
@@ -207,10 +212,12 @@ flowchart TD
 ```
 
 **Dark Theme**
-```r
+
+``` r
 put_diagram(workflow, theme = "dark")
 ```
-```mermaid
+
+``` mermaid
 flowchart TD
     fetch_data([Fetch API Data])
     clean_data[Clean and Validate]
@@ -228,10 +235,12 @@ flowchart TD
 ```
 
 **Auto Theme (GitHub Adaptive)**
-```r
+
+``` r
 put_diagram(workflow, theme = "auto")  # Recommended for GitHub!
 ```
-```mermaid
+
+``` mermaid
 flowchart TD
     fetch_data([Fetch API Data])
     clean_data[Clean and Validate]
@@ -249,10 +258,12 @@ flowchart TD
 ```
 
 **GitHub Theme (Maximum Compatibility)**
-```r
+
+``` r
 put_diagram(workflow, theme = "github")  # Best for GitHub README
 ```
-```mermaid
+
+``` mermaid
 flowchart TD
     fetch_data([Fetch API Data])
     clean_data[Clean and Validate]
@@ -270,10 +281,12 @@ flowchart TD
 ```
 
 **Minimal Theme**
-```r
+
+``` r
 put_diagram(workflow, theme = "minimal")  # Professional documents
 ```
-```mermaid
+
+``` mermaid
 flowchart TD
     fetch_data([Fetch API Data])
     clean_data[Clean and Validate]
@@ -292,24 +305,24 @@ flowchart TD
 
 ### When to Use Each Theme
 
-| Theme | Use Case | Environment |
-|-------|----------|-------------|
-| `light` | Documentation sites, tutorials | Light backgrounds |
-| `dark` | Dark mode apps, terminals | Dark backgrounds |
-| `auto` | GitHub README files | Adapts automatically |
-| `github` | **GitHub README (recommended)** | Maximum compatibility |
-| `minimal` | Business reports, presentations | Print-friendly |
+| Theme     | Use Case                        | Environment           |
+|-----------|---------------------------------|-----------------------|
+| `light`   | Documentation sites, tutorials  | Light backgrounds     |
+| `dark`    | Dark mode apps, terminals       | Dark backgrounds      |
+| `auto`    | GitHub README files             | Adapts automatically  |
+| `github`  | **GitHub README (recommended)** | Maximum compatibility |
+| `minimal` | Business reports, presentations | Print-friendly        |
 
 ### Pro Tips
 
-- **For GitHub**: Use `theme = "github"` for maximum compatibility, or `theme = "auto"` for adaptive colors
-- **For Documentation**: Use `theme = "light"` or `theme = "dark"` to match your site
-- **For Reports**: Use `theme = "minimal"` for professional, print-friendly diagrams
-- **For Demos**: Light theme usually shows colors best in presentations
+-   **For GitHub**: Use `theme = "github"` for maximum compatibility, or `theme = "auto"` for adaptive colors
+-   **For Documentation**: Use `theme = "light"` or `theme = "dark"` to match your site
+-   **For Reports**: Use `theme = "minimal"` for professional, print-friendly diagrams
+-   **For Demos**: Light theme usually shows colors best in presentations
 
 ### Theme Usage Examples
 
-```r
+``` r
 # For GitHub README (recommended)
 put_diagram(workflow, theme = "github")
 
@@ -337,7 +350,7 @@ for(theme in themes) {
 
 ### Flow Direction
 
-```r
+``` r
 put_diagram(workflow, direction = "TD")  # Top to bottom (default)
 put_diagram(workflow, direction = "LR")  # Left to right  
 put_diagram(workflow, direction = "BT")  # Bottom to top
@@ -346,7 +359,7 @@ put_diagram(workflow, direction = "RL")  # Right to left
 
 ### Node Labels
 
-```r
+``` r
 put_diagram(workflow, node_labels = "name")   # Show function names
 put_diagram(workflow, node_labels = "label")  # Show descriptions (default)
 put_diagram(workflow, node_labels = "both")   # Show name: description
@@ -354,7 +367,7 @@ put_diagram(workflow, node_labels = "both")   # Show name: description
 
 ### File Connections
 
-```r
+``` r
 # Show file names on arrows
 put_diagram(workflow, show_files = TRUE)
 
@@ -364,7 +377,7 @@ put_diagram(workflow, show_files = FALSE)
 
 ### Styling Control
 
-```r
+``` r
 # Include colored styling (default)
 put_diagram(workflow, style_nodes = TRUE)
 
@@ -374,7 +387,7 @@ put_diagram(workflow, style_nodes = FALSE)
 
 ### Output Options
 
-```r
+``` r
 # Console output (default)
 put_diagram(workflow)
 
@@ -390,28 +403,28 @@ put_diagram(workflow, output = "clipboard")
 ### Required Annotations
 
 | Annotation | Description | Example |
-|------------|-------------|---------|
+|-------------------------|---------------------------|-------------------|
 | `name` | Unique identifier for the node | `fetch_data`, `clean_sales` |
 | `label` | Human-readable description | `Fetch Sales Data`, `Clean and Process` |
 
 ### Optional Annotations
 
 | Annotation | Description | Example |
-|------------|-------------|---------|
+|-------------------------|---------------------------|-------------------|
 | `node_type` | Visual shape of the node | `input`, `process`, `output`, `decision` |
 | `input` | Input files (comma-separated) | `raw_data.csv, config.json` |
 | `output` | Output files (comma-separated) | `processed_data.csv, summary.txt` |
 
 ### Node Types and Shapes
 
-- **`input`** - Data sources, APIs, file readers → Stadium shape `([text])`
-- **`process`** - Data transformation, analysis → Rectangle `[text]`  
-- **`output`** - Final results, reports, exports → Subroutine `[[text]]`
-- **`decision`** - Conditional logic, branching → Diamond `{text}`
+-   **`input`** - Data sources, APIs, file readers → Stadium shape `([text])`
+-   **`process`** - Data transformation, analysis → Rectangle `[text]`\
+-   **`output`** - Final results, reports, exports → Subroutine `[[text]]`
+-   **`decision`** - Conditional logic, branching → Diamond `{text}`
 
 ### Example Annotations
 
-```r
+``` r
 #' @put name: load_sales_data
 #' @put label: Load Sales Data from API
 #' @put node_type: input
@@ -435,7 +448,8 @@ put_diagram(workflow, output = "clipboard")
 Contributions welcome! Please see our [contribution guidelines](CONTRIBUTING.md).
 
 **Development Setup:**
-```bash
+
+``` bash
 git clone https://github.com/pjt222/putior.git
 cd putior
 
@@ -455,10 +469,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Built with [Mermaid](https://mermaid-js.github.io/) for beautiful diagram generation
-- Inspired by the need for better code documentation and workflow visualization
-- Thanks to the R community for excellent development tooling
+-   Built with [Mermaid](https://mermaid-js.github.io/) for beautiful diagram generation
+-   Inspired by the need for better code documentation and workflow visualization
+-   Thanks to the R community for excellent development tooling
 
----
+------------------------------------------------------------------------
 
 **Made with ❤️ for the R and Python communities**
