@@ -1,186 +1,107 @@
-# putior <img src="man/figures/logo.svg" align="right" height="139" alt="" />
+# putior
 
-**PUT + Input + Output + R**: Register In- and Outputs for Workflow Visualization
+[![R CMD check](https://github.com/pjt222/putior/workflows/R-CMD-check/badge.svg)](https://github.com/pjt222/putior/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 
-## Overview
+> **Extract beautiful workflow diagrams from your code annotations**
 
-putior is an R package that extracts structured annotations from R and Python source files and creates elegant workflow visualizations. Simply add PUT annotations to your code, and putior will automatically generate beautiful mermaid diagrams showing your data pipeline flow.
+Turn your R and Python scripts into stunning visual workflows with simple annotations. Perfect for documentation, presentations, and understanding complex data pipelines.
 
-**Why putior?** Keep your workflow documentation in sync with your code. No more outdated flowcharts!
+## 🌟 Features
 
-## ✨ Features
+- **Simple Annotations** - Add `#' @put` comments to your code
+- **Beautiful Diagrams** - Generate professional Mermaid flowcharts  
+- **Multiple Themes** - 5 built-in themes including GitHub-optimized
+- **File Flow Tracking** - Automatically connects scripts based on input/output files
+- **Multiple Outputs** - Console, file, or clipboard export
+- **Cross-Language** - Works with R, Python, and more
 
-### 🔍 **Workflow Extraction**
-- **Multi-language support**: R, Python, SQL, shell scripts, Julia
-- **Flexible annotation syntax**: `#put`, `# put`, `#put|`
-- **Smart file parsing**: Automatically detects data flow between scripts
-- **Custom properties**: Add any metadata you need
-
-### 🎨 **Beautiful Visualizations**
-- **Elegant mermaid diagrams**: Professional, GitHub-ready flowcharts
-- **Smart node shapes**: Different shapes for inputs, processes, outputs, decisions
-- **Color-coded styling**: Visual distinction between node types
-- **Multiple layouts**: Top-down, left-right, custom directions
-- **File flow labels**: See exactly how data moves through your pipeline
-
-### 🚀 **Production Ready**
-- **Comprehensive testing**: 180+ tests ensure reliability
-- **Extensive documentation**: Vignettes, examples, and detailed help
-- **Validation system**: Catches common annotation mistakes
-- **Export options**: Console, file, clipboard output
-
-## Installation
-
-### From GitHub
+## 📦 Installation
 
 ```r
-# Install with devtools
+# Install from GitHub
 devtools::install_github("pjt222/putior")
 
 # Or with pak (faster)
 pak::pkg_install("pjt222/putior")
+
+# Or with remotes
+remotes::install_github("pjt222/putior")
 ```
 
 ## 🚀 Quick Start
 
-### 1. **Try the Examples**
+### 1. Annotate Your Code
 
+Add simple annotations to your R or Python scripts:
+
+**`01_load_data.R`**
 ```r
-# See putior in action with a complete workflow
-source(system.file("examples", "reprex.R", package = "putior"))
+#' @put name: fetch_sales
+#' @put label: Fetch Sales Data  
+#' @put node_type: input
+#' @put output: raw_sales.csv
 
-# Try the visualization examples  
-source(system.file("examples", "diagram-example.R", package = "putior"))
+library(readr)
+sales_data <- read_csv("database_export.csv")
+write_csv(sales_data, "raw_sales.csv")
 ```
 
-### 2. **Basic Usage**
-
-**Annotate your code:**
-```r
-# data_collection.R
-#put name:"fetch_api", label:"Fetch Sales Data", node_type:"input", output:"raw_sales.csv"
-sales_data <- fetch_from_api("/sales")
-write.csv(sales_data, "raw_sales.csv")
-```
-
+**`02_process_data.py`**
 ```python
-# analysis.py  
-#put name:"clean_data", label:"Clean and Process", node_type:"process", input:"raw_sales.csv", output:"clean_sales.csv"
+# @put name: clean_data
+# @put label: Clean and Process
+# @put node_type: process  
+# @put input: raw_sales.csv
+# @put output: processed_sales.csv
+
 import pandas as pd
-data = pd.read_csv("raw_sales.csv")
-clean_data = data.dropna()
-clean_data.to_csv("clean_sales.csv")
+df = pd.read_csv("raw_sales.csv")
+# ... cleaning code ...
+df.to_csv("processed_sales.csv")
 ```
 
-**Extract and visualize:**
+### 2. Generate Your Workflow
+
 ```r
 library(putior)
 
-# Extract workflow
-workflow <- put("./src")
+# Extract workflow from your scripts
+workflow <- put("./scripts/")
 
-# Create diagram
-put_diagram(workflow)
+# Create beautiful diagram
+put_diagram(workflow, theme = "github")
 ```
 
-**Result:**
+### 3. Get Beautiful Results
+
 ```mermaid
 flowchart TD
-    fetch_api([Fetch Sales Data])
+    fetch_sales([Fetch Sales Data])
     clean_data[Clean and Process]
     
-    fetch_api --> clean_data
+    fetch_sales --> clean_data
     
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
     classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class fetch_api inputStyle
+    class fetch_sales inputStyle
     class clean_data processStyle
 ```
 
-## 📊 Visualization Examples
-
-### Basic Workflow
-```r
-workflow <- put("./src")
-put_diagram(workflow)
-```
-
-### Horizontal Layout with File Labels
-```r
-put_diagram(workflow, 
-           direction = "LR", 
-           show_files = TRUE,
-           title = "Data Processing Pipeline")
-```
-
-### Styled Diagram with Custom Labels
-```r
-put_diagram(workflow,
-           node_labels = "both",  # Show names + descriptions
-           style_nodes = TRUE,    # Color-code by type
-           title = "Sales Analysis Workflow")
-```
-
-### Save to File
-```r
-put_diagram(workflow, 
-           output = "file", 
-           file = "workflow.md",
-           title = "My Data Pipeline")
-```
-
-## 🎯 PUT Annotation Guide
-
-### Basic Syntax
-```r
-#put property1:"value1", property2:"value2"
-```
-
-### Core Properties
-- **`name`**: Unique identifier (required)
-- **`label`**: Human-readable description  
-- **`node_type`**: `"input"`, `"process"`, `"output"`, `"decision"`
-- **`input`**: Input files consumed (comma-separated)
-- **`output`**: Output files produced (comma-separated)
-
-### Advanced Properties
-```r
-#put name:"train_model", label:"Train ML Model", node_type:"process", 
-     input:"features.csv", output:"model.pkl", 
-     duration:"30min", memory:"high", team:"data-science"
-```
-
-### Flexible Formats
-```r
-#put name:"node1", label:"Process Data"           # Standard
-# put name:"node1", label:"Process Data"          # Space after #
-#put| name:"node1", label:"Process Data"          # Pipe separator  
-#put: name:"node1", label:"Process Data"          # Colon separator
-```
-
-## 🔄 Real-World Example
+## 📊 Advanced Example
 
 Here's how putior handles a complete data science workflow:
 
-**Python Data Collection**
-```python
-# 01_collect.py
-#put name:"fetch_sales", label:"Fetch Sales Data", node_type:"input", output:"raw_sales.csv"  
-#put name:"fetch_customers", label:"Fetch Customer Data", node_type:"input", output:"raw_customers.csv"
-```
-
-**R Data Processing**  
 ```r
-# 02_process.R
-#put name:"clean_sales", label:"Clean Sales Data", node_type:"process", input:"raw_sales.csv", output:"clean_sales.csv"
-#put name:"merge_data", label:"Merge Datasets", node_type:"process", input:"clean_sales.csv,raw_customers.csv", output:"merged_data.csv"
-```
+# Extract workflow from multiple files
+workflow <- put("./data_pipeline/")
 
-**R Analysis & Reporting**
-```r
-# 03_analyze.R  
-#put name:"analyze", label:"Statistical Analysis", node_type:"process", input:"merged_data.csv", output:"results.rds"
-#put name:"report", label:"Generate Report", node_type:"output", input:"results.rds", output:"final_report.html"
+# Create comprehensive diagram with file connections
+put_diagram(workflow, 
+           theme = "github",
+           show_files = TRUE,
+           direction = "TD")
 ```
 
 **Generated Workflow:**
@@ -188,16 +109,16 @@ Here's how putior handles a complete data science workflow:
 flowchart TD
     fetch_sales([Fetch Sales Data])
     fetch_customers([Fetch Customer Data])
-    clean_sales[Clean Sales Data]  
+    clean_sales[Clean Sales Data]
     merge_data[Merge Datasets]
     analyze[Statistical Analysis]
-    report[[Generate Report]]
-    
-    fetch_sales --> clean_sales
-    fetch_customers --> merge_data
-    clean_sales --> merge_data
-    merge_data --> analyze
-    analyze --> report
+    report[[Generate Final Report]]
+
+    fetch_sales -->|raw_sales.csv| clean_sales
+    fetch_customers -->|customers.csv| merge_data
+    clean_sales -->|clean_sales.csv| merge_data
+    merge_data -->|merged_data.csv| analyze
+    analyze -->|analysis_results.json| report
     
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
     classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
@@ -207,283 +128,114 @@ flowchart TD
     class report outputStyle
 ```
 
-## 📋 Using the Diagrams
+## 🎨 Themes
 
-The generated mermaid diagrams work everywhere:
+Choose from 5 beautiful themes optimized for different environments:
 
-### **GitHub/GitLab** (Native Rendering)
-Just paste the mermaid code into any `.md` file - it renders automatically!
-
-### **Documentation Sites**  
-- R Markdown / Quarto documents
-- Jupyter notebooks  
-- GitBook, Docusaurus, etc.
-
-### **Live Editing**
-- **Mermaid Live Editor**: https://mermaid.live  
-- **VS Code**: Install mermaid extensions
-- **Export**: PNG, SVG, PDF formats
-
-## 🛠️ Advanced Usage
-
-### Directory Scanning
-```r
-# Recursive scanning  
-workflow <- put("./project", recursive = TRUE)
-
-# Custom file patterns
-workflow <- put("./src", pattern = "\\.(R|py|sql)$")
-
-# Single files
-workflow <- put("./analysis.R")
-```
-
-### Debugging & Validation
-```r
-# Include line numbers for debugging
-workflow <- put("./src", include_line_numbers = TRUE)
-
-# Disable validation warnings
-workflow <- put("./src", validate = FALSE)
-
-# Test annotation syntax
-is_valid_put_annotation('#put name:"test", label:"Test Node"')  # TRUE
-```
-
-### Filtering Workflows
-```r
-# Show only processing steps
-process_nodes <- workflow[workflow$node_type == "process", ]
-put_diagram(process_nodes, title = "Data Processing Steps")
-
-# Show workflow by team/group
-ml_nodes <- workflow[grepl("ml", workflow$team), ]
-put_diagram(ml_nodes, title = "Machine Learning Pipeline")
-```
-
-## 📖 Documentation
-
-```r
-# Function help
-?put
-?put_diagram
-
-# Package overview
-help(package = "putior")
-
-# Comprehensive guide
-vignette("getting-started", package = "putior")
-
-# Examples
-example(put)
-example(put_diagram)
-```
-
-## 🎯 Use Cases
-
-- **📊 Data Science Teams**: Visualize ML pipelines and data flows
-- **📈 Analytics Projects**: Document ETL processes and reporting workflows  
-- **🔄 Process Documentation**: Keep workflow docs in sync with code
-- **👥 Team Onboarding**: Help new members understand complex projects
-- **🔍 Code Review**: Visualize changes to data processing logic
-- **📋 Compliance**: Generate audit trails for data processing
-
-## 🎨 Themes & Styling
-
-putior supports multiple color themes to match your environment and preferences:
-
-### Available Themes
-
-```r
-# See all available themes
-get_diagram_themes()
-```
-
-- **`"light"`** (default): Bright colors with dark text - perfect for documentation
-- **`"dark"`**: Muted colors with light text - ideal for dark mode environments  
-- **`"auto"`**: GitHub adaptive theme - automatically works in both light/dark modes
-- **`"minimal"`**: Grayscale professional theme - great for business documents
-- **`"github"`**: Optimized specifically for GitHub README files with maximum compatibility
-
-### Theme Examples
-
-**Light Theme (Default)**
-```r
-put_diagram(workflow, theme = "light")
-```
-```mermaid
-flowchart TD
-    fetch_data([Fetch API Data])
-    clean_data[Clean and Validate]
-    generate_report[[Generate Final Report]]
-    
-    fetch_data --> clean_data
-    clean_data --> generate_report
-    
-    classDef inputStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000000
-    classDef processStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000000
-    classDef outputStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000000
-    class fetch_data inputStyle
-    class clean_data processStyle  
-    class generate_report outputStyle
-```
-
-**Dark Theme**
-```r
-put_diagram(workflow, theme = "dark")
-```
-```mermaid
-flowchart TD
-    fetch_data([Fetch API Data])
-    clean_data[Clean and Validate]
-    generate_report[[Generate Final Report]]
-    
-    fetch_data --> clean_data
-    clean_data --> generate_report
-    
-    classDef inputStyle fill:#1a237e,stroke:#3f51b5,stroke-width:2px,color:#ffffff
-    classDef processStyle fill:#4a148c,stroke:#9c27b0,stroke-width:2px,color:#ffffff
-    classDef outputStyle fill:#1b5e20,stroke:#4caf50,stroke-width:2px,color:#ffffff
-    class fetch_data inputStyle
-    class clean_data processStyle
-    class generate_report outputStyle
-```
-
-**Auto Theme (GitHub Adaptive)**
-```r
-put_diagram(workflow, theme = "auto")  # Recommended for GitHub!
-```
-```mermaid
-flowchart TD
-    fetch_data([Fetch API Data])
-    clean_data[Clean and Validate]
-    generate_report[[Generate Final Report]]
-    
-    fetch_data --> clean_data
-    clean_data --> generate_report
-    
-    classDef inputStyle fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#ffffff
-    classDef processStyle fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#ffffff
-    classDef outputStyle fill:#10b981,stroke:#047857,stroke-width:2px,color:#ffffff
-    class fetch_data inputStyle
-    class clean_data processStyle
-    class generate_report outputStyle
-```
-
-**GitHub Theme (Maximum Compatibility)**
-```r
-put_diagram(workflow, theme = "github")  # Best for GitHub README
-```
-```mermaid
-flowchart TD
-    fetch_data([Fetch API Data])
-    clean_data[Clean and Validate]
-    generate_report[[Generate Final Report]]
-    
-    fetch_data --> clean_data
-    clean_data --> generate_report
-    
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class fetch_data inputStyle
-    class clean_data processStyle
-    class generate_report outputStyle
-```
-
-**Minimal Theme**
-```r
-put_diagram(workflow, theme = "minimal")  # Professional documents
-```
-```mermaid
-flowchart TD
-    fetch_data([Fetch API Data])
-    clean_data[Clean and Validate]
-    generate_report[[Generate Final Report]]
-    
-    fetch_data --> clean_data
-    clean_data --> generate_report
-    
-    classDef inputStyle fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b
-    classDef processStyle fill:#f1f5f9,stroke:#64748b,stroke-width:1px,color:#1e293b
-    classDef outputStyle fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b
-    class fetch_data inputStyle
-    class clean_data processStyle
-    class generate_report outputStyle
-```
-
-### When to Use Each Theme
-
-| Theme | Best For | Environment |
+| Theme | Best For | Description |
 |-------|----------|-------------|
-| `light` | Documentation sites, tutorials | Light backgrounds |
-| `dark` | Dark mode apps, terminals | Dark backgrounds |
-| `auto` | GitHub README files | Adapts automatically |
-| `github` | **GitHub README (recommended)** | Maximum compatibility |
-| `minimal` | Business reports, presentations | Print-friendly |
-
-### Pro Tips
-
-- **For GitHub**: Use `theme = "github"` for maximum compatibility, or `theme = "auto"` for adaptive colors
-- **For Documentation**: Use `theme = "light"` or `theme = "dark"` to match your site
-- **For Reports**: Use `theme = "minimal"` for professional, print-friendly diagrams
-- **For Demos**: Light theme usually shows colors best in presentations
-
-### Theme Usage Examples
+| `github` | **GitHub README** | Maximum compatibility and contrast |
+| `light` | Documentation sites | Bright colors with dark text |
+| `dark` | Dark mode environments | Muted colors with light text |
+| `auto` | Adaptive documents | Works in both light/dark modes |
+| `minimal` | Business reports | Professional grayscale |
 
 ```r
-# For GitHub README (recommended)
+# GitHub-optimized (recommended for README)
 put_diagram(workflow, theme = "github")
 
-# For GitHub README (adaptive)  
-put_diagram(workflow, theme = "auto")
+# Professional minimal theme
+put_diagram(workflow, theme = "minimal", 
+           output = "file", file = "workflow.md")
 
-# For dark documentation sites
+# Dark theme for terminals
 put_diagram(workflow, theme = "dark", direction = "LR")
-
-# For professional reports
-put_diagram(workflow, theme = "minimal", output = "file", file = "report.md")
-
-# Save all themes for comparison
-themes <- c("light", "dark", "auto", "github", "minimal")
-for(theme in themes) {
-  put_diagram(workflow, 
-             theme = theme,
-             output = "file", 
-             file = paste0("workflow_", theme, ".md"),
-             title = paste("Workflow -", stringr::str_to_title(theme), "Theme"))
-}
 ```
+
+## 🔧 Customization Options
+
+### Direction Control
+```r
+put_diagram(workflow, direction = "LR")  # Left to right
+put_diagram(workflow, direction = "TD")  # Top to bottom (default)
+put_diagram(workflow, direction = "BT")  # Bottom to top
+put_diagram(workflow, direction = "RL")  # Right to left
+```
+
+### Output Options
+```r
+# Console output (default)
+put_diagram(workflow)
+
+# Save to file
+put_diagram(workflow, output = "file", file = "my_workflow.md")
+
+# Copy to clipboard
+put_diagram(workflow, output = "clipboard")
+```
+
+### Node Labels
+```r
+put_diagram(workflow, node_labels = "name")   # Show function names
+put_diagram(workflow, node_labels = "label")  # Show descriptions (default)
+put_diagram(workflow, node_labels = "both")   # Show both
+```
+
+### File Connections
+```r
+# Show file names on connections
+put_diagram(workflow, show_files = TRUE)
+
+# Hide file names (cleaner look)
+put_diagram(workflow, show_files = FALSE)
+```
+
+## 📋 Annotation Reference
+
+| Annotation | Description | Example |
+|------------|-------------|---------|
+| `name` | Unique identifier | `fetch_data` |
+| `label` | Display name | `Fetch Sales Data` |
+| `node_type` | Visual shape | `input`, `process`, `output`, `decision` |
+| `input` | Input files | `raw_data.csv, config.json` |
+| `output` | Output files | `processed_data.csv` |
+
+### Node Types
+- **`input`** - Data sources, APIs, file readers (stadium shape)
+- **`process`** - Data transformation, analysis (rectangle) 
+- **`output`** - Final results, reports, exports (subroutine shape)
+- **`decision`** - Conditional logic, branching (diamond)
 
 ## 🤝 Contributing
 
-Contributions welcome! Please see our [contribution guidelines](CONTRIBUTING.md).
+Contributions are welcome! Please see our [contribution guidelines](CONTRIBUTING.md).
 
 **Development Setup:**
-```r
-# Clone and setup
+```bash
+# Clone the repository
 git clone https://github.com/pjt222/putior.git
 cd putior
 
-# Install dev dependencies  
-renv::restore()
+# Install development dependencies
+Rscript -e "devtools::install_dev_deps()"
 
 # Run tests
-devtools::test()
+Rscript -e "devtools::test()"
 
 # Check package
-devtools::check()
+Rscript -e "devtools::check()"
 ```
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👨‍💻 Author
+## 🙏 Acknowledgments
 
-**Philipp Thoss**  
-🔗 ORCID: [0000-0002-4672-2792](https://orcid.org/0000-0002-4672-2792)
+- Built with [Mermaid](https://mermaid-js.github.io/) for diagram generation
+- Inspired by the need for better code documentation
+- Thanks to the R community for excellent tooling
 
 ---
 
-**putior**: Because workflow documentation should be as dynamic as your code! 🚀
+**Made with ❤️ for the R and Python communities**
