@@ -35,10 +35,10 @@ putior is an R package that extracts structured annotations from R and Python so
 
 ```r
 # Install with devtools
-devtools::install_github("username/putior")
+devtools::install_github("pjt222/putior")
 
 # Or with pak (faster)
-pak::pkg_install("username/putior")
+pak::pkg_install("pjt222/putior")
 ```
 
 ## 🚀 Quick Start
@@ -84,18 +84,18 @@ put_diagram(workflow)
 ```
 
 **Result:**
-````mermaid
+```mermaid
 flowchart TD
     fetch_api([Fetch Sales Data])
     clean_data[Clean and Process]
     
     fetch_api --> clean_data
     
-    classDef inputStyle fill:#e1f5fe,stroke:#01579b
-    classDef processStyle fill:#f3e5f5,stroke:#4a148c
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
     class fetch_api inputStyle
     class clean_data processStyle
-````
+```
 
 ## 📊 Visualization Examples
 
@@ -184,7 +184,7 @@ Here's how putior handles a complete data science workflow:
 ```
 
 **Generated Workflow:**
-````mermaid
+```mermaid
 flowchart TD
     fetch_sales([Fetch Sales Data])
     fetch_customers([Fetch Customer Data])
@@ -198,7 +198,14 @@ flowchart TD
     clean_sales --> merge_data
     merge_data --> analyze
     analyze --> report
-````
+    
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class fetch_sales,fetch_customers inputStyle
+    class clean_sales,merge_data,analyze processStyle
+    class report outputStyle
+```
 
 ## 📋 Using the Diagrams
 
@@ -296,6 +303,7 @@ get_diagram_themes()
 - **`"dark"`**: Muted colors with light text - ideal for dark mode environments  
 - **`"auto"`**: GitHub adaptive theme - automatically works in both light/dark modes
 - **`"minimal"`**: Grayscale professional theme - great for business documents
+- **`"github"`**: Optimized specifically for GitHub README files with maximum compatibility
 
 ### Theme Examples
 
@@ -303,7 +311,7 @@ get_diagram_themes()
 ```r
 put_diagram(workflow, theme = "light")
 ```
-````mermaid
+```mermaid
 flowchart TD
     fetch_data([Fetch API Data])
     clean_data[Clean and Validate]
@@ -312,19 +320,19 @@ flowchart TD
     fetch_data --> clean_data
     clean_data --> generate_report
     
-    classDef inputStyle fill:#e1f5fe,stroke:#01579b,color:#000
-    classDef processStyle fill:#f3e5f5,stroke:#4a148c,color:#000
-    classDef outputStyle fill:#e8f5e8,stroke:#1b5e20,color:#000
+    classDef inputStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000000
+    classDef processStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000000
+    classDef outputStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000000
     class fetch_data inputStyle
     class clean_data processStyle  
     class generate_report outputStyle
-````
+```
 
 **Dark Theme**
 ```r
 put_diagram(workflow, theme = "dark")
 ```
-````mermaid
+```mermaid
 flowchart TD
     fetch_data([Fetch API Data])
     clean_data[Clean and Validate]
@@ -333,22 +341,75 @@ flowchart TD
     fetch_data --> clean_data
     clean_data --> generate_report
     
-    classDef inputStyle fill:#1a237e,stroke:#3f51b5,color:#fff
-    classDef processStyle fill:#4a148c,stroke:#9c27b0,color:#fff
-    classDef outputStyle fill:#1b5e20,stroke:#4caf50,color:#fff
+    classDef inputStyle fill:#1a237e,stroke:#3f51b5,stroke-width:2px,color:#ffffff
+    classDef processStyle fill:#4a148c,stroke:#9c27b0,stroke-width:2px,color:#ffffff
+    classDef outputStyle fill:#1b5e20,stroke:#4caf50,stroke-width:2px,color:#ffffff
     class fetch_data inputStyle
     class clean_data processStyle
     class generate_report outputStyle
-````
+```
 
 **Auto Theme (GitHub Adaptive)**
 ```r
 put_diagram(workflow, theme = "auto")  # Recommended for GitHub!
 ```
+```mermaid
+flowchart TD
+    fetch_data([Fetch API Data])
+    clean_data[Clean and Validate]
+    generate_report[[Generate Final Report]]
+    
+    fetch_data --> clean_data
+    clean_data --> generate_report
+    
+    classDef inputStyle fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#ffffff
+    classDef processStyle fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#ffffff
+    classDef outputStyle fill:#10b981,stroke:#047857,stroke-width:2px,color:#ffffff
+    class fetch_data inputStyle
+    class clean_data processStyle
+    class generate_report outputStyle
+```
+
+**GitHub Theme (Maximum Compatibility)**
+```r
+put_diagram(workflow, theme = "github")  # Best for GitHub README
+```
+```mermaid
+flowchart TD
+    fetch_data([Fetch API Data])
+    clean_data[Clean and Validate]
+    generate_report[[Generate Final Report]]
+    
+    fetch_data --> clean_data
+    clean_data --> generate_report
+    
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class fetch_data inputStyle
+    class clean_data processStyle
+    class generate_report outputStyle
+```
 
 **Minimal Theme**
 ```r
 put_diagram(workflow, theme = "minimal")  # Professional documents
+```
+```mermaid
+flowchart TD
+    fetch_data([Fetch API Data])
+    clean_data[Clean and Validate]
+    generate_report[[Generate Final Report]]
+    
+    fetch_data --> clean_data
+    clean_data --> generate_report
+    
+    classDef inputStyle fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b
+    classDef processStyle fill:#f1f5f9,stroke:#64748b,stroke-width:1px,color:#1e293b
+    classDef outputStyle fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b
+    class fetch_data inputStyle
+    class clean_data processStyle
+    class generate_report outputStyle
 ```
 
 ### When to Use Each Theme
@@ -357,15 +418,42 @@ put_diagram(workflow, theme = "minimal")  # Professional documents
 |-------|----------|-------------|
 | `light` | Documentation sites, tutorials | Light backgrounds |
 | `dark` | Dark mode apps, terminals | Dark backgrounds |
-| `auto` | **GitHub README files** | Adapts automatically |
+| `auto` | GitHub README files | Adapts automatically |
+| `github` | **GitHub README (recommended)** | Maximum compatibility |
 | `minimal` | Business reports, presentations | Print-friendly |
 
 ### Pro Tips
 
-- **For GitHub**: Use `theme = "auto"` - it adapts to the viewer's theme preference
+- **For GitHub**: Use `theme = "github"` for maximum compatibility, or `theme = "auto"` for adaptive colors
 - **For Documentation**: Use `theme = "light"` or `theme = "dark"` to match your site
 - **For Reports**: Use `theme = "minimal"` for professional, print-friendly diagrams
 - **For Demos**: Light theme usually shows colors best in presentations
+
+### Theme Usage Examples
+
+```r
+# For GitHub README (recommended)
+put_diagram(workflow, theme = "github")
+
+# For GitHub README (adaptive)  
+put_diagram(workflow, theme = "auto")
+
+# For dark documentation sites
+put_diagram(workflow, theme = "dark", direction = "LR")
+
+# For professional reports
+put_diagram(workflow, theme = "minimal", output = "file", file = "report.md")
+
+# Save all themes for comparison
+themes <- c("light", "dark", "auto", "github", "minimal")
+for(theme in themes) {
+  put_diagram(workflow, 
+             theme = theme,
+             output = "file", 
+             file = paste0("workflow_", theme, ".md"),
+             title = paste("Workflow -", stringr::str_to_title(theme), "Theme"))
+}
+```
 
 ## 🤝 Contributing
 
@@ -374,7 +462,7 @@ Contributions welcome! Please see our [contribution guidelines](CONTRIBUTING.md)
 **Development Setup:**
 ```r
 # Clone and setup
-git clone https://github.com/username/putior.git
+git clone https://github.com/pjt222/putior.git
 cd putior
 
 # Install dev dependencies  

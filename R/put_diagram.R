@@ -19,7 +19,7 @@
 #' @param show_files Logical indicating whether to show file connections
 #' @param style_nodes Logical indicating whether to apply styling based on node_type
 #' @param theme Character string specifying color theme. Options:
-#'   "light" (default), "dark", "auto" (GitHub adaptive), "minimal"
+#'   "light" (default), "dark", "auto" (GitHub adaptive), "minimal", "github"
 #'
 #' @return Character string containing the mermaid diagram code
 #' @export
@@ -30,8 +30,8 @@
 #' workflow <- put("./src/")
 #' put_diagram(workflow)
 #'
-#' # Dark theme for dark mode environments
-#' put_diagram(workflow, theme = "dark")
+#' # GitHub-optimized theme for README files
+#' put_diagram(workflow, theme = "github")
 #'
 #' # Auto theme that adapts to GitHub's theme
 #' put_diagram(workflow, theme = "auto")
@@ -59,7 +59,7 @@ put_diagram <- function(workflow,
   }
 
   # Validate theme
-  valid_themes <- c("light", "dark", "auto", "minimal")
+  valid_themes <- c("light", "dark", "auto", "minimal", "github")
   if (!theme %in% valid_themes) {
     warning(
       "Invalid theme '", theme, "'. Using 'light'. Valid themes: ",
@@ -114,7 +114,7 @@ put_diagram <- function(workflow,
 
 #' Generate node styling based on node types and theme
 #' @param workflow Workflow data frame
-#' @param theme Color theme ("light", "dark", "auto", "minimal")
+#' @param theme Color theme ("light", "dark", "auto", "minimal", "github")
 #' @return Character vector of styling definitions
 #' @keywords internal
 generate_node_styling <- function(workflow, theme = "light") {
@@ -129,54 +129,62 @@ generate_node_styling <- function(workflow, theme = "light") {
 
     if (nrow(nodes_of_type) > 0) {
       node_ids <- sapply(nodes_of_type$name, sanitize_node_id)
-      class_name <- paste0("class ", paste(node_ids, collapse = ","), " ", node_type, "Style")
-      style_def <- paste0("    classDef ", node_type, "Style ", color_schemes[[node_type]])
+      class_name <- paste0(node_type, "Style")
+      style_def <- paste0("    classDef ", class_name, " ", color_schemes[[node_type]])
+      class_application <- paste0("    class ", paste(node_ids, collapse = ","), " ", class_name)
 
-      styling <- c(styling, style_def, paste0("    ", class_name))
+      styling <- c(styling, style_def, class_application)
     }
   }
 
   return(styling)
 }
 
-#' Get color schemes for different themes
+#' Get color schemes for different themes (FIXED VERSION)
 #' @param theme Theme name
 #' @return Named list of color definitions for each node type
 #' @keywords internal
 get_theme_colors <- function(theme) {
   switch(theme,
     "light" = list(
-      "input" = "fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000",
-      "process" = "fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000",
-      "output" = "fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000",
-      "decision" = "fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000"
+      "input" = "fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000000",
+      "process" = "fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000000",
+      "output" = "fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000000",
+      "decision" = "fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000000"
     ),
     "dark" = list(
-      "input" = "fill:#1a237e,stroke:#3f51b5,stroke-width:2px,color:#fff",
-      "process" = "fill:#4a148c,stroke:#9c27b0,stroke-width:2px,color:#fff",
-      "output" = "fill:#1b5e20,stroke:#4caf50,stroke-width:2px,color:#fff",
-      "decision" = "fill:#e65100,stroke:#ff9800,stroke-width:2px,color:#fff"
+      "input" = "fill:#1a237e,stroke:#3f51b5,stroke-width:2px,color:#ffffff",
+      "process" = "fill:#4a148c,stroke:#9c27b0,stroke-width:2px,color:#ffffff",
+      "output" = "fill:#1b5e20,stroke:#4caf50,stroke-width:2px,color:#ffffff",
+      "decision" = "fill:#e65100,stroke:#ff9800,stroke-width:2px,color:#ffffff"
     ),
     "auto" = list(
-      # GitHub auto-theme using CSS custom properties
-      "input" = "fill:#0969da,stroke:#0969da,stroke-width:2px,color:#ffffff",
-      "process" = "fill:#8250df,stroke:#8250df,stroke-width:2px,color:#ffffff",
-      "output" = "fill:#1a7f37,stroke:#1a7f37,stroke-width:2px,color:#ffffff",
-      "decision" = "fill:#bc4c00,stroke:#bc4c00,stroke-width:2px,color:#ffffff"
+      # GitHub-compatible auto theme using solid colors that work in both modes
+      "input" = "fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#ffffff",
+      "process" = "fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#ffffff",
+      "output" = "fill:#10b981,stroke:#047857,stroke-width:2px,color:#ffffff",
+      "decision" = "fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#ffffff"
     ),
     "minimal" = list(
-      "input" = "fill:#f6f8fa,stroke:#d0d7de,stroke-width:2px,color:#24292f",
-      "process" = "fill:#f6f8fa,stroke:#d0d7de,stroke-width:2px,color:#24292f",
-      "output" = "fill:#f6f8fa,stroke:#d0d7de,stroke-width:2px,color:#24292f",
-      "decision" = "fill:#f6f8fa,stroke:#d0d7de,stroke-width:2px,color:#24292f"
+      "input" = "fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b",
+      "process" = "fill:#f1f5f9,stroke:#64748b,stroke-width:1px,color:#1e293b",
+      "output" = "fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b",
+      "decision" = "fill:#fef3c7,stroke:#92400e,stroke-width:1px,color:#1e293b"
+    ),
+    "github" = list(
+      # Optimized specifically for GitHub README files with maximum compatibility
+      "input" = "fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af",
+      "process" = "fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6",
+      "output" = "fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d",
+      "decision" = "fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e"
     ),
 
     # Default to light theme
     list(
-      "input" = "fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000",
-      "process" = "fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000",
-      "output" = "fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000",
-      "decision" = "fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000"
+      "input" = "fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000000",
+      "process" = "fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000000",
+      "output" = "fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000000",
+      "decision" = "fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000000"
     )
   )
 }
@@ -195,207 +203,198 @@ get_theme_colors <- function(theme) {
 #' \dontrun{
 #' # Use a specific theme (requires actual workflow data)
 #' workflow <- put("./src")
-#' put_diagram(workflow, theme = "dark")
+#' put_diagram(workflow, theme = "github")
 #' }
 get_diagram_themes <- function() {
   list(
-    "light" = "Light theme with bright colors and dark text (default)",
-    "dark" = "Dark theme with muted colors and light text",
-    "auto" = "GitHub adaptive theme that works in both light and dark modes",
-    "minimal" = "Minimal grayscale theme focusing on structure over color"
+    "light" = "Default light theme with bright colors - perfect for documentation sites",
+    "dark" = "Dark theme with muted colors - ideal for dark mode environments and terminals",
+    "auto" = "GitHub-adaptive theme with solid colors that work in both light and dark modes",
+    "minimal" = "Grayscale professional theme - print-friendly and great for business documents",
+    "github" = "Optimized specifically for GitHub README files with maximum mermaid compatibility"
   )
 }
+
 #' Generate node definitions for mermaid diagram
 #' @param workflow Workflow data frame
 #' @param node_labels What to show in node labels
 #' @return Character vector of node definitions
 #' @keywords internal
-generate_node_definitions <- function(workflow, node_labels) {
-  definitions <- character()
+generate_node_definitions <- function(workflow, node_labels = "label") {
+  node_defs <- character()
 
-  for (i in seq_len(nrow(workflow))) {
-    row <- workflow[i, ]
-    node_id <- sanitize_node_id(row$name)
+  for (i in 1:nrow(workflow)) {
+    node <- workflow[i, ]
+    node_id <- sanitize_node_id(node$name)
 
-    # Determine node label
-    node_label <- switch(node_labels,
-      "name" = row$name,
-      "label" = if ("label" %in% names(row) && !is.na(row$label) && row$label != "") row$label else row$name,
-      "both" = if ("label" %in% names(row) && !is.na(row$label) && row$label != "") {
-        paste0(row$name, ": ", row$label)
+    # Determine node shape based on type
+    node_shape <- get_node_shape(node$node_type)
+
+    # Determine label text
+    label_text <- switch(node_labels,
+      "name" = node$name,
+      "label" = if (!is.na(node$label) && node$label != "") node$label else node$name,
+      "both" = if (!is.na(node$label) && node$label != "") {
+        paste0(node$name, ": ", node$label)
       } else {
-        row$name
+        node$name
       },
-      row$name # fallback
+      # Default to label
+      if (!is.na(node$label) && node$label != "") node$label else node$name
     )
 
-    # Determine node shape based on node_type (handle missing column)
-    node_type_value <- if ("node_type" %in% names(row)) row$node_type else NA
-    shape <- get_node_shape(node_type_value)
-    node_def <- paste0("    ", node_id, shape[1], node_label, shape[2])
-
-    definitions <- c(definitions, node_def)
+    # Create node definition
+    node_def <- paste0("    ", node_id, node_shape$start, label_text, node_shape$end)
+    node_defs <- c(node_defs, node_def)
   }
 
-  return(definitions)
+  return(node_defs)
 }
 
-#' Generate connections between nodes based on file flow
-#' @param workflow Workflow data frame
-#' @param show_files Whether to show file names on connections
-#' @return Character vector of connection definitions
-#' @keywords internal
-generate_connections <- function(workflow, show_files) {
-  connections <- character()
-
-  # Check if input/output columns exist
-  if (!"input" %in% names(workflow) && !"output" %in% names(workflow)) {
-    return(connections) # No file flow information available
-  }
-
-  # Create mapping of files to nodes
-  file_producers <- list()
-  file_consumers <- list()
-
-  # Build file mappings
-  for (i in seq_len(nrow(workflow))) {
-    row <- workflow[i, ]
-    node_id <- sanitize_node_id(row$name)
-
-    # Track outputs
-    if ("output" %in% names(row) && !is.na(row$output) && row$output != "") {
-      outputs <- split_file_list(row$output)
-      for (output_file in outputs) {
-        file_producers[[output_file]] <- node_id
-      }
-    }
-
-    # Track inputs
-    if ("input" %in% names(row) && !is.na(row$input) && row$input != "") {
-      inputs <- split_file_list(row$input)
-      for (input_file in inputs) {
-        if (!input_file %in% names(file_consumers)) {
-          file_consumers[[input_file]] <- character()
-        }
-        file_consumers[[input_file]] <- c(file_consumers[[input_file]], node_id)
-      }
-    }
-  }
-
-  # Generate connections
-  for (file_name in names(file_consumers)) {
-    if (file_name %in% names(file_producers)) {
-      producer <- file_producers[[file_name]]
-      consumers <- file_consumers[[file_name]]
-
-      for (consumer in consumers) {
-        if (show_files) {
-          connection <- paste0("    ", producer, " -->|", file_name, "| ", consumer)
-        } else {
-          connection <- paste0("    ", producer, " --> ", consumer)
-        }
-        connections <- c(connections, connection)
-      }
-    }
-  }
-
-  return(connections)
-}
-
-#' Get node shape characters based on node type
-#' @param node_type Node type string
-#' @return Character vector with opening and closing shape characters
+#' Get node shape based on type
+#' @param node_type Type of node
+#' @return List with start and end shape markers
 #' @keywords internal
 get_node_shape <- function(node_type) {
-  # Handle NULL, NA, or missing values
-  if (is.null(node_type) || length(node_type) == 0 || is.na(node_type)) {
-    return(c("[", "]")) # Default rectangle
+  if (is.na(node_type)) {
+    node_type <- "process"
   }
 
-  switch(as.character(node_type),
-    "input" = c("([", "])"), # Stadium shape for inputs
-    "process" = c("[", "]"), # Rectangle for processes
-    "output" = c("[[", "]]"), # Subroutine shape for outputs
-    "decision" = c("{", "}"), # Diamond for decisions
-    "start" = c("([", "])"), # Stadium for start
-    "end" = c("([", "])"), # Stadium for end
-    c("[", "]") # Default rectangle
+  switch(node_type,
+    "input" = list(start = "([", end = "])"),
+    "output" = list(start = "[[", end = "]]"),
+    "decision" = list(start = "{", end = "}"),
+    "process" = list(start = "[", end = "]"),
+    # Default to process
+    list(start = "[", end = "]")
   )
 }
 
-#' Sanitize node ID for mermaid compatibility
-#' @param name Node name
-#' @return Sanitized node ID
+#' Sanitize node ID for mermaid compatibility (IMPROVED VERSION)
+#' @param node_id Raw node identifier
+#' @return Sanitized identifier safe for mermaid
 #' @keywords internal
-sanitize_node_id <- function(name) {
-  # Replace problematic characters with underscores
-  sanitized <- gsub("[^a-zA-Z0-9_]", "_", name)
+sanitize_node_id <- function(node_id) {
+  if (is.na(node_id) || node_id == "") {
+    return("unknown_node")
+  }
 
-  # Ensure it starts with a letter
-  if (!grepl("^[a-zA-Z]", sanitized)) {
+  # Replace any non-alphanumeric characters with underscores
+  sanitized <- gsub("[^a-zA-Z0-9_]", "_", as.character(node_id))
+
+  # Ensure it starts with a letter or underscore
+  if (grepl("^[0-9]", sanitized)) {
     sanitized <- paste0("node_", sanitized)
+  }
+
+  # Remove multiple consecutive underscores
+  sanitized <- gsub("_{2,}", "_", sanitized)
+
+  # Remove trailing underscores
+  sanitized <- gsub("_+$", "", sanitized)
+
+  # Ensure it's not empty after cleaning
+  if (sanitized == "" || sanitized == "_") {
+    sanitized <- "unnamed_node"
   }
 
   return(sanitized)
 }
 
-#' Split comma-separated file list
-#' @param file_string Comma-separated file names
-#' @return Character vector of individual file names
+#' Generate connections between nodes
+#' @param workflow Workflow data frame
+#' @param show_files Whether to show file-based connections
+#' @return Character vector of connection definitions
 #' @keywords internal
-split_file_list <- function(file_string) {
-  if (is.na(file_string) || file_string == "") {
-    return(character(0))
+generate_connections <- function(workflow, show_files = FALSE) {
+  connections <- character()
+
+  for (i in 1:nrow(workflow)) {
+    node <- workflow[i, ]
+    target_id <- sanitize_node_id(node$name)
+
+    if (!is.na(node$input) && node$input != "") {
+      input_files <- strsplit(trimws(node$input), ",")[[1]]
+      input_files <- trimws(input_files)
+
+      for (input_file in input_files) {
+        if (input_file != "") {
+          # Find nodes that output this file
+          source_nodes <- workflow[
+            !is.na(workflow$output) &
+              sapply(workflow$output, function(x) {
+                if (is.na(x) || x == "") {
+                  return(FALSE)
+                }
+                output_files <- strsplit(trimws(x), ",")[[1]]
+                output_files <- trimws(output_files)
+                input_file %in% output_files
+              }),
+          ]
+
+          if (nrow(source_nodes) > 0) {
+            for (j in 1:nrow(source_nodes)) {
+              source_id <- sanitize_node_id(source_nodes[j, ]$name)
+
+              # Create connection with optional file label
+              if (show_files && input_file != "") {
+                connection <- paste0("    ", source_id, " -->|", input_file, "| ", target_id)
+              } else {
+                connection <- paste0("    ", source_id, " --> ", target_id)
+              }
+
+              connections <- c(connections, connection)
+            }
+          }
+        }
+      }
+    }
   }
 
-  # Split on commas and clean whitespace
-  files <- strsplit(file_string, ",")[[1]]
-  files <- trimws(files)
-  files <- files[files != ""]
-
-  return(files)
+  # Remove duplicate connections
+  connections <- unique(connections)
+  return(connections)
 }
 
-#' Handle output of mermaid diagram
+#' Handle diagram output to different destinations
 #' @param mermaid_code Generated mermaid code
-#' @param output Output method
+#' @param output Output format
 #' @param file File path for file output
 #' @param title Diagram title
 #' @keywords internal
-handle_output <- function(mermaid_code, output, file, title) {
+handle_output <- function(mermaid_code, output = "console", file = NULL, title = NULL) {
   switch(output,
     "console" = {
-      cat("```mermaid\n")
-      cat(mermaid_code)
-      cat("\n```\n")
+      cat(mermaid_code, "\n")
     },
     "file" = {
-      # Create markdown file with mermaid code block
-      if (!is.null(title)) {
-        content <- paste0("# ", title, "\n\n```mermaid\n", mermaid_code, "\n```\n")
-      } else {
-        content <- paste0("```mermaid\n", mermaid_code, "\n```\n")
+      if (is.null(file)) {
+        file <- "workflow_diagram.md"
       }
 
-      writeLines(content, file)
-      message("Diagram saved to: ", file)
+      # Create markdown file with mermaid code block
+      md_content <- c(
+        if (!is.null(title)) paste0("# ", title, "\n") else "",
+        "```mermaid",
+        mermaid_code,
+        "```"
+      )
+
+      writeLines(md_content, file)
+      cat("Diagram saved to:", file, "\n")
     },
     "clipboard" = {
       if (requireNamespace("clipr", quietly = TRUE)) {
-        clipr::write_clip(paste0("```mermaid\n", mermaid_code, "\n```"))
-        message("Diagram copied to clipboard")
+        clipr::write_clip(mermaid_code)
+        cat("Diagram copied to clipboard\n")
       } else {
         warning("clipr package not available. Install with: install.packages('clipr')")
-        cat("```mermaid\n")
-        cat(mermaid_code)
-        cat("\n```\n")
+        cat(mermaid_code, "\n")
       }
     },
     {
       # Default to console
-      cat("```mermaid\n")
-      cat(mermaid_code)
-      cat("\n```\n")
+      cat(mermaid_code, "\n")
     }
   )
 }
