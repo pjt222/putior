@@ -1,4 +1,103 @@
-.Rproj.user
+# History files
 .Rhistory
+.Rapp.history
+
+# Session Data files
 .RData
+.RDataTmp
+
+# User-specific files
+.Rproj.user/
 .Ruserdata
+
+# Example code in package build process
+*-Ex.R
+
+# Output files from R CMD build
+/*.tar.gz
+
+# Output files from R CMD check
+/*.Rcheck/
+
+# RStudio files
+.Rproj.user/
+*.Rproj
+
+# produced vignettes
+vignettes/*.html
+vignettes/*.pdf
+
+# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
+.httr-oauth
+
+# knitr and R markdown default cache directories
+*_cache/
+/cache/
+
+# Temporary files created by R markdown
+*.utf8.md
+*.knit.md
+
+# R Environment Variables
+.Renviron
+
+# pkgdown site
+docs/
+
+# translation temp files
+po/*~
+
+# RStudio Connect folder
+rsconnect/
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# VS Code
+.vscode/
+
+# Temporary folders often used in examples
+temp/
+tmp/
+temporary/
+
+# Log files
+*.log
+
+# Package development
+.Rbuildignore
+inst/doc
+
+# renv (if not using renv for package development)
+# Uncomment if you don't want to track renv
+# renv/
+# renv.lock
+
+# IDE files
+.idea/
+*.swp
+*.swo
+
+# Test outputs
+testthat.Rout*
+
+# Coverage reports
+coverage.html
+coverage/
+
+# Benchmarking results
+benchmark_results/
+
+# Local configuration files
+.env
+.local
+
+# Example outputs (adjust based on your examples)
+workflow_diagram.md
+*.svg
+*.png
