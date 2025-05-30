@@ -13,6 +13,14 @@ parse_put_annotation(line)
 Named list containing all extracted properties, or NULL if invalid
 }
 \description{
-Extract PUT Annotation Properties
+Parses a single line containing a PUT annotation and extracts key-value pairs.
+Supports flexible syntax with optional spaces and pipe separators.
+}
+\examples{
+\dontrun{
+parse_put_annotation('#put name:"test", label:"Test Node"')
+parse_put_annotation('# put name:"test", node_type:"process"')
+parse_put_annotation('#put| name:"test", input:"data.csv"')
+}
 }
 \keyword{internal}

@@ -4,26 +4,56 @@
 \alias{put}
 \title{Scan R and Python Files for PUT Annotations}
 \usage{
-put(path, pattern = "\\\\.(R|py)$")
+put(
+  path,
+  pattern = "\\\\.(R|r|py|sql|sh|jl)$",
+  recursive = FALSE,
+  include_line_numbers = FALSE,
+  validate = TRUE
+)
 }
 \arguments{
-\item{path}{Character string specifying the path to the folder containing files}
+\item{path}{Character string specifying the path to the folder containing files,
+or path to a single file}
 
-\item{pattern}{Character string specifying the file pattern to match (default: "\\.(R|py)$")}
+\item{pattern}{Character string specifying the file pattern to match.
+Default: "\\.(R|r|py|sql|sh|jl)$" (R, Python, SQL, shell, Julia files)}
+
+\item{recursive}{Logical. Should subdirectories be searched recursively?
+Default: FALSE}
+
+\item{include_line_numbers}{Logical. Should line numbers be included in output?
+Default: FALSE}
+
+\item{validate}{Logical. Should annotations be validated for common issues?
+Default: TRUE}
 }
 \value{
-A data frame containing file names and all properties found in annotations
+A data frame containing file names and all properties found in annotations.
+Always includes columns: file_name, file_type, and any properties found in
+PUT annotations. If include_line_numbers is TRUE, also includes line_number.
 }
 \description{
-Scan R and Python Files for PUT Annotations
+Scans source files in a directory for PUT annotations that define workflow
+nodes, inputs, outputs, and metadata. Supports both R and Python files with
+flexible annotation syntax.
 }
 \examples{
 \dontrun{
-# R annotation example:
-# #put name:"node1", label:"Process Data", node_type:"process"
-#
-# Python annotation example:
-# #put name:"py_node1", label:"Load Data", node_type:"input"
-documentation <- put("./src/")
+# Scan a directory for workflow annotations
+workflow <- put("./src/")
+
+# Scan recursively including subdirectories
+workflow <- put("./project/", recursive = TRUE)
+
+# Scan a single file
+workflow <- put("./script.R")
+
+# Include line numbers for debugging
+workflow <- put("./src/", include_line_numbers = TRUE)
+
+# Example annotations in your source files:
+# #put name:"load_data", label:"Load Dataset", node_type:"input", output:"data.csv"
+# #put name:"process", label:"Clean Data", node_type:"process", input:"data.csv", output:"clean.csv"
 }
 }
