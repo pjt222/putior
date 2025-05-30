@@ -249,30 +249,32 @@ generate_node_definitions <- function(workflow, node_labels = "label") {
       if (!is.na(node$label) && node$label != "") node$label else node$name
     )
 
-    # Create node definition
-    node_def <- paste0("    ", node_id, node_shape$start, label_text, node_shape$end)
+    # Create node definition using character vector format
+    node_def <- paste0("    ", node_id, node_shape[1], label_text, node_shape[2])
     node_defs <- c(node_defs, node_def)
   }
 
   return(node_defs)
 }
 
-#' Get node shape based on type
-#' @param node_type Type of node
-#' @return List with start and end shape markers
+#' Get node shape characters based on node type
+#' @param node_type Node type string
+#' @return Character vector with opening and closing shape characters
 #' @keywords internal
 get_node_shape <- function(node_type) {
-  if (is.na(node_type)) {
-    node_type <- "process"
+  # Handle NULL, NA, or missing values
+  if (is.null(node_type) || length(node_type) == 0 || is.na(node_type)) {
+    return(c("[", "]")) # Default rectangle
   }
 
-  switch(node_type,
-    "input" = list(start = "([", end = "])"),
-    "output" = list(start = "[[", end = "]]"),
-    "decision" = list(start = "{", end = "}"),
-    "process" = list(start = "[", end = "]"),
-    # Default to process
-    list(start = "[", end = "]")
+  switch(as.character(node_type),
+    "input" = c("([", "])"), # Stadium shape for inputs
+    "process" = c("[", "]"), # Rectangle for processes
+    "output" = c("[[", "]]"), # Subroutine shape for outputs
+    "decision" = c("{", "}"), # Diamond for decisions
+    "start" = c("([", "])"), # Stadium for start
+    "end" = c("([", "])"), # Stadium for end
+    c("[", "]") # Default rectangle
   )
 }
 
@@ -371,7 +373,10 @@ generate_connections <- function(workflow, show_files = FALSE) {
 handle_output <- function(mermaid_code, output = "console", file = NULL, title = NULL) {
   switch(output,
     "console" = {
-      cat(mermaid_code, "\n")
+      # Include mermaid code blocks for console output
+      cat("```mermaid\n")
+      cat(mermaid_code)
+      cat("\n```\n")
     },
     "file" = {
       if (is.null(file)) {
@@ -387,20 +392,42 @@ handle_output <- function(mermaid_code, output = "console", file = NULL, title =
       )
 
       writeLines(md_content, file)
-      cat("Diagram saved to:", file, "\n")
+      # Use message() instead of cat() so expect_message() can catch it
+      message("Diagram saved to: ", file)
     },
     "clipboard" = {
       if (requireNamespace("clipr", quietly = TRUE)) {
-        clipr::write_clip(mermaid_code)
-        cat("Diagram copied to clipboard\n")
+        clipr::write_clip(paste0("```mermaid\n", mermaid_code, "\n```"))
+        message("Diagram copied to clipboard")
       } else {
         warning("clipr package not available. Install with: install.packages('clipr')")
-        cat(mermaid_code, "\n")
+        cat("```mermaid\n")
+        cat(mermaid_code)
+        cat("\n```\n")
       }
     },
     {
-      # Default to console
-      cat(mermaid_code, "\n")
+      # Default to console with mermaid blocks
+      cat("```mermaid\n")
+      cat(mermaid_code)
+      cat("\n```\n")
     }
   )
+}
+
+#' Split comma-separated file list
+#' @param file_string Comma-separated file names
+#' @return Character vector of individual file names
+#' @export
+split_file_list <- function(file_string) {
+  if (is.na(file_string) || file_string == "" || is.null(file_string)) {
+    return(character(0))
+  }
+
+  # Split on commas and clean whitespace
+  files <- strsplit(as.character(file_string), ",")[[1]]
+  files <- trimws(files)
+  files <- files[files != ""]
+
+  return(files)
 }
