@@ -123,17 +123,23 @@ generate_node_styling <- function(workflow, theme = "light") {
   # Define color schemes for different themes
   color_schemes <- get_theme_colors(theme)
 
-  # Group nodes by type
+  # Group nodes by type and create styling
   for (node_type in names(color_schemes)) {
     nodes_of_type <- workflow[!is.na(workflow$node_type) & workflow$node_type == node_type, ]
 
     if (nrow(nodes_of_type) > 0) {
       node_ids <- sapply(nodes_of_type$name, sanitize_node_id)
       class_name <- paste0(node_type, "Style")
-      style_def <- paste0("    classDef ", class_name, " ", color_schemes[[node_type]])
-      class_application <- paste0("    class ", paste(node_ids, collapse = ","), " ", class_name)
 
-      styling <- c(styling, style_def, class_application)
+      # Create class definition
+      style_def <- paste0("    classDef ", class_name, " ", color_schemes[[node_type]])
+
+      # Apply class to each node individually to avoid line length issues
+      class_applications <- sapply(node_ids, function(id) {
+        paste0("    class ", id, " ", class_name)
+      })
+
+      styling <- c(styling, style_def, class_applications)
     }
   }
 
