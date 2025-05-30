@@ -18,6 +18,8 @@
 #'   "name" (node names), "label" (descriptions), "both" (name: label)
 #' @param show_files Logical indicating whether to show file connections
 #' @param style_nodes Logical indicating whether to apply styling based on node_type
+#' @param theme Character string specifying color theme. Options:
+#'   "light" (default), "dark", "auto" (GitHub adaptive), "minimal"
 #'
 #' @return Character string containing the mermaid diagram code
 #' @export
@@ -28,14 +30,14 @@
 #' workflow <- put("./src/")
 #' put_diagram(workflow)
 #'
-#' # Save to file
-#' put_diagram(workflow, output = "file", file = "workflow.md")
+#' # Dark theme for dark mode environments
+#' put_diagram(workflow, theme = "dark")
 #'
-#' # Horizontal layout with custom title
-#' put_diagram(workflow, direction = "LR", title = "Data Pipeline")
+#' # Auto theme that adapts to GitHub's theme
+#' put_diagram(workflow, theme = "auto")
 #'
-#' # Show detailed labels
-#' put_diagram(workflow, node_labels = "both", show_files = TRUE)
+#' # Save to file with custom theme
+#' put_diagram(workflow, output = "file", file = "workflow.md", theme = "dark")
 #' }
 put_diagram <- function(workflow,
                         output = "console",
@@ -44,7 +46,8 @@ put_diagram <- function(workflow,
                         direction = "TD",
                         node_labels = "label",
                         show_files = FALSE,
-                        style_nodes = TRUE) {
+                        style_nodes = TRUE,
+                        theme = "light") {
   # Input validation
   if (!is.data.frame(workflow) || nrow(workflow) == 0) {
     stop("workflow must be a non-empty data frame returned by put()")
@@ -53,6 +56,16 @@ put_diagram <- function(workflow,
   required_cols <- c("name", "file_name")
   if (!all(required_cols %in% names(workflow))) {
     stop("workflow must contain 'name' and 'file_name' columns")
+  }
+
+  # Validate theme
+  valid_themes <- c("light", "dark", "auto", "minimal")
+  if (!theme %in% valid_themes) {
+    warning(
+      "Invalid theme '", theme, "'. Using 'light'. Valid themes: ",
+      paste(valid_themes, collapse = ", ")
+    )
+    theme <- "light"
   }
 
   # Clean the workflow data
@@ -82,9 +95,9 @@ put_diagram <- function(workflow,
     mermaid_lines <- c(mermaid_lines, "", "    %% Connections", connections)
   }
 
-  # Add styling
+  # Add styling based on theme
   if (style_nodes && "node_type" %in% names(workflow)) {
-    styling <- generate_node_styling(workflow)
+    styling <- generate_node_styling(workflow, theme)
     if (length(styling) > 0) {
       mermaid_lines <- c(mermaid_lines, "", "    %% Styling", styling)
     }
@@ -99,6 +112,99 @@ put_diagram <- function(workflow,
   return(invisible(mermaid_code))
 }
 
+#' Generate node styling based on node types and theme
+#' @param workflow Workflow data frame
+#' @param theme Color theme ("light", "dark", "auto", "minimal")
+#' @return Character vector of styling definitions
+#' @keywords internal
+generate_node_styling <- function(workflow, theme = "light") {
+  styling <- character()
+
+  # Define color schemes for different themes
+  color_schemes <- get_theme_colors(theme)
+
+  # Group nodes by type
+  for (node_type in names(color_schemes)) {
+    nodes_of_type <- workflow[!is.na(workflow$node_type) & workflow$node_type == node_type, ]
+
+    if (nrow(nodes_of_type) > 0) {
+      node_ids <- sapply(nodes_of_type$name, sanitize_node_id)
+      class_name <- paste0("class ", paste(node_ids, collapse = ","), " ", node_type, "Style")
+      style_def <- paste0("    classDef ", node_type, "Style ", color_schemes[[node_type]])
+
+      styling <- c(styling, style_def, paste0("    ", class_name))
+    }
+  }
+
+  return(styling)
+}
+
+#' Get color schemes for different themes
+#' @param theme Theme name
+#' @return Named list of color definitions for each node type
+#' @keywords internal
+get_theme_colors <- function(theme) {
+  switch(theme,
+    "light" = list(
+      "input" = "fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000",
+      "process" = "fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000",
+      "output" = "fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000",
+      "decision" = "fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000"
+    ),
+    "dark" = list(
+      "input" = "fill:#1a237e,stroke:#3f51b5,stroke-width:2px,color:#fff",
+      "process" = "fill:#4a148c,stroke:#9c27b0,stroke-width:2px,color:#fff",
+      "output" = "fill:#1b5e20,stroke:#4caf50,stroke-width:2px,color:#fff",
+      "decision" = "fill:#e65100,stroke:#ff9800,stroke-width:2px,color:#fff"
+    ),
+    "auto" = list(
+      # GitHub auto-theme using CSS custom properties
+      "input" = "fill:#0969da,stroke:#0969da,stroke-width:2px,color:#ffffff",
+      "process" = "fill:#8250df,stroke:#8250df,stroke-width:2px,color:#ffffff",
+      "output" = "fill:#1a7f37,stroke:#1a7f37,stroke-width:2px,color:#ffffff",
+      "decision" = "fill:#bc4c00,stroke:#bc4c00,stroke-width:2px,color:#ffffff"
+    ),
+    "minimal" = list(
+      "input" = "fill:#f6f8fa,stroke:#d0d7de,stroke-width:2px,color:#24292f",
+      "process" = "fill:#f6f8fa,stroke:#d0d7de,stroke-width:2px,color:#24292f",
+      "output" = "fill:#f6f8fa,stroke:#d0d7de,stroke-width:2px,color:#24292f",
+      "decision" = "fill:#f6f8fa,stroke:#d0d7de,stroke-width:2px,color:#24292f"
+    ),
+
+    # Default to light theme
+    list(
+      "input" = "fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000",
+      "process" = "fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000",
+      "output" = "fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000",
+      "decision" = "fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000"
+    )
+  )
+}
+
+#' Get available themes for put_diagram
+#'
+#' Returns information about available color themes for workflow diagrams.
+#'
+#' @return Named list describing available themes
+#' @export
+#'
+#' @examples
+#' # See available themes
+#' get_diagram_themes()
+#'
+#' \dontrun{
+#' # Use a specific theme (requires actual workflow data)
+#' workflow <- put("./src")
+#' put_diagram(workflow, theme = "dark")
+#' }
+get_diagram_themes <- function() {
+  list(
+    "light" = "Light theme with bright colors and dark text (default)",
+    "dark" = "Dark theme with muted colors and light text",
+    "auto" = "GitHub adaptive theme that works in both light and dark modes",
+    "minimal" = "Minimal grayscale theme focusing on structure over color"
+  )
+}
 #' Generate node definitions for mermaid diagram
 #' @param workflow Workflow data frame
 #' @param node_labels What to show in node labels
@@ -194,37 +300,6 @@ generate_connections <- function(workflow, show_files) {
   }
 
   return(connections)
-}
-
-#' Generate node styling based on node types
-#' @param workflow Workflow data frame
-#' @return Character vector of styling definitions
-#' @keywords internal
-generate_node_styling <- function(workflow) {
-  styling <- character()
-
-  # Define colors for different node types
-  type_colors <- list(
-    "input" = "fill:#e1f5fe,stroke:#01579b,stroke-width:2px",
-    "process" = "fill:#f3e5f5,stroke:#4a148c,stroke-width:2px",
-    "output" = "fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px",
-    "decision" = "fill:#fff3e0,stroke:#e65100,stroke-width:2px"
-  )
-
-  # Group nodes by type
-  for (node_type in names(type_colors)) {
-    nodes_of_type <- workflow[!is.na(workflow$node_type) & workflow$node_type == node_type, ]
-
-    if (nrow(nodes_of_type) > 0) {
-      node_ids <- sapply(nodes_of_type$name, sanitize_node_id)
-      class_name <- paste0("class ", paste(node_ids, collapse = ","), " ", node_type, "Style")
-      style_def <- paste0("    classDef ", node_type, "Style ", type_colors[[node_type]])
-
-      styling <- c(styling, style_def, paste0("    ", class_name))
-    }
-  }
-
-  return(styling)
 }
 
 #' Get node shape characters based on node type

@@ -2,17 +2,19 @@
 % Please edit documentation in R/put_diagram.R
 \name{generate_node_styling}
 \alias{generate_node_styling}
-\title{Generate node styling based on node types}
+\title{Generate node styling based on node types and theme}
 \usage{
-generate_node_styling(workflow)
+generate_node_styling(workflow, theme = "light")
 }
 \arguments{
 \item{workflow}{Workflow data frame}
+
+\item{theme}{Color theme ("light", "dark", "auto", "minimal")}
 }
 \value{
 Character vector of styling definitions
 }
 \description{
-Generate node styling based on node types
+Generate node styling based on node types and theme
 }
 \keyword{internal}

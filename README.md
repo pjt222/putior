@@ -281,6 +281,92 @@ example(put_diagram)
 - **🔍 Code Review**: Visualize changes to data processing logic
 - **📋 Compliance**: Generate audit trails for data processing
 
+## 🎨 Themes & Styling
+
+putior supports multiple color themes to match your environment and preferences:
+
+### Available Themes
+
+```r
+# See all available themes
+get_diagram_themes()
+```
+
+- **`"light"`** (default): Bright colors with dark text - perfect for documentation
+- **`"dark"`**: Muted colors with light text - ideal for dark mode environments  
+- **`"auto"`**: GitHub adaptive theme - automatically works in both light/dark modes
+- **`"minimal"`**: Grayscale professional theme - great for business documents
+
+### Theme Examples
+
+**Light Theme (Default)**
+```r
+put_diagram(workflow, theme = "light")
+```
+````mermaid
+flowchart TD
+    fetch_data([Fetch API Data])
+    clean_data[Clean and Validate]
+    generate_report[[Generate Final Report]]
+    
+    fetch_data --> clean_data
+    clean_data --> generate_report
+    
+    classDef inputStyle fill:#e1f5fe,stroke:#01579b,color:#000
+    classDef processStyle fill:#f3e5f5,stroke:#4a148c,color:#000
+    classDef outputStyle fill:#e8f5e8,stroke:#1b5e20,color:#000
+    class fetch_data inputStyle
+    class clean_data processStyle  
+    class generate_report outputStyle
+````
+
+**Dark Theme**
+```r
+put_diagram(workflow, theme = "dark")
+```
+````mermaid
+flowchart TD
+    fetch_data([Fetch API Data])
+    clean_data[Clean and Validate]
+    generate_report[[Generate Final Report]]
+    
+    fetch_data --> clean_data
+    clean_data --> generate_report
+    
+    classDef inputStyle fill:#1a237e,stroke:#3f51b5,color:#fff
+    classDef processStyle fill:#4a148c,stroke:#9c27b0,color:#fff
+    classDef outputStyle fill:#1b5e20,stroke:#4caf50,color:#fff
+    class fetch_data inputStyle
+    class clean_data processStyle
+    class generate_report outputStyle
+````
+
+**Auto Theme (GitHub Adaptive)**
+```r
+put_diagram(workflow, theme = "auto")  # Recommended for GitHub!
+```
+
+**Minimal Theme**
+```r
+put_diagram(workflow, theme = "minimal")  # Professional documents
+```
+
+### When to Use Each Theme
+
+| Theme | Best For | Environment |
+|-------|----------|-------------|
+| `light` | Documentation sites, tutorials | Light backgrounds |
+| `dark` | Dark mode apps, terminals | Dark backgrounds |
+| `auto` | **GitHub README files** | Adapts automatically |
+| `minimal` | Business reports, presentations | Print-friendly |
+
+### Pro Tips
+
+- **For GitHub**: Use `theme = "auto"` - it adapts to the viewer's theme preference
+- **For Documentation**: Use `theme = "light"` or `theme = "dark"` to match your site
+- **For Reports**: Use `theme = "minimal"` for professional, print-friendly diagrams
+- **For Demos**: Light theme usually shows colors best in presentations
+
 ## 🤝 Contributing
 
 Contributions welcome! Please see our [contribution guidelines](CONTRIBUTING.md).

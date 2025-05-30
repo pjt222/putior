@@ -12,7 +12,8 @@ put_diagram(
   direction = "TD",
   node_labels = "label",
   show_files = FALSE,
-  style_nodes = TRUE
+  style_nodes = TRUE,
+  theme = "light"
 )
 }
 \arguments{
@@ -38,6 +39,9 @@ put_diagram(
 \item{show_files}{Logical indicating whether to show file connections}
 
 \item{style_nodes}{Logical indicating whether to apply styling based on node_type}
+
+\item{theme}{Character string specifying color theme. Options:
+"light" (default), "dark", "auto" (GitHub adaptive), "minimal"}
 }
 \value{
 Character string containing the mermaid diagram code
@@ -52,13 +56,13 @@ the flow of data through your analysis pipeline.
 workflow <- put("./src/")
 put_diagram(workflow)
 
-# Save to file
-put_diagram(workflow, output = "file", file = "workflow.md")
+# Dark theme for dark mode environments
+put_diagram(workflow, theme = "dark")
 
-# Horizontal layout with custom title
-put_diagram(workflow, direction = "LR", title = "Data Pipeline")
+# Auto theme that adapts to GitHub's theme
+put_diagram(workflow, theme = "auto")
 
-# Show detailed labels
-put_diagram(workflow, node_labels = "both", show_files = TRUE)
+# Save to file with custom theme
+put_diagram(workflow, output = "file", file = "workflow.md", theme = "dark")
 }
 }

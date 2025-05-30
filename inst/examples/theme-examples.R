@@ -1,0 +1,161 @@
+# Putior Theme Examples: Light and Dark Mode Support
+# ==============================================================================
+# This example demonstrates putior's theme support for different environments
+# and user preferences.
+#
+# To run this example:
+#   source(system.file("examples", "theme-examples.R", package = "putior"))
+# ==============================================================================
+
+library(putior)
+
+cat("🎨 Putior Theme Examples\n")
+cat(paste(rep("=", 40), collapse = ""), "\n\n")
+
+# Create a sample workflow for theme demonstration
+temp_dir <- file.path(tempdir(), "putior_themes")
+dir.create(temp_dir, showWarnings = FALSE)
+
+cat("📁 Creating sample workflow...\n")
+
+# Simple but representative workflow
+workflow_files <- list(
+  "collect.py" = c(
+    "#put name:\"fetch_data\", label:\"Fetch API Data\", node_type:\"input\", output:\"raw_data.json\"",
+    "import requests",
+    "data = requests.get('/api/data').json()",
+    "with open('raw_data.json', 'w') as f:",
+    "    json.dump(data, f)"
+  ),
+  
+  "process.R" = c(
+    "#put name:\"clean_data\", label:\"Clean and Validate\", node_type:\"process\", input:\"raw_data.json\", output:\"clean_data.csv\"",
+    "library(jsonlite)",
+    "raw <- fromJSON('raw_data.json')",
+    "clean <- clean_dataset(raw)",
+    "write.csv(clean, 'clean_data.csv')"
+  ),
+  
+  "analyze.R" = c(
+    "#put name:\"statistical_analysis\", label:\"Statistical Analysis\", node_type:\"process\", input:\"clean_data.csv\", output:\"results.rds\"",
+    "#put name:\"quality_check\", label:\"Data Quality Check\", node_type:\"decision\", input:\"clean_data.csv\", output:\"quality_report.json\"",
+    "data <- read.csv('clean_data.csv')",
+    "results <- perform_analysis(data)",
+    "saveRDS(results, 'results.rds')"
+  ),
+  
+  "report.R" = c(
+    "#put name:\"generate_report\", label:\"Generate Final Report\", node_type:\"output\", input:\"results.rds\", output:\"final_report.html\"",
+    "results <- readRDS('results.rds')",
+    "rmarkdown::render('report_template.Rmd', output_file = 'final_report.html')"
+  )
+)
+
+# Write workflow files
+for (filename in names(workflow_files)) {
+  writeLines(workflow_files[[filename]], file.path(temp_dir, filename))
+}
+
+# Extract workflow
+workflow <- put(temp_dir)
+cat("✅ Found", nrow(workflow), "workflow nodes\n\n")
+
+# Show available themes
+cat("🎨 Available Themes:\n")
+themes <- get_diagram_themes()
+for (theme_name in names(themes)) {
+  cat("  ", theme_name, ":", themes[[theme_name]], "\n")
+}
+cat("\n")
+
+cat(paste(rep("=", 50), collapse = ""), "\n")
+cat("🌅 LIGHT THEME (Default)\n")
+cat("Perfect for: Documentation sites, light mode environments\n")
+cat(paste(rep("-", 50), collapse = ""), "\n")
+put_diagram(workflow, 
+            title = "Data Processing Pipeline - Light Theme",
+            theme = "light")
+
+cat("\n", paste(rep("=", 50), collapse = ""), "\n")
+cat("🌙 DARK THEME\n") 
+cat("Perfect for: Dark mode environments, terminal displays\n")
+cat(paste(rep("-", 50), collapse = ""), "\n")
+put_diagram(workflow,
+            title = "Data Processing Pipeline - Dark Theme", 
+            theme = "dark",
+            direction = "LR")
+
+cat("\n", paste(rep("=", 50), collapse = ""), "\n")
+cat("🔄 AUTO THEME (GitHub Adaptive)\n")
+cat("Perfect for: GitHub README files, automatically adapts to user's theme\n")
+cat(paste(rep("-", 50), collapse = ""), "\n")
+put_diagram(workflow,
+            title = "Data Processing Pipeline - Auto Theme",
+            theme = "auto",
+            show_files = TRUE)
+
+cat("\n", paste(rep("=", 50), collapse = ""), "\n")
+cat("⚪ MINIMAL THEME\n")
+cat("Perfect for: Professional documents, print-friendly diagrams\n")
+cat(paste(rep("-", 50), collapse = ""), "\n")
+put_diagram(workflow,
+            title = "Data Processing Pipeline - Minimal Theme",
+            theme = "minimal",
+            node_labels = "both")
+
+cat("\n", paste(rep("=", 50), collapse = ""), "\n")
+cat("💡 USAGE RECOMMENDATIONS\n")
+cat(paste(rep("=", 50), collapse = ""), "\n\n")
+
+cat("🌅 Light Theme:\n")
+cat("  • Default theme with bright, friendly colors\n")
+cat("  • Best for documentation websites and light backgrounds\n")
+cat("  • High contrast and readability\n\n")
+
+cat("🌙 Dark Theme:\n") 
+cat("  • Muted colors with light text\n")
+cat("  • Perfect for dark mode applications and terminals\n")
+cat("  • Easy on the eyes for extended viewing\n\n")
+
+cat("🔄 Auto Theme:\n")
+cat("  • Uses GitHub's adaptive color system\n")
+cat("  • Automatically looks good in both light and dark modes\n")
+cat("  • Recommended for GitHub README files\n\n")
+
+cat("⚪ Minimal Theme:\n")
+cat("  • Grayscale with subtle borders\n")
+cat("  • Professional appearance for business documents\n")
+cat("  • Print-friendly and accessible\n\n")
+
+cat("📋 Example Usage:\n")
+cat("  # For GitHub README (adapts to user's theme)\n")
+cat("  put_diagram(workflow, theme = 'auto')\n\n")
+cat("  # For dark documentation sites\n")
+cat("  put_diagram(workflow, theme = 'dark', direction = 'LR')\n\n")
+cat("  # For professional reports\n")
+cat("  put_diagram(workflow, theme = 'minimal', output = 'file')\n\n")
+
+# Save examples to files for comparison
+cat("💾 Saving theme examples to files...\n")
+
+themes_to_save <- c("light", "dark", "auto", "minimal")
+for (theme in themes_to_save) {
+  filename <- file.path(temp_dir, paste0("workflow_", theme, "_theme.md"))
+  put_diagram(workflow,
+              output = "file",
+              file = filename,
+              title = paste("Workflow -", stringr::str_to_title(theme), "Theme"),
+              theme = theme,
+              show_files = TRUE)
+}
+
+cat("✅ Saved theme examples:\n")
+for (theme in themes_to_save) {
+  filename <- paste0("workflow_", theme, "_theme.md")
+  cat("  •", filename, "\n")
+}
+
+cat("\n📂 All files saved to:", temp_dir, "\n")
+cat("💡 Try opening these files in different environments to see the themes!\n\n")
+
+cat("🎨 Happy theming with putior! 🚀\n")
