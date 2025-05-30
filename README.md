@@ -1,183 +1,315 @@
 # putior <img src="man/figures/logo.svg" align="right" height="139" alt="" />
 
-Register In- and Outputs for Workflow Visualization
+**PUT + Input + Output + R**: Register In- and Outputs for Workflow Visualization
 
 ## Overview
 
-putior is an R package designed to extract and process structured annotations from R and Python source files, enabling workflow visualization in polyglot software environments. The package scans source code for special PUT annotations that define nodes, connections, and metadata within data processing workflows, making it easier to document and visualize complex data pipelines.
+putior is an R package that extracts structured annotations from R and Python source files and creates elegant workflow visualizations. Simply add PUT annotations to your code, and putior will automatically generate beautiful mermaid diagrams showing your data pipeline flow.
 
-## Features
+**Why putior?** Keep your workflow documentation in sync with your code. No more outdated flowcharts!
 
-putior offers comprehensive annotation processing capabilities:
+## ✨ Features
 
-- **Multi-language support**: Extracts structured annotations from both R and Python source files
-- **Flexible syntax**: Supports multiple annotation formats (`#put`, `# put`, `#put|`)
-- **Arbitrary properties**: Captures custom key-value properties for flexible metadata
-- **Clean output**: Returns results in tabular format ready for visualization
-- **Batch processing**: Handles both single-file and directory-wide scanning
+### 🔍 **Workflow Extraction**
+- **Multi-language support**: R, Python, SQL, shell scripts, Julia
+- **Flexible annotation syntax**: `#put`, `# put`, `#put|`
+- **Smart file parsing**: Automatically detects data flow between scripts
+- **Custom properties**: Add any metadata you need
+
+### 🎨 **Beautiful Visualizations**
+- **Elegant mermaid diagrams**: Professional, GitHub-ready flowcharts
+- **Smart node shapes**: Different shapes for inputs, processes, outputs, decisions
+- **Color-coded styling**: Visual distinction between node types
+- **Multiple layouts**: Top-down, left-right, custom directions
+- **File flow labels**: See exactly how data moves through your pipeline
+
+### 🚀 **Production Ready**
+- **Comprehensive testing**: 180+ tests ensure reliability
+- **Extensive documentation**: Vignettes, examples, and detailed help
+- **Validation system**: Catches common annotation mistakes
+- **Export options**: Console, file, clipboard output
 
 ## Installation
 
-### From GitHub with renv
-
-If you're using renv for package management, you can install putior directly from GitHub:
+### From GitHub
 
 ```r
-# Initialize renv if you haven't already
-renv::init()
+# Install with devtools
+devtools::install_github("username/putior")
 
-# Install putior
-renv::install("pjt222/putior")
-
-# Update renv.lock
-renv::snapshot()
+# Or with pak (faster)
+pak::pkg_install("username/putior")
 ```
 
-### From GitHub with devtools
+## 🚀 Quick Start
 
-Alternatively, you can install using devtools:
-
-```r
-# Install devtools if needed
-if (!require("devtools")) install.packages("devtools")
-
-# Install putior
-devtools::install_github("pjt222/putior")
-```
-
-## Quick Start
-
-See a complete working example:
+### 1. **Try the Examples**
 
 ```r
-# Run the built-in example
+# See putior in action with a complete workflow
 source(system.file("examples", "reprex.R", package = "putior"))
+
+# Try the visualization examples  
+source(system.file("examples", "diagram-example.R", package = "putior"))
 ```
 
-This creates a sample multi-language workflow and demonstrates putior's workflow extraction capabilities.
+### 2. **Basic Usage**
 
-## Usage
-
-### Basic Workflow
-
-**1. Add PUT annotations to your source files:**
-
-**R script example:**
+**Annotate your code:**
 ```r
-# data_processing.R
-#put name:"load_data", label:"Load Dataset", node_type:"input", output:"raw_data.csv"
-data <- read.csv("raw_data.csv")
-
-#put name:"clean_data", label:"Clean and Transform", node_type:"process", input:"raw_data.csv", output:"clean_data.csv"
-cleaned <- clean_dataset(data)
-write.csv(cleaned, "clean_data.csv")
+# data_collection.R
+#put name:"fetch_api", label:"Fetch Sales Data", node_type:"input", output:"raw_sales.csv"
+sales_data <- fetch_from_api("/sales")
+write.csv(sales_data, "raw_sales.csv")
 ```
 
-**Python script example:**
 ```python
-# analysis.py
-#put name:"train_model", label:"Train ML Model", node_type:"process", input:"clean_data.csv", output:"model.pkl"
+# analysis.py  
+#put name:"clean_data", label:"Clean and Process", node_type:"process", input:"raw_sales.csv", output:"clean_sales.csv"
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-
-data = pd.read_csv("clean_data.csv")
-model = RandomForestClassifier()
-model.fit(X_train, y_train)
+data = pd.read_csv("raw_sales.csv")
+clean_data = data.dropna()
+clean_data.to_csv("clean_sales.csv")
 ```
 
-**2. Extract the workflow:**
-
+**Extract and visualize:**
 ```r
 library(putior)
 
-# Process all R and Python files in a directory
+# Extract workflow
 workflow <- put("./src")
 
-# View the extracted workflow
-print(workflow)
-#>            file_name file_type        input                label         name
-#> 1 data_processing.R         r         <NA>         Load Dataset    load_data
-#> 2 data_processing.R         r raw_data.csv   Clean and Transform   clean_data
-#> 3        analysis.py        py clean_data.csv    Train ML Model  train_model
-#>   node_type        output
-#> 1     input   raw_data.csv
-#> 2   process  clean_data.csv
-#> 3   process     model.pkl
+# Create diagram
+put_diagram(workflow)
 ```
 
-### Advanced Features
+**Result:**
+````mermaid
+flowchart TD
+    fetch_api([Fetch Sales Data])
+    clean_data[Clean and Process]
+    
+    fetch_api --> clean_data
+    
+    classDef inputStyle fill:#e1f5fe,stroke:#01579b
+    classDef processStyle fill:#f3e5f5,stroke:#4a148c
+    class fetch_api inputStyle
+    class clean_data processStyle
+````
 
-**Custom properties for visualization:**
+## 📊 Visualization Examples
+
+### Basic Workflow
 ```r
-#put name:"analyze", label:"Statistical Analysis", node_type:"process", color:"blue", group:"stats", duration:"5min"
+workflow <- put("./src")
+put_diagram(workflow)
 ```
 
-**Multiple annotations per file:**
+### Horizontal Layout with File Labels
 ```r
-# reporting.R
-#put name:"create_report", label:"Generate Report", node_type:"output", input:"results.csv", output:"report.html"
-#put name:"send_email", label:"Email Results", node_type:"output", input:"report.html"
+put_diagram(workflow, 
+           direction = "LR", 
+           show_files = TRUE,
+           title = "Data Processing Pipeline")
 ```
 
-## PUT Annotation Syntax
-
+### Styled Diagram with Custom Labels
 ```r
-#put property1:"value1", property2:"value2", property3:"value3"
+put_diagram(workflow,
+           node_labels = "both",  # Show names + descriptions
+           style_nodes = TRUE,    # Color-code by type
+           title = "Sales Analysis Workflow")
 ```
 
-**Common properties:**
-- `name`: Unique identifier for the node
-- `label`: Human-readable description
-- `node_type`: Type of operation (input, process, output)
-- `input`: Input file(s) consumed
-- `output`: Output file(s) produced
+### Save to File
+```r
+put_diagram(workflow, 
+           output = "file", 
+           file = "workflow.md",
+           title = "My Data Pipeline")
+```
 
-**Flexible format:**
-- `#put name:"my_node", label:"My Process"`
-- `# put name:"my_node", label:"My Process"` (space after #)
-- `#put| name:"my_node", label:"My Process"` (pipe separator)
+## 🎯 PUT Annotation Guide
 
-## Documentation
+### Basic Syntax
+```r
+#put property1:"value1", property2:"value2"
+```
 
-Access the package documentation:
+### Core Properties
+- **`name`**: Unique identifier (required)
+- **`label`**: Human-readable description  
+- **`node_type`**: `"input"`, `"process"`, `"output"`, `"decision"`
+- **`input`**: Input files consumed (comma-separated)
+- **`output`**: Output files produced (comma-separated)
+
+### Advanced Properties
+```r
+#put name:"train_model", label:"Train ML Model", node_type:"process", 
+     input:"features.csv", output:"model.pkl", 
+     duration:"30min", memory:"high", team:"data-science"
+```
+
+### Flexible Formats
+```r
+#put name:"node1", label:"Process Data"           # Standard
+# put name:"node1", label:"Process Data"          # Space after #
+#put| name:"node1", label:"Process Data"          # Pipe separator  
+#put: name:"node1", label:"Process Data"          # Colon separator
+```
+
+## 🔄 Real-World Example
+
+Here's how putior handles a complete data science workflow:
+
+**Python Data Collection**
+```python
+# 01_collect.py
+#put name:"fetch_sales", label:"Fetch Sales Data", node_type:"input", output:"raw_sales.csv"  
+#put name:"fetch_customers", label:"Fetch Customer Data", node_type:"input", output:"raw_customers.csv"
+```
+
+**R Data Processing**  
+```r
+# 02_process.R
+#put name:"clean_sales", label:"Clean Sales Data", node_type:"process", input:"raw_sales.csv", output:"clean_sales.csv"
+#put name:"merge_data", label:"Merge Datasets", node_type:"process", input:"clean_sales.csv,raw_customers.csv", output:"merged_data.csv"
+```
+
+**R Analysis & Reporting**
+```r
+# 03_analyze.R  
+#put name:"analyze", label:"Statistical Analysis", node_type:"process", input:"merged_data.csv", output:"results.rds"
+#put name:"report", label:"Generate Report", node_type:"output", input:"results.rds", output:"final_report.html"
+```
+
+**Generated Workflow:**
+````mermaid
+flowchart TD
+    fetch_sales([Fetch Sales Data])
+    fetch_customers([Fetch Customer Data])
+    clean_sales[Clean Sales Data]  
+    merge_data[Merge Datasets]
+    analyze[Statistical Analysis]
+    report[[Generate Report]]
+    
+    fetch_sales --> clean_sales
+    fetch_customers --> merge_data
+    clean_sales --> merge_data
+    merge_data --> analyze
+    analyze --> report
+````
+
+## 📋 Using the Diagrams
+
+The generated mermaid diagrams work everywhere:
+
+### **GitHub/GitLab** (Native Rendering)
+Just paste the mermaid code into any `.md` file - it renders automatically!
+
+### **Documentation Sites**  
+- R Markdown / Quarto documents
+- Jupyter notebooks  
+- GitBook, Docusaurus, etc.
+
+### **Live Editing**
+- **Mermaid Live Editor**: https://mermaid.live  
+- **VS Code**: Install mermaid extensions
+- **Export**: PNG, SVG, PDF formats
+
+## 🛠️ Advanced Usage
+
+### Directory Scanning
+```r
+# Recursive scanning  
+workflow <- put("./project", recursive = TRUE)
+
+# Custom file patterns
+workflow <- put("./src", pattern = "\\.(R|py|sql)$")
+
+# Single files
+workflow <- put("./analysis.R")
+```
+
+### Debugging & Validation
+```r
+# Include line numbers for debugging
+workflow <- put("./src", include_line_numbers = TRUE)
+
+# Disable validation warnings
+workflow <- put("./src", validate = FALSE)
+
+# Test annotation syntax
+is_valid_put_annotation('#put name:"test", label:"Test Node"')  # TRUE
+```
+
+### Filtering Workflows
+```r
+# Show only processing steps
+process_nodes <- workflow[workflow$node_type == "process", ]
+put_diagram(process_nodes, title = "Data Processing Steps")
+
+# Show workflow by team/group
+ml_nodes <- workflow[grepl("ml", workflow$team), ]
+put_diagram(ml_nodes, title = "Machine Learning Pipeline")
+```
+
+## 📖 Documentation
 
 ```r
-# Main function help
+# Function help
 ?put
+?put_diagram
 
-# See all package functions
+# Package overview
 help(package = "putior")
 
-# View examples
+# Comprehensive guide
+vignette("getting-started", package = "putior")
+
+# Examples
 example(put)
+example(put_diagram)
 ```
 
-## Use Cases
+## 🎯 Use Cases
 
-- **Workflow documentation**: Automatically generate documentation for data science pipelines
-- **Code visualization**: Create flowcharts and diagrams from annotated code
-- **Data lineage tracking**: Track how data flows through processing steps
-- **Project onboarding**: Help new team members understand complex workflows
-- **Quality assurance**: Verify that all workflow steps are properly documented
+- **📊 Data Science Teams**: Visualize ML pipelines and data flows
+- **📈 Analytics Projects**: Document ETL processes and reporting workflows  
+- **🔄 Process Documentation**: Keep workflow docs in sync with code
+- **👥 Team Onboarding**: Help new members understand complex projects
+- **🔍 Code Review**: Visualize changes to data processing logic
+- **📋 Compliance**: Generate audit trails for data processing
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions welcome! Please see our [contribution guidelines](CONTRIBUTING.md).
 
-**Development setup:**
-1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/AmazingFeature`
-3. Make your changes and add tests
-4. Commit your changes: `git commit -m 'Add some AmazingFeature'`
-5. Push to the branch: `git push origin feature/AmazingFeature`
-6. Open a Pull Request
+**Development Setup:**
+```r
+# Clone and setup
+git clone https://github.com/username/putior.git
+cd putior
 
-## License
+# Install dev dependencies  
+renv::restore()
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+# Run tests
+devtools::test()
 
-## Author
+# Check package
+devtools::check()
+```
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## 👨‍💻 Author
 
 **Philipp Thoss**  
-📧 ph.thoss@gmx.de  
 🔗 ORCID: [0000-0002-4672-2792](https://orcid.org/0000-0002-4672-2792)
+
+---
+
+**putior**: Because workflow documentation should be as dynamic as your code! 🚀
