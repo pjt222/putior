@@ -15,4 +15,3 @@ Character vector of individual file names
 \description{
 Split comma-separated file list
 }
-\keyword{internal}

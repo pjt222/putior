@@ -2,20 +2,20 @@
 % Please edit documentation in R/put_diagram.R
 \name{handle_output}
 \alias{handle_output}
-\title{Handle output of mermaid diagram}
+\title{Handle diagram output to different destinations}
 \usage{
-handle_output(mermaid_code, output, file, title)
+handle_output(mermaid_code, output = "console", file = NULL, title = NULL)
 }
 \arguments{
 \item{mermaid_code}{Generated mermaid code}
 
-\item{output}{Output method}
+\item{output}{Output format}
 
 \item{file}{File path for file output}
 
 \item{title}{Diagram title}
 }
 \description{
-Handle output of mermaid diagram
+Handle diagram output to different destinations
 }
 \keyword{internal}

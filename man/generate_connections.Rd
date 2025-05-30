@@ -2,19 +2,19 @@
 % Please edit documentation in R/put_diagram.R
 \name{generate_connections}
 \alias{generate_connections}
-\title{Generate connections between nodes based on file flow}
+\title{Generate connections between nodes}
 \usage{
-generate_connections(workflow, show_files)
+generate_connections(workflow, show_files = FALSE)
 }
 \arguments{
 \item{workflow}{Workflow data frame}
 
-\item{show_files}{Whether to show file names on connections}
+\item{show_files}{Whether to show file-based connections}
 }
 \value{
 Character vector of connection definitions
 }
 \description{
-Generate connections between nodes based on file flow
+Generate connections between nodes
 }
 \keyword{internal}

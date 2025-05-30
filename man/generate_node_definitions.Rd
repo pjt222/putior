@@ -4,7 +4,7 @@
 \alias{generate_node_definitions}
 \title{Generate node definitions for mermaid diagram}
 \usage{
-generate_node_definitions(workflow, node_labels)
+generate_node_definitions(workflow, node_labels = "label")
 }
 \arguments{
 \item{workflow}{Workflow data frame}

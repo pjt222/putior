@@ -19,6 +19,6 @@ get_diagram_themes()
 \dontrun{
 # Use a specific theme (requires actual workflow data)
 workflow <- put("./src")
-put_diagram(workflow, theme = "dark")
+put_diagram(workflow, theme = "github")
 }
 }

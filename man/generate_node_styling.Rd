@@ -9,7 +9,7 @@ generate_node_styling(workflow, theme = "light")
 \arguments{
 \item{workflow}{Workflow data frame}
 
-\item{theme}{Color theme ("light", "dark", "auto", "minimal")}
+\item{theme}{Color theme ("light", "dark", "auto", "minimal", "github")}
 }
 \value{
 Character vector of styling definitions

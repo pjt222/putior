@@ -41,7 +41,7 @@ put_diagram(
 \item{style_nodes}{Logical indicating whether to apply styling based on node_type}
 
 \item{theme}{Character string specifying color theme. Options:
-"light" (default), "dark", "auto" (GitHub adaptive), "minimal"}
+"light" (default), "dark", "auto" (GitHub adaptive), "minimal", "github"}
 }
 \value{
 Character string containing the mermaid diagram code
@@ -56,8 +56,8 @@ the flow of data through your analysis pipeline.
 workflow <- put("./src/")
 put_diagram(workflow)
 
-# Dark theme for dark mode environments
-put_diagram(workflow, theme = "dark")
+# GitHub-optimized theme for README files
+put_diagram(workflow, theme = "github")
 
 # Auto theme that adapts to GitHub's theme
 put_diagram(workflow, theme = "auto")
