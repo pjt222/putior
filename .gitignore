@@ -70,8 +70,10 @@ temporary/
 *.log
 
 # Package development
-.Rbuildignore
 inst/doc
+
+# Claude Code
+.claude/
 
 # renv (if not using renv for package development)
 # Uncomment if you don't want to track renv
