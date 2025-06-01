@@ -503,7 +503,7 @@ is_valid_put_annotation("#put invalid syntax")                 # FALSE
 
 ## 🤝 Contributing
 
-Contributions welcome! Please see our [contribution guidelines](CONTRIBUTING.md).
+Contributions welcome! Please open an issue or pull request on [GitHub](https://github.com/pjt222/putior).
 
 **Development Setup:**
 ```bash
