@@ -42,7 +42,7 @@ The fastest way to see putior in action is to run the built-in example:
 source(system.file("examples", "reprex.R", package = "putior"))
 ```
 
-This creates a sample multi-language workflow and demonstrates putior's workflow extraction capabilities.
+This creates a sample multi-language workflow and demonstrates the workflow extraction capabilities of putior.
 
 ## Basic Workflow
 

@@ -10,6 +10,7 @@ Description: Provides tools for extracting and processing structured annotations
     metadata within a data processing workflow. These annotations can then be used 
     to generate visual representations of data flows and processing steps across 
     polyglot software environments.
+Language: en-US
 License: MIT + file LICENSE
 URL: https://github.com/pjt222/putior
 BugReports: https://github.com/pjt222/putior/issues
