@@ -6,7 +6,7 @@
 
 > **Extract beautiful workflow diagrams from your code annotations**
 
-putior is an R package that extracts structured annotations from R and Python source files and creates beautiful Mermaid flowchart diagrams. Perfect for documenting data pipelines, workflows, and understanding complex codebases.
+**putior** (PUT + Input + Output + R) is an R package that extracts structured annotations from source code files and creates beautiful Mermaid flowchart diagrams. Perfect for documenting data pipelines, workflows, and understanding complex codebases.
 
 ## 🌟 Key Features
 
@@ -407,7 +407,7 @@ All PUT annotations follow this format:
 
 | Annotation | Description | Example |
 |------------|-------------|---------|
-| `node_type` | Visual shape of the node | `"input"`, `"process"`, `"output"`, `"decision"` |
+| `node_type` | Visual shape of the node | `"input"`, `"process"`, `"output"`, `"decision"`, `"start"`, `"end"` |
 | `input` | Input files (comma-separated) | `"raw_data.csv, config.json"` |
 | `output` | Output files (comma-separated) | `"processed_data.csv, summary.txt"` |
 
@@ -417,6 +417,8 @@ All PUT annotations follow this format:
 - **`"process"`** - Data transformation, analysis → Rectangle `[text]`  
 - **`"output"`** - Final results, reports, exports → Subroutine `[[text]]`
 - **`"decision"`** - Conditional logic, branching → Diamond `{text}`
+- **`"start"`** - Workflow entry point → Stadium shape `([text])`
+- **`"end"`** - Workflow termination → Stadium shape `([text])`
 
 ### Example Annotations
 
@@ -445,6 +447,14 @@ All PUT annotations follow this format:
 #put name:"create_report", label:"Generate Sales Report", node_type:"output", input:"processed_data.csv", output:"sales_report.html"
 
 # Your R code here...
+```
+
+**Workflow Entry and Exit Points:**
+```r
+# main_workflow.R
+#put name:"workflow_start", label:"Start Analysis Pipeline", node_type:"start", output:"config.json"
+
+#put name:"workflow_end", label:"Pipeline Complete", node_type:"end", input:"final_report.pdf"
 ```
 
 ### Supported File Types

@@ -117,7 +117,7 @@ process_single_file <- function(file, include_line_numbers, validate) {
       lines <- readLines(file, warn = FALSE, encoding = "UTF-8")
 
       # Find PUT annotation lines
-      put_line_indices <- grep("^\\s*#\\s*put(\\||\\s+)", lines)
+      put_line_indices <- grep("^\\s*#\\s*put(\\||\\s+|:)", lines)
 
       if (length(put_line_indices) == 0) {
         return(list())
