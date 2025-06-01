@@ -6,3 +6,7 @@
 ^\.claude$
 ^CLAUDE\.md$
 ^\.github$
+^\.RData$
+^\.Rhistory$
+^\.Rprofile$
+^cran-comments\.md$
