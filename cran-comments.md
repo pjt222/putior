@@ -2,15 +2,18 @@
 
 0 errors | 0 warnings | 1 note
 
-* checking for future file timestamps ... NOTE
-  unable to verify current time
+* checking CRAN incoming feasibility ... NOTE
+  Maintainer: 'Philipp Thoss <ph.thoss@gmx.de>'
+  New submission
 
-This NOTE is due to a system configuration issue and does not affect package functionality.
+This NOTE is expected for first submissions and does not affect package functionality.
 
 ## Test environments
 
 * local: Windows 11, R 4.5.0
-* GitHub Actions: 
+* win-builder: R-release (R 4.5.0) - Status: 1 NOTE
+* win-builder: R-devel - Status: 1 NOTE  
+* GitHub Actions (all passing): 
   - macOS-latest (release)
   - windows-latest (release)  
   - ubuntu-latest (release)
