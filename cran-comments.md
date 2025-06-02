@@ -17,6 +17,16 @@ This NOTE is expected for first submissions and does not affect package function
   - macOS-latest (release)
   - windows-latest (release)  
   - ubuntu-latest (release)
+* R-hub v2 checks:
+  - linux: PASS
+  - macos: PASS
+  - windows: PASS
+  - ubuntu-release: PASS
+  - nosuggests: FAIL (expected - vignettes require rmarkdown from Suggests)
+
+## R-hub nosuggests check
+
+The nosuggests check fails as expected because the package vignettes require rmarkdown (listed in Suggests). The package functions correctly without suggested packages installed - only vignette building is affected. This is standard behavior for packages with vignettes and does not impact package functionality.
 
 ## Initial submission
 
