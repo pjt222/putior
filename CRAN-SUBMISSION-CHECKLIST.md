@@ -30,8 +30,19 @@ From your local R session with pandoc available:
 devtools::check_win_devel()
 devtools::check_win_release()
 
-# Test on R-hub
-rhub::check_for_cran()
+# Test on R-hub (using rhub v2)
+# First, you may need to install/update rhub
+# install.packages("rhub")
+
+# Check on multiple platforms for CRAN
+rhub::rhub_check()  # This will run checks on multiple platforms
+
+# Or check specific platforms:
+rhub::rhub_check(platforms = c(
+  "ubuntu-latest",
+  "windows-latest", 
+  "macos-latest"
+))
 ```
 
 ### 2. Additional Checks
