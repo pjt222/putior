@@ -398,3 +398,125 @@ test_that("show_artifacts combines with existing node_type styling", {
   expect_true(grepl("classDef processStyle", diagram_code))
   expect_true(grepl("classDef artifactStyle", diagram_code))
 })
+
+# ============================================================================
+# Workflow boundary functionality tests
+# ============================================================================
+
+test_that("put_diagram() supports show_workflow_boundaries parameter", {
+  workflow <- data.frame(
+    file_name = c("start.R", "process.R", "end.R"),
+    id = c("start_node", "process_node", "end_node"),
+    label = c("Start", "Process", "End"),
+    node_type = c("start", "process", "end"),
+    stringsAsFactors = FALSE
+  )
+  
+  # Test that show_workflow_boundaries parameter is accepted
+  expect_no_error({
+    diagram_boundaries <- put_diagram(workflow, show_workflow_boundaries = TRUE, output = "none")
+    diagram_no_boundaries <- put_diagram(workflow, show_workflow_boundaries = FALSE, output = "none")
+  })
+  
+  # Diagrams should be different
+  diagram_boundaries <- put_diagram(workflow, show_workflow_boundaries = TRUE, output = "none")
+  diagram_no_boundaries <- put_diagram(workflow, show_workflow_boundaries = FALSE, output = "none")
+  expect_false(identical(diagram_boundaries, diagram_no_boundaries))
+})
+
+test_that("workflow boundaries show special icons when enabled", {
+  workflow <- data.frame(
+    file_name = c("start.R", "end.R"),
+    id = c("start_node", "end_node"),
+    label = c("Pipeline Start", "Pipeline End"),
+    node_type = c("start", "end"),
+    stringsAsFactors = FALSE
+  )
+  
+  diagram_code <- put_diagram(workflow, show_workflow_boundaries = TRUE, output = "none")
+  
+  # Should contain special icons for start and end nodes
+  expect_true(grepl("\\\\u26a1", diagram_code))  # Lightning bolt for start
+  expect_true(grepl("\\\\ud83c\\\\udfc1", diagram_code))  # Flag for end
+})
+
+test_that("workflow boundaries hide icons when disabled", {
+  workflow <- data.frame(
+    file_name = c("start.R", "end.R"),
+    id = c("start_node", "end_node"),
+    label = c("Pipeline Start", "Pipeline End"),
+    node_type = c("start", "end"),
+    stringsAsFactors = FALSE
+  )
+  
+  diagram_code <- put_diagram(workflow, show_workflow_boundaries = FALSE, output = "none")
+  
+  # Should NOT contain special icons when boundaries are disabled
+  expect_false(grepl("\\\\u26a1", diagram_code))  # No lightning bolt
+  expect_false(grepl("\\\\ud83c\\\\udfc1", diagram_code))  # No flag
+})
+
+test_that("workflow boundary styling is applied when enabled", {
+  workflow <- data.frame(
+    file_name = c("start.R", "end.R"),
+    id = c("start_node", "end_node"),
+    label = c("Start", "End"),
+    node_type = c("start", "end"),
+    stringsAsFactors = FALSE
+  )
+  
+  diagram_code <- put_diagram(workflow, show_workflow_boundaries = TRUE, output = "none")
+  
+  # Should contain start and end styling
+  expect_true(grepl("classDef startStyle", diagram_code))
+  expect_true(grepl("classDef endStyle", diagram_code))
+  expect_true(grepl("class start_node startStyle", diagram_code))
+  expect_true(grepl("class end_node endStyle", diagram_code))
+})
+
+test_that("workflow boundary styling is hidden when disabled", {
+  workflow <- data.frame(
+    file_name = c("start.R", "end.R"),
+    id = c("start_node", "end_node"),
+    label = c("Start", "End"),
+    node_type = c("start", "end"),
+    stringsAsFactors = FALSE
+  )
+  
+  diagram_code <- put_diagram(workflow, show_workflow_boundaries = FALSE, output = "none")
+  
+  # Should NOT contain start and end styling when boundaries are disabled
+  expect_false(grepl("classDef startStyle", diagram_code))
+  expect_false(grepl("classDef endStyle", diagram_code))
+})
+
+test_that("get_node_shape handles workflow boundaries correctly", {
+  # With boundaries enabled, should get special shapes
+  expect_true(grepl("\\\\u26a1", get_node_shape("start", TRUE)[1]))
+  expect_true(grepl("\\\\ud83c\\\\udfc1", get_node_shape("end", TRUE)[1]))
+  
+  # With boundaries disabled, should get regular shapes
+  expect_equal(get_node_shape("start", FALSE), c("([", "])"))
+  expect_equal(get_node_shape("end", FALSE), c("([", "])"))
+})
+
+test_that("workflow boundaries work with different themes", {
+  workflow <- data.frame(
+    file_name = c("start.R", "end.R"),
+    id = c("start_node", "end_node"),
+    label = c("Start", "End"),
+    node_type = c("start", "end"),
+    stringsAsFactors = FALSE
+  )
+  
+  # Test multiple themes with workflow boundaries
+  themes <- c("light", "dark", "github", "minimal", "auto")
+  
+  for (theme in themes) {
+    expect_no_error({
+      diagram_code <- put_diagram(workflow, show_workflow_boundaries = TRUE, theme = theme, output = "none")
+      expect_true(grepl("startStyle", diagram_code))
+      expect_true(grepl("endStyle", diagram_code))
+    })
+  }
+})

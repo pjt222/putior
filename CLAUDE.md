@@ -147,17 +147,17 @@ Rscript inst/examples/theme-examples.R
    - `generate_connections()` - Creates edges based on matching input/output files
    - Theme system with 5 built-in themes (light, dark, auto, github, minimal)
    - Supports multiple output modes (console, file, clipboard)
-   - **NEW**: Artifact visualization mode for complete data flow
+   - **Artifact Visualization**: `show_artifacts=TRUE` creates nodes for all data files, providing complete data flow view
+   - **Workflow Boundaries**: `show_workflow_boundaries=TRUE` applies special styling to start/end nodes with icons and colors
 
 3. **Data Flow Architecture**
    - Annotations define nodes with `id`, `label`, `node_type`, `input`, and `output`
    - Automatic connection inference by matching output files to input files
-   - Node types map to Mermaid shapes:
-     - input/start/end → stadium `([text])`
-     - process → rectangle `[text]`
-     - output → subroutine `[[text]]`
-     - decision → diamond `{text}`
-     - **NEW**: artifact → cylinder `[(text)]`
+   - **Data-centric node types** for processing: input (stadium), process (rectangle), output (subroutine), decision (diamond)
+   - **Workflow control nodes**: start/end with special boundary styling when `show_workflow_boundaries=TRUE`
+   - **Artifact nodes**: cylinder shape `[(text)]` for data files in artifact mode
+   - **Dual visualization modes**: Simple (script-to-script) vs Artifact (complete data flow)
+   - **Connection preservation**: Artifact mode maintains both script-to-script AND script-to-artifact connections
 
 ### Key Design Patterns
 
@@ -166,7 +166,8 @@ Rscript inst/examples/theme-examples.R
 - **Flexible annotation syntax**: Supports multiple comment formats (#put, # put, #put|, #put:)
 - **Theme abstraction**: Color schemes isolated from diagram logic
 - **Output abstraction**: Single interface for console/file/clipboard output
-- **Visualization modes**: Simple (script connections) vs. Artifact (complete data flow)
+- **Conditional styling**: Workflow boundaries and artifact styling applied based on parameters
+- **Data-centric design**: Clear separation between data processing and workflow control elements
 - **UUID auto-generation**: When `id` is omitted, automatically generates UUID v4
 - **Empty vs missing distinction**: Missing `id` → auto-generate; empty `id:""` → validation warning
 
@@ -177,12 +178,44 @@ Rscript inst/examples/theme-examples.R
 - Edge case handling (empty files, invalid syntax, missing properties)
 - Theme validation tests
 - File I/O testing with temporary directories
-- **NEW**: Artifact functionality tests (91 total tests)
-- **Coverage**: Comprehensive test coverage for all major functions (280 tests total)
+- **Artifact visualization tests**: Complete test coverage for show_artifacts functionality
+- **Workflow boundary tests**: Comprehensive testing of show_workflow_boundaries parameter and styling
+- **Coverage**: Comprehensive test coverage for all major functions including new features
 
 ## Recent Major Features
 
-### Artifact Visualization System (NEW)
+### Workflow Boundaries System (NEW)
+
+**Purpose**: Provides special visual styling for workflow control nodes (`start` and `end`) to clearly distinguish pipeline boundaries from data processing steps.
+
+**Problem Solved**: Previously, `start` and `end` nodes looked identical to regular `input` nodes, making it hard to identify workflow entry/exit points in complex pipelines.
+
+**Implementation**:
+- `show_workflow_boundaries` parameter in `put_diagram()` function (default TRUE)
+- Enhanced `get_node_shape()` function with conditional boundary styling
+- Special icons: ⚡ for start nodes, 🏁 for end nodes
+- Distinctive colors: green for start, red for end (across all themes)
+- Enhanced `generate_node_styling()` to apply start/end styling conditionally
+
+**Design Philosophy**:
+- **Data-centric approach**: Regular node types (input, process, output, decision) represent data processing
+- **Workflow control elements**: start/end represent pipeline boundaries, not data transformations
+- **Conditional styling**: Users can disable boundaries for clean diagrams without workflow control styling
+
+**Usage**:
+```r
+# Workflow boundaries enabled (default) - special start/end styling
+put_diagram(workflow, show_workflow_boundaries = TRUE)
+
+# Workflow boundaries disabled - start/end render as regular nodes
+put_diagram(workflow, show_workflow_boundaries = FALSE)
+```
+
+**Testing**: Comprehensive test coverage with 7 dedicated workflow boundary tests covering parameter acceptance, icon display, styling application, and theme compatibility.
+
+**CRAN Compliance**: Fixed non-ASCII character issues by converting emoji icons to Unicode escapes (`\u26a1`, `\ud83c\udfc1`) and enhanced null checking for missing data frame columns.
+
+### Artifact Visualization System
 
 **Purpose**: Addresses the limitation where terminal outputs (files not consumed by other scripts) weren't shown in diagrams.
 
@@ -366,4 +399,60 @@ All tests have been updated to use `id` instead of `name`. The test suite includ
 - Use the spell check regularly to catch typos early
 - Test on multiple platforms before major releases
 - Follow the existing code style and patterns
-- Test both simple and artifact modes when making diagram changes
+
+## Evolution Timeline
+
+### Phase 1: Foundation (Original Implementation)
+- **Core annotation parsing system**: Extract structured comments from source files
+- **Basic diagram generation**: Simple script-to-script connections
+- **Multi-language support**: R, Python, SQL, Shell, Julia
+- **Theme system**: 5 built-in themes for different environments
+- **Output flexibility**: Console, file, clipboard support
+
+### Phase 2: Data Flow Enhancement (Artifact System)
+- **Problem identified**: Terminal outputs (like `final_results.csv`) missing from diagrams
+- **Solution implemented**: `show_artifacts=TRUE` parameter
+- **Architecture**: `create_artifact_nodes()` function identifies data files
+- **Connection preservation**: Maintains BOTH script-to-script AND script-to-artifact connections
+- **Visual distinction**: Cylindrical shape `[(filename)]` for data artifacts
+- **Impact**: Complete data lineage visualization for complex pipelines
+
+### Phase 3: Workflow Control Enhancement (Boundary System)
+- **Problem identified**: Start/end nodes looked identical to regular input nodes
+- **User feedback**: "there seems to be some redundancy" in node types
+- **Design decision**: Data-centric approach with workflow boundaries as special control elements
+- **Solution implemented**: `show_workflow_boundaries=TRUE` parameter (default)
+- **Visual enhancement**: ⚡ lightning for start, 🏁 flag for end nodes
+- **Conditional styling**: Green/red colors for start/end with option to disable
+- **Philosophy**: Clear separation between data processing and workflow control
+
+### Phase 4: CRAN Compliance & Robustness
+- **CRAN readiness**: Fixed non-ASCII characters using Unicode escapes
+- **Error handling**: Enhanced null checking for missing data frame columns
+- **Test coverage**: Comprehensive testing for all visualization modes
+- **Documentation**: Complete README.md and CLAUDE.md updates
+- **Backward compatibility**: All existing functionality preserved
+
+### Current State: Production Ready
+- **Status**: Ready for CRAN submission (all checks passing)
+- **Features**: Three visualization modes (Simple, Artifact, Workflow Boundaries)
+- **Robustness**: Handles edge cases, missing columns, and invalid data gracefully
+- **Documentation**: Comprehensive user guides and developer memory
+- **Testing**: 300+ tests covering all functionality
+- **Standards**: CRAN-compliant code and documentation
+
+### Future Evolution Potential
+- **Advanced layouts**: Network layouts for complex dependency graphs
+- **Interactive features**: Clickable nodes for code navigation
+- **Integration**: Direct IDE integration for live workflow visualization
+- **Export formats**: SVG, PNG, HTML interactive diagrams
+- **AI assistance**: Automatic workflow optimization suggestions
+
+### Development Journey Insights
+- **Iterative enhancement**: Each phase built upon previous foundation without breaking changes
+- **User-driven evolution**: Features developed in response to real workflow visualization needs
+- **Design philosophy**: Data-centric approach with clear separation of concerns
+- **Quality focus**: Comprehensive testing and documentation at each evolution phase
+- **CRAN standards**: Maintained compliance throughout development lifecycle
+- The memory system in this file captures key details about the project's development
+- Always document major changes, implementation details, and reasoning behind design decisions

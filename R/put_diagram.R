@@ -20,6 +20,9 @@
 #' @param show_artifacts Logical indicating whether to show data files as nodes.
 #'   When TRUE, creates nodes for all input/output files, not just script connections.
 #'   This provides a complete view of the data flow including terminal outputs.
+#' @param show_workflow_boundaries Logical indicating whether to apply special styling
+#'   to nodes with node_type "start" and "end". When TRUE, these nodes get distinctive
+#'   workflow boundary styling (icons, colors). When FALSE, they render as regular nodes.
 #' @param style_nodes Logical indicating whether to apply styling based on node_type
 #' @param theme Character string specifying color theme. Options:
 #'   "light" (default), "dark", "auto" (GitHub adaptive), "minimal", "github"
@@ -39,6 +42,12 @@
 #' # Show artifacts with file labels on connections
 #' put_diagram(workflow, show_artifacts = TRUE, show_files = TRUE)
 #'
+#' # Show workflow boundaries with special start/end styling
+#' put_diagram(workflow, show_workflow_boundaries = TRUE)
+#'
+#' # Disable workflow boundaries (start/end nodes render as regular)
+#' put_diagram(workflow, show_workflow_boundaries = FALSE)
+#'
 #' # GitHub-optimized theme for README files
 #' put_diagram(workflow, theme = "github")
 #'
@@ -53,6 +62,7 @@ put_diagram <- function(workflow,
                         node_labels = "label",
                         show_files = FALSE,
                         show_artifacts = FALSE,
+                        show_workflow_boundaries = TRUE,
                         style_nodes = TRUE,
                         theme = "light") {
   # Input validation
@@ -130,7 +140,7 @@ put_diagram <- function(workflow,
   }
 
   # Generate node definitions
-  node_definitions <- generate_node_definitions(combined_workflow, node_labels)
+  node_definitions <- generate_node_definitions(combined_workflow, node_labels, show_workflow_boundaries)
   mermaid_lines <- c(mermaid_lines, node_definitions)
 
   # Generate connections
@@ -141,7 +151,7 @@ put_diagram <- function(workflow,
 
   # Add styling based on theme
   if (style_nodes && "node_type" %in% names(combined_workflow)) {
-    styling <- generate_node_styling(combined_workflow, theme)
+    styling <- generate_node_styling(combined_workflow, theme, show_workflow_boundaries)
     if (length(styling) > 0) {
       mermaid_lines <- c(mermaid_lines, "", "    %% Styling", styling)
     }
@@ -161,7 +171,7 @@ put_diagram <- function(workflow,
 #' @param theme Color theme ("light", "dark", "auto", "minimal", "github")
 #' @return Character vector of styling definitions
 #' @keywords internal
-generate_node_styling <- function(workflow, theme = "light") {
+generate_node_styling <- function(workflow, theme = "light", show_workflow_boundaries = TRUE) {
   styling <- character()
 
   # Define color schemes for different themes
@@ -169,6 +179,11 @@ generate_node_styling <- function(workflow, theme = "light") {
 
   # Group nodes by type and create styling
   for (node_type in names(color_schemes)) {
+    # Skip start/end styling if workflow boundaries are disabled
+    if (!show_workflow_boundaries && node_type %in% c("start", "end")) {
+      next
+    }
+    
     nodes_of_type <- workflow[!is.na(workflow$node_type) & workflow$node_type == node_type, ]
 
     if (nrow(nodes_of_type) > 0) {
@@ -201,14 +216,18 @@ get_theme_colors <- function(theme) {
       "process" = "fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000000",
       "output" = "fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000000",
       "decision" = "fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000000",
-      "artifact" = "fill:#f9f9f9,stroke:#666666,stroke-width:1px,color:#333333"
+      "artifact" = "fill:#f9f9f9,stroke:#666666,stroke-width:1px,color:#333333",
+      "start" = "fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px,color:#1b5e20",
+      "end" = "fill:#ffebee,stroke:#c62828,stroke-width:3px,color:#b71c1c"
     ),
     "dark" = list(
       "input" = "fill:#1a237e,stroke:#3f51b5,stroke-width:2px,color:#ffffff",
       "process" = "fill:#4a148c,stroke:#9c27b0,stroke-width:2px,color:#ffffff",
       "output" = "fill:#1b5e20,stroke:#4caf50,stroke-width:2px,color:#ffffff",
       "decision" = "fill:#e65100,stroke:#ff9800,stroke-width:2px,color:#ffffff",
-      "artifact" = "fill:#2d2d2d,stroke:#888888,stroke-width:1px,color:#ffffff"
+      "artifact" = "fill:#2d2d2d,stroke:#888888,stroke-width:1px,color:#ffffff",
+      "start" = "fill:#2e7d32,stroke:#4caf50,stroke-width:3px,color:#ffffff",
+      "end" = "fill:#c62828,stroke:#f44336,stroke-width:3px,color:#ffffff"
     ),
     "auto" = list(
       # GitHub-compatible auto theme using solid colors that work in both modes
@@ -216,14 +235,18 @@ get_theme_colors <- function(theme) {
       "process" = "fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#ffffff",
       "output" = "fill:#10b981,stroke:#047857,stroke-width:2px,color:#ffffff",
       "decision" = "fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#ffffff",
-      "artifact" = "fill:#6b7280,stroke:#374151,stroke-width:1px,color:#ffffff"
+      "artifact" = "fill:#6b7280,stroke:#374151,stroke-width:1px,color:#ffffff",
+      "start" = "fill:#10b981,stroke:#047857,stroke-width:3px,color:#ffffff",
+      "end" = "fill:#ef4444,stroke:#dc2626,stroke-width:3px,color:#ffffff"
     ),
     "minimal" = list(
       "input" = "fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b",
       "process" = "fill:#f1f5f9,stroke:#64748b,stroke-width:1px,color:#1e293b",
       "output" = "fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b",
       "decision" = "fill:#fef3c7,stroke:#92400e,stroke-width:1px,color:#1e293b",
-      "artifact" = "fill:#e2e8f0,stroke:#94a3b8,stroke-width:1px,color:#475569"
+      "artifact" = "fill:#e2e8f0,stroke:#94a3b8,stroke-width:1px,color:#475569",
+      "start" = "fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d",
+      "end" = "fill:#fecaca,stroke:#dc2626,stroke-width:2px,color:#991b1b"
     ),
     "github" = list(
       # Optimized specifically for GitHub README files with maximum compatibility
@@ -231,7 +254,9 @@ get_theme_colors <- function(theme) {
       "process" = "fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6",
       "output" = "fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d",
       "decision" = "fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e",
-      "artifact" = "fill:#f3f4f6,stroke:#6b7280,stroke-width:1px,color:#374151"
+      "artifact" = "fill:#f3f4f6,stroke:#6b7280,stroke-width:1px,color:#374151",
+      "start" = "fill:#dcfce7,stroke:#16a34a,stroke-width:3px,color:#15803d",
+      "end" = "fill:#fecaca,stroke:#dc2626,stroke-width:3px,color:#991b1b"
     ),
 
     # Default to light theme
@@ -240,7 +265,9 @@ get_theme_colors <- function(theme) {
       "process" = "fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000000",
       "output" = "fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000000",
       "decision" = "fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000000",
-      "artifact" = "fill:#f9f9f9,stroke:#666666,stroke-width:1px,color:#333333"
+      "artifact" = "fill:#f9f9f9,stroke:#666666,stroke-width:1px,color:#333333",
+      "start" = "fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px,color:#1b5e20",
+      "end" = "fill:#ffebee,stroke:#c62828,stroke-width:3px,color:#b71c1c"
     )
   )
 }
@@ -274,17 +301,18 @@ get_diagram_themes <- function() {
 #' Generate node definitions for mermaid diagram
 #' @param workflow Workflow data frame
 #' @param node_labels What to show in node labels
+#' @param show_workflow_boundaries Whether to apply special styling to start/end nodes
 #' @return Character vector of node definitions
 #' @keywords internal
-generate_node_definitions <- function(workflow, node_labels = "label") {
+generate_node_definitions <- function(workflow, node_labels = "label", show_workflow_boundaries = TRUE) {
   node_defs <- character()
 
   for (i in 1:nrow(workflow)) {
     node <- workflow[i, ]
     node_id <- sanitize_node_id(node$id)
 
-    # Determine node shape based on type
-    node_shape <- get_node_shape(node$node_type)
+    # Determine node shape based on type and workflow boundary settings
+    node_shape <- get_node_shape(node$node_type, show_workflow_boundaries)
 
     # Determine label text
     label_text <- switch(node_labels,
@@ -309,21 +337,34 @@ generate_node_definitions <- function(workflow, node_labels = "label") {
 
 #' Get node shape characters based on node type
 #' @param node_type Node type string
+#' @param show_workflow_boundaries Whether to apply special workflow boundary styling
 #' @return Character vector with opening and closing shape characters
 #' @keywords internal
-get_node_shape <- function(node_type) {
+get_node_shape <- function(node_type, show_workflow_boundaries = TRUE) {
   # Handle NULL, NA, or missing values
   if (is.null(node_type) || length(node_type) == 0 || is.na(node_type)) {
     return(c("[", "]")) # Default rectangle
   }
 
-  switch(as.character(node_type),
+  node_type_char <- as.character(node_type)
+  
+  # Handle workflow boundary nodes
+  if (show_workflow_boundaries && node_type_char %in% c("start", "end")) {
+    if (node_type_char == "start") {
+      return(c("([\\u26a1 ", "])")) # Special start shape with lightning icon
+    } else {
+      return(c("([\\ud83c\\udfc1 ", "])")) # Special end shape with flag icon
+    }
+  }
+  
+  # Regular node types
+  switch(node_type_char,
     "input" = c("([", "])"), # Stadium shape for inputs
     "process" = c("[", "]"), # Rectangle for processes
     "output" = c("[[", "]]"), # Subroutine shape for outputs
     "decision" = c("{", "}"), # Diamond for decisions
-    "start" = c("([", "])"), # Stadium for start
-    "end" = c("([", "])"), # Stadium for end
+    "start" = c("([", "])"), # Stadium for start (when boundaries disabled)
+    "end" = c("([", "])"), # Stadium for end (when boundaries disabled)
     "artifact" = c("[(", ")]"), # Cylindrical shape for data files
     c("[", "]") # Default rectangle
   )
@@ -373,7 +414,7 @@ create_artifact_nodes <- function(workflow) {
     node <- workflow[i, ]
     
     # Process input files
-    if (!is.na(node$input) && node$input != "") {
+    if (!is.null(node$input) && !is.na(node$input) && node$input != "") {
       input_files <- strsplit(trimws(node$input), ",")[[1]]
       input_files <- trimws(input_files)
       input_files <- input_files[input_files != ""]
@@ -381,7 +422,7 @@ create_artifact_nodes <- function(workflow) {
     }
     
     # Process output files
-    if (!is.na(node$output) && node$output != "") {
+    if (!is.null(node$output) && !is.na(node$output) && node$output != "") {
       output_files <- strsplit(trimws(node$output), ",")[[1]]
       output_files <- trimws(output_files)
       output_files <- output_files[output_files != ""]
@@ -440,7 +481,7 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
       node <- script_nodes[i, ]
       target_id <- sanitize_node_id(node$id)
 
-      if (!is.na(node$input) && node$input != "") {
+      if (!is.null(node$input) && !is.na(node$input) && node$input != "") {
         input_files <- strsplit(trimws(node$input), ",")[[1]]
         input_files <- trimws(input_files)
 
@@ -484,7 +525,7 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
       target_id <- sanitize_node_id(node$id)
       
       # Input connections: artifact → script
-      if (!is.na(node$input) && node$input != "") {
+      if (!is.null(node$input) && !is.na(node$input) && node$input != "") {
         input_files <- strsplit(trimws(node$input), ",")[[1]]
         input_files <- trimws(input_files[input_files != ""])
         
@@ -505,7 +546,7 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
       }
       
       # Output connections: script → artifact
-      if (!is.na(node$output) && node$output != "") {
+      if (!is.null(node$output) && !is.na(node$output) && node$output != "") {
         output_files <- strsplit(trimws(node$output), ",")[[1]]
         output_files <- trimws(output_files[output_files != ""])
         
@@ -533,7 +574,7 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
       node <- workflow[i, ]
       target_id <- sanitize_node_id(node$id)
 
-      if (!is.na(node$input) && node$input != "") {
+      if (!is.null(node$input) && !is.na(node$input) && node$input != "") {
         input_files <- strsplit(trimws(node$input), ",")[[1]]
         input_files <- trimws(input_files)
 
@@ -541,7 +582,7 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
           if (input_file != "") {
             # Find nodes that output this file
             source_nodes <- workflow[
-              !is.na(workflow$output) &
+              !is.null(workflow$output) & !is.na(workflow$output) &
                 sapply(workflow$output, function(x) {
                   if (is.na(x) || x == "") {
                     return(FALSE)

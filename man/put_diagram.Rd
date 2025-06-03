@@ -12,6 +12,8 @@ put_diagram(
   direction = "TD",
   node_labels = "label",
   show_files = FALSE,
+  show_artifacts = FALSE,
+  show_workflow_boundaries = TRUE,
   style_nodes = TRUE,
   theme = "light"
 )
@@ -38,6 +40,14 @@ put_diagram(
 
 \item{show_files}{Logical indicating whether to show file connections}
 
+\item{show_artifacts}{Logical indicating whether to show data files as nodes.
+When TRUE, creates nodes for all input/output files, not just script connections.
+This provides a complete view of the data flow including terminal outputs.}
+
+\item{show_workflow_boundaries}{Logical indicating whether to apply special styling
+to nodes with node_type "start" and "end". When TRUE, these nodes get distinctive
+workflow boundary styling (icons, colors). When FALSE, they render as regular nodes.}
+
 \item{style_nodes}{Logical indicating whether to apply styling based on node_type}
 
 \item{theme}{Character string specifying color theme. Options:
@@ -52,17 +62,26 @@ the flow of data through your analysis pipeline.
 }
 \examples{
 \dontrun{
-# Basic usage
+# Basic usage - shows only script connections
 workflow <- put("./src/")
 put_diagram(workflow)
+
+# Show all data artifacts as nodes (complete data flow)
+put_diagram(workflow, show_artifacts = TRUE)
+
+# Show artifacts with file labels on connections
+put_diagram(workflow, show_artifacts = TRUE, show_files = TRUE)
+
+# Show workflow boundaries with special start/end styling
+put_diagram(workflow, show_workflow_boundaries = TRUE)
+
+# Disable workflow boundaries (start/end nodes render as regular)
+put_diagram(workflow, show_workflow_boundaries = FALSE)
 
 # GitHub-optimized theme for README files
 put_diagram(workflow, theme = "github")
 
-# Auto theme that adapts to GitHub's theme
-put_diagram(workflow, theme = "auto")
-
-# Save to file with custom theme
-put_diagram(workflow, output = "file", file = "workflow.md", theme = "dark")
+# Save to file with artifacts enabled
+put_diagram(workflow, show_artifacts = TRUE, output = "file", file = "workflow.md")
 }
 }

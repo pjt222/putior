@@ -255,6 +255,60 @@ put_diagram(workflow, output = "file", file = "docs/pipeline.md",
 
 putior offers two visualization modes to suit different needs:
 
+### Workflow Boundaries Demo
+
+First, let's see how workflow boundaries enhance pipeline visualization:
+
+**Pipeline with Boundaries (Default):**
+```r
+# Complete ETL pipeline with clear start/end boundaries
+put_diagram(workflow, show_workflow_boundaries = TRUE)
+```
+
+```mermaid
+flowchart TD
+    start([⚡ Pipeline Start])
+    extract[Extract Data]
+    transform[Transform Data]
+    load[Load to Database]
+    end_node([🏁 Pipeline Complete])
+    
+    start --> extract
+    extract --> transform
+    transform --> load
+    load --> end_node
+    
+    classDef startStyle fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px,color:#1b5e20
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    classDef endStyle fill:#ffebee,stroke:#c62828,stroke-width:3px,color:#b71c1c
+    class start startStyle
+    class extract,transform,load processStyle
+    class end_node endStyle
+```
+
+**Same Pipeline without Boundaries:**
+```r
+# Clean diagram without workflow control styling
+put_diagram(workflow, show_workflow_boundaries = FALSE)
+```
+
+```mermaid
+flowchart TD
+    start([Pipeline Start])
+    extract[Extract Data]
+    transform[Transform Data]  
+    load[Load to Database]
+    end_node([Pipeline Complete])
+    
+    start --> extract
+    extract --> transform
+    transform --> load
+    load --> end_node
+    
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class start,extract,transform,load,end_node processStyle
+```
+
 ### Simple Mode (Default)
 Shows only **script-to-script connections** - perfect for understanding code dependencies:
 ```r
@@ -525,6 +579,20 @@ put_diagram(workflow, style_nodes = TRUE)
 
 # Plain diagram without colors
 put_diagram(workflow, style_nodes = FALSE)
+
+# Control workflow boundary styling
+put_diagram(workflow, show_workflow_boundaries = TRUE)   # Special start/end styling (default)
+put_diagram(workflow, show_workflow_boundaries = FALSE)  # Regular node styling
+```
+
+### Workflow Boundaries
+
+```r
+# Enable workflow boundaries (default) - start/end get special styling
+put_diagram(workflow, show_workflow_boundaries = TRUE)
+
+# Disable workflow boundaries - start/end render as regular nodes
+put_diagram(workflow, show_workflow_boundaries = FALSE)
 ```
 
 ### Output Options
@@ -579,12 +647,36 @@ All PUT annotations follow this format:
 
 ### Node Types and Shapes
 
+putior uses a **data-centric approach** with workflow boundaries as special control elements:
+
+**Data Processing Nodes:**
 - **`"input"`** - Data sources, APIs, file readers → Stadium shape `([text])`
 - **`"process"`** - Data transformation, analysis → Rectangle `[text]`  
 - **`"output"`** - Final results, reports, exports → Subroutine `[[text]]`
 - **`"decision"`** - Conditional logic, branching → Diamond `{text}`
-- **`"start"`** - Workflow entry point → Stadium shape `([text])`
-- **`"end"`** - Workflow termination → Stadium shape `([text])`
+
+**Workflow Control Nodes:**
+- **`"start"`** - Workflow entry point → Special boundary styling `([⚡ text])`
+- **`"end"`** - Workflow termination → Special boundary styling `([🏁 text])`
+
+### Workflow Boundaries
+
+Control the visualization of workflow start/end points with `show_workflow_boundaries`:
+
+```r
+# Special workflow boundary styling (default)
+put_diagram(workflow, show_workflow_boundaries = TRUE)
+
+# Regular nodes without special workflow styling
+put_diagram(workflow, show_workflow_boundaries = FALSE)
+```
+
+**With boundaries enabled** (default):
+- `node_type:"start"` gets ⚡ lightning icon and green styling
+- `node_type:"end"` gets 🏁 flag icon and red styling
+
+**With boundaries disabled**:
+- Start/end nodes render as regular stadium shapes without icons
 
 ### Example Annotations
 
@@ -621,6 +713,35 @@ All PUT annotations follow this format:
 #put id:"workflow_start", label:"Start Analysis Pipeline", node_type:"start", output:"config.json"
 
 #put id:"workflow_end", label:"Pipeline Complete", node_type:"end", input:"final_report.pdf"
+```
+
+**Workflow Boundary Examples:**
+```r
+# Complete pipeline with boundaries
+#put id:"pipeline_start", label:"Data Pipeline Start", node_type:"start", output:"raw_config.json"
+#put id:"extract_data", label:"Extract Raw Data", node_type:"process", input:"raw_config.json", output:"raw_data.csv"
+#put id:"transform_data", label:"Transform Data", node_type:"process", input:"raw_data.csv", output:"clean_data.csv"
+#put id:"pipeline_end", label:"Pipeline Complete", node_type:"end", input:"clean_data.csv"
+```
+
+**Generated Workflow with Boundaries:**
+```mermaid
+flowchart TD
+    pipeline_start([⚡ Data Pipeline Start])
+    extract_data[Extract Raw Data]
+    transform_data[Transform Data]
+    pipeline_end([🏁 Pipeline Complete])
+    
+    pipeline_start --> extract_data
+    extract_data --> transform_data
+    transform_data --> pipeline_end
+    
+    classDef startStyle fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px,color:#1b5e20
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    classDef endStyle fill:#ffebee,stroke:#c62828,stroke-width:3px,color:#b71c1c
+    class pipeline_start startStyle
+    class extract_data,transform_data processStyle
+    class pipeline_end endStyle
 ```
 
 ### Supported File Types

@@ -4,7 +4,11 @@
 \alias{generate_node_styling}
 \title{Generate node styling based on node types and theme}
 \usage{
-generate_node_styling(workflow, theme = "light")
+generate_node_styling(
+  workflow,
+  theme = "light",
+  show_workflow_boundaries = TRUE
+)
 }
 \arguments{
 \item{workflow}{Workflow data frame}

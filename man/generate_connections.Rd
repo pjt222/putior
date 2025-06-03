@@ -4,12 +4,14 @@
 \alias{generate_connections}
 \title{Generate connections between nodes}
 \usage{
-generate_connections(workflow, show_files = FALSE)
+generate_connections(workflow, show_files = FALSE, show_artifacts = FALSE)
 }
 \arguments{
-\item{workflow}{Workflow data frame}
+\item{workflow}{Workflow data frame with combined script and artifact nodes}
 
 \item{show_files}{Whether to show file-based connections}
+
+\item{show_artifacts}{Whether artifacts are included in the workflow}
 }
 \value{
 Character vector of connection definitions

@@ -4,12 +4,18 @@
 \alias{generate_node_definitions}
 \title{Generate node definitions for mermaid diagram}
 \usage{
-generate_node_definitions(workflow, node_labels = "label")
+generate_node_definitions(
+  workflow,
+  node_labels = "label",
+  show_workflow_boundaries = TRUE
+)
 }
 \arguments{
 \item{workflow}{Workflow data frame}
 
 \item{node_labels}{What to show in node labels}
+
+\item{show_workflow_boundaries}{Whether to apply special styling to start/end nodes}
 }
 \value{
 Character vector of node definitions

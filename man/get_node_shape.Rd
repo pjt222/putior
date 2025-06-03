@@ -4,10 +4,12 @@
 \alias{get_node_shape}
 \title{Get node shape characters based on node type}
 \usage{
-get_node_shape(node_type)
+get_node_shape(node_type, show_workflow_boundaries = TRUE)
 }
 \arguments{
 \item{node_type}{Node type string}
+
+\item{show_workflow_boundaries}{Whether to apply special workflow boundary styling}
 }
 \value{
 Character vector with opening and closing shape characters
