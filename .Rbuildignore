@@ -11,3 +11,4 @@
 ^\.Rprofile$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION-CHECKLIST\.md$
+^IMPLEMENTATION_SUMMARY\.md$
