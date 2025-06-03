@@ -32,6 +32,31 @@ cd /path/to/putior
 "/mnt/c/Program Files/R/R-{version}/bin/Rscript.exe" -e ".libPaths()"
 ```
 
+### Simplified R Command Access (Optional)
+
+For convenience, you can create wrapper scripts to avoid typing the full Windows path:
+
+```bash
+# Create wrapper script for easier access
+mkdir -p ~/bin
+cat > ~/bin/Rscript << 'EOF'
+#!/bin/bash
+exec "/mnt/c/Program Files/R/R-{version}/bin/Rscript.exe" "$@"
+EOF
+chmod +x ~/bin/Rscript
+
+# Add to PATH in ~/.bashrc
+echo 'export PATH="$HOME/bin:$PATH"' >> ~/.bashrc
+
+# Usage (after restarting terminal or sourcing ~/.bashrc)
+Rscript -e "devtools::check()"
+```
+
+**Benefits:**
+- Shorter commands for development workflow
+- Consistent across different R versions
+- Maintains full compatibility with Windows R installation
+
 ### Pandoc Configuration for WSL
 
 When running R package checks from WSL, pandoc is required for building vignettes. The `.Renviron` file in the project root sets the `RSTUDIO_PANDOC` environment variable to point to the pandoc executable included with RStudio:

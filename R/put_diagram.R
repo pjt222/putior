@@ -217,8 +217,8 @@ get_theme_colors <- function(theme) {
       "output" = "fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000000",
       "decision" = "fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000000",
       "artifact" = "fill:#f9f9f9,stroke:#666666,stroke-width:1px,color:#333333",
-      "start" = "fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px,color:#1b5e20",
-      "end" = "fill:#ffebee,stroke:#c62828,stroke-width:3px,color:#b71c1c"
+      "start" = "fill:#fff3e0,stroke:#f57c00,stroke-width:3px,color:#e65100",
+      "end" = "fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px,color:#1b5e20"
     ),
     "dark" = list(
       "input" = "fill:#1a237e,stroke:#3f51b5,stroke-width:2px,color:#ffffff",
@@ -226,8 +226,8 @@ get_theme_colors <- function(theme) {
       "output" = "fill:#1b5e20,stroke:#4caf50,stroke-width:2px,color:#ffffff",
       "decision" = "fill:#e65100,stroke:#ff9800,stroke-width:2px,color:#ffffff",
       "artifact" = "fill:#2d2d2d,stroke:#888888,stroke-width:1px,color:#ffffff",
-      "start" = "fill:#2e7d32,stroke:#4caf50,stroke-width:3px,color:#ffffff",
-      "end" = "fill:#c62828,stroke:#f44336,stroke-width:3px,color:#ffffff"
+      "start" = "fill:#ff6f00,stroke:#ff9800,stroke-width:3px,color:#ffffff",
+      "end" = "fill:#2e7d32,stroke:#4caf50,stroke-width:3px,color:#ffffff"
     ),
     "auto" = list(
       # GitHub-compatible auto theme using solid colors that work in both modes
@@ -236,8 +236,8 @@ get_theme_colors <- function(theme) {
       "output" = "fill:#10b981,stroke:#047857,stroke-width:2px,color:#ffffff",
       "decision" = "fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#ffffff",
       "artifact" = "fill:#6b7280,stroke:#374151,stroke-width:1px,color:#ffffff",
-      "start" = "fill:#10b981,stroke:#047857,stroke-width:3px,color:#ffffff",
-      "end" = "fill:#ef4444,stroke:#dc2626,stroke-width:3px,color:#ffffff"
+      "start" = "fill:#f59e0b,stroke:#d97706,stroke-width:3px,color:#ffffff",
+      "end" = "fill:#10b981,stroke:#047857,stroke-width:3px,color:#ffffff"
     ),
     "minimal" = list(
       "input" = "fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b",
@@ -245,8 +245,8 @@ get_theme_colors <- function(theme) {
       "output" = "fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b",
       "decision" = "fill:#fef3c7,stroke:#92400e,stroke-width:1px,color:#1e293b",
       "artifact" = "fill:#e2e8f0,stroke:#94a3b8,stroke-width:1px,color:#475569",
-      "start" = "fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d",
-      "end" = "fill:#fecaca,stroke:#dc2626,stroke-width:2px,color:#991b1b"
+      "start" = "fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e",
+      "end" = "fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d"
     ),
     "github" = list(
       # Optimized specifically for GitHub README files with maximum compatibility
@@ -255,8 +255,8 @@ get_theme_colors <- function(theme) {
       "output" = "fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d",
       "decision" = "fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e",
       "artifact" = "fill:#f3f4f6,stroke:#6b7280,stroke-width:1px,color:#374151",
-      "start" = "fill:#dcfce7,stroke:#16a34a,stroke-width:3px,color:#15803d",
-      "end" = "fill:#fecaca,stroke:#dc2626,stroke-width:3px,color:#991b1b"
+      "start" = "fill:#fef3c7,stroke:#d97706,stroke-width:3px,color:#92400e",
+      "end" = "fill:#dcfce7,stroke:#16a34a,stroke-width:3px,color:#15803d"
     ),
 
     # Default to light theme
@@ -266,8 +266,8 @@ get_theme_colors <- function(theme) {
       "output" = "fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000000",
       "decision" = "fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000000",
       "artifact" = "fill:#f9f9f9,stroke:#666666,stroke-width:1px,color:#333333",
-      "start" = "fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px,color:#1b5e20",
-      "end" = "fill:#ffebee,stroke:#c62828,stroke-width:3px,color:#b71c1c"
+      "start" = "fill:#fff3e0,stroke:#f57c00,stroke-width:3px,color:#e65100",
+      "end" = "fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px,color:#1b5e20"
     )
   )
 }
