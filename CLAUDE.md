@@ -218,8 +218,8 @@ Rscript inst/examples/theme-examples.R
 **Implementation**:
 - `show_workflow_boundaries` parameter in `put_diagram()` function (default TRUE)
 - Enhanced `get_node_shape()` function with conditional boundary styling
-- Special icons: ⚡ for start nodes, 🏁 for end nodes
-- Distinctive colors: green for start, red for end (across all themes)
+- Distinctive colors: orange for start, green for end (across all themes)
+- Thicker borders (3px vs 2px) for visual emphasis
 - Enhanced `generate_node_styling()` to apply start/end styling conditionally
 
 **Design Philosophy**:

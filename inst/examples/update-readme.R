@@ -85,6 +85,8 @@ boundary_workflow <- data.frame(
   id = c("pipeline_start", "extract_data", "transform_data", "pipeline_end"),
   label = c("Data Pipeline Start", "Extract Raw Data", "Transform Data", "Pipeline Complete"),
   node_type = c("start", "process", "process", "end"),
+  input = c(NA, "raw_config.json", "raw_data.csv", "clean_data.csv"),
+  output = c("raw_config.json", "raw_data.csv", "clean_data.csv", NA),
   stringsAsFactors = FALSE
 )
 
@@ -113,6 +115,8 @@ datascience_workflow <- data.frame(
   label = c("Fetch Sales Data", "Fetch Customer Data", "Clean Sales Data", 
             "Merge Datasets", "Statistical Analysis", "Generate Final Report"),
   node_type = c("input", "input", "process", "process", "process", "output"),
+  input = c(NA, NA, "sales_data.csv", "customers.csv,clean_sales.csv", "merged_data.csv", "analysis_results.csv"),
+  output = c("sales_data.csv", "customers.csv", "clean_sales.csv", "merged_data.csv", "analysis_results.csv", "final_report.pdf"),
   stringsAsFactors = FALSE
 )
 
@@ -152,6 +156,8 @@ theme_workflow <- data.frame(
   id = c("fetch_data", "clean_data", "generate_report"),
   label = c("Fetch API Data", "Clean and Validate", "Generate Final Report"),
   node_type = c("input", "process", "output"),
+  input = c(NA, "raw_data.csv", "clean_data.csv"),
+  output = c("raw_data.csv", "clean_data.csv", "final_report.html"),
   stringsAsFactors = FALSE
 )
 

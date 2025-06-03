@@ -435,9 +435,9 @@ test_that("workflow boundaries show special icons when enabled", {
   
   diagram_code <- put_diagram(workflow, show_workflow_boundaries = TRUE, output = "none")
   
-  # Should contain special icons for start and end nodes
-  expect_true(grepl("\\\\u26a1", diagram_code))  # Lightning bolt for start
-  expect_true(grepl("\\\\ud83c\\\\udfc1", diagram_code))  # Flag for end
+  # Should contain start and end nodes with special styling
+  expect_true(grepl("startStyle", diagram_code))  # Special start styling
+  expect_true(grepl("endStyle", diagram_code))  # Special end styling
 })
 
 test_that("workflow boundaries hide icons when disabled", {
@@ -451,9 +451,9 @@ test_that("workflow boundaries hide icons when disabled", {
   
   diagram_code <- put_diagram(workflow, show_workflow_boundaries = FALSE, output = "none")
   
-  # Should NOT contain special icons when boundaries are disabled
-  expect_false(grepl("\\\\u26a1", diagram_code))  # No lightning bolt
-  expect_false(grepl("\\\\ud83c\\\\udfc1", diagram_code))  # No flag
+  # Should NOT contain special styling when boundaries are disabled
+  expect_false(grepl("startStyle", diagram_code))  # No start styling
+  expect_false(grepl("endStyle", diagram_code))  # No end styling
 })
 
 test_that("workflow boundary styling is applied when enabled", {
@@ -491,9 +491,9 @@ test_that("workflow boundary styling is hidden when disabled", {
 })
 
 test_that("get_node_shape handles workflow boundaries correctly", {
-  # With boundaries enabled, should get special shapes
-  expect_true(grepl("\\\\u26a1", get_node_shape("start", TRUE)[1]))
-  expect_true(grepl("\\\\ud83c\\\\udfc1", get_node_shape("end", TRUE)[1]))
+  # With boundaries enabled, should get stadium shapes (no special characters)
+  expect_equal(get_node_shape("start", TRUE), c("([", "])"))
+  expect_equal(get_node_shape("end", TRUE), c("([", "])"))
   
   # With boundaries disabled, should get regular shapes
   expect_equal(get_node_shape("start", FALSE), c("([", "])"))

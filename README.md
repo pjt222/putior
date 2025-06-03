@@ -217,6 +217,13 @@ flowchart TD
     analyze[Statistical Analysis]
     report[[Generate Final Report]]
 
+    %% Connections
+    fetch_sales --> clean_sales
+    fetch_customers --> merge_data
+    clean_sales --> merge_data
+    merge_data --> analyze
+    analyze --> report
+
     %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
     class fetch_sales inputStyle
@@ -278,6 +285,11 @@ flowchart TD
     transform_data[Transform Data]
     pipeline_end([\ud83c\udfc1 Pipeline Complete])
 
+    %% Connections
+    pipeline_start --> extract_data
+    extract_data --> transform_data
+    transform_data --> pipeline_end
+
     %% Styling
     classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
     class extract_data processStyle
@@ -300,6 +312,11 @@ flowchart TD
     extract_data[Extract Raw Data]
     transform_data[Transform Data]
     pipeline_end([Pipeline Complete])
+
+    %% Connections
+    pipeline_start --> extract_data
+    extract_data --> transform_data
+    transform_data --> pipeline_end
 
     %% Styling
     classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
@@ -402,6 +419,10 @@ flowchart TD
     clean_data[Clean and Validate]
     generate_report[[Generate Final Report]]
 
+    %% Connections
+    fetch_data --> clean_data
+    clean_data --> generate_report
+
     %% Styling
     classDef inputStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000000
     class fetch_data inputStyle
@@ -420,6 +441,10 @@ flowchart TD
     fetch_data([Fetch API Data])
     clean_data[Clean and Validate]
     generate_report[[Generate Final Report]]
+
+    %% Connections
+    fetch_data --> clean_data
+    clean_data --> generate_report
 
     %% Styling
     classDef inputStyle fill:#1a237e,stroke:#3f51b5,stroke-width:2px,color:#ffffff
@@ -440,6 +465,10 @@ flowchart TD
     clean_data[Clean and Validate]
     generate_report[[Generate Final Report]]
 
+    %% Connections
+    fetch_data --> clean_data
+    clean_data --> generate_report
+
     %% Styling
     classDef inputStyle fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#ffffff
     class fetch_data inputStyle
@@ -459,6 +488,10 @@ flowchart TD
     clean_data[Clean and Validate]
     generate_report[[Generate Final Report]]
 
+    %% Connections
+    fetch_data --> clean_data
+    clean_data --> generate_report
+
     %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
     class fetch_data inputStyle
@@ -477,6 +510,10 @@ flowchart TD
     fetch_data([Fetch API Data])
     clean_data[Clean and Validate]
     generate_report[[Generate Final Report]]
+
+    %% Connections
+    fetch_data --> clean_data
+    clean_data --> generate_report
 
     %% Styling
     classDef inputStyle fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b
@@ -644,8 +681,8 @@ putior uses a **data-centric approach** with workflow boundaries as special cont
 - **`"decision"`** - Conditional logic, branching → Diamond `{text}`
 
 **Workflow Control Nodes:**
-- **`"start"`** - Workflow entry point → Special boundary styling `([⚡ text])`
-- **`"end"`** - Workflow termination → Special boundary styling `([🏁 text])`
+- **`"start"`** - Workflow entry point → Stadium shape with orange styling
+- **`"end"`** - Workflow termination → Stadium shape with green styling
 
 ### Workflow Boundaries
 
@@ -660,11 +697,11 @@ put_diagram(workflow, show_workflow_boundaries = FALSE)
 ```
 
 **With boundaries enabled** (default):
-- `node_type:"start"` gets ⚡ lightning icon and green styling
-- `node_type:"end"` gets 🏁 flag icon and red styling
+- `node_type:"start"` gets distinctive orange styling with thicker borders
+- `node_type:"end"` gets distinctive green styling with thicker borders
 
 **With boundaries disabled**:
-- Start/end nodes render as regular stadium shapes without icons
+- Start/end nodes render as regular stadium shapes without special colors
 
 ### Example Annotations
 

@@ -351,9 +351,9 @@ get_node_shape <- function(node_type, show_workflow_boundaries = TRUE) {
   # Handle workflow boundary nodes
   if (show_workflow_boundaries && node_type_char %in% c("start", "end")) {
     if (node_type_char == "start") {
-      return(c("([\\u26a1 ", "])")) # Special start shape with lightning icon
+      return(c("([", "])")) # Special start shape - orange styling is enough
     } else {
-      return(c("([\\ud83c\\udfc1 ", "])")) # Special end shape with flag icon
+      return(c("([", "])")) # Special end shape - green styling is enough
     }
   }
   
