@@ -860,6 +860,63 @@ This creates a diagram showing:
 - `analysis.R` → `main.R` (sourced into)
 - `utils.R` → `analysis.R` (dependency)
 
+## 🔄 Self-Documentation: putior Documents Itself!
+
+As a demonstration of putior's capabilities, we've added PUT annotations to putior's own source code. This creates a beautiful visualization of how the package works internally:
+
+```r
+# Extract putior's own workflow
+workflow <- put("./R/")
+put_diagram(workflow, theme = "github", title = "putior Package Internals")
+```
+
+**Result:**
+```mermaid
+---
+title: putior Package Internals
+---
+flowchart TD
+    put_entry([Entry Point - Scan Files])
+    process_file[Process Single File]
+    parser[Parse Annotation Syntax]
+    convert_df[Convert to Data Frame]
+    diagram_gen[Generate Mermaid Diagram]
+    node_defs[Create Node Definitions]
+    connections[Generate Node Connections]
+    output_handler([Output Final Diagram])
+
+    %% Connections
+    put_entry --> process_file
+    process_file --> parser
+    parser --> convert_df
+    convert_df --> diagram_gen
+    diagram_gen --> node_defs
+    node_defs --> connections
+    connections --> output_handler
+
+    %% Styling
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class process_file processStyle
+    class parser processStyle
+    class convert_df processStyle
+    class diagram_gen processStyle
+    class node_defs processStyle
+    class connections processStyle
+    classDef startStyle fill:#fef3c7,stroke:#d97706,stroke-width:3px,color:#92400e
+    class put_entry startStyle
+    classDef endStyle fill:#dcfce7,stroke:#16a34a,stroke-width:3px,color:#15803d
+    class output_handler endStyle
+```
+
+This self-documentation shows the two main phases of putior:
+1. **Parsing Phase**: Scanning files → extracting annotations → converting to workflow data
+2. **Diagram Generation Phase**: Taking workflow data → creating nodes/connections → outputting diagram
+
+To see the complete data flow with intermediate files, run:
+```r
+put_diagram(workflow, show_artifacts = TRUE, theme = "github")
+```
+
 ## 🤝 Contributing
 
 Contributions welcome! Please open an issue or pull request on [GitHub](https://github.com/pjt222/putior).

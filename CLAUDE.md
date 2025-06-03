@@ -458,6 +458,19 @@ All tests have been updated to use `id` instead of `name`. The test suite includ
 - **Documentation**: Complete README.md and CLAUDE.md updates
 - **Backward compatibility**: All existing functionality preserved
 
+### Phase 5: Meta-Documentation (Self-Documentation)
+- **Achievement**: Added PUT annotations to putior's own source code
+- **Demonstration**: putior can visualize its own internal workflow
+- **Files annotated**: 
+  - `R/putior.R`: Entry point and parsing functions
+  - `R/put_diagram.R`: Diagram generation functions
+- **Example created**: `inst/examples/self-documentation.R`
+- **Impact**: Perfect demonstration of putior's capabilities - eating our own dog food!
+- **Workflow phases visualized**:
+  1. Parsing Phase: put() → process_file() → parser → convert_df()
+  2. Diagram Phase: put_diagram() → node_defs → connections → output()
+- **Meta-capability**: Shows putior can be used to understand any codebase, including itself
+
 ### Current State: Production Ready
 - **Status**: Ready for CRAN submission (all checks passing)
 - **Features**: Three visualization modes (Simple, Artifact, Workflow Boundaries)

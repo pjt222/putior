@@ -1,3 +1,4 @@
+#put id:"put_entry", label:"Entry Point - Scan Files", node_type:"start", output:"workflow_data.rds"
 #' Scan R and Python Files for PUT Annotations
 #'
 #' Scans source files in a directory for PUT annotations that define workflow
@@ -117,6 +118,7 @@ put <- function(path,
   }
 }
 
+#put id:"process_file", label:"Process Single File", node_type:"process", input:"putior.R", output:"annotations.rds"
 #' Process a single file for PUT annotations
 #' @param file Path to file
 #' @param include_line_numbers Whether to include line numbers
@@ -186,6 +188,7 @@ process_single_file <- function(file, include_line_numbers, validate) {
   )
 }
 
+#put id:"validate", label:"Validate Annotations", node_type:"process", input:"annotations.rds", output:"putior.R"
 #' Validate PUT annotation for common issues
 #' @param properties List of annotation properties
 #' @param line_content Original line content
@@ -226,6 +229,7 @@ validate_annotation <- function(properties, line_content) {
   return(issues)
 }
 
+#put id:"parser", label:"Parse Annotation Syntax", node_type:"process", input:"annotations.rds", output:"properties.rds"
 #' Extract PUT Annotation Properties
 #'
 #' Parses a single line containing a PUT annotation and extracts key-value pairs.
@@ -341,6 +345,7 @@ parse_comma_separated_pairs <- function(text) {
   return(pairs)
 }
 
+#put id:"convert_df", label:"Convert to Data Frame", node_type:"process", input:"properties.rds", output:"workflow_data.rds"
 #' Convert results list to data frame
 #' @param results List of annotation results
 #' @param include_line_numbers Whether line numbers are included
