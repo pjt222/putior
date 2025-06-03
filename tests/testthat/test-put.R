@@ -356,3 +356,25 @@ test_that("put() detects duplicate IDs", {
   # Should still return all nodes
   expect_equal(nrow(result), 3)
 })
+
+test_that("put() defaults output to file_name when missing", {
+  temp_dir <- tempdir()
+  test_dir <- file.path(temp_dir, "putior_test_output_default")
+  dir.create(test_dir, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE))
+
+  # Create file where output is not specified
+  content <- c(
+    '#put label:"Process Step", node_type:"process", input:"data.csv"',
+    '# No output specified - should default to file name'
+  )
+
+  create_test_file(content, "process_script.R", test_dir)
+  
+  result <- put(test_dir)
+  
+  # Check that output was defaulted to the file name
+  expect_equal(nrow(result), 1)
+  expect_equal(result$output, "process_script.R")
+  expect_equal(result$file_name, "process_script.R")
+})

@@ -33,6 +33,7 @@ A data frame containing file names and all properties found in annotations.
 Always includes columns: file_name, file_type, and any properties found in
 PUT annotations (typically: id, label, node_type, input, output).
 If include_line_numbers is TRUE, also includes line_number.
+Note: If output is not specified in an annotation, it defaults to the file name.
 }
 \description{
 Scans source files in a directory for PUT annotations that define workflow

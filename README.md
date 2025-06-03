@@ -407,11 +407,13 @@ All PUT annotations follow this format:
 
 ### Optional Annotations
 
-| Annotation | Description | Example |
-|------------|-------------|---------|
-| `node_type` | Visual shape of the node | `"input"`, `"process"`, `"output"`, `"decision"`, `"start"`, `"end"` |
-| `input` | Input files (comma-separated) | `"raw_data.csv, config.json"` |
-| `output` | Output files (comma-separated) | `"processed_data.csv, summary.txt"` |
+| Annotation | Description | Example | Default |
+|------------|-------------|---------|---------|
+| `node_type` | Visual shape of the node | `"input"`, `"process"`, `"output"`, `"decision"`, `"start"`, `"end"` | `"process"` |
+| `input` | Input files (comma-separated) | `"raw_data.csv, config.json"` | None |
+| `output` | Output files (comma-separated) | `"processed_data.csv, summary.txt"` | Current file name* |
+
+*Note: If `output` is omitted, it defaults to the name of the file containing the annotation. This ensures nodes can be connected in workflows.
 
 ### Node Types and Shapes
 

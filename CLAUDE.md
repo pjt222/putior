@@ -198,6 +198,13 @@ When `id` field is omitted from an annotation:
 2. If `uuid` package is not installed, `id` remains NULL
 3. Empty `id:""` is treated differently - it generates a validation warning
 
+### Output Defaulting Implementation
+
+When `output` field is omitted from an annotation:
+1. The output automatically defaults to the current file name
+2. This ensures nodes can be connected in workflows even without explicit output files
+3. Enables natural file-based connections (e.g., script A outputs itself, script B can use script A as input)
+
 ### Implementation Details
 
 #### 1. Core Changes

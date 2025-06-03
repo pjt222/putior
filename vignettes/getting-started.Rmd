@@ -250,6 +250,22 @@ print(workflow$id)  # Will show UUIDs like "a1b2c3d4-e5f6-7890-abcd-ef1234567890
 
 Note: If you provide an empty `id` (e.g., `id:""`), you'll get a validation warning.
 
+### Automatic Output Defaulting
+
+If you omit the `output` field, putior automatically uses the file name as the output:
+
+```{r}
+# In process_data.R:
+#put label:"Process Step", node_type:"process", input:"raw.csv"
+# No output specified - will default to "process_data.R"
+
+# In analyze_data.R:
+#put label:"Analyze", node_type:"process", input:"process_data.R", output:"results.csv"
+# This creates a connection from process_data.R to analyze_data.R
+```
+
+This feature ensures that scripts can be connected in workflows even when explicit output files aren't specified.
+
 ## Real-World Example
 
 Let's walk through a complete data science workflow:

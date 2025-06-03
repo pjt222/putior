@@ -19,6 +19,7 @@
 #'   Always includes columns: file_name, file_type, and any properties found in
 #'   PUT annotations (typically: id, label, node_type, input, output).
 #'   If include_line_numbers is TRUE, also includes line_number.
+#'   Note: If output is not specified in an annotation, it defaults to the file name.
 #'
 #' @export
 #'
@@ -150,6 +151,11 @@ process_single_file <- function(file, include_line_numbers, validate) {
 
           if (include_line_numbers) {
             properties$line_number <- line_idx
+          }
+          
+          # Default output to file_name if not specified
+          if (is.null(properties$output) || properties$output == "") {
+            properties$output <- basename(file)
           }
 
           # Validate if requested
