@@ -80,6 +80,73 @@ flowchart TD
     class clean_data processStyle
 ```
 
+## 📈 Common Data Science Pattern
+
+### Modular Workflow with source()
+
+The most common data science pattern: modularize functions into separate scripts and orchestrate them in a main workflow:
+
+**`utils.R` - Utility functions**
+```r
+#put label:"Data Utilities", node_type:"input"
+
+load_and_clean <- function(file) {
+  data <- read.csv(file)
+  data[complete.cases(data), ]
+}
+
+validate_data <- function(data) {
+  stopifnot(nrow(data) > 0)
+  return(data)
+}
+```
+
+**`analysis.R` - Analysis functions** 
+```r
+#put label:"Statistical Analysis", input:"utils.R"
+
+perform_analysis <- function(data) {
+  # Uses utility functions from utils.R
+  cleaned <- validate_data(data)
+  summary(cleaned)
+}
+```
+
+**`main.R` - Workflow orchestrator**
+```r
+#put label:"Main Analysis Pipeline", input:"utils.R,analysis.R", output:"results.csv"
+
+source("utils.R")     # Load utility functions
+source("analysis.R")  # Load analysis functions
+
+# Execute the pipeline
+data <- load_and_clean("raw_data.csv")
+results <- perform_analysis(data)
+write.csv(results, "results.csv")
+```
+
+**Generated Workflow:**
+```mermaid
+flowchart TD
+    utils([Data Utilities])
+    analysis[Statistical Analysis] 
+    main[Main Analysis Pipeline]
+
+    utils --> main
+    analysis --> main
+    utils --> analysis
+    
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class utils inputStyle
+    class analysis,main processStyle
+```
+
+This pattern clearly shows:
+- **Function modules** (`utils.R`, `analysis.R`) are sourced into the main script
+- **Dependencies** between modules (analysis depends on utils)  
+- **Data flow** from raw data through the pipeline to results
+
 ## 📊 Visualization Examples
 
 ### Basic Workflow
