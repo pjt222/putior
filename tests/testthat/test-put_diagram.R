@@ -330,7 +330,11 @@ test_that("show_artifacts creates correct connections", {
   workflow <- create_test_workflow_with_terminal()
   diagram_code <- put_diagram(workflow, show_artifacts = TRUE, output = "none")
   
-  # Should have script-to-artifact and artifact-to-script connections
+  # Should have BOTH script-to-script AND script-to-artifact connections
+  # Script-to-script connection (preserved from simple mode)
+  expect_true(grepl("load --> process", diagram_code))
+  
+  # Script-to-artifact and artifact-to-script connections
   expect_true(grepl("load --> artifact_data_csv", diagram_code))
   expect_true(grepl("artifact_data_csv --> process", diagram_code))
   expect_true(grepl("process --> artifact_final_results_csv", diagram_code))

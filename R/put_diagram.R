@@ -430,11 +430,55 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
   connections <- character()
   
   if (show_artifacts) {
-    # With artifacts: create file-to-node and node-to-file connections
+    # With artifacts: create BOTH script-to-script AND script-to-artifact connections
     
     # Get script nodes (non-artifacts)
     script_nodes <- workflow[is.na(workflow$is_artifact) | !workflow$is_artifact, ]
     
+    # FIRST: Create script-to-script connections (like simple mode)
+    for (i in 1:nrow(script_nodes)) {
+      node <- script_nodes[i, ]
+      target_id <- sanitize_node_id(node$id)
+
+      if (!is.na(node$input) && node$input != "") {
+        input_files <- strsplit(trimws(node$input), ",")[[1]]
+        input_files <- trimws(input_files)
+
+        for (input_file in input_files) {
+          if (input_file != "") {
+            # Find script nodes that output this file
+            source_nodes <- script_nodes[
+              !is.na(script_nodes$output) &
+                sapply(script_nodes$output, function(x) {
+                  if (is.na(x) || x == "") {
+                    return(FALSE)
+                  }
+                  output_files <- strsplit(trimws(x), ",")[[1]]
+                  output_files <- trimws(output_files)
+                  input_file %in% output_files
+                }),
+            ]
+
+            if (nrow(source_nodes) > 0) {
+              for (j in 1:nrow(source_nodes)) {
+                source_id <- sanitize_node_id(source_nodes[j, ]$id)
+
+                # Create script-to-script connection
+                if (show_files && input_file != "") {
+                  connection <- paste0("    ", source_id, " -->|", input_file, "| ", target_id)
+                } else {
+                  connection <- paste0("    ", source_id, " --> ", target_id)
+                }
+
+                connections <- c(connections, connection)
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    # SECOND: Create script-to-artifact connections
     for (i in 1:nrow(script_nodes)) {
       node <- script_nodes[i, ]
       target_id <- sanitize_node_id(node$id)
