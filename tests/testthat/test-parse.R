@@ -6,58 +6,58 @@ library(testthat)
 # Test basic PUT annotation parsing
 test_that("parse_put_annotation() handles basic formats correctly", {
   # Standard format
-  result1 <- parse_put_annotation('#put name:"test", label:"Test Label"')
-  expect_equal(result1$name, "test")
+  result1 <- parse_put_annotation('#put id:"test", label:"Test Label"')
+  expect_equal(result1$id, "test")
   expect_equal(result1$label, "Test Label")
   expect_equal(length(result1), 2)
 
   # With spaces after #
-  result2 <- parse_put_annotation('# put name:"test2", node_type:"process"')
-  expect_equal(result2$name, "test2")
+  result2 <- parse_put_annotation('# put id:"test2", node_type:"process"')
+  expect_equal(result2$id, "test2")
   expect_equal(result2$node_type, "process")
 
   # With pipe separator
-  result3 <- parse_put_annotation('#put| name:"test3", input:"data.csv"')
-  expect_equal(result3$name, "test3")
+  result3 <- parse_put_annotation('#put| id:"test3", input:"data.csv"')
+  expect_equal(result3$id, "test3")
   expect_equal(result3$input, "data.csv")
 
   # With colon separator
-  result4 <- parse_put_annotation('#put: name:"test4", output:"result.txt"')
-  expect_equal(result4$name, "test4")
+  result4 <- parse_put_annotation('#put: id:"test4", output:"result.txt"')
+  expect_equal(result4$id, "test4")
   expect_equal(result4$output, "result.txt")
 })
 
 test_that("parse_put_annotation() handles different quote styles", {
   # Single quotes
-  result1 <- parse_put_annotation("#put name:'test1', label:'Single Quotes'")
-  expect_equal(result1$name, "test1")
+  result1 <- parse_put_annotation("#put id:'test1', label:'Single Quotes'")
+  expect_equal(result1$id, "test1")
   expect_equal(result1$label, "Single Quotes")
 
   # Mixed quotes
-  result2 <- parse_put_annotation('#put name:"test2", label:\'Mixed Quotes\'')
-  expect_equal(result2$name, "test2")
+  result2 <- parse_put_annotation('#put id:"test2", label:\'Mixed Quotes\'')
+  expect_equal(result2$id, "test2")
   expect_equal(result2$label, "Mixed Quotes")
 
   # Double quotes (standard)
-  result3 <- parse_put_annotation('#put name:"test3", label:"Double Quotes"')
-  expect_equal(result3$name, "test3")
+  result3 <- parse_put_annotation('#put id:"test3", label:"Double Quotes"')
+  expect_equal(result3$id, "test3")
   expect_equal(result3$label, "Double Quotes")
 })
 
 test_that("parse_put_annotation() handles whitespace correctly", {
   # Extra spaces around properties
-  result1 <- parse_put_annotation('#put  name : "test" , label : "Test Label"  ')
-  expect_equal(result1$name, "test")
+  result1 <- parse_put_annotation('#put  id : "test" , label : "Test Label"  ')
+  expect_equal(result1$id, "test")
   expect_equal(result1$label, "Test Label")
 
   # Tabs and mixed whitespace
-  result2 <- parse_put_annotation("#put\tname:\t\"test\",\t\tlabel:\t\"Test\"")
-  expect_equal(result2$name, "test")
+  result2 <- parse_put_annotation("#put\tid:\t\"test\",\t\tlabel:\t\"Test\"")
+  expect_equal(result2$id, "test")
   expect_equal(result2$label, "Test")
 
   # Leading and trailing whitespace in values should be preserved
-  result3 <- parse_put_annotation('#put name:" test ", label:" Test Label "')
-  expect_equal(result3$name, " test ") # Preserve internal whitespace
+  result3 <- parse_put_annotation('#put id:" test ", label:" Test Label "')
+  expect_equal(result3$id, " test ") # Preserve internal whitespace
   expect_equal(result3$label, " Test Label ")
 })
 
@@ -73,12 +73,12 @@ test_that("parse_put_annotation() handles empty and invalid inputs", {
   expect_null(parse_put_annotation("# put \t\n"))
 
   # Invalid syntax - no quotes
-  expect_null(parse_put_annotation("#put name:test"))
-  expect_null(parse_put_annotation("#put name:test, label:label"))
+  expect_null(parse_put_annotation("#put id:test"))
+  expect_null(parse_put_annotation("#put id:test, label:label"))
 
   # Invalid syntax - malformed
   expect_null(parse_put_annotation("#put invalid"))
-  expect_null(parse_put_annotation("#put name"))
+  expect_null(parse_put_annotation("#put id"))
   expect_null(parse_put_annotation("#put :"))
 
   # Not a PUT annotation
@@ -89,12 +89,12 @@ test_that("parse_put_annotation() handles empty and invalid inputs", {
 
 test_that("parse_put_annotation() handles complex property values", {
   # Commas inside quotes should be preserved
-  result1 <- parse_put_annotation('#put name:"test", label:"Label with, commas, inside"')
-  expect_equal(result1$name, "test")
+  result1 <- parse_put_annotation('#put id:"test", label:"Label with, commas, inside"')
+  expect_equal(result1$id, "test")
   expect_equal(result1$label, "Label with, commas, inside")
 
   # Multiple commas and complex descriptions
-  result2 <- parse_put_annotation('#put name:"complex", description:"Process A, B, and C data", files:"file1.csv,file2.csv"')
+  result2 <- parse_put_annotation('#put id:"complex", description:"Process A, B, and C data", files:"file1.csv,file2.csv"')
   expect_equal(result2$description, "Process A, B, and C data")
   expect_equal(result2$files, "file1.csv,file2.csv")
 
@@ -187,16 +187,16 @@ test_that("parse_comma_separated_pairs() handles edge cases", {
 })
 
 # Test validation functionality
-test_that("validate_annotation() catches missing name", {
+test_that("validate_annotation() catches missing id", {
   # Missing name property
   props1 <- list(label = "Test", node_type = "process")
   issues1 <- validate_annotation(props1, "test line")
-  expect_true(any(grepl("Missing.*name", issues1)))
+  expect_true(any(grepl("Missing.*id", issues1)))
 
   # Empty name property
   props2 <- list(name = "", label = "Test", node_type = "process")
   issues2 <- validate_annotation(props2, "test line")
-  expect_true(any(grepl("Missing.*empty.*name", issues2)))
+  expect_true(any(grepl("Missing.*empty.*id", issues2)))
 
   # Valid name property
   props3 <- list(name = "valid_name", label = "Test")
@@ -259,7 +259,7 @@ test_that("validate_annotation() handles multiple issues", {
   issues <- validate_annotation(props, "test line")
 
   # Should catch all three issues
-  expect_true(any(grepl("Missing.*name", issues)))
+  expect_true(any(grepl("Missing.*id", issues)))
   expect_true(any(grepl("Unusual node_type", issues)))
   expect_true(any(grepl("missing extension", issues)))
   expect_gte(length(issues), 3)
@@ -303,7 +303,7 @@ test_that("parse_put_annotation() handles malformed input gracefully", {
 # Test consistency between parsing and validation
 test_that("Parsing and validation work together correctly", {
   # Valid annotation should parse and validate
-  valid_annotation <- '#put name:"test_node", label:"Test Node", node_type:"process"'
+  valid_annotation <- '#put id:"test_node", label:"Test Node", node_type:"process"'
   parsed <- parse_put_annotation(valid_annotation)
   expect_false(is.null(parsed))
   expect_true(is_valid_put_annotation(valid_annotation))

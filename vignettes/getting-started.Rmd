@@ -53,13 +53,13 @@ PUT annotations are special comments that describe workflow nodes. Here's how to
 **R script example:**
 
     # data_processing.R
-    #put name:"load_data", label:"Load Customer Data", node_type:"input", output:"raw_data.csv"
+    #put id:"load_data", label:"Load Customer Data", node_type:"input", output:"raw_data.csv"
     
     # Your actual code
     data <- read.csv("customer_data.csv")
     write.csv(data, "raw_data.csv")
     
-    #put name:"clean_data", label:"Clean and Validate", node_type:"process", input:"raw_data.csv", output:"clean_data.csv"
+    #put id:"clean_data", label:"Clean and Validate", node_type:"process", input:"raw_data.csv", output:"clean_data.csv"
     
     # Data cleaning code
     cleaned_data <- data %>%
@@ -71,7 +71,7 @@ PUT annotations are special comments that describe workflow nodes. Here's how to
 **Python script example:**
 
     # analysis.py
-    #put name:"analyze_sales", label:"Sales Analysis", node_type:"process", input:"clean_data.csv", output:"sales_report.json"
+    #put id:"analyze_sales", label:"Sales Analysis", node_type:"process", input:"clean_data.csv", output:"sales_report.json"
     
     import pandas as pd
     import json
@@ -110,7 +110,7 @@ example_output <- data.frame(
   file_type = c("r", "r", "py"),
   input = c(NA, "raw_data.csv", "clean_data.csv"),
   label = c("Load Customer Data", "Clean and Validate", "Sales Analysis"),
-  name = c("load_data", "clean_data", "analyze_sales"),
+  id = c("load_data", "clean_data", "analyze_sales"),
   node_type = c("input", "process", "process"),
   output = c("raw_data.csv", "clean_data.csv", "sales_report.json"),
   stringsAsFactors = FALSE
@@ -124,7 +124,7 @@ The output is a data frame where each row represents a workflow node. The column
 
 - **file_name**: Which script contains this node
 - **file_type**: Programming language (r, py, sql, etc.)
-- **name**: Unique identifier for the node
+- **id**: Unique identifier for the node
 - **label**: Human-readable description
 - **node_type**: Type of operation (input, process, output)
 - **input**: Files consumed by this step
@@ -143,11 +143,11 @@ The general syntax for PUT annotations is:
 
 PUT annotations support several formats to fit different coding styles:
 
-    #put name:"my_node", label:"My Process"           # Standard format
-    # put name:"my_node", label:"My Process"          # Space after #
-    #put| name:"my_node", label:"My Process"          # Pipe separator
-    #put name:'my_node', label:'Single quotes'        # Single quotes
-    #put name:"my_node", label:'Mixed quotes'         # Mixed quote styles
+    #put id:"my_node", label:"My Process"           # Standard format
+    # put id:"my_node", label:"My Process"          # Space after #
+    #put| id:"my_node", label:"My Process"          # Pipe separator
+    #put id:'my_node', label:'Single quotes'        # Single quotes
+    #put id:"my_node", label:'Mixed quotes'         # Mixed quote styles
 
 ### Core Properties
 
@@ -155,7 +155,7 @@ While putior accepts any properties you define, these are commonly used:
 
 | Property | Purpose | Example Values |
 |----------|---------|----------------|
-| `name` | Unique identifier | `"load_data"`, `"process_sales"` |
+| `id` | Unique identifier | `"load_data"`, `"process_sales"` |
 | `label` | Human description | `"Load Customer Data"` |
 | `node_type` | Operation type | `"input"`, `"process"`, `"output"` |
 | `input` | Input files | `"raw_data.csv"`, `"data/*.json"` |
@@ -174,7 +174,7 @@ For consistency across projects, consider using these standard node types:
 
 Add any properties you need for visualization or metadata:
 
-    #put name:"train_model", label:"Train ML Model", node_type:"process", color:"green", group:"machine_learning", duration:"45min", priority:"high"
+    #put id:"train_model", label:"Train ML Model", node_type:"process", color:"green", group:"machine_learning", duration:"45min", priority:"high"
 
 These custom properties can be used by visualization tools or workflow management systems.
 
@@ -241,7 +241,7 @@ Let's walk through a complete data science workflow:
 ### 1. Data Collection (Python)
 
     # 01_collect_data.py
-    #put name:"fetch_api_data", label:"Fetch Data from API", node_type:"input", output:"raw_api_data.json"
+    #put id:"fetch_api_data", label:"Fetch Data from API", node_type:"input", output:"raw_api_data.json"
     
     import requests
     import json
@@ -255,7 +255,7 @@ Let's walk through a complete data science workflow:
 ### 2. Data Processing (R)
 
     # 02_process_data.R  
-    #put name:"clean_api_data", label:"Clean and Structure Data", node_type:"process", input:"raw_api_data.json", output:"processed_sales.csv"
+    #put id:"clean_api_data", label:"Clean and Structure Data", node_type:"process", input:"raw_api_data.json", output:"processed_sales.csv"
     
     library(jsonlite)
     library(dplyr)
@@ -278,8 +278,8 @@ Let's walk through a complete data science workflow:
 ### 3. Analysis and Reporting (R)
 
     # 03_analyze_report.R
-    #put name:"sales_analysis", label:"Perform Sales Analysis", node_type:"process", input:"processed_sales.csv", output:"analysis_results.rds"
-    #put name:"generate_report", label:"Generate HTML Report", node_type:"output", input:"analysis_results.rds", output:"sales_report.html"
+    #put id:"sales_analysis", label:"Perform Sales Analysis", node_type:"process", input:"processed_sales.csv", output:"analysis_results.rds"
+    #put id:"generate_report", label:"Generate HTML Report", node_type:"output", input:"analysis_results.rds", output:"sales_report.html"
     
     library(dplyr)
     

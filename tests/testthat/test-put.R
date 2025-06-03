@@ -19,13 +19,13 @@ test_that("put() handles basic directory scanning", {
   # Create test files
   r_content <- c(
     "# Test R file",
-    "#put name:\"test_r\", label:\"Test R Node\", node_type:\"process\"",
+    "#put id:\"test_r\", label:\"Test R Node\", node_type:\"process\"",
     "x <- 1"
   )
 
   py_content <- c(
     "# Test Python file",
-    "#put name:\"test_py\", label:\"Test Python Node\", node_type:\"input\"",
+    "#put id:\"test_py\", label:\"Test Python Node\", node_type:\"input\"",
     "x = 1"
   )
 
@@ -37,8 +37,8 @@ test_that("put() handles basic directory scanning", {
 
   expect_s3_class(result, "data.frame")
   expect_equal(nrow(result), 2)
-  expect_true(all(c("file_name", "file_type", "name", "label", "node_type") %in% names(result)))
-  expect_equal(sort(result$name), c("test_py", "test_r"))
+  expect_true(all(c("file_name", "file_type", "id", "label", "node_type") %in% names(result)))
+  expect_equal(sort(result$id), c("test_py", "test_r"))
   expect_equal(sort(result$file_type), c("py", "r"))
 })
 
@@ -50,7 +50,7 @@ test_that("put() handles single file processing", {
 
   content <- c(
     "# Single file test",
-    "#put name:\"single\", label:\"Single Node\", output:\"result.csv\"",
+    "#put id:\"single\", label:\"Single Node\", output:\"result.csv\"",
     "write.csv(data, 'result.csv')"
   )
 
@@ -61,7 +61,7 @@ test_that("put() handles single file processing", {
 
   expect_s3_class(result, "data.frame")
   expect_equal(nrow(result), 1)
-  expect_equal(result$name, "single")
+  expect_equal(result$id, "single")
   expect_equal(result$output, "result.csv")
 })
 
@@ -74,10 +74,10 @@ test_that("put() handles recursive directory scanning", {
   on.exit(unlink(test_dir, recursive = TRUE))
 
   # Create files in main directory
-  create_test_file(c("#put name:\"main\", label:\"Main\""), "main.R", test_dir)
+  create_test_file(c("#put id:\"main\", label:\"Main\""), "main.R", test_dir)
 
   # Create files in subdirectory
-  create_test_file(c("#put name:\"sub\", label:\"Sub\""), "sub.py", subdir)
+  create_test_file(c("#put id:\"sub\", label:\"Sub\""), "sub.py", subdir)
 
   # Test non-recursive (should find 1)
   result_non_recursive <- put(test_dir, recursive = FALSE)
@@ -86,7 +86,7 @@ test_that("put() handles recursive directory scanning", {
   # Test recursive (should find 2)
   result_recursive <- put(test_dir, recursive = TRUE)
   expect_equal(nrow(result_recursive), 2)
-  expect_true(all(c("main", "sub") %in% result_recursive$name))
+  expect_true(all(c("main", "sub") %in% result_recursive$id))
 })
 
 test_that("put() includes line numbers when requested", {
@@ -97,9 +97,9 @@ test_that("put() includes line numbers when requested", {
 
   content <- c(
     "# Line 1",
-    "#put name:\"first\", label:\"First\"", # Line 2
+    "#put id:\"first\", label:\"First\"", # Line 2
     "# Line 3",
-    "#put name:\"second\", label:\"Second\"" # Line 4
+    "#put id:\"second\", label:\"Second\"" # Line 4
   )
 
   create_test_file(content, "test.R", test_dir)
@@ -117,28 +117,28 @@ test_that("put() includes line numbers when requested", {
 # Test annotation parsing
 test_that("parse_put_annotation() handles various formats", {
   # Basic format
-  result1 <- parse_put_annotation('#put name:"test", label:"Test Label"')
-  expect_equal(result1$name, "test")
+  result1 <- parse_put_annotation('#put id:"test", label:"Test Label"')
+  expect_equal(result1$id, "test")
   expect_equal(result1$label, "Test Label")
 
   # With spaces
-  result2 <- parse_put_annotation('# put name:"test2", node_type:"process"')
-  expect_equal(result2$name, "test2")
+  result2 <- parse_put_annotation('# put id:"test2", node_type:"process"')
+  expect_equal(result2$id, "test2")
   expect_equal(result2$node_type, "process")
 
   # With pipe separator
-  result3 <- parse_put_annotation('#put| name:"test3", input:"data.csv"')
-  expect_equal(result3$name, "test3")
+  result3 <- parse_put_annotation('#put| id:"test3", input:"data.csv"')
+  expect_equal(result3$id, "test3")
   expect_equal(result3$input, "data.csv")
 
   # Single quotes
-  result4 <- parse_put_annotation("#put name:'test4', label:'Single Quotes'")
-  expect_equal(result4$name, "test4")
+  result4 <- parse_put_annotation("#put id:'test4', label:'Single Quotes'")
+  expect_equal(result4$id, "test4")
   expect_equal(result4$label, "Single Quotes")
 
   # Mixed quotes
-  result5 <- parse_put_annotation('#put name:"test5", label:\'Mixed Quotes\'')
-  expect_equal(result5$name, "test5")
+  result5 <- parse_put_annotation('#put id:"test5", label:\'Mixed Quotes\'')
+  expect_equal(result5$id, "test5")
   expect_equal(result5$label, "Mixed Quotes")
 })
 
@@ -149,32 +149,33 @@ test_that("parse_put_annotation() handles edge cases", {
 
   # Invalid syntax
   expect_null(parse_put_annotation("#put invalid"))
-  expect_null(parse_put_annotation("#put name:noQuotes"))
+  expect_null(parse_put_annotation("#put no quotes"))
 
-  # Extra spaces
-  result <- parse_put_annotation('#put  name : "test" , label : "Test"  ')
-  expect_equal(result$name, "test")
-  expect_equal(result$label, "Test")
-
-  # Empty values
-  result_empty <- parse_put_annotation('#put name:"", label:"Not Empty"')
-  expect_equal(result_empty$name, "")
-  expect_equal(result_empty$label, "Not Empty")
+  # Not a PUT annotation
+  expect_null(parse_put_annotation("# Regular comment"))
+  expect_null(parse_put_annotation("puts something"))
 })
 
-test_that("parse_put_annotation() handles commas in values", {
-  # Comma inside quotes should be preserved
-  result <- parse_put_annotation('#put name:"test", label:"Label, with comma"')
-  expect_equal(result$name, "test")
-  expect_equal(result$label, "Label, with comma")
+test_that("put() handles files with no annotations", {
+  temp_dir <- tempdir()
+  test_dir <- file.path(temp_dir, "putior_test_no_annotations")
+  dir.create(test_dir, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE))
 
-  # Multiple commas
-  result2 <- parse_put_annotation('#put name:"test", description:"A, B, and C", type:"complex"')
-  expect_equal(result2$description, "A, B, and C")
-  expect_equal(length(result2), 3)
+  # Create file without PUT annotations
+  content <- c(
+    "# Regular R file",
+    "x <- 1:10",
+    "mean(x)"
+  )
+
+  create_test_file(content, "no_annotations.R", test_dir)
+
+  result <- put(test_dir)
+  expect_s3_class(result, "data.frame")
+  expect_equal(nrow(result), 0)
 })
 
-# Test validation functionality
 test_that("put() validation works correctly", {
   temp_dir <- tempdir()
   test_dir <- file.path(temp_dir, "putior_test_validation")
@@ -183,10 +184,10 @@ test_that("put() validation works correctly", {
 
   # Create file with validation issues
   content_with_issues <- c(
-    "#put label:\"No Name\"", # Missing name
-    "#put name:\"test\", node_type:\"invalid_type\"", # Invalid node type
-    "#put name:\"test2\", input:\"noextension\"", # File without extension
-    "#put name:\"good\", label:\"Good Annotation\", node_type:\"process\"" # Valid
+    "#put label:\"No ID\"", # Missing id
+    "#put id:\"test\", node_type:\"invalid_type\"", # Invalid node type
+    "#put id:\"test2\", input:\"noextension\"", # File without extension
+    "#put id:\"good\", label:\"Good Annotation\", node_type:\"process\"" # Valid
   )
 
   create_test_file(content_with_issues, "test.R", test_dir)
@@ -207,14 +208,14 @@ test_that("put() validation works correctly", {
 
 test_that("is_valid_put_annotation() correctly identifies valid annotations", {
   # Valid annotations
-  expect_true(is_valid_put_annotation('#put name:"test", label:"Test"'))
-  expect_true(is_valid_put_annotation('# put name:"test"'))
-  expect_true(is_valid_put_annotation('#put| name:"test", type:"process"'))
+  expect_true(is_valid_put_annotation('#put id:"test", label:"Test"'))
+  expect_true(is_valid_put_annotation('# put id:"test"'))
+  expect_true(is_valid_put_annotation('#put| id:"test", type:"process"'))
 
   # Invalid annotations
   expect_false(is_valid_put_annotation("#put"))
   expect_false(is_valid_put_annotation("#put invalid"))
-  expect_false(is_valid_put_annotation("#put name:noQuotes"))
+  expect_false(is_valid_put_annotation("#put id:noQuotes"))
   expect_false(is_valid_put_annotation("not a put annotation"))
 })
 
@@ -256,16 +257,13 @@ test_that("put() handles different file extensions", {
   extensions <- c("R", "py", "sql", "sh", "jl") # Removed lowercase "r" to avoid duplicates
 
   for (ext in extensions) {
-    content <- paste0("#put name:\"test_", ext, "\", label:\"Test ", ext, "\"")
+    content <- paste0("#put id:\"test_", ext, "\", label:\"Test ", ext, "\"")
     create_test_file(content, paste0("test.", ext), test_dir)
   }
 
   result <- put(test_dir)
   expect_equal(nrow(result), length(extensions))
-
-  # Check that the expected file types are present
-  expected_types <- c("r", "py", "sql", "sh", "jl") # tolower() is applied to file extensions
-  expect_true(all(expected_types %in% result$file_type))
+  expect_true(all(tolower(extensions) %in% result$file_type))
 })
 
 test_that("put() preserves custom properties", {
@@ -275,7 +273,7 @@ test_that("put() preserves custom properties", {
   on.exit(unlink(test_dir, recursive = TRUE))
 
   content <- c(
-    '#put name:"custom", label:"Custom Node", color:"blue", priority:"high", duration:"5min"'
+    '#put id:"custom", label:"Custom Node", color:"blue", priority:"high", duration:"5min"'
   )
 
   create_test_file(content, "custom.R", test_dir)
@@ -298,7 +296,7 @@ test_that("put() handles multiple annotations efficiently", {
   for (i in 1:50) {
     many_annotations <- c(
       many_annotations,
-      paste0('#put name:"node', i, '", label:"Node ', i, '", step:', i)
+      paste0('#put id:"node', i, '", label:"Node ', i, '", step:', i)
     )
   }
 
@@ -320,7 +318,7 @@ test_that("put() column ordering is consistent", {
   on.exit(unlink(test_dir, recursive = TRUE))
 
   content <- c(
-    '#put zebra:"z", alpha:"a", name:"test", beta:"b"'
+    '#put zebra:"z", alpha:"a", id:"test", beta:"b"'
   )
 
   create_test_file(content, "test.R", test_dir)
@@ -334,4 +332,27 @@ test_that("put() column ordering is consistent", {
   # Custom columns should be alphabetically ordered
   custom_cols <- names(result)[!names(result) %in% c("file_name", "file_path", "file_type")]
   expect_equal(custom_cols, sort(custom_cols))
+})
+
+test_that("put() detects duplicate IDs", {
+  temp_dir <- tempdir()
+  test_dir <- file.path(temp_dir, "putior_test_duplicates")
+  dir.create(test_dir, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE))
+
+  content <- c(
+    '#put id:"test_dup", label:"First Duplicate"',
+    '#put id:"test_dup", label:"Second Duplicate"',
+    '#put id:"unique_node", label:"Unique Node"'
+  )
+
+  create_test_file(content, "test.R", test_dir)
+
+  # Should warn about duplicate IDs
+  expect_warning({
+    result <- put(test_dir, validate = TRUE)
+  }, "Duplicate node IDs found: test_dup")
+
+  # Should still return all nodes
+  expect_equal(nrow(result), 3)
 })

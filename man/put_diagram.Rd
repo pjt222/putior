@@ -34,7 +34,7 @@ put_diagram(
 "TD" (top-down), "LR" (left-right), "BT" (bottom-top), "RL" (right-left)}
 
 \item{node_labels}{Character string specifying what to show in nodes:
-"name" (node names), "label" (descriptions), "both" (name: label)}
+"name" (node IDs), "label" (descriptions), "both" (ID: label)}
 
 \item{show_files}{Logical indicating whether to show file connections}
 

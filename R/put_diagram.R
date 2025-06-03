@@ -15,7 +15,7 @@
 #' @param direction Character string specifying diagram direction. Options:
 #'   "TD" (top-down), "LR" (left-right), "BT" (bottom-top), "RL" (right-left)
 #' @param node_labels Character string specifying what to show in nodes:
-#'   "name" (node names), "label" (descriptions), "both" (name: label)
+#'   "name" (node IDs), "label" (descriptions), "both" (ID: label)
 #' @param show_files Logical indicating whether to show file connections
 #' @param style_nodes Logical indicating whether to apply styling based on node_type
 #' @param theme Character string specifying color theme. Options:
@@ -53,9 +53,9 @@ put_diagram <- function(workflow,
     stop("workflow must be a non-empty data frame returned by put()")
   }
 
-  required_cols <- c("name", "file_name")
+  required_cols <- c("id", "file_name")
   if (!all(required_cols %in% names(workflow))) {
-    stop("workflow must contain 'name' and 'file_name' columns")
+    stop("workflow must contain 'id' and 'file_name' columns")
   }
 
   # Validate theme
@@ -69,9 +69,9 @@ put_diagram <- function(workflow,
   }
 
   # Clean the workflow data
-  workflow <- workflow[!is.na(workflow$name) & workflow$name != "", ]
+  workflow <- workflow[!is.na(workflow$id) & workflow$id != "", ]
   if (nrow(workflow) == 0) {
-    stop("No valid workflow nodes found (all names are missing or empty)")
+    stop("No valid workflow nodes found (all IDs are missing or empty)")
   }
 
   # Start building the mermaid diagram
@@ -128,7 +128,7 @@ generate_node_styling <- function(workflow, theme = "light") {
     nodes_of_type <- workflow[!is.na(workflow$node_type) & workflow$node_type == node_type, ]
 
     if (nrow(nodes_of_type) > 0) {
-      node_ids <- sapply(nodes_of_type$name, sanitize_node_id)
+      node_ids <- sapply(nodes_of_type$id, sanitize_node_id)
       class_name <- paste0(node_type, "Style")
 
       # Create class definition
@@ -231,22 +231,22 @@ generate_node_definitions <- function(workflow, node_labels = "label") {
 
   for (i in 1:nrow(workflow)) {
     node <- workflow[i, ]
-    node_id <- sanitize_node_id(node$name)
+    node_id <- sanitize_node_id(node$id)
 
     # Determine node shape based on type
     node_shape <- get_node_shape(node$node_type)
 
     # Determine label text
     label_text <- switch(node_labels,
-      "name" = node$name,
-      "label" = if (!is.na(node$label) && node$label != "") node$label else node$name,
+      "name" = node$id,
+      "label" = if (!is.na(node$label) && node$label != "") node$label else node$id,
       "both" = if (!is.na(node$label) && node$label != "") {
-        paste0(node$name, ": ", node$label)
+        paste0(node$id, ": ", node$label)
       } else {
-        node$name
+        node$id
       },
       # Default to label
-      if (!is.na(node$label) && node$label != "") node$label else node$name
+      if (!is.na(node$label) && node$label != "") node$label else node$id
     )
 
     # Create node definition using character vector format
@@ -319,7 +319,7 @@ generate_connections <- function(workflow, show_files = FALSE) {
 
   for (i in 1:nrow(workflow)) {
     node <- workflow[i, ]
-    target_id <- sanitize_node_id(node$name)
+    target_id <- sanitize_node_id(node$id)
 
     if (!is.na(node$input) && node$input != "") {
       input_files <- strsplit(trimws(node$input), ",")[[1]]
@@ -342,7 +342,7 @@ generate_connections <- function(workflow, show_files = FALSE) {
 
           if (nrow(source_nodes) > 0) {
             for (j in 1:nrow(source_nodes)) {
-              source_id <- sanitize_node_id(source_nodes[j, ]$name)
+              source_id <- sanitize_node_id(source_nodes[j, ]$id)
 
               # Create connection with optional file label
               if (show_files && input_file != "") {

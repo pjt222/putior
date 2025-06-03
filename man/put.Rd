@@ -31,7 +31,8 @@ Default: TRUE}
 \value{
 A data frame containing file names and all properties found in annotations.
 Always includes columns: file_name, file_type, and any properties found in
-PUT annotations. If include_line_numbers is TRUE, also includes line_number.
+PUT annotations (typically: id, label, node_type, input, output).
+If include_line_numbers is TRUE, also includes line_number.
 }
 \description{
 Scans source files in a directory for PUT annotations that define workflow
@@ -53,7 +54,7 @@ workflow <- put("./script.R")
 workflow <- put("./src/", include_line_numbers = TRUE)
 
 # Example annotations in your source files:
-# #put name:"load_data", label:"Load Dataset", node_type:"input", output:"data.csv"
-# #put name:"process", label:"Clean Data", node_type:"process", input:"data.csv", output:"clean.csv"
+# #put id:"load_data", label:"Load Dataset", node_type:"input", output:"data.csv"
+# #put id:"process", label:"Clean Data", node_type:"process", input:"data.csv", output:"clean.csv"
 }
 }

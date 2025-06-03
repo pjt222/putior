@@ -6,7 +6,7 @@ create_test_workflow <- function() {
   data.frame(
     file_name = c("01_load.R", "02_process.py", "03_analyze.R"),
     file_type = c("r", "py", "r"),
-    name = c("load_data", "process_data", "analyze_results"),
+    id = c("load_data", "process_data", "analyze_results"),
     label = c("Load Raw Data", "Process Data", "Analyze Results"),
     node_type = c("input", "process", "output"),
     input = c(NA, "raw_data.csv", "processed_data.csv"),
@@ -48,9 +48,9 @@ test_that("put_diagram() handles different directions", {
 test_that("put_diagram() handles different node label options", {
   workflow <- create_test_workflow()
 
-  # Test name labels
-  diagram_name <- put_diagram(workflow, node_labels = "name", output = "none")
-  expect_true(grepl("load_data", diagram_name))
+  # Test ID labels (node_labels = "name" shows IDs)
+  diagram_id <- put_diagram(workflow, node_labels = "name", output = "none")
+  expect_true(grepl("load_data", diagram_id))
 
   # Test description labels
   diagram_label <- put_diagram(workflow, node_labels = "label", output = "none")
@@ -147,15 +147,15 @@ test_that("put_diagram() validates input", {
 
   # Missing required columns
   bad_workflow <- data.frame(x = 1, y = 2)
-  expect_error(put_diagram(bad_workflow), "must contain 'name' and 'file_name' columns")
+  expect_error(put_diagram(bad_workflow), "must contain 'id' and 'file_name' columns")
 
-  # All names missing
-  workflow_no_names <- data.frame(
-    name = c(NA, "", NA),
+  # All IDs missing
+  workflow_no_ids <- data.frame(
+    id = c(NA, "", NA),
     file_name = c("a.R", "b.py", "c.R"),
     stringsAsFactors = FALSE
   )
-  expect_error(put_diagram(workflow_no_names), "No valid workflow nodes found")
+  expect_error(put_diagram(workflow_no_ids), "No valid workflow nodes found")
 })
 
 test_that("sanitize_node_id() works correctly", {
@@ -202,7 +202,7 @@ test_that("put_diagram() handles complex workflows", {
   # Create workflow with multiple inputs/outputs and various node types
   complex_workflow <- data.frame(
     file_name = c("collect.py", "clean.R", "analyze.R", "report.R", "decide.R"),
-    name = c("collect", "clean", "analyze", "report", "decide"),
+    id = c("collect", "clean", "analyze", "report", "decide"),
     label = c("Collect Data", "Clean Data", "Analyze", "Generate Report", "Make Decision"),
     node_type = c("input", "process", "process", "output", "decision"),
     input = c(NA, "raw.csv", "clean.csv", "analysis.rds", "analysis.rds"),
@@ -228,7 +228,7 @@ test_that("put_diagram() handles workflows with no connections", {
   # Independent nodes with no shared files
   independent_workflow <- data.frame(
     file_name = c("task1.R", "task2.R", "task3.R"),
-    name = c("task1", "task2", "task3"),
+    id = c("task1", "task2", "task3"),
     label = c("Task 1", "Task 2", "Task 3"),
     node_type = c("process", "process", "process"),
     input = c("file1.csv", "file2.csv", "file3.csv"),

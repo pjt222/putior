@@ -131,7 +131,7 @@ Rscript inst/examples/theme-examples.R
    - Supports multiple output modes (console, file, clipboard)
 
 3. **Data Flow Architecture**
-   - Annotations define nodes with `name`, `label`, `node_type`, `input`, and `output`
+   - Annotations define nodes with `id`, `label`, `node_type`, `input`, and `output`
    - Automatic connection inference by matching output files to input files
    - Node types map to Mermaid shapes:
      - input/start/end → stadium `([text])`
@@ -155,6 +155,63 @@ Rscript inst/examples/theme-examples.R
 - Theme validation tests
 - File I/O testing with temporary directories
 - **Coverage**: Comprehensive test coverage for all major functions
+
+## Annotation Naming Implementation (Completed)
+
+### Summary of Changes
+
+The package has been updated to use `id` instead of `name` for node identifiers, aligning with graph theory conventions and improving semantic clarity.
+
+### Current Annotation Structure
+
+- **Mandatory field**: `id` - unique node identifier
+- **Optional fields**: `label`, `node_type`, `input`, `output`
+- **Validation**: Duplicate ID detection with warnings
+
+### Implementation Details
+
+#### 1. Core Changes
+- Renamed `name` to `id` throughout the codebase
+- Added duplicate ID validation in `put()` function
+- Updated error messages to reference `id` instead of `name`
+
+#### 2. Example Syntax
+```r
+# Standard annotation:
+#put id:"load_data", label:"Load Raw Data", node_type:"input", output:"raw_data.csv"
+
+# All supported formats work with id:
+#put id:"process", label:"Process Data"           # Standard
+# put id:"process", label:"Process Data"          # Space after #
+#put| id:"process", label:"Process Data"          # Pipe separator
+#put: id:"process", label:"Process Data"          # Colon separator
+```
+
+#### 3. Duplicate ID Detection
+The `put()` function now warns about duplicate IDs:
+```r
+workflow <- put("./src/")
+# Warning: Duplicate node IDs found: process_1, analyze_data
+# Each node must have a unique ID within the workflow.
+```
+
+#### 4. Graph Theory Alignment
+- `id` clearly indicates a unique identifier (not a display name)
+- Follows conventions from graph theory where nodes have IDs/vertices
+- Enables future enhancements like explicit edge declarations
+
+### Future Enhancements (Not Yet Implemented)
+
+1. **Explicit Edge Support**: `edges_to` parameter for complex workflows
+2. **Node Grouping**: `group` parameter for subgraph support
+3. **Auto-generated IDs**: Option to use `label` as mandatory field with auto-generated IDs
+
+### Testing
+All tests have been updated to use `id` instead of `name`. The test suite includes:
+- Parsing tests for all annotation formats
+- Duplicate ID detection tests
+- Workflow extraction tests
+- Diagram generation tests
 
 ## CRAN Submission Status
 

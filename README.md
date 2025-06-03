@@ -36,7 +36,7 @@ Add structured annotations to your R or Python scripts using `#put` comments:
 
 **`01_fetch_data.R`**
 ```r
-#put name:"fetch_sales", label:"Fetch Sales Data", node_type:"input", output:"sales_data.csv"
+#put id:"fetch_sales", label:"Fetch Sales Data", node_type:"input", output:"sales_data.csv"
 
 # Your actual code
 library(readr)
@@ -46,7 +46,7 @@ write_csv(sales_data, "sales_data.csv")
 
 **`02_clean_data.py`**
 ```python
-#put name:"clean_data", label:"Clean and Process", node_type:"process", input:"sales_data.csv", output:"clean_sales.csv"
+#put id:"clean_data", label:"Clean and Process", node_type:"process", input:"sales_data.csv", output:"clean_sales.csv"
 
 import pandas as pd
 df = pd.read_csv("sales_data.csv")
@@ -340,7 +340,7 @@ put_diagram(workflow, direction = "RL")  # Right to left
 ### Node Labels
 
 ```r
-put_diagram(workflow, node_labels = "name")   # Show function names
+put_diagram(workflow, node_labels = "name")   # Show node IDs
 put_diagram(workflow, node_labels = "label")  # Show descriptions (default)
 put_diagram(workflow, node_labels = "both")   # Show name: description
 ```
@@ -390,17 +390,17 @@ All PUT annotations follow this format:
 ### Alternative Formats (All Valid)
 
 ```r
-#put name:"node_name", label:"Description"              # Standard
-# put name:"node_name", label:"Description"             # Space after #
-#put| name:"node_name", label:"Description"             # Pipe separator
-#put: name:"node_name", label:"Description"             # Colon separator
+#put id:"node_id", label:"Description"              # Standard
+# put id:"node_id", label:"Description"             # Space after #
+#put| id:"node_id", label:"Description"             # Pipe separator
+#put: id:"node_id", label:"Description"             # Colon separator
 ```
 
 ### Required Annotations
 
 | Annotation | Description | Example |
 |------------|-------------|---------|
-| `name` | Unique identifier for the node | `"fetch_data"`, `"clean_sales"` |
+| `id` | Unique identifier for the node | `"fetch_data"`, `"clean_sales"` |
 | `label` | Human-readable description | `"Fetch Sales Data"`, `"Clean and Process"` |
 
 ### Optional Annotations
@@ -424,27 +424,27 @@ All PUT annotations follow this format:
 
 **R Scripts:**
 ```r
-#put name:"load_sales_data", label:"Load Sales Data from API", node_type:"input", output:"raw_sales.csv, metadata.json"
+#put id:"load_sales_data", label:"Load Sales Data from API", node_type:"input", output:"raw_sales.csv, metadata.json"
 
-#put name:"validate_data", label:"Validate and Clean Data", node_type:"process", input:"raw_sales.csv", output:"clean_sales.csv"
+#put id:"validate_data", label:"Validate and Clean Data", node_type:"process", input:"raw_sales.csv", output:"clean_sales.csv"
 
-#put name:"generate_report", label:"Generate Executive Summary", node_type:"output", input:"clean_sales.csv, metadata.json", output:"executive_summary.pdf"
+#put id:"generate_report", label:"Generate Executive Summary", node_type:"output", input:"clean_sales.csv, metadata.json", output:"executive_summary.pdf"
 ```
 
 **Python Scripts:**
 ```python
-#put name:"collect_data", label:"Collect Raw Data", node_type:"input", output:"raw_data.csv"
+#put id:"collect_data", label:"Collect Raw Data", node_type:"input", output:"raw_data.csv"
 
-#put name:"train_model", label:"Train ML Model", node_type:"process", input:"features.csv", output:"model.pkl"
+#put id:"train_model", label:"Train ML Model", node_type:"process", input:"features.csv", output:"model.pkl"
 
-#put name:"predict", label:"Generate Predictions", node_type:"output", input:"model.pkl, test_data.csv", output:"predictions.csv"
+#put id:"predict", label:"Generate Predictions", node_type:"output", input:"model.pkl, test_data.csv", output:"predictions.csv"
 ```
 
 **Multiple Annotations Per File:**
 ```r
 # analysis.R
-#put name:"create_summary", label:"Calculate Summary Stats", node_type:"process", input:"processed_data.csv", output:"summary_stats.json"
-#put name:"create_report", label:"Generate Sales Report", node_type:"output", input:"processed_data.csv", output:"sales_report.html"
+#put id:"create_summary", label:"Calculate Summary Stats", node_type:"process", input:"processed_data.csv", output:"summary_stats.json"
+#put id:"create_report", label:"Generate Sales Report", node_type:"output", input:"processed_data.csv", output:"sales_report.html"
 
 # Your R code here...
 ```
@@ -452,9 +452,9 @@ All PUT annotations follow this format:
 **Workflow Entry and Exit Points:**
 ```r
 # main_workflow.R
-#put name:"workflow_start", label:"Start Analysis Pipeline", node_type:"start", output:"config.json"
+#put id:"workflow_start", label:"Start Analysis Pipeline", node_type:"start", output:"config.json"
 
-#put name:"workflow_end", label:"Pipeline Complete", node_type:"end", input:"final_report.pdf"
+#put id:"workflow_end", label:"Pipeline Complete", node_type:"end", input:"final_report.pdf"
 ```
 
 ### Supported File Types
@@ -497,7 +497,7 @@ workflow <- put("./src/", include_line_numbers = TRUE)
 workflow <- put("./src/", validate = FALSE)
 
 # Test annotation syntax
-is_valid_put_annotation('#put name:"test", label:"Test Node"')  # TRUE
+is_valid_put_annotation('#put id:"test", label:"Test Node"')  # TRUE
 is_valid_put_annotation("#put invalid syntax")                 # FALSE
 ```
 
