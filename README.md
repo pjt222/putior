@@ -71,12 +71,14 @@ put_diagram(workflow)
 flowchart TD
     fetch_sales([Fetch Sales Data])
     clean_data[Clean and Process]
-    
+
+    %% Connections
     fetch_sales --> clean_data
-    
+
+    %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
     class fetch_sales inputStyle
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
     class clean_data processStyle
 ```
 
@@ -129,17 +131,20 @@ write.csv(results, "results.csv")
 ```mermaid
 flowchart TD
     utils([Data Utilities])
-    analysis[Statistical Analysis] 
+    analysis[Statistical Analysis]
     main[Main Analysis Pipeline]
 
+    %% Connections
+    utils --> analysis
     utils --> main
     analysis --> main
-    utils --> analysis
-    
+
+    %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
     class utils inputStyle
-    class analysis,main processStyle
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class analysis processStyle
+    class main processStyle
 ```
 
 **Generated Workflow (With Data Artifacts):**
@@ -151,20 +156,23 @@ put_diagram(workflow, show_artifacts = TRUE)
 ```mermaid
 flowchart TD
     utils([Data Utilities])
-    analysis[Statistical Analysis] 
+    analysis[Statistical Analysis]
     main[Main Analysis Pipeline]
     artifact_results_csv[(results.csv)]
 
+    %% Connections
+    utils --> analysis
     utils --> main
     analysis --> main
-    utils --> analysis
     main --> artifact_results_csv
-    
+
+    %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef artifactStyle fill:#f3f4f6,stroke:#6b7280,stroke-width:1px,color:#374151
     class utils inputStyle
-    class analysis,main processStyle
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class analysis processStyle
+    class main processStyle
+    classDef artifactStyle fill:#f3f4f6,stroke:#6b7280,stroke-width:1px,color:#374151
     class artifact_results_csv artifactStyle
 ```
 
@@ -209,17 +217,15 @@ flowchart TD
     analyze[Statistical Analysis]
     report[[Generate Final Report]]
 
-    fetch_sales --> clean_sales
-    fetch_customers --> merge_data
-    clean_sales --> merge_data
-    merge_data --> analyze
-    analyze --> report
-    
+    %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    class fetch_sales inputStyle
+    class fetch_customers inputStyle
     classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class clean_sales processStyle
+    class merge_data processStyle
+    class analyze processStyle
     classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class fetch_sales,fetch_customers inputStyle
-    class clean_sales,merge_data,analyze processStyle
     class report outputStyle
 ```
 
@@ -267,23 +273,19 @@ put_diagram(workflow, show_workflow_boundaries = TRUE)
 
 ```mermaid
 flowchart TD
-    start([⚡ Pipeline Start])
-    extract[Extract Data]
-    transform[Transform Data]
-    load[Load to Database]
-    end_node([🏁 Pipeline Complete])
-    
-    start --> extract
-    extract --> transform
-    transform --> load
-    load --> end_node
-    
-    classDef startStyle fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px,color:#1b5e20
+    pipeline_start([\u26a1 Data Pipeline Start])
+    extract_data[Extract Raw Data]
+    transform_data[Transform Data]
+    pipeline_end([\ud83c\udfc1 Pipeline Complete])
+
+    %% Styling
     classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef endStyle fill:#ffebee,stroke:#c62828,stroke-width:3px,color:#b71c1c
-    class start startStyle
-    class extract,transform,load processStyle
-    class end_node endStyle
+    class extract_data processStyle
+    class transform_data processStyle
+    classDef startStyle fill:#fef3c7,stroke:#d97706,stroke-width:3px,color:#92400e
+    class pipeline_start startStyle
+    classDef endStyle fill:#dcfce7,stroke:#16a34a,stroke-width:3px,color:#15803d
+    class pipeline_end endStyle
 ```
 
 **Same Pipeline without Boundaries:**
@@ -294,19 +296,15 @@ put_diagram(workflow, show_workflow_boundaries = FALSE)
 
 ```mermaid
 flowchart TD
-    start([Pipeline Start])
-    extract[Extract Data]
-    transform[Transform Data]  
-    load[Load to Database]
-    end_node([Pipeline Complete])
-    
-    start --> extract
-    extract --> transform
-    transform --> load
-    load --> end_node
-    
+    pipeline_start([Data Pipeline Start])
+    extract_data[Extract Raw Data]
+    transform_data[Transform Data]
+    pipeline_end([Pipeline Complete])
+
+    %% Styling
     classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class start,extract,transform,load,end_node processStyle
+    class extract_data processStyle
+    class transform_data processStyle
 ```
 
 ### Simple Mode (Default)
@@ -403,15 +401,13 @@ flowchart TD
     fetch_data([Fetch API Data])
     clean_data[Clean and Validate]
     generate_report[[Generate Final Report]]
-    
-    fetch_data --> clean_data
-    clean_data --> generate_report
-    
+
+    %% Styling
     classDef inputStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000000
-    classDef processStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000000
-    classDef outputStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000000
     class fetch_data inputStyle
+    classDef processStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000000
     class clean_data processStyle
+    classDef outputStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000000
     class generate_report outputStyle
 ```
 
@@ -424,15 +420,13 @@ flowchart TD
     fetch_data([Fetch API Data])
     clean_data[Clean and Validate]
     generate_report[[Generate Final Report]]
-    
-    fetch_data --> clean_data
-    clean_data --> generate_report
-    
+
+    %% Styling
     classDef inputStyle fill:#1a237e,stroke:#3f51b5,stroke-width:2px,color:#ffffff
-    classDef processStyle fill:#4a148c,stroke:#9c27b0,stroke-width:2px,color:#ffffff
-    classDef outputStyle fill:#1b5e20,stroke:#4caf50,stroke-width:2px,color:#ffffff
     class fetch_data inputStyle
+    classDef processStyle fill:#4a148c,stroke:#9c27b0,stroke-width:2px,color:#ffffff
     class clean_data processStyle
+    classDef outputStyle fill:#1b5e20,stroke:#4caf50,stroke-width:2px,color:#ffffff
     class generate_report outputStyle
 ```
 
@@ -445,15 +439,13 @@ flowchart TD
     fetch_data([Fetch API Data])
     clean_data[Clean and Validate]
     generate_report[[Generate Final Report]]
-    
-    fetch_data --> clean_data
-    clean_data --> generate_report
-    
+
+    %% Styling
     classDef inputStyle fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#ffffff
-    classDef processStyle fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#ffffff
-    classDef outputStyle fill:#10b981,stroke:#047857,stroke-width:2px,color:#ffffff
     class fetch_data inputStyle
+    classDef processStyle fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#ffffff
     class clean_data processStyle
+    classDef outputStyle fill:#10b981,stroke:#047857,stroke-width:2px,color:#ffffff
     class generate_report outputStyle
 ```
 
@@ -466,15 +458,13 @@ flowchart TD
     fetch_data([Fetch API Data])
     clean_data[Clean and Validate]
     generate_report[[Generate Final Report]]
-    
-    fetch_data --> clean_data
-    clean_data --> generate_report
-    
+
+    %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
     class fetch_data inputStyle
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
     class clean_data processStyle
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
     class generate_report outputStyle
 ```
 
@@ -487,15 +477,13 @@ flowchart TD
     fetch_data([Fetch API Data])
     clean_data[Clean and Validate]
     generate_report[[Generate Final Report]]
-    
-    fetch_data --> clean_data
-    clean_data --> generate_report
-    
+
+    %% Styling
     classDef inputStyle fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b
-    classDef processStyle fill:#f1f5f9,stroke:#64748b,stroke-width:1px,color:#1e293b
-    classDef outputStyle fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b
     class fetch_data inputStyle
+    classDef processStyle fill:#f1f5f9,stroke:#64748b,stroke-width:1px,color:#1e293b
     class clean_data processStyle
+    classDef outputStyle fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b
     class generate_report outputStyle
 ```
 
