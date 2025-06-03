@@ -147,6 +147,7 @@ Rscript inst/examples/theme-examples.R
    - `generate_connections()` - Creates edges based on matching input/output files
    - Theme system with 5 built-in themes (light, dark, auto, github, minimal)
    - Supports multiple output modes (console, file, clipboard)
+   - **NEW**: Artifact visualization mode for complete data flow
 
 3. **Data Flow Architecture**
    - Annotations define nodes with `id`, `label`, `node_type`, `input`, and `output`
@@ -156,6 +157,7 @@ Rscript inst/examples/theme-examples.R
      - process → rectangle `[text]`
      - output → subroutine `[[text]]`
      - decision → diamond `{text}`
+     - **NEW**: artifact → cylinder `[(text)]`
 
 ### Key Design Patterns
 
@@ -164,6 +166,7 @@ Rscript inst/examples/theme-examples.R
 - **Flexible annotation syntax**: Supports multiple comment formats (#put, # put, #put|, #put:)
 - **Theme abstraction**: Color schemes isolated from diagram logic
 - **Output abstraction**: Single interface for console/file/clipboard output
+- **Visualization modes**: Simple (script connections) vs. Artifact (complete data flow)
 - **UUID auto-generation**: When `id` is omitted, automatically generates UUID v4
 - **Empty vs missing distinction**: Missing `id` → auto-generate; empty `id:""` → validation warning
 
@@ -174,7 +177,47 @@ Rscript inst/examples/theme-examples.R
 - Edge case handling (empty files, invalid syntax, missing properties)
 - Theme validation tests
 - File I/O testing with temporary directories
-- **Coverage**: Comprehensive test coverage for all major functions
+- **NEW**: Artifact functionality tests (91 total tests)
+- **Coverage**: Comprehensive test coverage for all major functions (280 tests total)
+
+## Recent Major Features
+
+### Artifact Visualization System (NEW)
+
+**Purpose**: Addresses the limitation where terminal outputs (files not consumed by other scripts) weren't shown in diagrams.
+
+**Problem Solved**: Previously, workflows like `Load Data → Process Data → final_results.csv` would only show `Load Data → Process Data`, missing the terminal output `final_results.csv`.
+
+**Implementation**: 
+- `show_artifacts` parameter in `put_diagram()` function
+- `create_artifact_nodes()` function identifies data files (non-script files)
+- Extended `generate_connections()` for file-to-script and script-to-file relationships
+- Artifact styling with cylindrical shape `[(filename)]` and subtle colors across all themes
+
+**Usage**:
+```r
+# Simple mode (default) - script connections only
+put_diagram(workflow)
+
+# Artifact mode - complete data flow including terminal outputs
+put_diagram(workflow, show_artifacts = TRUE)
+
+# With file labels on connections for extra clarity
+put_diagram(workflow, show_artifacts = TRUE, show_files = TRUE)
+```
+
+**Key Benefits**:
+- Shows terminal outputs like `final_results.csv` that aren't consumed by other scripts
+- Shows initial inputs that aren't produced by other scripts
+- Provides complete data lineage visualization
+- Maintains backward compatibility with simple mode as default
+- Works with all existing themes and styling options
+
+**Visualization Modes**:
+| Mode | Parameter | Shows | Best For |
+|------|-----------|-------|----------|
+| **Simple** | `show_artifacts = FALSE` (default) | Script connections only | Code architecture, dependencies |
+| **Artifact** | `show_artifacts = TRUE` | Scripts + data files | Data pipelines, complete data flow |
 
 ## Annotation Naming Implementation (Completed)
 
@@ -298,6 +341,7 @@ All tests have been updated to use `id` instead of `name`. The test suite includ
 - ✅ Spell check: Clean (no spelling errors)
 - ✅ GitHub Actions: Multi-platform CI passing
 - ✅ R-hub v2: Configured and tested
+- ✅ Tests: 280 tests passing (includes 91 artifact functionality tests)
 
 ### CI/CD
 - GitHub Actions workflow (`.github/workflows/r.yml`) tests on Windows, macOS, Ubuntu
@@ -312,6 +356,7 @@ All tests have been updated to use `id` instead of `name`. The test suite includ
 - **File extensions**: Required in input/output declarations for validation
 - **Backwards compatibility**: Works with existing codebases (only annotations needed)
 - **Language field**: Added to DESCRIPTION for proper spell checking
+- **Artifact mode**: New feature for complete data flow visualization
 
 ## Development Tips
 
@@ -321,3 +366,4 @@ All tests have been updated to use `id` instead of `name`. The test suite includ
 - Use the spell check regularly to catch typos early
 - Test on multiple platforms before major releases
 - Follow the existing code style and patterns
+- Test both simple and artifact modes when making diagram changes

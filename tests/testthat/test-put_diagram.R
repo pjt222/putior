@@ -15,6 +15,20 @@ create_test_workflow <- function() {
   )
 }
 
+# Helper function to create test workflow with terminal outputs
+create_test_workflow_with_terminal <- function() {
+  data.frame(
+    file_name = c("load.R", "process.R"),
+    file_type = c("r", "r"),
+    id = c("load", "process"),
+    label = c("Load Data", "Process Data"),
+    node_type = c("input", "process"),
+    input = c(NA, "data.csv"),
+    output = c("data.csv", "final_results.csv"),  # final_results.csv is terminal
+    stringsAsFactors = FALSE
+  )
+}
+
 test_that("put_diagram() creates basic mermaid diagram", {
   workflow <- create_test_workflow()
 
@@ -266,4 +280,117 @@ test_that("put_diagram() handles clipboard output", {
     # Should fall back to console output
     expect_true(any(grepl("```mermaid", result)))
   }
+})
+
+# ============================================================================
+# Artifact functionality tests
+# ============================================================================
+
+test_that("put_diagram() supports show_artifacts parameter", {
+  workflow <- create_test_workflow_with_terminal()
+  
+  # Test that show_artifacts parameter is accepted
+  expect_no_error({
+    diagram_simple <- put_diagram(workflow, output = "none")
+    diagram_artifacts <- put_diagram(workflow, show_artifacts = TRUE, output = "none")
+  })
+  
+  # Diagrams should be different
+  diagram_simple <- put_diagram(workflow, output = "none")
+  diagram_artifacts <- put_diagram(workflow, show_artifacts = TRUE, output = "none")
+  expect_false(identical(diagram_simple, diagram_artifacts))
+})
+
+test_that("create_artifact_nodes() identifies data files correctly", {
+  workflow <- create_test_workflow_with_terminal()
+  artifacts <- create_artifact_nodes(workflow)
+  
+  # Should identify final_results.csv as an artifact (terminal output)
+  expect_true(nrow(artifacts) > 0)
+  expect_true("final_results.csv" %in% artifacts$file_name)
+  expect_true(all(artifacts$node_type == "artifact"))
+  expect_true(all(artifacts$is_artifact == TRUE))
+})
+
+test_that("artifact nodes have correct shape", {
+  # Test artifact node shape
+  expect_equal(get_node_shape("artifact"), c("[(", ")]"))
+})
+
+test_that("show_artifacts creates artifact nodes in diagram", {
+  workflow <- create_test_workflow_with_terminal()
+  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, output = "none")
+  
+  # Should contain artifact node for terminal output
+  expect_true(grepl("artifact_final_results_csv", diagram_code))
+  expect_true(grepl("\\[\\(final_results\\.csv\\)\\]", diagram_code))
+})
+
+test_that("show_artifacts creates correct connections", {
+  workflow <- create_test_workflow_with_terminal()
+  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, output = "none")
+  
+  # Should have script-to-artifact and artifact-to-script connections
+  expect_true(grepl("load --> artifact_data_csv", diagram_code))
+  expect_true(grepl("artifact_data_csv --> process", diagram_code))
+  expect_true(grepl("process --> artifact_final_results_csv", diagram_code))
+})
+
+test_that("artifact styling is applied correctly", {
+  workflow <- create_test_workflow_with_terminal()
+  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, output = "none")
+  
+  # Should contain artifact styling
+  expect_true(grepl("classDef artifactStyle", diagram_code))
+  expect_true(grepl("class artifact_", diagram_code))
+})
+
+test_that("show_artifacts with show_files shows file labels", {
+  workflow <- create_test_workflow_with_terminal()
+  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, show_files = TRUE, output = "none")
+  
+  # Should have file labels on connections
+  expect_true(grepl("-->\\|.*\\|", diagram_code))  # Should have |file| labels
+})
+
+test_that("show_artifacts works with different themes", {
+  workflow <- create_test_workflow_with_terminal()
+  
+  # Test multiple themes
+  themes <- c("light", "dark", "github", "minimal", "auto")
+  
+  for (theme in themes) {
+    expect_no_error({
+      diagram_code <- put_diagram(workflow, show_artifacts = TRUE, theme = theme, output = "none")
+      expect_true(grepl("artifact", diagram_code))
+    })
+  }
+})
+
+test_that("show_artifacts handles workflow with no artifacts", {
+  # Create workflow where all outputs are script files
+  workflow <- data.frame(
+    file_name = c("main.R", "utils.R"),
+    id = c("main", "utils"),
+    label = c("Main", "Utils"),
+    node_type = c("process", "input"),
+    input = c("utils.R", NA),
+    output = c("results.txt", "utils.R"),  # utils.R is script, not artifact
+    stringsAsFactors = FALSE
+  )
+  
+  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, output = "none")
+  
+  # Should handle gracefully and show results.txt artifact
+  expect_true(grepl("artifact_results_txt", diagram_code))
+})
+
+test_that("show_artifacts combines with existing node_type styling", {
+  workflow <- create_test_workflow_with_terminal()
+  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, style_nodes = TRUE, output = "none")
+  
+  # Should have both script node styling and artifact styling
+  expect_true(grepl("classDef inputStyle", diagram_code))
+  expect_true(grepl("classDef processStyle", diagram_code))
+  expect_true(grepl("classDef artifactStyle", diagram_code))
 })

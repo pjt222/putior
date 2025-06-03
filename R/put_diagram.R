@@ -17,6 +17,9 @@
 #' @param node_labels Character string specifying what to show in nodes:
 #'   "name" (node IDs), "label" (descriptions), "both" (ID: label)
 #' @param show_files Logical indicating whether to show file connections
+#' @param show_artifacts Logical indicating whether to show data files as nodes.
+#'   When TRUE, creates nodes for all input/output files, not just script connections.
+#'   This provides a complete view of the data flow including terminal outputs.
 #' @param style_nodes Logical indicating whether to apply styling based on node_type
 #' @param theme Character string specifying color theme. Options:
 #'   "light" (default), "dark", "auto" (GitHub adaptive), "minimal", "github"
@@ -26,18 +29,21 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Basic usage
+#' # Basic usage - shows only script connections
 #' workflow <- put("./src/")
 #' put_diagram(workflow)
+#'
+#' # Show all data artifacts as nodes (complete data flow)
+#' put_diagram(workflow, show_artifacts = TRUE)
+#'
+#' # Show artifacts with file labels on connections
+#' put_diagram(workflow, show_artifacts = TRUE, show_files = TRUE)
 #'
 #' # GitHub-optimized theme for README files
 #' put_diagram(workflow, theme = "github")
 #'
-#' # Auto theme that adapts to GitHub's theme
-#' put_diagram(workflow, theme = "auto")
-#'
-#' # Save to file with custom theme
-#' put_diagram(workflow, output = "file", file = "workflow.md", theme = "dark")
+#' # Save to file with artifacts enabled
+#' put_diagram(workflow, show_artifacts = TRUE, output = "file", file = "workflow.md")
 #' }
 put_diagram <- function(workflow,
                         output = "console",
@@ -46,6 +52,7 @@ put_diagram <- function(workflow,
                         direction = "TD",
                         node_labels = "label",
                         show_files = FALSE,
+                        show_artifacts = FALSE,
                         style_nodes = TRUE,
                         theme = "light") {
   # Input validation
@@ -85,19 +92,56 @@ put_diagram <- function(workflow,
   # Add flowchart declaration
   mermaid_lines <- c(mermaid_lines, paste0("flowchart ", direction))
 
+  # Handle artifacts if requested
+  if (show_artifacts) {
+    # Create artifact nodes for data files
+    artifact_nodes <- create_artifact_nodes(workflow)
+    
+    # Combine workflow with artifact nodes
+    if (nrow(artifact_nodes) > 0) {
+      # Add is_artifact column to original workflow if it doesn't exist
+      if (!"is_artifact" %in% names(workflow)) {
+        workflow$is_artifact <- FALSE
+      }
+      
+      # Ensure both data frames have the same columns
+      # Add missing columns to workflow
+      missing_in_workflow <- setdiff(names(artifact_nodes), names(workflow))
+      for (col in missing_in_workflow) {
+        workflow[[col]] <- NA
+      }
+      
+      # Add missing columns to artifact_nodes
+      missing_in_artifacts <- setdiff(names(workflow), names(artifact_nodes))
+      for (col in missing_in_artifacts) {
+        artifact_nodes[[col]] <- NA
+      }
+      
+      # Combine the data frames
+      combined_workflow <- rbind(workflow, artifact_nodes)
+    } else {
+      combined_workflow <- workflow
+      if (!"is_artifact" %in% names(combined_workflow)) {
+        combined_workflow$is_artifact <- FALSE
+      }
+    }
+  } else {
+    combined_workflow <- workflow
+  }
+
   # Generate node definitions
-  node_definitions <- generate_node_definitions(workflow, node_labels)
+  node_definitions <- generate_node_definitions(combined_workflow, node_labels)
   mermaid_lines <- c(mermaid_lines, node_definitions)
 
   # Generate connections
-  connections <- generate_connections(workflow, show_files)
+  connections <- generate_connections(combined_workflow, show_files, show_artifacts)
   if (length(connections) > 0) {
     mermaid_lines <- c(mermaid_lines, "", "    %% Connections", connections)
   }
 
   # Add styling based on theme
-  if (style_nodes && "node_type" %in% names(workflow)) {
-    styling <- generate_node_styling(workflow, theme)
+  if (style_nodes && "node_type" %in% names(combined_workflow)) {
+    styling <- generate_node_styling(combined_workflow, theme)
     if (length(styling) > 0) {
       mermaid_lines <- c(mermaid_lines, "", "    %% Styling", styling)
     }
@@ -156,33 +200,38 @@ get_theme_colors <- function(theme) {
       "input" = "fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000000",
       "process" = "fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000000",
       "output" = "fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000000",
-      "decision" = "fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000000"
+      "decision" = "fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000000",
+      "artifact" = "fill:#f9f9f9,stroke:#666666,stroke-width:1px,color:#333333"
     ),
     "dark" = list(
       "input" = "fill:#1a237e,stroke:#3f51b5,stroke-width:2px,color:#ffffff",
       "process" = "fill:#4a148c,stroke:#9c27b0,stroke-width:2px,color:#ffffff",
       "output" = "fill:#1b5e20,stroke:#4caf50,stroke-width:2px,color:#ffffff",
-      "decision" = "fill:#e65100,stroke:#ff9800,stroke-width:2px,color:#ffffff"
+      "decision" = "fill:#e65100,stroke:#ff9800,stroke-width:2px,color:#ffffff",
+      "artifact" = "fill:#2d2d2d,stroke:#888888,stroke-width:1px,color:#ffffff"
     ),
     "auto" = list(
       # GitHub-compatible auto theme using solid colors that work in both modes
       "input" = "fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#ffffff",
       "process" = "fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#ffffff",
       "output" = "fill:#10b981,stroke:#047857,stroke-width:2px,color:#ffffff",
-      "decision" = "fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#ffffff"
+      "decision" = "fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#ffffff",
+      "artifact" = "fill:#6b7280,stroke:#374151,stroke-width:1px,color:#ffffff"
     ),
     "minimal" = list(
       "input" = "fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b",
       "process" = "fill:#f1f5f9,stroke:#64748b,stroke-width:1px,color:#1e293b",
       "output" = "fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b",
-      "decision" = "fill:#fef3c7,stroke:#92400e,stroke-width:1px,color:#1e293b"
+      "decision" = "fill:#fef3c7,stroke:#92400e,stroke-width:1px,color:#1e293b",
+      "artifact" = "fill:#e2e8f0,stroke:#94a3b8,stroke-width:1px,color:#475569"
     ),
     "github" = list(
       # Optimized specifically for GitHub README files with maximum compatibility
       "input" = "fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af",
       "process" = "fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6",
       "output" = "fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d",
-      "decision" = "fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e"
+      "decision" = "fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e",
+      "artifact" = "fill:#f3f4f6,stroke:#6b7280,stroke-width:1px,color:#374151"
     ),
 
     # Default to light theme
@@ -190,7 +239,8 @@ get_theme_colors <- function(theme) {
       "input" = "fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000000",
       "process" = "fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000000",
       "output" = "fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000000",
-      "decision" = "fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000000"
+      "decision" = "fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000000",
+      "artifact" = "fill:#f9f9f9,stroke:#666666,stroke-width:1px,color:#333333"
     )
   )
 }
@@ -274,6 +324,7 @@ get_node_shape <- function(node_type) {
     "decision" = c("{", "}"), # Diamond for decisions
     "start" = c("([", "])"), # Stadium for start
     "end" = c("([", "])"), # Stadium for end
+    "artifact" = c("[(", ")]"), # Cylindrical shape for data files
     c("[", "]") # Default rectangle
   )
 }
@@ -309,49 +360,167 @@ sanitize_node_id <- function(node_id) {
   return(sanitized)
 }
 
-#' Generate connections between nodes
+#' Create artifact nodes for data files
 #' @param workflow Workflow data frame
-#' @param show_files Whether to show file-based connections
-#' @return Character vector of connection definitions
+#' @return Data frame with artifact node definitions
 #' @keywords internal
-generate_connections <- function(workflow, show_files = FALSE) {
-  connections <- character()
-
+create_artifact_nodes <- function(workflow) {
+  # Collect all unique input and output files
+  all_inputs <- character()
+  all_outputs <- character()
+  
   for (i in 1:nrow(workflow)) {
     node <- workflow[i, ]
-    target_id <- sanitize_node_id(node$id)
-
+    
+    # Process input files
     if (!is.na(node$input) && node$input != "") {
       input_files <- strsplit(trimws(node$input), ",")[[1]]
       input_files <- trimws(input_files)
+      input_files <- input_files[input_files != ""]
+      all_inputs <- c(all_inputs, input_files)
+    }
+    
+    # Process output files
+    if (!is.na(node$output) && node$output != "") {
+      output_files <- strsplit(trimws(node$output), ",")[[1]]
+      output_files <- trimws(output_files)
+      output_files <- output_files[output_files != ""]
+      all_outputs <- c(all_outputs, output_files)
+    }
+  }
+  
+  # Get unique files (input or output)
+  all_files <- unique(c(all_inputs, all_outputs))
+  
+  # Remove script files (files that appear as file_name in workflow)
+  script_files <- workflow$file_name
+  data_files <- all_files[!all_files %in% script_files]
+  
+  if (length(data_files) == 0) {
+    return(data.frame(
+      id = character(),
+      label = character(),
+      node_type = character(),
+      file_name = character(),
+      is_artifact = logical(),
+      stringsAsFactors = FALSE
+    ))
+  }
+  
+  # Create artifact node definitions
+  artifact_nodes <- data.frame(
+    id = paste0("artifact_", gsub("[^a-zA-Z0-9_]", "_", data_files)),
+    label = data_files,
+    node_type = "artifact",
+    file_name = data_files,
+    is_artifact = TRUE,
+    stringsAsFactors = FALSE
+  )
+  
+  return(artifact_nodes)
+}
 
-      for (input_file in input_files) {
-        if (input_file != "") {
-          # Find nodes that output this file
-          source_nodes <- workflow[
-            !is.na(workflow$output) &
-              sapply(workflow$output, function(x) {
-                if (is.na(x) || x == "") {
-                  return(FALSE)
+#' Generate connections between nodes
+#' @param workflow Workflow data frame with combined script and artifact nodes
+#' @param show_files Whether to show file-based connections
+#' @param show_artifacts Whether artifacts are included in the workflow
+#' @return Character vector of connection definitions
+#' @keywords internal
+generate_connections <- function(workflow, show_files = FALSE, show_artifacts = FALSE) {
+  connections <- character()
+  
+  if (show_artifacts) {
+    # With artifacts: create file-to-node and node-to-file connections
+    
+    # Get script nodes (non-artifacts)
+    script_nodes <- workflow[is.na(workflow$is_artifact) | !workflow$is_artifact, ]
+    
+    for (i in 1:nrow(script_nodes)) {
+      node <- script_nodes[i, ]
+      target_id <- sanitize_node_id(node$id)
+      
+      # Input connections: artifact → script
+      if (!is.na(node$input) && node$input != "") {
+        input_files <- strsplit(trimws(node$input), ",")[[1]]
+        input_files <- trimws(input_files[input_files != ""])
+        
+        for (input_file in input_files) {
+          # Find the artifact node for this input file
+          artifact_id <- paste0("artifact_", gsub("[^a-zA-Z0-9_]", "_", input_file))
+          artifact_exists <- any(workflow$id == artifact_id, na.rm = TRUE)
+          
+          if (artifact_exists) {
+            if (show_files) {
+              connection <- paste0("    ", artifact_id, " -->|", input_file, "| ", target_id)
+            } else {
+              connection <- paste0("    ", artifact_id, " --> ", target_id)
+            }
+            connections <- c(connections, connection)
+          }
+        }
+      }
+      
+      # Output connections: script → artifact
+      if (!is.na(node$output) && node$output != "") {
+        output_files <- strsplit(trimws(node$output), ",")[[1]]
+        output_files <- trimws(output_files[output_files != ""])
+        
+        for (output_file in output_files) {
+          # Find the artifact node for this output file
+          artifact_id <- paste0("artifact_", gsub("[^a-zA-Z0-9_]", "_", output_file))
+          artifact_exists <- any(workflow$id == artifact_id, na.rm = TRUE)
+          
+          if (artifact_exists) {
+            if (show_files) {
+              connection <- paste0("    ", target_id, " -->|", output_file, "| ", artifact_id)
+            } else {
+              connection <- paste0("    ", target_id, " --> ", artifact_id)
+            }
+            connections <- c(connections, connection)
+          }
+        }
+      }
+    }
+    
+  } else {
+    # Without artifacts: original logic (script-to-script connections only)
+    
+    for (i in 1:nrow(workflow)) {
+      node <- workflow[i, ]
+      target_id <- sanitize_node_id(node$id)
+
+      if (!is.na(node$input) && node$input != "") {
+        input_files <- strsplit(trimws(node$input), ",")[[1]]
+        input_files <- trimws(input_files)
+
+        for (input_file in input_files) {
+          if (input_file != "") {
+            # Find nodes that output this file
+            source_nodes <- workflow[
+              !is.na(workflow$output) &
+                sapply(workflow$output, function(x) {
+                  if (is.na(x) || x == "") {
+                    return(FALSE)
+                  }
+                  output_files <- strsplit(trimws(x), ",")[[1]]
+                  output_files <- trimws(output_files)
+                  input_file %in% output_files
+                }),
+            ]
+
+            if (nrow(source_nodes) > 0) {
+              for (j in 1:nrow(source_nodes)) {
+                source_id <- sanitize_node_id(source_nodes[j, ]$id)
+
+                # Create connection with optional file label
+                if (show_files && input_file != "") {
+                  connection <- paste0("    ", source_id, " -->|", input_file, "| ", target_id)
+                } else {
+                  connection <- paste0("    ", source_id, " --> ", target_id)
                 }
-                output_files <- strsplit(trimws(x), ",")[[1]]
-                output_files <- trimws(output_files)
-                input_file %in% output_files
-              }),
-          ]
 
-          if (nrow(source_nodes) > 0) {
-            for (j in 1:nrow(source_nodes)) {
-              source_id <- sanitize_node_id(source_nodes[j, ]$id)
-
-              # Create connection with optional file label
-              if (show_files && input_file != "") {
-                connection <- paste0("    ", source_id, " -->|", input_file, "| ", target_id)
-              } else {
-                connection <- paste0("    ", source_id, " --> ", target_id)
+                connections <- c(connections, connection)
               }
-
-              connections <- c(connections, connection)
             }
           }
         }

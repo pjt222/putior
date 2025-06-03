@@ -125,7 +125,7 @@ results <- perform_analysis(data)
 write.csv(results, "results.csv")
 ```
 
-**Generated Workflow:**
+**Generated Workflow (Simple):**
 ```mermaid
 flowchart TD
     utils([Data Utilities])
@@ -142,10 +142,37 @@ flowchart TD
     class analysis,main processStyle
 ```
 
+**Generated Workflow (With Data Artifacts):**
+```r
+# Show complete data flow including all files
+put_diagram(workflow, show_artifacts = TRUE)
+```
+
+```mermaid
+flowchart TD
+    utils([Data Utilities])
+    analysis[Statistical Analysis] 
+    main[Main Analysis Pipeline]
+    artifact_results_csv[(results.csv)]
+
+    utils --> main
+    analysis --> main
+    utils --> analysis
+    main --> artifact_results_csv
+    
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    classDef artifactStyle fill:#f3f4f6,stroke:#6b7280,stroke-width:1px,color:#374151
+    class utils inputStyle
+    class analysis,main processStyle
+    class artifact_results_csv artifactStyle
+```
+
 This pattern clearly shows:
 - **Function modules** (`utils.R`, `analysis.R`) are sourced into the main script
 - **Dependencies** between modules (analysis depends on utils)  
-- **Data flow** from raw data through the pipeline to results
+- **Complete data flow** with artifacts showing terminal outputs like `results.csv`
+- **Two visualization modes**: simple (script connections only) vs. complete (with data artifacts)
 
 ## 📊 Visualization Examples
 
@@ -222,6 +249,74 @@ put_diagram(workflow, output = "clipboard")
 # Include title for documentation
 put_diagram(workflow, output = "file", file = "docs/pipeline.md", 
            title = "Data Processing Pipeline")
+```
+
+## 🔧 Visualization Modes
+
+putior offers two visualization modes to suit different needs:
+
+### Simple Mode (Default)
+Shows only **script-to-script connections** - perfect for understanding code dependencies:
+```r
+put_diagram(workflow)  # Default: simple mode
+```
+
+**Use when:**
+- Documenting code architecture
+- Showing function dependencies
+- Clean, simple workflow diagrams
+
+### Artifact Mode (Complete Data Flow)
+Shows **all data files as nodes** - provides complete picture of data flow including terminal outputs:
+```r
+put_diagram(workflow, show_artifacts = TRUE)
+```
+
+**Use when:**
+- Documenting data pipelines
+- Tracking data lineage
+- Showing complete input/output flow
+- Understanding data dependencies
+
+### Comparison Example
+
+**Simple Mode:**
+```mermaid
+flowchart TD
+    load[Load Data] --> process[Process Data]
+    process --> analyze[Analyze]
+```
+
+**Artifact Mode:**
+```mermaid
+flowchart TD
+    load[Load Data]
+    raw_data[(raw_data.csv)]
+    process[Process Data]
+    clean_data[(clean_data.csv)]
+    analyze[Analyze]
+    results[(results.json)]
+    
+    load --> raw_data
+    raw_data --> process
+    process --> clean_data
+    clean_data --> analyze
+    analyze --> results
+```
+
+### Key Differences
+
+| Mode | Shows | Best For |
+|------|-------|----------|
+| **Simple** | Script connections only | Code architecture, dependencies |
+| **Artifact** | Scripts + data files | Data pipelines, complete data flow |
+
+### File Labeling
+
+Add file names to connections for extra clarity:
+```r
+# Show file names on arrows
+put_diagram(workflow, show_artifacts = TRUE, show_files = TRUE)
 ```
 
 ## 🎨 Theme System
