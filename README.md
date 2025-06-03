@@ -528,6 +528,30 @@ This feature is perfect for:
 
 Note: If you provide an empty `id` (e.g., `id:""`), you'll get a validation warning.
 
+### Tracking Source Relationships
+
+When you have a main script that sources other scripts, annotate them to show the sourcing relationships:
+
+```r
+# main.R - sources other scripts
+#put label:"Main Workflow", input:"utils.R,analysis.R", output:"results.csv"
+source("utils.R")     # Reading utils.R into main.R
+source("analysis.R")  # Reading analysis.R into main.R
+
+# utils.R - sourced by main.R  
+#put label:"Utility Functions", node_type:"input"
+# output defaults to "utils.R"
+
+# analysis.R - sourced by main.R, depends on utils.R
+#put label:"Analysis Functions", input:"utils.R"  
+# output defaults to "analysis.R"
+```
+
+This creates a diagram showing:
+- `utils.R` → `main.R` (sourced into)
+- `analysis.R` → `main.R` (sourced into)
+- `utils.R` → `analysis.R` (dependency)
+
 ## 🤝 Contributing
 
 Contributions welcome! Please open an issue or pull request on [GitHub](https://github.com/pjt222/putior).

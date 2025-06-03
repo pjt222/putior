@@ -205,6 +205,40 @@ When `output` field is omitted from an annotation:
 2. This ensures nodes can be connected in workflows even without explicit output files
 3. Enables natural file-based connections (e.g., script A outputs itself, script B can use script A as input)
 
+### Source Relationship Tracking
+
+For workflows where scripts source other scripts, the annotation pattern is:
+
+**Main script (sources others):**
+```r
+# main.R - reads/sources other scripts
+#put label:"Main Workflow", input:"utils.R,analysis.R,report.R", output:"results.csv"
+source("utils.R")     # Reading utils.R INTO main.R
+source("analysis.R")  # Reading analysis.R INTO main.R
+source("report.R")    # Reading report.R INTO main.R
+```
+
+**Sourced scripts:**
+```r
+# utils.R - this script is read BY main.R
+#put label:"Utility Functions", node_type:"input"
+# output defaults to "utils.R" (the script outputs itself)
+
+# analysis.R - read BY main.R, depends on utils.R
+#put label:"Analysis Functions", input:"utils.R"
+# output defaults to "analysis.R"
+
+# report.R - read BY main.R, depends on analysis.R
+#put label:"Report Functions", input:"analysis.R"
+# output defaults to "report.R"
+```
+
+**Key principles:**
+- Scripts being sourced are **inputs** to the main script
+- Flow direction: sourced scripts → main script
+- Dependencies between sourced scripts use their file names
+- This correctly represents that `source("file.R")` reads file.R into the current environment
+
 ### Implementation Details
 
 #### 1. Core Changes

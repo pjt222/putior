@@ -266,6 +266,27 @@ If you omit the `output` field, putior automatically uses the file name as the o
 
 This feature ensures that scripts can be connected in workflows even when explicit output files aren't specified.
 
+### Tracking Source Relationships
+
+When you have scripts that source other scripts, use this annotation pattern:
+
+```{r}
+# In main.R (sources other scripts):
+#put label:"Main Analysis", input:"load_data.R,process_data.R", output:"report.pdf"
+source("load_data.R")    # Reading load_data.R into main.R
+source("process_data.R") # Reading process_data.R into main.R
+
+# In load_data.R (sourced by main.R):
+#put label:"Data Loader", node_type:"input"
+# output defaults to "load_data.R"
+
+# In process_data.R (sourced by main.R, depends on load_data.R):
+#put label:"Data Processor", input:"load_data.R"
+# output defaults to "process_data.R"
+```
+
+This correctly shows the flow: sourced scripts are **inputs** to the main script.
+
 ## Real-World Example
 
 Let's walk through a complete data science workflow:

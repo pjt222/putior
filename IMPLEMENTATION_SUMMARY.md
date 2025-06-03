@@ -46,6 +46,17 @@ if (is.null(properties$output) || properties$output == "") {
 }
 ```
 
+### Source Relationship Tracking
+
+**Pattern for scripts that source other scripts:**
+- Main script: `input:"script1.R,script2.R"` (scripts being sourced)
+- Sourced scripts: `output` defaults to their filename
+- Dependencies between sourced scripts use filenames
+
+**Correct flow direction:**
+- `sourced_script.R` → `main_script.R` (sourced into)
+- Represents that `source("file.R")` reads file.R into current environment
+
 ### Theme System (get_theme_colors in put_diagram.R)
 - Each theme defines colors for: input, process, output, decision node types
 - Invalid themes trigger warning and fallback to light theme
