@@ -15,6 +15,7 @@ When running R commands from WSL with this project:
 1. **Use the correct R version**: This project requires R 4.5.0 (as specified in renv.lock)
 2. **Source .Rprofile first**: The renv environment must be activated before running commands
 3. **Windows R path**: R is typically installed at `C:/Program Files/R/R-{version}/`
+4. **Pandoc requirement**: Vignette building requires pandoc (see below)
 
 ### Example R Execution from WSL
 ```bash
@@ -30,6 +31,23 @@ cd /path/to/putior
 # To verify renv is activated, check library paths:
 "/mnt/c/Program Files/R/R-{version}/bin/Rscript.exe" -e ".libPaths()"
 ```
+
+### Pandoc Configuration for WSL
+
+When running R package checks from WSL, pandoc is required for building vignettes. The `.Renviron` file in the project root sets the `RSTUDIO_PANDOC` environment variable to point to the pandoc executable included with RStudio:
+
+```bash
+# .Renviron
+RSTUDIO_PANDOC="C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools"
+```
+
+This configuration:
+- Uses the pandoc bundled with RStudio (no separate installation needed)
+- Works when running R from WSL with Windows-installed RStudio
+- Is automatically loaded when R starts in the project directory
+- Allows vignette building during `devtools::check()` and CRAN submission
+
+If RStudio is installed in a different location, update the path accordingly.
 
 ## Common Development Commands
 
@@ -146,6 +164,8 @@ Rscript inst/examples/theme-examples.R
 - **Flexible annotation syntax**: Supports multiple comment formats (#put, # put, #put|, #put:)
 - **Theme abstraction**: Color schemes isolated from diagram logic
 - **Output abstraction**: Single interface for console/file/clipboard output
+- **UUID auto-generation**: When `id` is omitted, automatically generates UUID v4
+- **Empty vs missing distinction**: Missing `id` → auto-generate; empty `id:""` → validation warning
 
 ### Testing Strategy
 
@@ -164,9 +184,19 @@ The package has been updated to use `id` instead of `name` for node identifiers,
 
 ### Current Annotation Structure
 
-- **Mandatory field**: `id` - unique node identifier
+- **No longer mandatory**: `id` - unique node identifier (auto-generated if omitted)
 - **Optional fields**: `label`, `node_type`, `input`, `output`
-- **Validation**: Duplicate ID detection with warnings
+- **Validation**: 
+  - Duplicate ID detection with warnings
+  - Empty `id:""` generates validation warning
+  - Missing `id` triggers UUID auto-generation
+
+### UUID Auto-Generation Implementation
+
+When `id` field is omitted from an annotation:
+1. The `uuid` package (if available) generates a UUID v4
+2. If `uuid` package is not installed, `id` remains NULL
+3. Empty `id:""` is treated differently - it generates a validation warning
 
 ### Implementation Details
 

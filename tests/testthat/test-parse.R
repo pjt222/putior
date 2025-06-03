@@ -122,16 +122,36 @@ test_that("parse_put_annotation() handles empty values", {
   expect_equal(result2$label, "Test")
 })
 
+test_that("parse_put_annotation() auto-generates UUID when id is missing", {
+  skip_if_not_installed("uuid", minimum_version = NULL)
+  
+  # Missing id should get auto-generated UUID
+  result1 <- parse_put_annotation('#put label:"Test Node", node_type:"process"')
+  expect_false(is.null(result1$id))
+  expect_true(nchar(result1$id) > 0)
+  # Check it looks like a UUID (basic check)
+  expect_true(grepl("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", result1$id, ignore.case = TRUE))
+  
+  # Empty id should NOT get auto-generated
+  result2 <- parse_put_annotation('#put id:"", label:"Test Node"')
+  expect_equal(result2$id, "")
+  
+  # Explicit id should be preserved
+  result3 <- parse_put_annotation('#put id:"my_custom_id", label:"Test Node"')
+  expect_equal(result3$id, "my_custom_id")
+})
+
 test_that("parse_put_annotation() preserves property order", {
   # Properties should be returned in the order they appear
-  result <- parse_put_annotation('#put zebra:"z", alpha:"a", name:"test", beta:"b"')
+  result <- parse_put_annotation('#put zebra:"z", alpha:"a", name:"test", beta:"b", id:"explicit_id"')
 
   # Check that all properties are present
   expect_equal(result$zebra, "z")
   expect_equal(result$alpha, "a")
   expect_equal(result$name, "test")
   expect_equal(result$beta, "b")
-  expect_equal(length(result), 4)
+  expect_equal(result$id, "explicit_id")
+  expect_equal(length(result), 5)
 })
 
 # Test the comma-separated parsing function
@@ -187,21 +207,21 @@ test_that("parse_comma_separated_pairs() handles edge cases", {
 })
 
 # Test validation functionality
-test_that("validate_annotation() catches missing id", {
-  # Missing name property
+test_that("validate_annotation() handles id validation correctly", {
+  # Missing id property should NOT generate issues (auto-generated)
   props1 <- list(label = "Test", node_type = "process")
   issues1 <- validate_annotation(props1, "test line")
-  expect_true(any(grepl("Missing.*id", issues1)))
+  expect_false(any(grepl("id", issues1)))
 
-  # Empty name property
-  props2 <- list(name = "", label = "Test", node_type = "process")
+  # Empty id property should generate issue
+  props2 <- list(id = "", label = "Test", node_type = "process")
   issues2 <- validate_annotation(props2, "test line")
-  expect_true(any(grepl("Missing.*empty.*id", issues2)))
+  expect_true(any(grepl("Empty.*id", issues2)))
 
-  # Valid name property
-  props3 <- list(name = "valid_name", label = "Test")
+  # Valid id property
+  props3 <- list(id = "valid_id", label = "Test")
   issues3 <- validate_annotation(props3, "test line")
-  expect_false(any(grepl("Missing.*name", issues3)))
+  expect_false(any(grepl("id", issues3)))
 })
 
 test_that("validate_annotation() checks node_type values", {
@@ -251,18 +271,19 @@ test_that("validate_annotation() checks file extensions", {
 test_that("validate_annotation() handles multiple issues", {
   # Multiple validation problems
   props <- list(
-    # name missing
+    # id missing (but that's ok - auto-generated)
+    id = "",  # empty id - this is an issue
     node_type = "invalid_type", # invalid node type
     input = "noextension" # missing file extension
   )
 
   issues <- validate_annotation(props, "test line")
 
-  # Should catch all three issues
-  expect_true(any(grepl("Missing.*id", issues)))
+  # Should catch the three issues (empty id, invalid node_type, missing extension)
+  expect_true(any(grepl("Empty.*id", issues)))
   expect_true(any(grepl("Unusual node_type", issues)))
   expect_true(any(grepl("missing extension", issues)))
-  expect_gte(length(issues), 3)
+  expect_equal(length(issues), 3)
 })
 
 # Test the exported validation function
@@ -320,19 +341,20 @@ test_that("Parsing and validation work together correctly", {
 
 # Performance tests for parsing
 test_that("Parsing performs well with many properties", {
-  # Create annotation with many properties
+  # Create annotation with many properties (including id to prevent auto-generation)
   many_props <- paste(paste0("prop", 1:50, ':"value', 1:50, '"'), collapse = ", ")
-  annotation <- paste0("#put ", many_props)
+  annotation <- paste0("#put id:\"test\", ", many_props)
 
   # Should parse without issues
   start_time <- Sys.time()
   result <- parse_put_annotation(annotation)
   end_time <- Sys.time()
 
-  expect_equal(length(result), 50)
+  expect_equal(length(result), 51)  # 50 props + id
   expect_lt(as.numeric(end_time - start_time), 1) # Should take less than 1 second
 
   # Verify some properties
+  expect_equal(result$id, "test")
   expect_equal(result$prop1, "value1")
   expect_equal(result$prop50, "value50")
 })

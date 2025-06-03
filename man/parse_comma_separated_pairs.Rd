@@ -5,20 +5,14 @@
 \title{Parse comma-separated pairs while respecting quotes}
 \usage{
 parse_comma_separated_pairs(text)
-
-parse_comma_separated_pairs(text)
 }
 \arguments{
 \item{text}{Text to parse}
 }
 \value{
 Character vector of pairs
-
-Character vector of pairs
 }
 \description{
-Parse comma-separated pairs while respecting quotes
-
 Parse comma-separated pairs while respecting quotes
 }
 \keyword{internal}

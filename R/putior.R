@@ -188,9 +188,9 @@ process_single_file <- function(file, include_line_numbers, validate) {
 validate_annotation <- function(properties, line_content) {
   issues <- character()
 
-  # Check for required properties (can be customized)
-  if (is.null(properties$id) || properties$id == "") {
-    issues <- c(issues, "Missing or empty 'id' property")
+  # Check for empty id (but not missing - missing ids are auto-generated)
+  if (!is.null(properties$id) && properties$id == "") {
+    issues <- c(issues, "Empty 'id' property - either omit id for auto-generation or provide a valid value")
   }
 
   # Note: Duplicate ID checking is done at the put() function level
@@ -281,6 +281,10 @@ parse_put_annotation <- function(line) {
   if (length(properties) == 0) {
     NULL
   } else {
+    # Generate UUID if id is missing (not if it's empty)
+    if (is.null(properties$id) && requireNamespace("uuid", quietly = TRUE)) {
+      properties$id <- uuid::UUIDgenerate()
+    }
     properties
   }
 }
@@ -295,46 +299,6 @@ parse_comma_separated_pairs <- function(text) {
     return(character(0))
   }
 
-  # Simple implementation - could be improved for complex cases
-  # This handles most common cases correctly
-  pairs <- character()
-  current_pair <- ""
-  in_quotes <- FALSE
-  quote_char <- ""
-
-  for (i in seq_len(nchar(text))) {
-    char <- substr(text, i, i)
-
-    if (!in_quotes && (char == '"' || char == "'")) {
-      in_quotes <- TRUE
-      quote_char <- char
-      current_pair <- paste0(current_pair, char)
-    } else if (in_quotes && char == quote_char) {
-      in_quotes <- FALSE
-      quote_char <- ""
-      current_pair <- paste0(current_pair, char)
-    } else if (!in_quotes && char == ",") {
-      if (nchar(trimws(current_pair)) > 0) {
-        pairs <- c(pairs, current_pair)
-      }
-      current_pair <- ""
-    } else {
-      current_pair <- paste0(current_pair, char)
-    }
-  }
-
-  # Add the last pair
-  if (nchar(trimws(current_pair)) > 0) {
-    pairs <- c(pairs, current_pair)
-  }
-
-  return(pairs)
-}
-#' Parse comma-separated pairs while respecting quotes
-#' @param text Text to parse
-#' @return Character vector of pairs
-#' @keywords internal
-parse_comma_separated_pairs <- function(text) {
   # Simple implementation - could be improved for complex cases
   # This handles most common cases correctly
   pairs <- character()

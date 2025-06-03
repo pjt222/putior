@@ -36,7 +36,7 @@ Add structured annotations to your R or Python scripts using `#put` comments:
 
 **`01_fetch_data.R`**
 ```r
-#put id:"fetch_sales", label:"Fetch Sales Data", node_type:"input", output:"sales_data.csv"
+#put label:"Fetch Sales Data", node_type:"input", output:"sales_data.csv"
 
 # Your actual code
 library(readr)
@@ -46,7 +46,7 @@ write_csv(sales_data, "sales_data.csv")
 
 **`02_clean_data.py`**
 ```python
-#put id:"clean_data", label:"Clean and Process", node_type:"process", input:"sales_data.csv", output:"clean_sales.csv"
+#put label:"Clean and Process", node_type:"process", input:"sales_data.csv", output:"clean_sales.csv"
 
 import pandas as pd
 df = pd.read_csv("sales_data.csv")
@@ -396,12 +396,14 @@ All PUT annotations follow this format:
 #put: id:"node_id", label:"Description"             # Colon separator
 ```
 
-### Required Annotations
+### Annotations
 
-| Annotation | Description | Example |
-|------------|-------------|---------|
-| `id` | Unique identifier for the node | `"fetch_data"`, `"clean_sales"` |
-| `label` | Human-readable description | `"Fetch Sales Data"`, `"Clean and Process"` |
+| Annotation | Description | Example | Required |
+|------------|-------------|---------|----------|
+| `id` | Unique identifier for the node (auto-generated if omitted) | `"fetch_data"`, `"clean_sales"` | Optional* |
+| `label` | Human-readable description | `"Fetch Sales Data"`, `"Clean and Process"` | Recommended |
+
+*Note: If `id` is omitted, a UUID will be automatically generated. If you provide an empty `id` (e.g., `id:""`), you'll get a validation warning.
 
 ### Optional Annotations
 
@@ -500,6 +502,29 @@ workflow <- put("./src/", validate = FALSE)
 is_valid_put_annotation('#put id:"test", label:"Test Node"')  # TRUE
 is_valid_put_annotation("#put invalid syntax")                 # FALSE
 ```
+
+### UUID Auto-Generation
+
+When you omit the `id` field, putior automatically generates a unique UUID:
+
+```r
+# Annotations without explicit IDs
+#put label:"Load Data", node_type:"input", output:"data.csv"
+#put label:"Process Data", node_type:"process", input:"data.csv"
+
+# Extract workflow - IDs will be auto-generated
+workflow <- put("./")
+print(workflow$id)
+# [1] "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+# [2] "b2c3d4e5-f6a7-8901-bcde-f23456789012"
+```
+
+This feature is perfect for:
+- Quick prototyping without worrying about unique IDs
+- Temporary workflows where IDs don't matter
+- Ensuring uniqueness across large codebases
+
+Note: If you provide an empty `id` (e.g., `id:""`), you'll get a validation warning.
 
 ## 🤝 Contributing
 
