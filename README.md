@@ -973,7 +973,9 @@ putior fills a unique niche in the R ecosystem by combining annotation-based wor
 putior stands on the shoulders of giants in the R visualization and workflow ecosystem:
 
 - **[CodeDepends](https://cran.r-project.org/package=CodeDepends)** by Duncan Temple Lang - pioneering work in R code dependency analysis
+- **[targets](https://cran.r-project.org/package=targets)** by William Michael Landau - powerful pipeline toolkit for reproducible computation
 - **[DiagrammeR](https://cran.r-project.org/package=DiagrammeR)** by Richard Iannone - bringing beautiful graph visualization to R
+- **[ggraph](https://cran.r-project.org/package=ggraph)** by Thomas Lin Pedersen - grammar of graphics for networks and trees
 - **[visNetwork](https://cran.r-project.org/package=visNetwork)** by Almende B.V. - interactive network visualization excellence
 - **[networkD3](https://cran.r-project.org/package=networkD3)** by Christopher Gandrud - D3.js network graphs in R
 - **[dm](https://cran.r-project.org/package=dm)** by energie360° AG - relational data model visualization
