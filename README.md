@@ -280,10 +280,10 @@ put_diagram(workflow, show_workflow_boundaries = TRUE)
 
 ```mermaid
 flowchart TD
-    pipeline_start([\u26a1 Data Pipeline Start])
+    pipeline_start([Data Pipeline Start])
     extract_data[Extract Raw Data]
     transform_data[Transform Data]
-    pipeline_end([\ud83c\udfc1 Pipeline Complete])
+    pipeline_end([Pipeline Complete])
 
     %% Connections
     pipeline_start --> extract_data
@@ -752,10 +752,10 @@ put_diagram(workflow, show_workflow_boundaries = FALSE)
 **Generated Workflow with Boundaries:**
 ```mermaid
 flowchart TD
-    pipeline_start([⚡ Data Pipeline Start])
+    pipeline_start([Data Pipeline Start])
     extract_data[Extract Raw Data]
     transform_data[Transform Data]
-    pipeline_end([🏁 Pipeline Complete])
+    pipeline_end([Pipeline Complete])
     
     pipeline_start --> extract_data
     extract_data --> transform_data
