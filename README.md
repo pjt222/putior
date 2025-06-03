@@ -940,12 +940,48 @@ Rscript -e "devtools::check()"
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 📊 How putior Compares to Other R Packages
+
+putior fills a unique niche in the R ecosystem by combining annotation-based workflow extraction with beautiful diagram generation:
+
+| Package | Focus | Approach | Output | Best For |
+|---------|-------|----------|--------|----------|
+| **putior** | **Data workflow visualization** | **Code annotations** | **Mermaid diagrams** | **Pipeline documentation** |
+| [CodeDepends](https://cran.r-project.org/package=CodeDepends) | Code dependency analysis | Static analysis | Variable graphs | Understanding code structure |
+| [DiagrammeR](https://cran.r-project.org/package=DiagrammeR) | General diagramming | Manual diagram code | Interactive graphs | Custom diagrams |
+| [visNetwork](https://cran.r-project.org/package=visNetwork) | Interactive networks | Manual network definition | Interactive vis.js | Complex network exploration |
+| [dm](https://cran.r-project.org/package=dm) | Database relationships | Schema analysis | ER diagrams | Database documentation |
+| [flowchart](https://cran.r-project.org/package=flowchart) | Study flow diagrams | Dataframe input | ggplot2 charts | Clinical trials |
+
+### Key Advantages of putior
+
+- **📝 Annotation-Based**: Workflow documentation lives in your code comments
+- **🔄 Multi-Language**: Works across R, Python, SQL, Shell, and Julia
+- **📁 File Flow Tracking**: Automatically connects scripts based on input/output files
+- **🎨 Beautiful Output**: GitHub-ready Mermaid diagrams with multiple themes
+- **📦 Lightweight**: Minimal dependencies (only requires `tools` package)
+- **🔍 Two Views**: Simple script connections + complete data artifact flow
+
 ## 🙏 Acknowledgments
 
 - Built with [Mermaid](https://mermaid-js.github.io/) for beautiful diagram generation
 - Inspired by the need for better code documentation and workflow visualization
 - Thanks to the R community for excellent development tooling
 
+### 🌟 Shoutout to Related R Packages
+
+putior stands on the shoulders of giants in the R visualization and workflow ecosystem:
+
+- **[CodeDepends](https://cran.r-project.org/package=CodeDepends)** by Duncan Temple Lang - pioneering work in R code dependency analysis
+- **[DiagrammeR](https://cran.r-project.org/package=DiagrammeR)** by Richard Iannone - bringing beautiful graph visualization to R
+- **[visNetwork](https://cran.r-project.org/package=visNetwork)** by Almende B.V. - interactive network visualization excellence
+- **[networkD3](https://cran.r-project.org/package=networkD3)** by Christopher Gandrud - D3.js network graphs in R
+- **[dm](https://cran.r-project.org/package=dm)** by energie360° AG - relational data model visualization
+- **[flowchart](https://cran.r-project.org/package=flowchart)** by Adrian Antico - participant flow diagrams
+- **[igraph](https://cran.r-project.org/package=igraph)** by Gábor Csárdi & Tamás Nepusz - the foundation of network analysis in R
+
+Each of these packages excels in their domain, and putior complements them by focusing specifically on code workflow documentation through annotations.
+
 ---
 
-**Made with ❤️ for the R and Python communities**
+**Made with ❤️ for polyglot data science workflows across R, Python, Julia, SQL, Shell, and beyond**
