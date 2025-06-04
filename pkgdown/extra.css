@@ -1,0 +1,28 @@
+/* Mermaid diagram styling */
+.mermaid {
+  text-align: center;
+  margin: 20px 0;
+}
+
+/* Ensure mermaid diagrams are responsive */
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix for code blocks that contain mermaid */
+pre.mermaid {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* Ensure mermaid code blocks are processed */
+pre > code.language-mermaid {
+  display: none;
+}
+
+/* Add container for processed mermaid diagrams */
+div.mermaid {
+  min-height: 100px;
+}

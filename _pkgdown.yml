@@ -7,6 +7,39 @@ template:
     base_font: {google: "Roboto"}
     heading_font: {google: "Roboto Slab"}
     code_font: {google: "JetBrains Mono"}
+  includes:
+    in_header: |
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+              primaryColor: '#fff4e6',
+              primaryTextColor: '#333',
+              primaryBorderColor: '#d97706',
+              lineColor: '#5a5a5a',
+              secondaryColor: '#f3f4f6',
+              tertiaryColor: '#e5e7eb'
+            }
+          });
+          
+          // Convert code blocks with class 'language-mermaid' to mermaid divs
+          document.querySelectorAll('pre code.language-mermaid').forEach(function(element) {
+            const mermaidCode = element.textContent;
+            const mermaidDiv = document.createElement('div');
+            mermaidDiv.className = 'mermaid';
+            mermaidDiv.textContent = mermaidCode;
+            element.parentElement.parentElement.replaceChild(mermaidDiv, element.parentElement);
+          });
+          
+          // Re-initialize mermaid to render the new divs
+          mermaid.init();
+        });
+      </script>
+    after_body: |
+      <link href="pkgdown/extra.css" rel="stylesheet">
 
 home:
   title: "putior: Register in- and Outputs for Workflow Visualization"
