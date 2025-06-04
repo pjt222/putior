@@ -4,6 +4,8 @@ Version: 0.1.0
 Authors@R: 
     person("Philipp", "Thoss", , "ph.thoss@gmx.de", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4672-2792"))
+Author: Philipp Thoss [aut, cre] (0000-0002-4672-2792)
+Maintainer: Philipp Thoss <ph.thoss@gmx.de>
 Description: Provides tools for extracting and processing structured annotations from R 
     and Python source files to facilitate workflow visualization. The package scans 
     source files for special 'PUT' annotations that define nodes, connections, and 

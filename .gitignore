@@ -120,3 +120,5 @@ inst/examples/*.png
 
 # pkgdown site output
 docs
+/doc/
+/Meta/
