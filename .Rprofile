@@ -1,4 +1,8 @@
 if (file.exists("renv/activate.R")) {
   source("renv/activate.R")
 }
-acquaint::mcp_session()
+
+# Load acquaint MCP session if package is available (for development)
+if (requireNamespace("acquaint", quietly = TRUE)) {
+  acquaint::mcp_session()
+}
