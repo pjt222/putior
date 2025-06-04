@@ -102,6 +102,21 @@ benchmark_results/
 
 # Example outputs (adjust based on your examples)
 workflow_diagram.md
-*.svg
-*.png
+
+# Exclude generated diagrams from examples, but keep package assets
+inst/examples/*.svg
+inst/examples/*.png
+
+# Keep package logos and favicons
+!man/figures/*.png
+!man/figures/*.svg
+!pkgdown/favicon/*.png
+!pkgdown/favicon/*.svg
+!pkgdown/favicon/*.ico
+
+# Keep hex sticker assets (both handcrafted and generated)
+!inst/hex-sticker/**/*.png
+!inst/hex-sticker/**/*.svg
+
+# pkgdown site output
 docs

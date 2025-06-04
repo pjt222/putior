@@ -15,3 +15,5 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^inst/hex-sticker/generated$
+^inst/hex-sticker/handcrafted/putior\.drawio$
