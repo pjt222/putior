@@ -38,8 +38,41 @@ Note: If output is not specified in an annotation, it defaults to the file name.
 \description{
 Scans source files in a directory for PUT annotations that define workflow
 nodes, inputs, outputs, and metadata. Supports both R and Python files with
-flexible annotation syntax.
+flexible annotation syntax including single-line and multiline formats.
 }
+\section{PUT Annotation Syntax}{
+
+PUT annotations can be written in single-line or multiline format:
+
+\strong{Single-line format:} All parameters on one line
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{#put id:"node1", label:"Process Data", input:"data.csv", output:"result.csv"
+}\if{html}{\out{</div>}}
+
+\strong{Multiline format:} Use backslash (\) for line continuation
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{#put id:"node1", label:"Process Data", \\
+#    input:"data.csv", \\
+#    output:"result.csv"
+}\if{html}{\out{</div>}}
+
+\strong{Benefits of multiline format:}
+\itemize{
+\item Compliance with code style guidelines (styler, lintr)
+\item Improved readability for complex workflows
+\item Easier maintenance of long file lists
+\item Better code organization and documentation
+}
+
+\strong{Syntax rules:}
+\itemize{
+\item End lines with backslash (\) to continue
+\item Each continuation line must start with # comment marker
+\item Properties are automatically joined with proper comma separation
+\item Works with all PUT formats: #put, # put, #put|, #put:
+}
+}
+
 \examples{
 \dontrun{
 # Scan a directory for workflow annotations
@@ -54,13 +87,26 @@ workflow <- put("./script.R")
 # Include line numbers for debugging
 workflow <- put("./src/", include_line_numbers = TRUE)
 
-# Example annotations in your source files:
+# Single-line PUT annotations (basic syntax):
 # #put id:"load_data", label:"Load Dataset", node_type:"input", output:"data.csv"
 # #put id:"process", label:"Clean Data", node_type:"process", input:"data.csv", output:"clean.csv"
 #
-# Multiline annotations for long input/output lists:
+# Multiline PUT annotations (for better code style compliance):
+# Use backslash (\) at end of line to continue on next line
 # #put id:"complex_process", label:"Complex Data Processing", \
 # #    input:"file1.csv,file2.csv,file3.csv,file4.csv", \
 # #    output:"results.csv"
+#
+# Multiline example with many files:
+# #put id:"data_merger", \
+# #    label:"Merge Multiple Data Sources", \
+# #    node_type:"process", \
+# #    input:"sales.csv,customers.csv,products.csv,inventory.csv", \
+# #    output:"merged_dataset.csv"
+#
+# All PUT formats support multiline syntax:
+# # put id:"style1", label:"Standard" \     # Space after #
+# #put| id:"style2", label:"Pipe" \        # Pipe separator
+# #put: id:"style3", label:"Colon" \       # Colon separator
 }
 }

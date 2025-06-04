@@ -3,7 +3,7 @@
 #'
 #' Scans source files in a directory for PUT annotations that define workflow
 #' nodes, inputs, outputs, and metadata. Supports both R and Python files with
-#' flexible annotation syntax.
+#' flexible annotation syntax including single-line and multiline formats.
 #'
 #' @param path Character string specifying the path to the folder containing files,
 #'   or path to a single file
@@ -22,6 +22,33 @@
 #'   If include_line_numbers is TRUE, also includes line_number.
 #'   Note: If output is not specified in an annotation, it defaults to the file name.
 #'
+#' @section PUT Annotation Syntax:
+#' PUT annotations can be written in single-line or multiline format:
+#' 
+#' **Single-line format:** All parameters on one line
+#' ```
+#' #put id:"node1", label:"Process Data", input:"data.csv", output:"result.csv"
+#' ```
+#' 
+#' **Multiline format:** Use backslash (\) for line continuation
+#' ```
+#' #put id:"node1", label:"Process Data", \
+#' #    input:"data.csv", \
+#' #    output:"result.csv"
+#' ```
+#' 
+#' **Benefits of multiline format:**
+#' - Compliance with code style guidelines (styler, lintr)
+#' - Improved readability for complex workflows
+#' - Easier maintenance of long file lists
+#' - Better code organization and documentation
+#' 
+#' **Syntax rules:**
+#' - End lines with backslash (\) to continue
+#' - Each continuation line must start with # comment marker
+#' - Properties are automatically joined with proper comma separation
+#' - Works with all PUT formats: #put, # put, #put|, #put:
+#'
 #' @export
 #'
 #' @examples
@@ -38,14 +65,27 @@
 #' # Include line numbers for debugging
 #' workflow <- put("./src/", include_line_numbers = TRUE)
 #'
-#' # Example annotations in your source files:
+#' # Single-line PUT annotations (basic syntax):
 #' # #put id:"load_data", label:"Load Dataset", node_type:"input", output:"data.csv"
 #' # #put id:"process", label:"Clean Data", node_type:"process", input:"data.csv", output:"clean.csv"
 #' #
-#' # Multiline annotations for long input/output lists:
+#' # Multiline PUT annotations (for better code style compliance):
+#' # Use backslash (\) at end of line to continue on next line
 #' # #put id:"complex_process", label:"Complex Data Processing", \
 #' # #    input:"file1.csv,file2.csv,file3.csv,file4.csv", \
 #' # #    output:"results.csv"
+#' #
+#' # Multiline example with many files:
+#' # #put id:"data_merger", \
+#' # #    label:"Merge Multiple Data Sources", \
+#' # #    node_type:"process", \
+#' # #    input:"sales.csv,customers.csv,products.csv,inventory.csv", \
+#' # #    output:"merged_dataset.csv"
+#' #
+#' # All PUT formats support multiline syntax:
+#' # # put id:"style1", label:"Standard" \     # Space after #
+#' # #put| id:"style2", label:"Pipe" \        # Pipe separator
+#' # #put: id:"style3", label:"Colon" \       # Colon separator
 #' }
 put <- function(path,
                 pattern = "\\.(R|r|py|sql|sh|jl)$",
