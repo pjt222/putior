@@ -57,5 +57,10 @@ workflow <- put("./src/", include_line_numbers = TRUE)
 # Example annotations in your source files:
 # #put id:"load_data", label:"Load Dataset", node_type:"input", output:"data.csv"
 # #put id:"process", label:"Clean Data", node_type:"process", input:"data.csv", output:"clean.csv"
+#
+# Multiline annotations for long input/output lists:
+# #put id:"complex_process", label:"Complex Data Processing", \
+# #    input:"file1.csv,file2.csv,file3.csv,file4.csv", \
+# #    output:"results.csv"
 }
 }

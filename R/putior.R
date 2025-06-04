@@ -41,6 +41,11 @@
 #' # Example annotations in your source files:
 #' # #put id:"load_data", label:"Load Dataset", node_type:"input", output:"data.csv"
 #' # #put id:"process", label:"Clean Data", node_type:"process", input:"data.csv", output:"clean.csv"
+#' #
+#' # Multiline annotations for long input/output lists:
+#' # #put id:"complex_process", label:"Complex Data Processing", \
+#' # #    input:"file1.csv,file2.csv,file3.csv,file4.csv", \
+#' # #    output:"results.csv"
 #' }
 put <- function(path,
                 pattern = "\\.(R|r|py|sql|sh|jl)$",
@@ -141,9 +146,60 @@ process_single_file <- function(file, include_line_numbers, validate) {
       file_ext <- tolower(tools::file_ext(file))
       file_results <- list()
 
-      for (line_idx in put_line_indices) {
+      for (i in seq_along(put_line_indices)) {
+        line_idx <- put_line_indices[i]
         line_content <- lines[line_idx]
-        properties <- parse_put_annotation(line_content)
+        
+        # Check if this is a multiline annotation (ends with backslash)
+        full_content <- line_content
+        current_idx <- line_idx
+        
+        # Collect continuation lines if this is a multiline annotation
+        if (grepl("\\\\\\s*$", full_content)) {
+          has_continuation <- TRUE
+          
+          while (has_continuation && current_idx < length(lines)) {
+            # Remove trailing backslash and whitespace from current content
+            full_content <- sub("\\\\\\s*$", " ", full_content)
+            current_idx <- current_idx + 1
+            
+            # Break if we've reached the end of the file
+            if (current_idx > length(lines)) {
+              break
+            }
+            
+            # Break if we've reached another PUT annotation line
+            if (grepl("^\\s*#\\s*put(\\||\\s+|:)", lines[current_idx])) {
+              break
+            }
+            
+            # Process continuation line (including empty comment lines)
+            continuation_line <- lines[current_idx]
+            
+            # Break if line is not a comment
+            if (!grepl("^\\s*#", continuation_line)) {
+              break
+            }
+            
+            # Remove comment marker and leading whitespace
+            continuation <- sub("^\\s*#\\s*", "", continuation_line)
+            
+            # Append continuation with proper spacing
+            # If continuation is not empty and doesn't start with a comma, add comma
+            if (nchar(trimws(continuation)) > 0) {
+              if (!grepl("^\\s*,", continuation)) {
+                full_content <- paste0(full_content, ", ", trimws(continuation))
+              } else {
+                full_content <- paste0(full_content, trimws(continuation))
+              }
+            }
+            
+            # Check if this line ends with backslash to continue
+            has_continuation <- grepl("\\\\\\s*$", continuation_line)
+          }
+        }
+        
+        properties <- parse_put_annotation(full_content)
 
         if (!is.null(properties)) {
           # Add file metadata
@@ -162,7 +218,7 @@ process_single_file <- function(file, include_line_numbers, validate) {
 
           # Validate if requested
           if (validate) {
-            validation_issues <- validate_annotation(properties, line_content)
+            validation_issues <- validate_annotation(properties, full_content)
             if (length(validation_issues) > 0) {
               warning(
                 "Validation issues in ", basename(file), " line ", line_idx, ":\n",
@@ -175,7 +231,7 @@ process_single_file <- function(file, include_line_numbers, validate) {
         } else if (validate) {
           warning(
             "Invalid PUT annotation syntax in ", basename(file), " line ", line_idx, ":\n",
-            line_content
+            full_content
           )
         }
       }
