@@ -478,7 +478,8 @@
         "skimr",
         "tibble",
         "utils",
-        "withr"
+        "withr",
+        "xml2"
       ],
       "Suggests": [
         "bslib (>= 0.7.0)",
@@ -494,7 +495,7 @@
       "Encoding": "UTF-8",
       "Roxygen": "list(markdown = TRUE)",
       "RoxygenNote": "7.3.2",
-      "Collate": "'aaa-tools.R' 'btw-package.R' 'btw.R' 'btw_client.R' 'btw_this.R' 'clipboard.R' 'import-standalone-obj-type.R' 'import-standalone-purrr.R' 'import-standalone-types-check.R' 'tool-data-frame.R' 'tool-result.R' 'tool-docs.R' 'tool-environment.R' 'tool-files.R' 'tool-rstudioapi.R' 'tool-search-packages.R' 'tool-session-package-installed.R' 'tool-sessioninfo.R' 'tools.R' 'utils-md.R' 'utils.R' 'zzz.R'",
+      "Collate": "'aaa-tools.R' 'btw-package.R' 'btw.R' 'btw_client.R' 'btw_this.R' 'clipboard.R' 'import-standalone-obj-type.R' 'import-standalone-purrr.R' 'import-standalone-types-check.R' 'tool-data-frame.R' 'tool-result.R' 'tool-docs-news.R' 'tool-docs.R' 'tool-environment.R' 'tool-files.R' 'tool-rstudioapi.R' 'tool-search-packages.R' 'tool-session-package-installed.R' 'tool-sessioninfo.R' 'tools.R' 'utils-md.R' 'utils.R' 'zzz.R'",
       "Author": "Garrick Aden-Buie [aut, cre] (ORCID: <https://orcid.org/0000-0002-7111-0077>), Simon Couch [aut] (ORCID: <https://orcid.org/0000-0001-5676-5107>), Joe Cheng [aut], Posit Software, PBC [cph, fnd]",
       "Maintainer": "Garrick Aden-Buie <garrick@adenbuie.com>",
       "RemoteType": "github",
@@ -502,7 +503,7 @@
       "RemoteUsername": "posit-dev",
       "RemoteRepo": "btw",
       "RemoteRef": "main",
-      "RemoteSha": "20e056d36b26bf0752394097d8b7215e071c982b"
+      "RemoteSha": "1c587003a71280cceaa13048f413b43ad71ae7b8"
     },
     "cachem": {
       "Package": "cachem",
