@@ -1,4 +1,4 @@
-# putior
+# putior <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
 [![R CMD check](https://github.com/pjt222/putior/workflows/R-CMD-check/badge.svg)](https://github.com/pjt222/putior/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
