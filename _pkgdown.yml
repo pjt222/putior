@@ -1,0 +1,82 @@
+url: https://pjt222.github.io/putior/
+template:
+  bootstrap: 5
+  bootswatch: cosmo
+  bslib:
+    primary: "#0054AD"
+    base_font: {google: "Roboto"}
+    heading_font: {google: "Roboto Slab"}
+    code_font: {google: "JetBrains Mono"}
+
+home:
+  title: "putior: Register in- and Outputs for Workflow Visualization"
+  description: >
+    Extract structured annotations from source code files and generate 
+    Mermaid flowchart diagrams for visualizing workflows and data pipelines.
+  
+  links:
+  - text: Report a bug
+    href: https://github.com/pjt222/putior/issues
+  - text: Browse source code
+    href: https://github.com/pjt222/putior
+
+navbar:
+  structure:
+    left: [intro, reference, articles, news]
+    right: [search, github]
+  components:
+    home:
+      icon: fas fa-home
+      href: index.html
+    intro:
+      text: Get started
+      href: articles/getting-started.html
+    articles:
+      text: Articles
+      menu:
+      - text: Getting Started with putior
+        href: articles/getting-started.html
+
+reference:
+- title: "Core Functions"
+  desc: "Main functions for extracting annotations and creating diagrams"
+  contents:
+  - put
+  - put_diagram
+
+- title: "Helper Functions"
+  desc: "Supporting functions for processing annotations"
+  contents:
+  - parse_put_annotation
+  - validate_annotation
+  - is_valid_put_annotation
+  - process_single_file
+  - split_file_list
+
+- title: "Diagram Generation"
+  desc: "Functions for creating Mermaid diagrams"
+  contents:
+  - generate_node_definitions
+  - generate_connections
+  - generate_node_styling
+  - create_artifact_nodes
+  - get_diagram_themes
+  - get_theme_colors
+  - get_node_shape
+  - sanitize_node_id
+
+- title: "Data Processing"
+  desc: "Functions for handling results"
+  contents:
+  - convert_results_to_df
+  - empty_result_df
+  - handle_output
+  - parse_comma_separated_pairs
+
+authors:
+  Philipp Thoss:
+    href: https://orcid.org/0000-0002-4672-2792
+
+development:
+  mode: auto
+

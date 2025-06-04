@@ -12,7 +12,7 @@ Description: Provides tools for extracting and processing structured annotations
     polyglot software environments.
 Language: en-US
 License: MIT + file LICENSE
-URL: https://github.com/pjt222/putior
+URL: https://pjt222.github.io/putior/, https://github.com/pjt222/putior
 BugReports: https://github.com/pjt222/putior/issues
 Depends:
     R (>= 3.5.0)
@@ -23,7 +23,8 @@ Suggests:
     knitr,
     rmarkdown,
     clipr,
-    uuid
+    uuid,
+    pkgdown
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
