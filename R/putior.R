@@ -233,9 +233,13 @@ process_single_file <- function(file, include_line_numbers, validate) {
                 full_content <- paste0(full_content, trimws(continuation))
               }
             }
+            # Note: Empty comment lines are skipped but we still check for continuation
             
             # Check if this line ends with backslash to continue
-            has_continuation <- grepl("\\\\\\s*$", continuation_line)
+            # If it's an empty comment line without backslash, keep the previous continuation state
+            if (nchar(trimws(continuation)) > 0 || grepl("\\\\\\s*$", continuation_line)) {
+              has_continuation <- grepl("\\\\\\s*$", continuation_line)
+            }
           }
         }
         
