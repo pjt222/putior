@@ -1,0 +1,9 @@
+# Git mailmap file to properly attribute contributions
+# Format: Proper Name <proper@email.com> <commit@email.com>
+
+# Primary author
+Philipp Thoss <ph.thoss@gmx.de>
+
+# Note: Claude contributions are tracked via Co-Authored-By tags in commit messages
+# GitHub does not display co-authors in the contributors graph, only primary authors
+# To see Claude's contributions, use: git log --grep="Co-Authored-By: Claude"

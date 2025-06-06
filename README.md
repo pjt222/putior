@@ -968,6 +968,13 @@ putior fills a unique niche in the R ecosystem by combining annotation-based wor
 - Inspired by the need for better code documentation and workflow visualization
 - Thanks to the R community for excellent development tooling
 
+### 👥 Contributors
+
+- **Philipp Thoss** ([@pjt222](https://github.com/pjt222)) - Primary author and maintainer
+- **Claude** (Anthropic) - Co-author on 38 commits, contributing to package development, documentation, and testing
+
+*Note: While GitHub's contributor graph only displays primary commit authors, Claude's contributions are properly attributed through Co-Authored-By tags in the commit messages. To see all contributions, use: `git log --grep="Co-Authored-By: Claude"`*
+
 ### 🌟 Shoutout to Related R Packages
 
 putior stands on the shoulders of giants in the R visualization and workflow ecosystem:
