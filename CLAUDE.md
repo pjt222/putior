@@ -73,6 +73,22 @@ putior is an R package that extracts structured annotations from source code fil
 - Solution: Use conditional loading with `requireNamespace()` in `.Rprofile`
 - Spell check passes cleanly with comprehensive WORDLIST
 
+## Development Dependencies vs Package Dependencies
+
+### Package Dependencies (in DESCRIPTION & renv.lock)
+- Only packages required for putior to function
+- Listed in Imports/Suggests in DESCRIPTION  
+- Included in renv.lock for reproducible installation
+- All dependencies are from CRAN (no GitHub packages)
+
+### Development-Only Tools (NOT in renv.lock)
+- **acquaint**: MCP server for AI-assisted development
+- **btw**: Dependency of acquaint
+- Install separately when needed: `remotes::install_github("posit-dev/acquaint")`
+- Loaded conditionally in .Rprofile if available
+- Excluded from renv.lock to avoid GitHub credential warnings for users
+- Configure renv to ignore: `renv::settings$ignored.packages(c("acquaint", "btw"))`
+
 ## Recent Major Accomplishments
 
 1. **Multiline annotation support** - Implemented backslash continuation syntax
@@ -82,6 +98,7 @@ putior is an R package that extracts structured annotations from source code fil
 5. **CI/CD fixes** - Resolved GitHub Actions failures with conditional package loading
 6. **Documentation excellence** - High-quality vignettes and self-documentation
 7. **Spelling compliance** - Complete WORDLIST for technical terms and proper names
+8. **Clean renv.lock** - Removed development-only GitHub dependencies to eliminate credential warnings
 
 ## Package Readiness
 ✅ **Production ready** - All checks passing  

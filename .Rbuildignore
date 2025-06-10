@@ -24,3 +24,4 @@
 ^readme_examples\.rds$
 ^doc$
 ^Meta$
+^\.mailmap$
