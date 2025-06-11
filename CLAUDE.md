@@ -105,3 +105,9 @@ putior is an R package that extracts structured annotations from source code fil
 ✅ **CRAN submission ready** - Comprehensive documentation and testing  
 ✅ **Self-documenting** - Demonstrates own capabilities effectively  
 ✅ **Clean codebase** - Well-organized file structure and ignore patterns
+
+## Development Best Practices References
+@../development-guides/r-package-development-best-practices.md
+@../development-guides/wsl-rstudio-claude-integration.md
+@../development-guides/general-development-setup.md
+@../development-guides/quick-reference.md

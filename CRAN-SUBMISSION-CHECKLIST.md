@@ -6,66 +6,58 @@
    - [x] DESCRIPTION file complete with all required fields
    - [x] NEWS.md created with version history
    - [x] All functions documented with roxygen2
-   - [x] Vignette created (getting-started.Rmd)
+   - [x] Vignette created and properly built (getting-started.Rmd)
    - [x] Examples use \dontrun{} appropriately
 
 2. **Code quality**
-   - [x] R CMD check passes locally (0 errors, 0 warnings, 1 system note)
-   - [x] Tests have good coverage
+   - [x] R CMD check passes locally (Status: OK - 0 errors, 0 warnings, 0 notes)
+   - [x] Tests have good coverage (338 tests)
    - [x] No problematic files (.RData, .Rhistory removed)
-   - [x] .Rbuildignore properly configured
+   - [x] .Rbuildignore properly configured to exclude renv/
+   - [x] Vignettes build correctly with inst/doc directory
 
-3. **GitHub Actions CI**
-   - [x] Multi-platform testing configured (Windows, macOS, Ubuntu)
-   - [x] CI badge in README
+3. **Platform testing**
+   - [x] Local Windows 11, R 4.5.0: Status OK
+   - [x] GitHub Actions CI (Windows, macOS, Ubuntu): All passing
+   - [x] Win-builder submissions: R-release and R-devel (submitted)
+   - [x] R-hub v2 multi-platform checks (submitted)
 
-## 📋 Remaining Manual Steps
+4. **Additional checks**
+   - [x] Spell check passes (WORDLIST updated)
+   - [x] URL check passes
+   - [x] cran-comments.md updated with latest results
 
-### 1. Test on Multiple Platforms
+## 📋 Remaining Steps
 
-From your local R session with pandoc available:
+### 1. Monitor Platform Check Results
 
-```r
-# Test on win-builder (do both)
-devtools::check_win_devel()
-devtools::check_win_release()
+**Win-builder results** (expected within 15-30 minutes):
+- Check email for results from win-builder.r-project.org
+- Expected: Clean checks with only "New submission" NOTE
 
-# Test on R-hub (using rhub v2)
-# First, you may need to install/update rhub
-# install.packages("rhub")
+**R-hub results** (live at GitHub Actions):
+- Monitor: https://github.com/pjt222/putior/actions
+- Expected: All platforms PASS (nosuggests expected to fail due to vignettes)
 
-# Check on multiple platforms for CRAN
-rhub::rhub_check()  # This will run checks on multiple platforms
+### 2. Final Pre-submission Check
 
-# Or check specific platforms:
-rhub::rhub_check(platforms = c(
-  "ubuntu-latest",
-  "windows-latest", 
-  "macos-latest"
-))
-```
-
-### 2. Additional Checks
+Once platform results are available:
 
 ```r
-# Spell check (requires spelling package)
-install.packages("spelling")
-devtools::spell_check()
-
-# URL check (requires urlchecker package)
-install.packages("urlchecker")
-urlchecker::url_check()
-
 # Final comprehensive check
 devtools::check(manual = TRUE, cran = TRUE)
+
+# Ensure build artifacts are clean
+R CMD build .
+R CMD check putior_0.1.0.tar.gz
 ```
 
 ### 3. Update cran-comments.md
 
-After running the above checks, update `cran-comments.md` with:
-- Actual test results from win-builder (both devel and release)
-- R-hub test results
-- Any NOTEs from different platforms
+After platform results are received:
+- Update with actual win-builder results
+- Include R-hub platform check outcomes
+- Note any platform-specific issues
 
 ### 4. Submit to CRAN
 

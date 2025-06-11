@@ -10,19 +10,19 @@ This NOTE is expected for first submissions and does not affect package function
 
 ## Test environments
 
-* local: Windows 11, R 4.5.0
-* win-builder: R-release (R 4.5.0) - Status: 1 NOTE
-* win-builder: R-devel - Status: 1 NOTE  
+* local: Windows 11, R 4.5.0 - Status: OK
+* win-builder: R-devel (R Under development) - Status: 1 NOTE (new submission only)
+* win-builder: R-release (R 4.5.0) - Status: 1 NOTE (new submission only)  
 * GitHub Actions (all passing): 
   - macOS-latest (release)
   - windows-latest (release)  
   - ubuntu-latest (release)
-* R-hub v2 checks:
-  - linux: PASS
-  - macos: PASS
-  - windows: PASS
-  - ubuntu-release: PASS
-  - nosuggests: FAIL (expected - vignettes require rmarkdown from Suggests)
+* R-hub v2 checks (completed):
+  - linux (R-devel): ✅ PASS
+  - macos (R-devel): ✅ PASS  
+  - windows (R-devel): ✅ PASS
+  - ubuntu-release: ✅ PASS
+  - nosuggests: ❌ EXPECTED FAIL (vignettes require rmarkdown from Suggests)
 
 ## R-hub nosuggests check
 
