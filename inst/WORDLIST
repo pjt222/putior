@@ -8,10 +8,13 @@ centric
 CMD
 CodeDepends
 codebases
+comjnl
 Csárdi
 DiagrammeR
 dm
+doi
 energie
+Foraita
 Gábor
 Gandrud
 ggplot
@@ -38,8 +41,10 @@ README
 renderer
 RL
 Shoutout
+Spallek
 sql
 styler
+Sveidqvist
 Tamás
 UUID
 utput
@@ -47,5 +52,6 @@ vis
 visNetwork
 workflow
 workflows
+Zeeb
 ️
 ❤️

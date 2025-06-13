@@ -339,12 +339,6 @@ validate_annotation <- function(properties, line_content) {
 #' @return Named list containing all extracted properties, or NULL if invalid
 #' @keywords internal
 #'
-#' @examples
-#' \dontrun{
-#' parse_put_annotation('#put name:"test", label:"Test Node"')
-#' parse_put_annotation('# put name:"test", node_type:"process"')
-#' parse_put_annotation('#put| name:"test", input:"data.csv"')
-#' }
 parse_put_annotation <- function(line) {
   # Handle NULL input
   if (is.null(line) || length(line) == 0) {
