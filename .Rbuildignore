@@ -29,3 +29,4 @@
 ^.*\.Rcheck$
 ^.*\.tar\.gz$
 ^vign_test$
+^CRAN-SUBMISSION$

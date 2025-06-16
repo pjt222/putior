@@ -28,9 +28,20 @@ This NOTE is expected for first submissions and does not affect package function
 
 The nosuggests check fails as expected because the package vignettes require rmarkdown (listed in Suggests). The package functions correctly without suggested packages installed - only vignette building is affected. This is standard behavior for packages with vignettes and does not impact package functionality.
 
-## Initial submission
+## Resubmission
 
-This is the first submission of the putior package to CRAN.
+This is a resubmission addressing reviewer feedback:
+
+### Reviewer comments addressed:
+
+1. **Title formatting**: Already correct with Title Case in quotes
+2. **Package names**: All software names ('R', 'Python', 'PUT', 'Mermaid') properly formatted in single quotes
+3. **References**: Academic references already included with proper DOI formatting
+4. **Unexported function examples**: Removed examples from internal function `parse_put_annotation()` by regenerating documentation
+
+### Changes made:
+- Regenerated package documentation to remove examples from unexported functions
+- Verified all CRAN policy requirements are met
 
 ## Package purpose
 
