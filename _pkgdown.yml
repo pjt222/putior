@@ -9,33 +9,59 @@ template:
     code_font: {google: "JetBrains Mono"}
   includes:
     in_header: |
-      <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.3/dist/mermaid.min.js"></script>
       <script>
+        // Initialize mermaid with configuration
+        mermaid.initialize({ 
+          startOnLoad: false,
+          theme: 'default',
+          themeVariables: {
+            primaryColor: '#fff4e6',
+            primaryTextColor: '#333',
+            primaryBorderColor: '#d97706',
+            lineColor: '#5a5a5a',
+            secondaryColor: '#f3f4f6',
+            tertiaryColor: '#e5e7eb'
+          },
+          flowchart: {
+            htmlLabels: true,
+            curve: 'linear'
+          }
+        });
+        
+        // Process Mermaid diagrams after page load
         document.addEventListener('DOMContentLoaded', function() {
-          mermaid.initialize({ 
-            startOnLoad: true,
-            theme: 'default',
-            themeVariables: {
-              primaryColor: '#fff4e6',
-              primaryTextColor: '#333',
-              primaryBorderColor: '#d97706',
-              lineColor: '#5a5a5a',
-              secondaryColor: '#f3f4f6',
-              tertiaryColor: '#e5e7eb'
+          // Find all mermaid code blocks
+          const mermaidBlocks = document.querySelectorAll('pre code.language-mermaid');
+          
+          mermaidBlocks.forEach(function(block, index) {
+            try {
+              // Get the mermaid code
+              let mermaidCode = block.textContent || block.innerText;
+              
+              // Create a new div for the diagram
+              const mermaidDiv = document.createElement('div');
+              mermaidDiv.className = 'mermaid';
+              mermaidDiv.setAttribute('id', 'mermaid-' + index);
+              
+              // Insert the mermaid code
+              mermaidDiv.textContent = mermaidCode;
+              
+              // Replace the pre/code block with the mermaid div
+              const pre = block.parentElement;
+              pre.parentElement.insertBefore(mermaidDiv, pre);
+              pre.style.display = 'none'; // Hide original code block
+              
+              // Render this specific diagram
+              mermaid.run({
+                nodes: [mermaidDiv],
+              });
+            } catch (e) {
+              console.error('Error processing Mermaid block ' + index + ':', e);
+              // Show the original code block if rendering fails
+              block.parentElement.style.display = 'block';
             }
           });
-          
-          // Convert code blocks with class 'language-mermaid' to mermaid divs
-          document.querySelectorAll('pre code.language-mermaid').forEach(function(element) {
-            const mermaidCode = element.textContent;
-            const mermaidDiv = document.createElement('div');
-            mermaidDiv.className = 'mermaid';
-            mermaidDiv.textContent = mermaidCode;
-            element.parentElement.parentElement.replaceChild(mermaidDiv, element.parentElement);
-          });
-          
-          // Re-initialize mermaid to render the new divs
-          mermaid.init();
         });
       </script>
     after_body: |
