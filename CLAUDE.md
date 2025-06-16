@@ -57,7 +57,10 @@ putior is an R package that extracts structured annotations from source code fil
 ## Quality Assurance
 
 ### R CMD Check Status
-- Package passes with **0 errors, 0 warnings, 1 minor note** (timing verification)
+- **Local**: 0 errors, 0 warnings, 1 note (timing verification)
+- **Win-builder R-devel**: ✅ 1 NOTE (new submission only) 
+- **Win-builder R-release**: ✅ 1 NOTE (new submission only)
+- **R-hub**: ✅ 4/5 platforms PASS (linux, macos, windows, ubuntu-release; nosuggests expected fail)
 - All vignettes build successfully with Pandoc
 - All tests pass (338 tests including multiline annotation support)
 - Comprehensive multiline PUT annotation support implemented

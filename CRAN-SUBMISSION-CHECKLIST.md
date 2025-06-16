@@ -19,8 +19,9 @@
 3. **Platform testing**
    - [x] Local Windows 11, R 4.5.0: Status OK
    - [x] GitHub Actions CI (Windows, macOS, Ubuntu): All passing
-   - [x] Win-builder submissions: R-release and R-devel (submitted)
-   - [x] R-hub v2 multi-platform checks (submitted)
+   - [x] Win-builder R-devel (2025-06-15 r88316): ✅ 1 NOTE (new submission)
+   - [x] Win-builder R-release (4.5.0): ✅ 1 NOTE (new submission)
+   - [x] R-hub v2 multi-platform checks: ✅ COMPLETED (4/5 platforms PASS, nosuggests expected fail)
 
 4. **Additional checks**
    - [x] Spell check passes (WORDLIST updated)
@@ -31,13 +32,14 @@
 
 ### 1. Monitor Platform Check Results
 
-**Win-builder results** (expected within 15-30 minutes):
-- Check email for results from win-builder.r-project.org
-- Expected: Clean checks with only "New submission" NOTE
+**Win-builder results** ✅ **RECEIVED**:
+- R-devel: https://win-builder.r-project.org/v75QSLo869S1 - Status: 1 NOTE (new submission)
+- R-release: https://win-builder.r-project.org/EIZ5hHdOpuJm - Status: 1 NOTE (new submission)
 
-**R-hub results** (live at GitHub Actions):
-- Monitor: https://github.com/pjt222/putior/actions
-- Expected: All platforms PASS (nosuggests expected to fail due to vignettes)
+**R-hub results** ✅ **COMPLETED**:
+- Results: https://github.com/pjt222/putior/actions/runs/15684902318
+- Status: 4/5 platforms PASS (linux, macos, windows, ubuntu-release)
+- nosuggests: Expected fail (vignettes require rmarkdown from Suggests)
 
 ### 2. Final Pre-submission Check
 

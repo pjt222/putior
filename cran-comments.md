@@ -10,9 +10,9 @@ This NOTE is expected for first submissions and does not affect package function
 
 ## Test environments
 
-* local: Windows 11, R 4.5.0 - Status: OK
-* win-builder: R-devel (R Under development) - Status: 1 NOTE (new submission only)
-* win-builder: R-release (R 4.5.0) - Status: 1 NOTE (new submission only)  
+* local: Windows 11, R 4.5.0 - Status: ✅ OK
+* win-builder: R-devel (2025-06-15 r88316) - Status: ✅ 1 NOTE (new submission only) 
+* win-builder: R-release (R 4.5.0) - Status: ✅ 1 NOTE (new submission only)
 * GitHub Actions (all passing): 
   - macOS-latest (release)
   - windows-latest (release)  
