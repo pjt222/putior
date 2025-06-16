@@ -33,26 +33,8 @@ template:
         
         // Function to render all mermaid diagrams
         function renderMermaidDiagrams() {
-          console.log('Starting Mermaid rendering...');
-          
-          // Find all code blocks with language-mermaid class
-          const codeBlocks = document.querySelectorAll('pre > code.language-mermaid');
-          console.log('Found ' + codeBlocks.length + ' mermaid code blocks');
-          
-          // Also try other possible selectors
-          const codeBlocks2 = document.querySelectorAll('code.mermaid');
-          console.log('Found ' + codeBlocks2.length + ' code.mermaid blocks');
-          
+          // Find all pre blocks
           const preBlocks = document.querySelectorAll('pre');
-          console.log('Found ' + preBlocks.length + ' total pre blocks');
-          
-          // Log first few pre blocks to see their content
-          preBlocks.forEach(function(pre, i) {
-            if (i < 3) {
-              console.log('Pre block ' + i + ' content:', pre.textContent.substring(0, 100));
-              console.log('Pre block ' + i + ' HTML:', pre.innerHTML.substring(0, 100));
-            }
-          });
           
           // Process any pre blocks that contain flowchart syntax
           preBlocks.forEach(function(pre, index) {
@@ -60,7 +42,8 @@ template:
             
             // Check if this contains mermaid syntax
             if (text.includes('flowchart') || text.includes('graph') || text.includes('sequenceDiagram')) {
-              console.log('Found potential mermaid in pre block ' + index);
+              // Skip if already processed
+              if (pre.style.display === 'none') return;
               
               try {
                 // Create container div
@@ -75,20 +58,46 @@ template:
                 container.appendChild(mermaidDiv);
                 pre.parentElement.insertBefore(container, pre);
                 pre.style.display = 'none';
-                
-                console.log('Created mermaid div for pre block ' + index);
               } catch (e) {
-                console.error('Error processing pre block ' + index, e);
+                console.error('Error processing pre block', e);
               }
             }
           });
           
-          // Now render all mermaid divs at once
-          const allMermaidDivs = document.querySelectorAll('div.mermaid');
-          console.log('Total mermaid divs to render: ' + allMermaidDivs.length);
+          // Also look for code blocks that might contain mermaid
+          const codeBlocks = document.querySelectorAll('pre > code');
+          codeBlocks.forEach(function(code) {
+            const text = code.textContent || code.innerText;
+            
+            // Check if parent pre is already hidden
+            if (code.parentElement.style.display === 'none') return;
+            
+            // Look for mermaid content that starts with flowchart
+            if (text.trim().startsWith('flowchart') || text.trim().startsWith('graph')) {
+              try {
+                const pre = code.parentElement;
+                
+                // Create container div
+                const container = document.createElement('div');
+                container.className = 'mermaid-container';
+                
+                // Create mermaid div with just the text content
+                const mermaidDiv = document.createElement('div');
+                mermaidDiv.className = 'mermaid';
+                mermaidDiv.textContent = text.trim();
+                
+                container.appendChild(mermaidDiv);
+                pre.parentElement.insertBefore(container, pre);
+                pre.style.display = 'none';
+              } catch (e) {
+                console.error('Error processing code block', e);
+              }
+            }
+          });
           
+          // Render all mermaid divs
+          const allMermaidDivs = document.querySelectorAll('div.mermaid');
           if (allMermaidDivs.length > 0) {
-            // Use mermaid.init with the correct syntax
             mermaid.init(window.mermaidConfig, allMermaidDivs);
           }
         }
