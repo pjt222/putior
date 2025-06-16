@@ -12,7 +12,7 @@ template:
       <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.3/dist/mermaid.min.js"></script>
       <script>
         // Initialize mermaid with configuration
-        mermaid.initialize({ 
+        window.mermaidConfig = {
           startOnLoad: false,
           theme: 'default',
           themeVariables: {
@@ -27,85 +27,66 @@ template:
             htmlLabels: true,
             curve: 'linear'
           }
-        });
+        };
         
-        // Process Mermaid diagrams after page load
-        document.addEventListener('DOMContentLoaded', function() {
-          // Method 1: Find all mermaid code blocks (for markdown code fences)
-          const mermaidBlocks = document.querySelectorAll('pre code.language-mermaid');
+        mermaid.initialize(window.mermaidConfig);
+        
+        // Function to render all mermaid diagrams
+        function renderMermaidDiagrams() {
+          console.log('Starting Mermaid rendering...');
           
-          mermaidBlocks.forEach(function(block, index) {
+          // Find all code blocks with language-mermaid class
+          const codeBlocks = document.querySelectorAll('pre > code.language-mermaid');
+          console.log('Found ' + codeBlocks.length + ' mermaid code blocks');
+          
+          codeBlocks.forEach(function(codeBlock, index) {
             try {
-              // Get the mermaid code
-              let mermaidCode = block.textContent || block.innerText;
+              const preBlock = codeBlock.parentElement;
+              const mermaidCode = codeBlock.textContent;
               
-              // Create a new div for the diagram
+              console.log('Processing mermaid block ' + index + ':', mermaidCode.substring(0, 50) + '...');
+              
+              // Create container div
+              const container = document.createElement('div');
+              container.className = 'mermaid-container';
+              container.style.textAlign = 'center';
+              container.style.margin = '1em 0';
+              
+              // Create mermaid div
               const mermaidDiv = document.createElement('div');
               mermaidDiv.className = 'mermaid';
-              mermaidDiv.setAttribute('id', 'mermaid-' + index);
-              
-              // Insert the mermaid code
               mermaidDiv.textContent = mermaidCode;
               
-              // Replace the pre/code block with the mermaid div
-              const pre = block.parentElement;
-              pre.parentElement.insertBefore(mermaidDiv, pre);
-              pre.style.display = 'none'; // Hide original code block
+              container.appendChild(mermaidDiv);
+              preBlock.parentElement.insertBefore(container, preBlock);
+              preBlock.style.display = 'none';
               
-              // Render this specific diagram
-              mermaid.run({
-                nodes: [mermaidDiv],
-              });
+              // Don't render yet, just mark for processing
             } catch (e) {
-              console.error('Error processing Mermaid block ' + index + ':', e);
-              // Show the original code block if rendering fails
-              block.parentElement.style.display = 'block';
+              console.error('Error rendering mermaid block ' + index, e);
             }
           });
           
-          // Method 2: Also look for pre blocks that contain mermaid syntax directly
-          // This handles R code chunk outputs that might not have language-mermaid class
-          const preBlocks = document.querySelectorAll('pre');
+          // Now render all mermaid divs at once
+          const allMermaidDivs = document.querySelectorAll('div.mermaid');
+          console.log('Total mermaid divs to render: ' + allMermaidDivs.length);
           
-          preBlocks.forEach(function(pre, index) {
-            // Skip if already processed as a mermaid code block
-            if (pre.querySelector('code.language-mermaid')) return;
-            
-            const text = pre.textContent || pre.innerText;
-            
-            // Check if this looks like mermaid code
-            if (text.includes('flowchart') || text.includes('graph') || text.includes('sequenceDiagram')) {
-              // Also check for the telltale ```mermaid fence
-              const mermaidMatch = text.match(/```mermaid\s*([\s\S]*?)\s*```/);
-              
-              if (mermaidMatch) {
-                try {
-                  const mermaidCode = mermaidMatch[1];
-                  
-                  // Create a new div for the diagram
-                  const mermaidDiv = document.createElement('div');
-                  mermaidDiv.className = 'mermaid';
-                  mermaidDiv.setAttribute('id', 'mermaid-pre-' + index);
-                  
-                  // Insert the mermaid code
-                  mermaidDiv.textContent = mermaidCode;
-                  
-                  // Replace the pre block with the mermaid div
-                  pre.parentElement.insertBefore(mermaidDiv, pre);
-                  pre.style.display = 'none'; // Hide original
-                  
-                  // Render this specific diagram
-                  mermaid.run({
-                    nodes: [mermaidDiv],
-                  });
-                } catch (e) {
-                  console.error('Error processing pre block ' + index + ':', e);
-                  pre.style.display = 'block';
-                }
-              }
-            }
-          });
-        });
+          if (allMermaidDivs.length > 0) {
+            // Use mermaid.init with the correct syntax
+            mermaid.init(window.mermaidConfig, allMermaidDivs);
+          }
+        }
+        
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', renderMermaidDiagrams);
+        } else {
+          // DOM is already ready
+          setTimeout(renderMermaidDiagrams, 100);
+        }
+        
+        // Also try after a delay in case content is dynamically loaded
+        setTimeout(renderMermaidDiagrams, 1000);
       </script>
     after_body: |
       <link href="pkgdown/extra.css" rel="stylesheet">
