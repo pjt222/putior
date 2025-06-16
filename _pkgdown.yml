@@ -39,31 +39,47 @@ template:
           const codeBlocks = document.querySelectorAll('pre > code.language-mermaid');
           console.log('Found ' + codeBlocks.length + ' mermaid code blocks');
           
-          codeBlocks.forEach(function(codeBlock, index) {
-            try {
-              const preBlock = codeBlock.parentElement;
-              const mermaidCode = codeBlock.textContent;
+          // Also try other possible selectors
+          const codeBlocks2 = document.querySelectorAll('code.mermaid');
+          console.log('Found ' + codeBlocks2.length + ' code.mermaid blocks');
+          
+          const preBlocks = document.querySelectorAll('pre');
+          console.log('Found ' + preBlocks.length + ' total pre blocks');
+          
+          // Log first few pre blocks to see their content
+          preBlocks.forEach(function(pre, i) {
+            if (i < 3) {
+              console.log('Pre block ' + i + ' content:', pre.textContent.substring(0, 100));
+              console.log('Pre block ' + i + ' HTML:', pre.innerHTML.substring(0, 100));
+            }
+          });
+          
+          // Process any pre blocks that contain flowchart syntax
+          preBlocks.forEach(function(pre, index) {
+            const text = pre.textContent || pre.innerText;
+            
+            // Check if this contains mermaid syntax
+            if (text.includes('flowchart') || text.includes('graph') || text.includes('sequenceDiagram')) {
+              console.log('Found potential mermaid in pre block ' + index);
               
-              console.log('Processing mermaid block ' + index + ':', mermaidCode.substring(0, 50) + '...');
-              
-              // Create container div
-              const container = document.createElement('div');
-              container.className = 'mermaid-container';
-              container.style.textAlign = 'center';
-              container.style.margin = '1em 0';
-              
-              // Create mermaid div
-              const mermaidDiv = document.createElement('div');
-              mermaidDiv.className = 'mermaid';
-              mermaidDiv.textContent = mermaidCode;
-              
-              container.appendChild(mermaidDiv);
-              preBlock.parentElement.insertBefore(container, preBlock);
-              preBlock.style.display = 'none';
-              
-              // Don't render yet, just mark for processing
-            } catch (e) {
-              console.error('Error rendering mermaid block ' + index, e);
+              try {
+                // Create container div
+                const container = document.createElement('div');
+                container.className = 'mermaid-container';
+                
+                // Create mermaid div
+                const mermaidDiv = document.createElement('div');
+                mermaidDiv.className = 'mermaid';
+                mermaidDiv.textContent = text.trim();
+                
+                container.appendChild(mermaidDiv);
+                pre.parentElement.insertBefore(container, pre);
+                pre.style.display = 'none';
+                
+                console.log('Created mermaid div for pre block ' + index);
+              } catch (e) {
+                console.error('Error processing pre block ' + index, e);
+              }
             }
           });
           
@@ -89,7 +105,32 @@ template:
         setTimeout(renderMermaidDiagrams, 1000);
       </script>
     after_body: |
-      <link href="pkgdown/extra.css" rel="stylesheet">
+      <style>
+        /* Mermaid diagram styling */
+        .mermaid {
+          text-align: center;
+          margin: 20px 0;
+        }
+        
+        /* Ensure mermaid diagrams are responsive */
+        .mermaid svg {
+          max-width: 100%;
+          height: auto;
+        }
+        
+        /* Fix for code blocks that contain mermaid */
+        pre.mermaid {
+          background: transparent;
+          border: none;
+          padding: 0;
+        }
+        
+        /* Add container for processed mermaid diagrams */
+        div.mermaid-container {
+          text-align: center;
+          margin: 1em 0;
+        }
+      </style>
 
 home:
   title: "putior: Register in- and Outputs for Workflow Visualization"
