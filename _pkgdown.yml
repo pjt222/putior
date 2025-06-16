@@ -31,7 +31,7 @@ template:
         
         // Process Mermaid diagrams after page load
         document.addEventListener('DOMContentLoaded', function() {
-          // Find all mermaid code blocks
+          // Method 1: Find all mermaid code blocks (for markdown code fences)
           const mermaidBlocks = document.querySelectorAll('pre code.language-mermaid');
           
           mermaidBlocks.forEach(function(block, index) {
@@ -60,6 +60,49 @@ template:
               console.error('Error processing Mermaid block ' + index + ':', e);
               // Show the original code block if rendering fails
               block.parentElement.style.display = 'block';
+            }
+          });
+          
+          // Method 2: Also look for pre blocks that contain mermaid syntax directly
+          // This handles R code chunk outputs that might not have language-mermaid class
+          const preBlocks = document.querySelectorAll('pre');
+          
+          preBlocks.forEach(function(pre, index) {
+            // Skip if already processed as a mermaid code block
+            if (pre.querySelector('code.language-mermaid')) return;
+            
+            const text = pre.textContent || pre.innerText;
+            
+            // Check if this looks like mermaid code
+            if (text.includes('flowchart') || text.includes('graph') || text.includes('sequenceDiagram')) {
+              // Also check for the telltale ```mermaid fence
+              const mermaidMatch = text.match(/```mermaid\s*([\s\S]*?)\s*```/);
+              
+              if (mermaidMatch) {
+                try {
+                  const mermaidCode = mermaidMatch[1];
+                  
+                  // Create a new div for the diagram
+                  const mermaidDiv = document.createElement('div');
+                  mermaidDiv.className = 'mermaid';
+                  mermaidDiv.setAttribute('id', 'mermaid-pre-' + index);
+                  
+                  // Insert the mermaid code
+                  mermaidDiv.textContent = mermaidCode;
+                  
+                  // Replace the pre block with the mermaid div
+                  pre.parentElement.insertBefore(mermaidDiv, pre);
+                  pre.style.display = 'none'; // Hide original
+                  
+                  // Render this specific diagram
+                  mermaid.run({
+                    nodes: [mermaidDiv],
+                  });
+                } catch (e) {
+                  console.error('Error processing pre block ' + index + ':', e);
+                  pre.style.display = 'block';
+                }
+              }
             }
           });
         });

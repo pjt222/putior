@@ -10,6 +10,7 @@
 #'     \item "console" - Print to console (default)
 #'     \item "file" - Save to file specified by \code{file} parameter
 #'     \item "clipboard" - Copy to clipboard (if available)
+#'     \item "raw" - Return raw mermaid code without markdown fences (for knitr/pkgdown)
 #'   }
 #' @param file Character string specifying output file path (used when output = "file")
 #' @param title Character string for diagram title (optional)
@@ -54,6 +55,10 @@
 #'
 #' # Save to file with artifacts enabled
 #' put_diagram(workflow, show_artifacts = TRUE, output = "file", file = "workflow.md")
+#'
+#' # For use in knitr/pkgdown - returns raw mermaid code
+#' # Use within a code chunk with results='asis'
+#' cat("```mermaid\n", put_diagram(workflow, output = "raw"), "\n```\n")
 #' }
 put_diagram <- function(workflow,
                         output = "console",
@@ -664,6 +669,11 @@ handle_output <- function(mermaid_code, output = "console", file = NULL, title =
         cat(mermaid_code)
         cat("\n```\n")
       }
+    },
+    "raw" = {
+      # Return just the raw mermaid code without any output
+      # This is useful for knitr/pkgdown where markdown fences are handled externally
+      # Do nothing - the invisible return in put_diagram() will handle it
     },
     {
       # Default to console with mermaid blocks
