@@ -26,6 +26,7 @@ igraph
 jl
 js
 Jupyter
+knitr
 lifecycle
 lintr
 Mermaid
@@ -35,6 +36,7 @@ networkD
 nput
 orchestrator
 Pedersen
+pkgdown
 putior's
 py
 README
