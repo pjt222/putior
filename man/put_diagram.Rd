@@ -26,6 +26,7 @@ put_diagram(
 \item "console" - Print to console (default)
 \item "file" - Save to file specified by \code{file} parameter
 \item "clipboard" - Copy to clipboard (if available)
+\item "raw" - Return raw mermaid code without markdown fences (for knitr/pkgdown)
 }}
 
 \item{file}{Character string specifying output file path (used when output = "file")}
@@ -83,5 +84,9 @@ put_diagram(workflow, theme = "github")
 
 # Save to file with artifacts enabled
 put_diagram(workflow, show_artifacts = TRUE, output = "file", file = "workflow.md")
+
+# For use in knitr/pkgdown - returns raw mermaid code
+# Use within a code chunk with results='asis'
+cat("```mermaid\n", put_diagram(workflow, output = "raw"), "\n```\n")
 }
 }
