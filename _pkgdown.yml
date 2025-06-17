@@ -142,7 +142,7 @@ template:
       </style>
 
 home:
-  title: "putior: Register in- and Outputs for Workflow Visualization"
+  title: "putior: Register In- and Outputs for Workflow Visualization"
   description: >
     Extract structured annotations from source code files and generate 
     Mermaid flowchart diagrams for visualizing workflows and data pipelines.
