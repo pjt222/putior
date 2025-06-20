@@ -1,3 +1,40 @@
+/* Font ligature support for Fira Code */
+pre, code, .sourceCode, .pre, .code {
+  font-variant-ligatures: contextual;
+  -webkit-font-feature-settings: "liga" 1, "calt" 1;
+  font-feature-settings: "liga" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* Consistent heading weights with Fira Sans */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* Strong text should use semibold */
+b, strong {
+  font-weight: 600;
+}
+
+/* Improve code readability */
+code {
+  font-size: 0.875em;
+  padding: 0.125em 0.25em;
+}
+
+pre code {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Better inline code styling */
+p code, li code, td code {
+  background-color: rgba(0, 0, 0, 0.04);
+  border-radius: 3px;
+  padding: 2px 4px;
+}
+
 /* Mermaid diagram styling */
 .mermaid {
   text-align: center;
@@ -25,4 +62,10 @@ pre > code.language-mermaid {
 /* Add container for processed mermaid diagrams */
 div.mermaid {
   min-height: 100px;
+}
+
+/* Ensure consistent font rendering across browsers */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
