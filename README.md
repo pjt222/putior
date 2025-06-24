@@ -1,8 +1,10 @@
 # putior <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
 [![R CMD check](https://github.com/pjt222/putior/workflows/R-CMD-check/badge.svg)](https://github.com/pjt222/putior/actions)
+[![CRAN status](https://www.r-pkg.org/badges/version/putior)](https://CRAN.R-project.org/package=putior)
+[![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/putior)](https://cran.r-project.org/package=putior)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 
 > **Extract beautiful workflow diagrams from your code annotations**
 
