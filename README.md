@@ -870,6 +870,33 @@ This creates a diagram showing:
 - `analysis.R` → `main.R` (sourced into)
 - `utils.R` → `analysis.R` (dependency)
 
+### Variable References with `.internal` Extension
+
+Track in-memory variables and objects alongside persistent files:
+
+```r
+# Script 1: Create and save data
+#put output:'my_data.internal, my_data.RData'
+my_data <- process_data()
+save(my_data, file = 'my_data.RData')
+
+# Script 2: Load data and create new variables
+#put input:'my_data.RData', output:'results.internal, summary.csv'
+load('my_data.RData')  # Load the persistent file
+results <- analyze(my_data)  # Create new in-memory variable
+write.csv(results, 'summary.csv')
+```
+
+**Key Concepts:**
+- **`.internal` variables**: Exist only during script execution (outputs only)
+- **Persistent files**: Enable data flow between scripts (inputs/outputs)
+- **Connected workflows**: Use file-based dependencies, not variable references
+
+Try the complete example:
+```r
+source(system.file("examples", "variable-reference-example.R", package = "putior"))
+```
+
 ## 🔄 Self-Documentation: putior Documents Itself!
 
 As a demonstration of putior's capabilities, we've added PUT annotations to putior's own source code. This creates a beautiful visualization of how the package works internally:

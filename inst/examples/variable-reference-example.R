@@ -48,8 +48,8 @@ script1_content <- c(
 # Script 2: Use the variable from Script 1
 script2_content <- c(
   "# Variable Processing Script", 
-  "# Demonstrates: Referencing variables from previous steps",
-  "#put id:'process_var', label:'Process Variable', node_type:'process', input:'var.internal, var.RData', output:'processed_var.internal, result.txt'",
+  "# Demonstrates: Loading persisted data and creating new variables",
+  "#put id:'process_var', label:'Process Variable', node_type:'process', input:'var.RData', output:'processed_var.internal, result.txt'",
   "",
   "# Load the variable if working with persistent version",
   "load('var.RData')",
@@ -61,8 +61,8 @@ script2_content <- c(
   "# Save result to file",
   "writeLines(processed_var, 'result.txt')",
   "",
-  "# Both var.internal and processed_var.internal represent variables",
-  "# that exist in memory during execution"
+  "# processed_var.internal represents the new variable created in this script",
+  "# var.internal existed only in the previous script's memory"
 )
 
 # Write the scripts
@@ -70,86 +70,56 @@ writeLines(script1_content, file.path(temp_dir, "01_create_variable.R"))
 writeLines(script2_content, file.path(temp_dir, "02_process_variable.R"))
 
 # ==============================================================================
-# EXAMPLE 2: COMPLEX OBJECT TRACKING
+# EXAMPLE 2: EXTEND THE PIPELINE - BUILD ON PREVIOUS RESULTS
 # ==============================================================================
 
-# Script 3: Create multiple objects
+# Script 3: Further processing using results from Script 2
 script3_content <- c(
-  "# Multiple Object Creation",
-  "#put id:'create_objects', label:'Create Data Objects', node_type:'input', output:'data_frame.internal, model.internal, objects.RData'",
+  "# Advanced Processing Script",
+  "#put id:'advanced_process', label:'Advanced Data Processing', node_type:'process', input:'result.txt', output:'enhanced_data.internal, enhanced_results.csv'",
   "",
-  "# Create multiple objects",
-  "data_frame <- data.frame(",
-  "  x = 1:10,",
-  "  y = rnorm(10)",
+  "# Read results from previous script",
+  "processed_text <- readLines('result.txt')",
+  "",
+  "# Create enhanced data based on previous results",
+  "enhanced_data <- data.frame(",
+  "  original = processed_text,",
+  "  length = nchar(processed_text),",
+  "  reversed = sapply(processed_text, function(x) paste(rev(strsplit(x, '')[[1]]), collapse = ''))",
   ")",
   "",
-  "# Create a simple model object",
-  "model <- lm(y ~ x, data = data_frame)",
+  "# Save enhanced results",
+  "write.csv(enhanced_data, 'enhanced_results.csv', row.names = FALSE)",
   "",
-  "# Save all objects",
-  "save(data_frame, model, file = 'objects.RData')",
-  "",
-  "print('Created data frame and model objects')"
+  "print('Enhanced processing completed')"
 )
 
-# Script 4: Use multiple objects  
+# Script 4: Final analysis using all previous outputs
 script4_content <- c(
-  "# Object Analysis Script",
-  "#put id:'analyze_objects', label:'Analyze Objects', node_type:'process', input:'data_frame.internal, model.internal, objects.RData', output:'summary.internal, analysis.txt'",
+  "# Final Analysis Script",
+  "#put id:'final_analysis', label:'Final Analysis & Report', node_type:'output', input:'var.RData, enhanced_results.csv', output:'final_report.internal, complete_analysis.txt'",
   "",
-  "# Load objects",
-  "load('objects.RData')",
+  "# Load original variable",
+  "load('var.RData')",
   "",
-  "# Create analysis summary (in-memory object)",
-  "summary <- list(",
-  "  data_summary = summary(data_frame),",
-  "  model_summary = summary(model),",
-  "  r_squared = summary(model)$r.squared",
+  "# Load enhanced results", 
+  "enhanced_data <- read.csv('enhanced_results.csv')",
+  "",
+  "# Create comprehensive final report (in-memory object)",
+  "final_report <- list(",
+  "  original_var_length = length(var),",
+  "  enhanced_data_rows = nrow(enhanced_data),",
+  "  processing_summary = paste('Processed', length(var), 'original items into', nrow(enhanced_data), 'enhanced records')",
   ")",
   "",
-  "# Save analysis to file",
-  "writeLines(capture.output(print(summary)), 'analysis.txt')",
+  "# Save final analysis",
+  "writeLines(capture.output(str(final_report)), 'complete_analysis.txt')",
   "",
-  "print('Analysis completed')"
+  "print('Final analysis completed')"
 )
 
-writeLines(script3_content, file.path(temp_dir, "03_create_objects.R"))
-writeLines(script4_content, file.path(temp_dir, "04_analyze_objects.R"))
-
-# ==============================================================================
-# EXAMPLE 3: PIPELINE WITH VARIABLE REFERENCES
-# ==============================================================================
-
-# Script 5: Data pipeline with multiple variable stages
-script5_content <- c(
-  "# Data Pipeline with Variable Tracking",
-  "#put id:'load_data', label:'Load Raw Data', node_type:'input', output:'raw_data.internal, raw_data.csv'",
-  "#put id:'clean_data', label:'Clean Data', node_type:'process', input:'raw_data.internal', output:'clean_data.internal'", 
-  "#put id:'transform_data', label:'Transform Data', node_type:'process', input:'clean_data.internal', output:'final_data.internal, final_data.csv'",
-  "",
-  "# Step 1: Load raw data",
-  "raw_data <- data.frame(",
-  "  id = 1:100,",
-  "  value = rnorm(100),",
-  "  category = sample(c('A', 'B', 'C'), 100, replace = TRUE)",
-  ")",
-  "write.csv(raw_data, 'raw_data.csv', row.names = FALSE)",
-  "",
-  "# Step 2: Clean data (remove NAs, outliers)",
-  "clean_data <- raw_data[!is.na(raw_data$value), ]",
-  "clean_data <- clean_data[abs(clean_data$value) < 2, ]",
-  "",
-  "# Step 3: Transform data (add calculated columns)",
-  "final_data <- clean_data",
-  "final_data$value_squared <- final_data$value^2",
-  "final_data$category_numeric <- as.numeric(factor(final_data$category))",
-  "write.csv(final_data, 'final_data.csv', row.names = FALSE)",
-  "",
-  "print(paste('Pipeline completed. Final data has', nrow(final_data), 'rows'))"
-)
-
-writeLines(script5_content, file.path(temp_dir, "05_data_pipeline.R"))
+writeLines(script3_content, file.path(temp_dir, "03_advanced_process.R"))
+writeLines(script4_content, file.path(temp_dir, "04_final_analysis.R"))
 
 cat("Created", length(list.files(temp_dir, pattern = "*.R")), "example scripts\n")
 
@@ -259,10 +229,10 @@ cat("   - Use both .internal and file outputs when appropriate\n")
 cat("   - Example: output:'data.internal, data.RData'\n")
 cat("   - .internal tracks the variable, .RData tracks the saved file\n")
 
-cat("\n3. Chain Variables Through Pipeline:\n")
-cat("   - Use .internal outputs as inputs to next step\n")
-cat("   - Example: input:'data.internal' in the next script\n")
-cat("   - This shows data flow through variables\n")
+cat("\n3. .internal Variables Are Script-Local:\n")
+cat("   - .internal variables exist only during script execution\n")
+cat("   - They CANNOT be used as inputs to other scripts\n")
+cat("   - Use persistent files (RData, CSV, etc.) for inter-script data flow\n")
 
 cat("\n4. Multiple Variables in One Step:\n")
 cat("   - List multiple .internal items: 'var1.internal, var2.internal'\n")
@@ -270,7 +240,8 @@ cat("   - Useful for scripts that create multiple objects\n")
 
 cat("\n5. Document Variable Purpose:\n")
 cat("   - Use descriptive names: 'cleaned_data.internal'\n")
-cat("   - The variable name (before .internal) becomes the reference\n")
+cat("   - The variable name (before .internal) shows what was created\n")
+cat("   - Helps document the computational steps within each script\n")
 
 # ==============================================================================
 # CLEANUP

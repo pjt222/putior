@@ -102,6 +102,39 @@ putior is an R package that extracts structured annotations from source code fil
 6. **Documentation excellence** - High-quality vignettes and self-documentation
 7. **Spelling compliance** - Complete WORDLIST for technical terms and proper names
 8. **Clean renv.lock** - Removed development-only GitHub dependencies to eliminate credential warnings
+9. **Variable reference feature** - Comprehensive example demonstrating `.internal` extension usage
+
+## Variable Reference Implementation (GitHub Issue #2)
+
+### Key Concepts for `.internal` Extension
+- **Purpose**: Track in-memory variables and objects during script execution
+- **Usage**: `.internal` variables are **outputs only**, never inputs between scripts
+- **Data Flow**: Use persistent files (RData, CSV, etc.) for inter-script communication
+- **Example**: `output:'my_variable.internal, my_data.RData'`
+
+### Critical Rules
+1. **`.internal` variables exist only during script execution** → Cannot be inputs to other scripts
+2. **Persistent files enable inter-script data flow** → Use saved files as inputs/outputs between scripts  
+3. **Connected workflows require file-based dependencies** → Each script's file outputs become inputs to subsequent scripts
+4. **Document computational steps** → Use `.internal` to show what variables are created within each script
+
+### Example Implementation
+```r
+# Script 1: Creates variable and saves it
+#put output:'data.internal, data.RData'
+data <- process_something()
+save(data, file = 'data.RData')
+
+# Script 2: Uses saved file, creates new variable  
+#put input:'data.RData', output:'results.internal, results.csv'
+load('data.RData')  # NOT 'data.internal'
+results <- analyze(data)
+write.csv(results, 'results.csv')
+```
+
+### Reference
+- **Example**: `inst/examples/variable-reference-example.R`
+- **GitHub Issues**: #2 (original discussion), #3 (metadata), #4 (hyperlinks)
 
 ## GitHub Pages Deployment
 

@@ -287,6 +287,59 @@ source("process_data.R") # Reading process_data.R into main.R
 
 This correctly shows the flow: sourced scripts are **inputs** to the main script.
 
+## Variable References with `.internal` Extension
+
+putior supports tracking in-memory variables and objects using the `.internal` extension. This is useful for documenting computational steps within scripts while maintaining clear data flow between scripts.
+
+### Key Concepts
+
+**`.internal` variables:**
+- Represent in-memory objects during script execution
+- Can only be **outputs**, never inputs between scripts
+- Help document what variables are created within each script
+- Example: `my_data.internal` represents a variable named `my_data`
+
+**Persistent files:**
+- Enable actual data flow between scripts
+- Can be both inputs and outputs
+- Required for connected workflows
+- Example: `my_data.RData`, `results.csv`
+
+### Correct Usage Pattern
+
+```{r eval=FALSE}
+# Script 1: Create variable and save it
+#put id:"create_data", output:"dataset.internal, dataset.RData"
+dataset <- data.frame(x = 1:100, y = rnorm(100))
+save(dataset, file = "dataset.RData")
+
+# Script 2: Load data and create new variables  
+#put id:"analyze_data", input:"dataset.RData", output:"analysis.internal, summary.txt"
+load("dataset.RData")  # Load the persistent file (NOT dataset.internal)
+analysis <- summary(dataset)  # Create new in-memory variable
+writeLines(capture.output(analysis), "summary.txt")
+```
+
+### What NOT to Do
+
+```{r eval=FALSE}
+# INCORRECT: Using .internal as input between scripts
+#put input:"dataset.internal"  # This is wrong!
+
+# CORRECT: Use persistent files as inputs
+#put input:"dataset.RData"     # This is correct!
+```
+
+### Complete Example
+
+Try the comprehensive variable reference example:
+
+```{r eval=FALSE}
+source(system.file("examples", "variable-reference-example.R", package = "putior"))
+```
+
+This creates a connected 4-script workflow demonstrating proper `.internal` usage and file-based data flow.
+
 ## Real-World Example
 
 Let's walk through a complete data science workflow:
