@@ -463,10 +463,11 @@ Problematic example:
 Now that you understand the basics of putior:
 
 1. **Try the complete example**: `source(system.file("examples", "reprex.R", package = "putior"))`
-2. **Add annotations to your existing projects**: Start with key data processing scripts
-3. **Build visualization tools**: Use the extracted workflow data to create flowcharts
-4. **Integrate into CI/CD**: Automatically update workflow documentation
-5. **Explore advanced features**: Check out the advanced usage vignette
+2. **Explore variable references**: See how to track variables and objects with `source(system.file("examples", "variable-reference-example.R", package = "putior"))`
+3. **Add annotations to your existing projects**: Start with key data processing scripts
+4. **Build visualization tools**: Use the extracted workflow data to create flowcharts
+5. **Integrate into CI/CD**: Automatically update workflow documentation
+6. **Explore advanced features**: Check out the advanced usage vignette
 
 For more detailed information, see:
 - `?put` - Complete function documentation
