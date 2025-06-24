@@ -214,6 +214,7 @@ authors:
   Philipp Thoss:
     href: https://orcid.org/0000-0002-4672-2792
 
-development:
-  mode: auto
+# Development mode disabled for GitHub Pages deployment
+# development:
+#   mode: auto
 
