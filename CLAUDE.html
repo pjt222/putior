@@ -279,15 +279,55 @@
 <strong>Clean renv.lock</strong> - Removed development-only GitHub dependencies to eliminate credential warnings</li>
 </ol></div>
 <div class="section level2">
+<h2 id="github-pages-deployment">GitHub Pages Deployment<a class="anchor" aria-label="anchor" href="#github-pages-deployment"></a></h2>
+<div class="section level3">
+<h3 id="current-configuration">Current Configuration<a class="anchor" aria-label="anchor" href="#current-configuration"></a></h3>
+<ul><li>
+<strong>Deployment Method</strong>: Branch-based deployment from <code>gh-pages</code> branch</li>
+<li>
+<strong>Workflow</strong>: <code>.github/workflows/pkgdown-gh-pages.yaml</code>
+</li>
+<li>
+<strong>Important</strong>: Development mode is disabled in <code>_pkgdown.yml</code> to ensure proper root-level deployment</li>
+</ul></div>
+<div class="section level3">
+<h3 id="key-settings">Key Settings<a class="anchor" aria-label="anchor" href="#key-settings"></a></h3>
+<ul><li>
+<p><code>_pkgdown.yml</code>: Development mode must be disabled/commented out:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># development:</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co">#   mode: auto</span></span></code></pre></div>
+</li>
+<li><p>GitHub Pages Settings: Deploy from <code>gh-pages</code> branch (NOT GitHub Actions)</p></li>
+<li><p>Site URL: <a href="https://pjt222.github.io/putior/" class="uri">https://pjt222.github.io/putior/</a></p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="deployment-workflow">Deployment Workflow<a class="anchor" aria-label="anchor" href="#deployment-workflow"></a></h3>
+<ol style="list-style-type: decimal"><li>Changes pushed to main branch trigger <code>pkgdown-gh-pages</code> workflow</li>
+<li>Workflow builds pkgdown site with <code><a href="https://pkgdown.r-lib.org/reference/build_site_github_pages.html" class="external-link">pkgdown::build_site_github_pages()</a></code>
+</li>
+<li>JamesIves/github-pages-deploy-action deploys <code>docs/</code> folder to <code>gh-pages</code> branch</li>
+<li>GitHub Pages serves the site from <code>gh-pages</code> branch root</li>
+</ol></div>
+<div class="section level3">
+<h3 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a></h3>
+<ul><li>
+<strong>404 Error</strong>: Check if development mode is enabled in <code>_pkgdown.yml</code> (causes site to build in <code>dev/</code> subdirectory)</li>
+<li>
+<strong>Deployment Issues</strong>: Ensure GitHub Pages is set to deploy from <code>gh-pages</code> branch, not GitHub Actions</li>
+<li>
+<strong>Build Failures</strong>: Check workflow logs for pkgdown build errors</li>
+</ul></div>
+</div>
+<div class="section level2">
 <h2 id="package-readiness">Package Readiness<a class="anchor" aria-label="anchor" href="#package-readiness"></a></h2>
 <p>✅ <strong>Production ready</strong> - All checks passing<br>
 ✅ <strong>CRAN submission ready</strong> - Comprehensive documentation and testing<br>
 ✅ <strong>Self-documenting</strong> - Demonstrates own capabilities effectively<br>
-✅ <strong>Clean codebase</strong> - Well-organized file structure and ignore patterns</p>
+✅ <strong>Clean codebase</strong> - Well-organized file structure and ignore patterns ✅ <strong>GitHub Pages deployed</strong> - Documentation site live at <a href="https://pjt222.github.io/putior/" class="uri">https://pjt222.github.io/putior/</a></p>
 </div>
 <div class="section level2">
 <h2 id="development-best-practices-references">Development Best Practices References<a class="anchor" aria-label="anchor" href="#development-best-practices-references"></a></h2>
-<p>@../development-guides/r-package-development-best-practices.md @../development-guides/wsl-rstudio-claude-integration.md @../development-guides/general-development-setup.md @../development-guides/quick-reference.md</p>
+<p>@../development-guides/r-package-development-best-practices.md @../development-guides/wsl-rstudio-claude-integration.md @../development-guides/general-development-setup.md @../development-guides/quick-reference.md @../development-guides/pkgdown-github-pages-deployment.md</p>
 </div>
 </div>
 
