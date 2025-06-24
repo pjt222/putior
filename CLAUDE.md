@@ -103,14 +103,43 @@ putior is an R package that extracts structured annotations from source code fil
 7. **Spelling compliance** - Complete WORDLIST for technical terms and proper names
 8. **Clean renv.lock** - Removed development-only GitHub dependencies to eliminate credential warnings
 
+## GitHub Pages Deployment
+
+### Current Configuration
+- **Deployment Method**: Branch-based deployment from `gh-pages` branch
+- **Workflow**: `.github/workflows/pkgdown-gh-pages.yaml` 
+- **Important**: Development mode is disabled in `_pkgdown.yml` to ensure proper root-level deployment
+
+### Key Settings
+- `_pkgdown.yml`: Development mode must be disabled/commented out:
+  ```yaml
+  # development:
+  #   mode: auto
+  ```
+- GitHub Pages Settings: Deploy from `gh-pages` branch (NOT GitHub Actions)
+- Site URL: https://pjt222.github.io/putior/
+
+### Deployment Workflow
+1. Changes pushed to main branch trigger `pkgdown-gh-pages` workflow
+2. Workflow builds pkgdown site with `pkgdown::build_site_github_pages()`
+3. JamesIves/github-pages-deploy-action deploys `docs/` folder to `gh-pages` branch
+4. GitHub Pages serves the site from `gh-pages` branch root
+
+### Troubleshooting
+- **404 Error**: Check if development mode is enabled in `_pkgdown.yml` (causes site to build in `dev/` subdirectory)
+- **Deployment Issues**: Ensure GitHub Pages is set to deploy from `gh-pages` branch, not GitHub Actions
+- **Build Failures**: Check workflow logs for pkgdown build errors
+
 ## Package Readiness
 ✅ **Production ready** - All checks passing  
 ✅ **CRAN submission ready** - Comprehensive documentation and testing  
 ✅ **Self-documenting** - Demonstrates own capabilities effectively  
 ✅ **Clean codebase** - Well-organized file structure and ignore patterns
+✅ **GitHub Pages deployed** - Documentation site live at https://pjt222.github.io/putior/
 
 ## Development Best Practices References
 @../development-guides/r-package-development-best-practices.md
 @../development-guides/wsl-rstudio-claude-integration.md
 @../development-guides/general-development-setup.md
 @../development-guides/quick-reference.md
+@../development-guides/pkgdown-github-pages-deployment.md
