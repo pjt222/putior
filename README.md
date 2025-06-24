@@ -23,14 +23,19 @@
 ## 📦 Installation
 
 ```r
-# Install from GitHub (no GitHub credentials required)
+# Install from CRAN (recommended)
+install.packages("putior")
+
+# Or install from GitHub (development version)
 remotes::install_github("pjt222/putior")
 
 # Or with renv
-renv::install("pjt222/putior")
+renv::install("putior")  # CRAN version
+renv::install("pjt222/putior")  # GitHub version
 
 # Or with pak (faster)
-pak::pkg_install("pjt222/putior")
+pak::pkg_install("putior")  # CRAN version
+pak::pkg_install("pjt222/putior")  # GitHub version
 ```
 
 ## 🚀 Quick Start
