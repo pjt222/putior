@@ -13,6 +13,7 @@ This directory contains comprehensive development documentation for the putior R
 5. **[CRAN Submission Guide](05-cran-submission.md)** - Complete CRAN submission process and checklist
 6. **[CI/CD Workflows](06-ci-cd-workflows.md)** - GitHub Actions and continuous integration setup
 7. **[Asset Management](07-asset-management.md)** - Hex stickers, logos, and visual assets
+8. **[Release Checklist](08-release-checklist.md)** - Pre-release checklist and submission tracking
 
 ### Quick Reference
 
