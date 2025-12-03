@@ -122,3 +122,8 @@ inst/examples/*.png
 docs
 /doc/
 /Meta/
+
+# Local test and workflow files
+R/putior_test.R
+my_workflow.md
+test/
