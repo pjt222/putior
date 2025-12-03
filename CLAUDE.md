@@ -12,7 +12,7 @@ putior is an R package that extracts structured annotations from source code fil
 
 ### Critical Files for Development
 - `.Renviron`: Contains Pandoc path for vignette building: `RSTUDIO_PANDOC="C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools"`
-- `.Rprofile`: Contains renv activation and conditional acquaint MCP session loading
+- `.Rprofile`: Contains renv activation and conditional mcptools MCP session loading
 - **NEVER delete these files** - they are essential for development workflow
 
 ### Key Commands
@@ -72,7 +72,7 @@ putior is an R package that extracts structured annotations from source code fil
 - README with auto-generated examples capability
 
 ### CI/CD Considerations
-- GitHub Actions may fail if development dependencies (like `acquaint`) aren't available
+- GitHub Actions may fail if development dependencies (like `mcptools`) aren't available
 - Solution: Use conditional loading with `requireNamespace()` in `.Rprofile`
 - Spell check passes cleanly with comprehensive WORDLIST
 
@@ -85,12 +85,12 @@ putior is an R package that extracts structured annotations from source code fil
 - All dependencies are from CRAN (no GitHub packages)
 
 ### Development-Only Tools (NOT in renv.lock)
-- **acquaint**: MCP server for AI-assisted development
-- **btw**: Dependency of acquaint
-- Install separately when needed: `remotes::install_github("posit-dev/acquaint")`
+- **mcptools**: MCP server for AI-assisted development
+- **btw**: Dependency of mcptools
+- Install separately when needed: `remotes::install_github("posit-dev/mcptools")`
 - Loaded conditionally in .Rprofile if available
 - Excluded from renv.lock to avoid GitHub credential warnings for users
-- Configure renv to ignore: `renv::settings$ignored.packages(c("acquaint", "btw"))`
+- Configure renv to ignore: `renv::settings$ignored.packages(c("mcptools", "btw"))`
 
 ## Recent Major Accomplishments
 
