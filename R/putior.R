@@ -163,7 +163,7 @@ put <- function(path,
   }
 }
 
-#put id:"process_file", label:"Process Single File", node_type:"process", input:"putior.R", output:"annotations.rds"
+#put id:"process_file", label:"Process Single File", node_type:"process", input:"source_files", output:"annotations.rds"
 #' Process a single file for PUT annotations
 #' @param file Path to file
 #' @param include_line_numbers Whether to include line numbers
@@ -288,7 +288,7 @@ process_single_file <- function(file, include_line_numbers, validate) {
   )
 }
 
-#put id:"validate", label:"Validate Annotations", node_type:"process", input:"annotations.rds", output:"putior.R"
+#put id:"validate", label:"Validate Annotations", node_type:"process", input:"annotations.rds", output:"validated_annotations.rds"
 #' Validate PUT annotation for common issues
 #' @param properties List of annotation properties
 #' @param line_content Original line content

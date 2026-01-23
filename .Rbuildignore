@@ -7,6 +7,7 @@
 ^\.Renviron$
 ^\.Rprofile$
 ^\.claude$
+^\.claude/
 ^\.git$
 ^\.github$
 ^\.Rproj\.user$
@@ -30,3 +31,5 @@
 ^.*\.tar\.gz$
 ^vign_test$
 ^CRAN-SUBMISSION$
+^docs-dev$
+^my_workflow\.md$

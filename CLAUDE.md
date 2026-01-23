@@ -95,7 +95,7 @@ putior is an R package that extracts structured annotations from source code fil
 ## Recent Major Accomplishments
 
 1. **Multiline annotation support** - Implemented backslash continuation syntax
-2. **Hex sticker organization** - Clean separation of handcrafted vs generated assets  
+2. **Hex sticker organization** - Clean separation of handcrafted vs generated assets
 3. **Development environment restoration** - Proper `.Renviron`/`.Rprofile` setup
 4. **File structure cleanup** - Removed 4.2MB of temporary files while preserving essentials
 5. **CI/CD fixes** - Resolved GitHub Actions failures with conditional package loading
@@ -103,6 +103,96 @@ putior is an R package that extracts structured annotations from source code fil
 7. **Spelling compliance** - Complete WORDLIST for technical terms and proper names
 8. **Clean renv.lock** - Removed development-only GitHub dependencies to eliminate credential warnings
 9. **Variable reference feature** - Comprehensive example demonstrating `.internal` extension usage
+10. **Metadata Display (Issue #3)** - Show source file info in diagram nodes with `show_source_info` parameter
+11. **Clickable Hyperlinks (Issue #4)** - Make nodes clickable with `enable_clicks` and `click_protocol` parameters
+12. **Auto-Annotation Feature (Issue #5)** - Automatic workflow detection from code analysis (roxygen2-style)
+
+## Auto-Annotation Feature (GitHub Issue #5)
+
+### Overview
+Automatic detection of workflow elements from code analysis, similar to how roxygen2 auto-generates documentation skeletons. Two primary modes:
+
+1. **Direct detection**: `put_auto()` analyzes code and produces workflow data without requiring annotations
+2. **Comment generation**: `put_generate()` creates `#put` annotation text for persistent documentation
+
+### Core Functions
+
+#### `put_auto()` - Auto-detect workflow from code
+```r
+# Analyze code to detect inputs/outputs automatically
+workflow <- put_auto("./src/")
+put_diagram(workflow)
+
+# Control what to detect
+workflow <- put_auto("./src/",
+                     detect_inputs = TRUE,
+                     detect_outputs = TRUE,
+                     detect_dependencies = TRUE)
+```
+
+#### `put_generate()` - Generate annotation comments (roxygen2-style)
+```r
+# Print suggested annotations to console
+put_generate("./src/")
+
+# Copy to clipboard for pasting
+put_generate("./src/", output = "clipboard")
+
+# Single-line or multiline style
+put_generate("./src/", style = "multiline")
+put_generate("./src/", style = "single")
+```
+
+#### `put_merge()` - Combine manual + auto annotations
+```r
+# Manual annotations override auto-detected
+workflow <- put_merge("./src/", merge_strategy = "manual_priority")
+
+# Auto fills in missing input/output fields
+workflow <- put_merge("./src/", merge_strategy = "supplement")
+
+# Combine all detected I/O from both sources
+workflow <- put_merge("./src/", merge_strategy = "union")
+```
+
+#### `get_detection_patterns()` - View/customize patterns
+```r
+# Get all R patterns
+patterns <- get_detection_patterns("r")
+
+# Get only input patterns for Python
+input_patterns <- get_detection_patterns("python", type = "input")
+```
+
+### Supported Detection Patterns
+
+**R Language:**
+- Inputs: `read.csv`, `read_csv`, `readRDS`, `load`, `fread`, `read_excel`, `fromJSON`, `read_parquet`, etc.
+- Outputs: `write.csv`, `saveRDS`, `ggsave`, `pdf`, `png`, `write_parquet`, etc.
+- Dependencies: `source()`, `sys.source()`
+
+**Python:**
+- Inputs: `pd.read_csv`, `pd.read_excel`, `json.load`, `pickle.load`, `np.load`, etc.
+- Outputs: `.to_csv`, `.to_excel`, `json.dump`, `plt.savefig`, etc.
+
+**Also supported:** SQL, Shell, Julia
+
+### Workflow Integration
+```
+Source Files ──┬──> put()      ──> Manual Annotations ─┬─> put_merge() ──> put_diagram()
+               │                                       │
+               └──> put_auto() ──> Auto Annotations  ──┘
+```
+
+### Use Cases
+1. **Quick Visualization**: `put_auto()` for instant workflow diagrams without any annotations
+2. **Skeleton Generation**: `put_generate()` to create annotation templates for new files
+3. **Hybrid Workflow**: `put_merge()` for manual control over key files with auto-fill for rest
+4. **Project Onboarding**: Instantly understand data flow in unfamiliar codebases
+
+### Reference
+- **Example**: `inst/examples/auto-annotation-example.R`
+- **Tests**: `tests/testthat/test-put_auto.R`, `tests/testthat/test-put_generate.R`
 
 ## Variable Reference Implementation (GitHub Issue #2)
 
@@ -135,6 +225,56 @@ write.csv(results, 'results.csv')
 ### Reference
 - **Example**: `inst/examples/variable-reference-example.R`
 - **GitHub Issues**: #2 (original discussion), #3 (metadata), #4 (hyperlinks)
+
+## Interactive Diagram Features (GitHub Issues #3 & #4)
+
+### Metadata Display (show_source_info)
+Displays source file information in diagram nodes to help users identify where each workflow step is defined.
+
+**Parameters:**
+- `show_source_info = TRUE/FALSE` (default: FALSE) - Enable/disable source info display
+- `source_info_style = "inline"/"subgraph"` (default: "inline") - How to display the info
+
+**Usage:**
+```r
+# Inline style - shows file name below node label
+put_diagram(workflow, show_source_info = TRUE)
+
+# Subgraph style - groups nodes by source file
+put_diagram(workflow, show_source_info = TRUE, source_info_style = "subgraph")
+```
+
+### Clickable Hyperlinks (enable_clicks)
+Makes diagram nodes clickable to open source files directly in your preferred editor.
+
+**Parameters:**
+- `enable_clicks = TRUE/FALSE` (default: FALSE) - Enable/disable clickable nodes
+- `click_protocol = "vscode"/"file"/"rstudio"` (default: "vscode") - URL protocol
+
+**Supported Protocols:**
+- `"vscode"` - VS Code (vscode://file/path:line)
+- `"file"` - Standard file:// protocol
+- `"rstudio"` - RStudio (rstudio://open-file?path=)
+
+**Usage:**
+```r
+# Enable VS Code clicks
+put_diagram(workflow, enable_clicks = TRUE)
+
+# Use RStudio protocol
+put_diagram(workflow, enable_clicks = TRUE, click_protocol = "rstudio")
+
+# Combine with source info
+put_diagram(workflow, show_source_info = TRUE, enable_clicks = TRUE)
+```
+
+**Notes:**
+- Line numbers are included when available from annotations
+- Artifact nodes (data files) are excluded from click directives
+- Both features are backward compatible (off by default)
+
+### Reference
+- **Example**: `inst/examples/interactive-diagrams-example.R`
 
 ## GitHub Pages Deployment
 

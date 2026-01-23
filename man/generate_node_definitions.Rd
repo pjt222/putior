@@ -7,7 +7,8 @@
 generate_node_definitions(
   workflow,
   node_labels = "label",
-  show_workflow_boundaries = TRUE
+  show_workflow_boundaries = TRUE,
+  show_source_info = FALSE
 )
 }
 \arguments{
@@ -16,6 +17,8 @@ generate_node_definitions(
 \item{node_labels}{What to show in node labels}
 
 \item{show_workflow_boundaries}{Whether to apply special styling to start/end nodes}
+
+\item{show_source_info}{Whether to append source file info to node labels}
 }
 \value{
 Character vector of node definitions
