@@ -318,6 +318,46 @@ put_diagram(workflow, show_source_info = TRUE, enable_clicks = TRUE)
 ### Reference
 - **Example**: `inst/examples/interactive-diagrams-example.R`
 
+## Quarto Integration
+
+### Overview
+putior diagrams can be embedded in Quarto (`.qmd`) documents for reproducible reports and dashboards.
+
+### Key Insights
+
+**Challenge**: Quarto's native `{mermaid}` chunks are static and cannot use dynamically generated R content. Using `output: asis` with code folding causes R code to be included inside the mermaid block, breaking rendering.
+
+**Solution**: Separate the code into two chunks:
+1. **Visible chunk** (with code folding): Generates mermaid code and stores in variable
+2. **Hidden chunk** (`echo: false`, `output: asis`): Outputs the `<pre class="mermaid">` HTML
+
+**Mermaid.js Loading**: Quarto only auto-loads mermaid.js for native `{mermaid}` chunks. For dynamic R-generated diagrams, load via CDN in YAML header:
+```yaml
+format:
+  html:
+    include-after-body:
+      text: |
+        <script type="module">
+          import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+          mermaid.initialize({ startOnLoad: true });
+        </script>
+```
+
+### Usage Pattern
+```r
+# Chunk 1: Generate code (visible, foldable)
+workflow <- put("./R/")
+mermaid_code <- put_diagram(workflow, output = "raw")
+
+# Chunk 2: Output HTML (hidden)
+cat('<pre class="mermaid">\n')
+cat(mermaid_code)
+cat('\n</pre>\n')
+```
+
+### Reference
+- **Example**: `inst/examples/quarto-example.qmd`
+
 ## GitHub Pages Deployment
 
 ### Current Configuration

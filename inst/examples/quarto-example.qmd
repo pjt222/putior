@@ -1,0 +1,72 @@
+---
+title: "putior Workflow Diagram"
+format:
+  html:
+    code-fold: true
+    code-summary: "Show code"
+    include-after-body:
+      text: |
+        <script type="module">
+          import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+          mermaid.initialize({ startOnLoad: true });
+        </script>
+---
+
+## Workflow Visualization
+
+This example demonstrates how to embed putior-generated Mermaid diagrams in Quarto documents.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show code"
+library(putior)
+
+# Create sample workflow data
+workflow <- data.frame(
+  id = c("load", "process", "save"),
+  label = c("Load Data", "Process", "Save Results"),
+  file_name = c("load.R", "process.R", "save.R"),
+  node_type = c("input", "process", "output"),
+  input = c(NA, "raw.csv", "clean.csv"),
+  output = c("raw.csv", "clean.csv", "results.csv"),
+  stringsAsFactors = FALSE
+)
+
+# Generate mermaid code
+mermaid_code <- put_diagram(workflow, output = "raw")
+```
+
+```{r}
+#| echo: false
+#| output: asis
+
+# Output as raw HTML for Mermaid.js
+cat('<pre class="mermaid">\n')
+cat(mermaid_code)
+cat('\n</pre>\n')
+```
+
+## How It Works
+
+The key techniques used:
+
+1. **`output: asis`** - Tells Quarto to render the chunk output as raw HTML
+2. **`put_diagram(output = "raw")`** - Returns mermaid code without markdown fences
+3. **`<pre class="mermaid">`** - Mermaid.js renders content in elements with class "mermaid"
+4. **Mermaid CDN** - Script loaded via `include-after-body` in YAML header
+
+## Using with Real Files
+
+To visualize an actual project workflow:
+
+```{r}
+#| eval: false
+# Extract workflow from annotated R files
+workflow <- put("./R/")
+
+# Generate and output mermaid diagram
+mermaid_code <- put_diagram(workflow, output = "raw")
+cat('<pre class="mermaid">\n')
+cat(mermaid_code)
+cat('\n</pre>\n')
+```
