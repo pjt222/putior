@@ -453,9 +453,75 @@ GitHub sends email notifications for:
 - Breaking changes in actions
 - Performance improvements
 
+## GitHub Pages Deployment Review (January 2026)
+
+### Verification Checklist
+
+| Check | Command | Expected Result |
+|-------|---------|-----------------|
+| gh-pages branch exists | `git branch -r \| grep gh-pages` | `origin/gh-pages` |
+| Workflow succeeds | `gh run list --workflow=pkgdown-gh-pages` | All runs show `success` |
+| Site returns HTTP 200 | `curl -sI https://pjt222.github.io/putior/ \| head -1` | `HTTP/2 200` |
+| Development mode disabled | Check `_pkgdown.yml` lines 217-219 | Commented out |
+
+### Critical Success Factors
+
+1. **Development Mode Must Be Disabled**
+   ```yaml
+   # _pkgdown.yml - This MUST be commented out
+   # development:
+   #   mode: auto
+   ```
+   When enabled, pkgdown builds the site in a `/dev/` subdirectory, causing 404 errors for root-level GitHub Pages deployment.
+
+2. **Branch-Based Deployment**
+   - Uses `JamesIves/github-pages-deploy-action@v4`
+   - Deploys to `gh-pages` branch (not GitHub Actions deployment)
+   - `clean: true` ensures fresh deployments without stale files
+
+3. **GitHub Pages Settings**
+   - Source: "Deploy from a branch"
+   - Branch: `gh-pages`
+   - Folder: `/ (root)`
+
+### Configuration Files Summary
+
+| File | Purpose | Key Setting |
+|------|---------|-------------|
+| `_pkgdown.yml` | Site configuration | Development mode disabled |
+| `.github/workflows/pkgdown-gh-pages.yaml` | CI/CD workflow | Branch deployment to gh-pages |
+| `.Rbuildignore` | Package build exclusions | `^docs$` excluded |
+| `.github/workflows/pkgdown.yaml.disabled` | Archived workflow | Preserved for reference |
+
+### Deployment Flow
+
+```
+Push to main → pkgdown-gh-pages workflow triggers
+    ↓
+Build site with pkgdown::build_site_github_pages()
+    ↓
+Deploy docs/ to gh-pages branch
+    ↓
+GitHub Pages serves from gh-pages root
+    ↓
+Site live at https://pjt222.github.io/putior/
+```
+
+### Why Branch-Based Over Actions Deployment?
+
+| Aspect | Branch-Based | Actions Deployment |
+|--------|-------------|-------------------|
+| Reliability | More predictable | Can have config conflicts |
+| Debugging | Easy to inspect gh-pages branch | Artifacts less accessible |
+| Rollback | `git revert` on gh-pages | Re-run previous workflow |
+| Setup | Slightly more steps | Newer, fewer steps |
+
+Branch-based deployment was chosen for this package due to its reliability and ease of troubleshooting.
+
 ## Additional Resources
 
 - **GitHub Actions Documentation**: https://docs.github.com/en/actions
 - **r-lib/actions**: https://github.com/r-lib/actions
 - **pkgdown**: https://pkgdown.r-lib.org/
 - **R-hub**: https://r-hub.github.io/rhub/
+- **GitHub Pages Troubleshooting**: See `development-guides/pkgdown-github-pages-deployment.md`
