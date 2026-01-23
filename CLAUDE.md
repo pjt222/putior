@@ -321,38 +321,44 @@ put_diagram(workflow, show_source_info = TRUE, enable_clicks = TRUE)
 ## Quarto Integration
 
 ### Overview
-putior diagrams can be embedded in Quarto (`.qmd`) documents for reproducible reports and dashboards.
+putior diagrams can be embedded in Quarto (`.qmd`) documents for reproducible reports and dashboards using native Mermaid chunk support.
 
-### Key Insights
+### Quarto Availability
+Quarto is bundled with RStudio. To render `.qmd` files:
+- **RStudio**: Use the "Render" button or `quarto::quarto_render()`
+- **Command line (Windows/WSL)**: Use Quarto CLI from RStudio's bundled installation:
+  ```bash
+  # From WSL
+  "/mnt/c/Program Files/RStudio/resources/app/bin/quarto/bin/quarto.exe" render file.qmd
+  ```
 
-**Challenge**: Quarto's native `{mermaid}` chunks are static and cannot use dynamically generated R content. Using `output: asis` with code folding causes R code to be included inside the mermaid block, breaking rendering.
+### Key Technique: `knitr::knit_child()`
 
-**Solution**: Separate the code into two chunks:
+**Challenge**: Quarto's native `{mermaid}` chunks are static and cannot directly use dynamically generated R content.
+
+**Solution**: Use `knitr::knit_child()` to dynamically generate a native `{mermaid}` chunk from R code:
+
 1. **Visible chunk** (with code folding): Generates mermaid code and stores in variable
-2. **Hidden chunk** (`echo: false`, `output: asis`): Outputs the `<pre class="mermaid">` HTML
+2. **Hidden chunk** (`output: asis`, `echo: false`): Uses `knit_child()` to process a dynamically created mermaid chunk
 
-**Mermaid.js Loading**: Quarto only auto-loads mermaid.js for native `{mermaid}` chunks. For dynamic R-generated diagrams, load via CDN in YAML header:
-```yaml
-format:
-  html:
-    include-after-body:
-      text: |
-        <script type="module">
-          import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-          mermaid.initialize({ startOnLoad: true });
-        </script>
-```
+This approach:
+- Uses Quarto's native Mermaid support (no CDN required)
+- Maintains code folding for the R code
+- Produces proper Mermaid diagrams with Quarto's built-in styling
 
 ### Usage Pattern
 ```r
 # Chunk 1: Generate code (visible, foldable)
 workflow <- put("./R/")
 mermaid_code <- put_diagram(workflow, output = "raw")
+```
 
-# Chunk 2: Output HTML (hidden)
-cat('<pre class="mermaid">\n')
-cat(mermaid_code)
-cat('\n</pre>\n')
+```r
+# Chunk 2: Output as native mermaid chunk (hidden)
+#| output: asis
+#| echo: false
+mermaid_chunk <- paste0("```{mermaid}\n", mermaid_code, "\n```")
+cat(knitr::knit_child(text = mermaid_chunk, quiet = TRUE))
 ```
 
 ### Reference
