@@ -24,6 +24,9 @@ NULL
 #'   be detected? Default: TRUE
 #' @param include_line_numbers Logical. Should line numbers be included?
 #'   Default: FALSE
+#' @param log_level Character string specifying log verbosity for this call.
+#'   Overrides the global option \code{putior.log_level} when specified.
+#'   Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.
 #'
 #' @return A data frame in the same format as \code{\link{put}()}, containing:
 #'   \itemize{
@@ -62,7 +65,15 @@ put_auto <- function(path,
                      detect_inputs = TRUE,
                      detect_outputs = TRUE,
                      detect_dependencies = TRUE,
-                     include_line_numbers = FALSE) {
+                     include_line_numbers = FALSE,
+                     log_level = NULL) {
+  # Set log level for this call if specified
+  restore_log_level <- with_log_level(log_level)
+  on.exit(restore_log_level(), add = TRUE)
+
+  putior_log("INFO", "Starting auto-detection scan")
+  putior_log("DEBUG", "Auto-detection parameters: path='{path}', detect_inputs={detect_inputs}, detect_outputs={detect_outputs}, detect_dependencies={detect_dependencies}")
+
   # Input validation
   if (!is.character(path) || length(path) != 1) {
     stop("'path' must be a single character string")
@@ -90,14 +101,18 @@ put_auto <- function(path,
   }
 
   if (length(files) == 0) {
+    putior_log("WARN", "No files matching pattern '{pattern}' found in: {path}")
     warning("No files matching pattern '", pattern, "' found in: ", path)
     return(empty_auto_result_df(include_line_numbers))
   }
+
+  putior_log("INFO", "Found {length(files)} file(s) to analyze")
 
   # Process each file
   results <- list()
 
   for (file in files) {
+    putior_log("DEBUG", "Auto-detecting workflow elements in: {basename(file)}")
     file_result <- detect_workflow_elements(
       file,
       detect_inputs = detect_inputs,
@@ -115,8 +130,10 @@ put_auto <- function(path,
   if (length(results) > 0) {
     df <- do.call(rbind, lapply(results, as.data.frame, stringsAsFactors = FALSE))
     rownames(df) <- NULL
+    putior_log("INFO", "Auto-detection complete: found {nrow(df)} workflow node(s)")
     return(df)
   } else {
+    putior_log("INFO", "Auto-detection complete: no workflow elements detected")
     return(empty_auto_result_df(include_line_numbers))
   }
 }
@@ -375,8 +392,11 @@ detect_workflow_elements <- function(file,
     language <- ext_to_language(file_ext)
 
     if (is.null(language)) {
+      putior_log("DEBUG", "Unsupported file extension '{file_ext}' for {basename(file)}")
       return(NULL)
     }
+
+    putior_log("DEBUG", "Detected language '{language}' for {basename(file)}")
 
     # Get detection patterns
     patterns <- get_detection_patterns(language)
@@ -392,17 +412,26 @@ detect_workflow_elements <- function(file,
       input_result <- detect_files_from_patterns(content, lines, patterns$input)
       inputs <- input_result$files
       input_lines <- input_result$lines
+      if (length(inputs) > 0) {
+        putior_log("DEBUG", "Detected {length(inputs)} input(s) in {basename(file)}: {paste(inputs, collapse=', ')}")
+      }
     }
 
     if (detect_outputs) {
       output_result <- detect_files_from_patterns(content, lines, patterns$output)
       outputs <- output_result$files
       output_lines <- output_result$lines
+      if (length(outputs) > 0) {
+        putior_log("DEBUG", "Detected {length(outputs)} output(s) in {basename(file)}: {paste(outputs, collapse=', ')}")
+      }
     }
 
     if (detect_dependencies) {
       dep_result <- detect_files_from_patterns(content, lines, patterns$dependency)
       dependencies <- dep_result$files
+      if (length(dependencies) > 0) {
+        putior_log("DEBUG", "Detected {length(dependencies)} dependency(ies) in {basename(file)}")
+      }
     }
 
     # Generate node ID and label from filename

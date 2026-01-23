@@ -15,6 +15,9 @@
 #'   Default: FALSE
 #' @param validate Logical. Should annotations be validated for common issues?
 #'   Default: TRUE
+#' @param log_level Character string specifying log verbosity for this call.
+#'   Overrides the global option \code{putior.log_level} when specified.
+#'   Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.
 #'
 #' @return A data frame containing file names and all properties found in annotations.
 #'   Always includes columns: file_name, file_type, and any properties found in
@@ -91,7 +94,15 @@ put <- function(path,
                 pattern = "\\.(R|r|py|sql|sh|jl)$",
                 recursive = FALSE,
                 include_line_numbers = FALSE,
-                validate = TRUE) {
+                validate = TRUE,
+                log_level = NULL) {
+  # Set log level for this call if specified
+  restore_log_level <- with_log_level(log_level)
+  on.exit(restore_log_level(), add = TRUE)
+
+  putior_log("INFO", "Starting PUT annotation scan")
+  putior_log("DEBUG", "Scan parameters: path='{path}', pattern='{pattern}', recursive={recursive}")
+
   # Input validation
   if (!is.character(path) || length(path) != 1) {
     stop("'path' must be a single character string")
@@ -119,15 +130,20 @@ put <- function(path,
   }
 
   if (length(files) == 0) {
+    putior_log("WARN", "No files matching pattern '{pattern}' found in: {path}")
     warning("No files matching pattern '", pattern, "' found in: ", path)
     return(empty_result_df(include_line_numbers))
   }
+
+  putior_log("INFO", "Found {length(files)} file(s) to scan")
+  putior_log("DEBUG", "Files: {paste(basename(files), collapse=', ')}")
 
   # Process files
   results <- list()
   processing_errors <- character()
 
   for (file in files) {
+    putior_log("DEBUG", "Processing file: {basename(file)}")
     file_result <- process_single_file(file, include_line_numbers, validate)
 
     if (is.character(file_result)) {
@@ -147,18 +163,21 @@ put <- function(path,
   # Convert results to data frame
   if (length(results) > 0) {
     df <- convert_results_to_df(results, include_line_numbers)
-    
+
     # Check for duplicate IDs if validation is enabled
     if (validate && "id" %in% names(df)) {
       duplicate_ids <- df$id[duplicated(df$id) & !is.na(df$id)]
       if (length(duplicate_ids) > 0) {
-        warning("Duplicate node IDs found: ", paste(unique(duplicate_ids), collapse = ", "), 
+        putior_log("WARN", "Duplicate node IDs found: {paste(unique(duplicate_ids), collapse=', ')}")
+        warning("Duplicate node IDs found: ", paste(unique(duplicate_ids), collapse = ", "),
                 "\nEach node must have a unique ID within the workflow.")
       }
     }
-    
+
+    putior_log("INFO", "Scan complete: found {nrow(df)} workflow node(s) in {length(files)} file(s)")
     return(df)
   } else {
+    putior_log("INFO", "Scan complete: no PUT annotations found in {length(files)} file(s)")
     empty_result_df(include_line_numbers)
   }
 }
@@ -175,13 +194,17 @@ process_single_file <- function(file, include_line_numbers, validate) {
     {
       # Read file with proper encoding handling
       lines <- readLines(file, warn = FALSE, encoding = "UTF-8")
+      putior_log("DEBUG", "Read {length(lines)} lines from {basename(file)}")
 
       # Find PUT annotation lines
       put_line_indices <- grep("^\\s*#\\s*put(\\||\\s+|:)", lines)
 
       if (length(put_line_indices) == 0) {
+        putior_log("DEBUG", "No PUT annotations found in {basename(file)}")
         return(list())
       }
+
+      putior_log("DEBUG", "Found {length(put_line_indices)} PUT annotation(s) in {basename(file)}")
 
       file_ext <- tolower(tools::file_ext(file))
       file_results <- list()
@@ -193,9 +216,10 @@ process_single_file <- function(file, include_line_numbers, validate) {
         # Check if this is a multiline annotation (ends with backslash)
         full_content <- line_content
         current_idx <- line_idx
-        
+
         # Collect continuation lines if this is a multiline annotation
         if (grepl("\\\\\\s*$", full_content)) {
+          putior_log("DEBUG", "Multiline annotation detected at line {line_idx} in {basename(file)}")
           has_continuation <- TRUE
           
           while (has_continuation && current_idx < length(lines)) {

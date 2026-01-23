@@ -62,7 +62,7 @@ putior is an R package that extracts structured annotations from source code fil
 - **Win-builder R-release**: ✅ 1 NOTE (new submission only)
 - **R-hub**: ✅ 4/5 platforms PASS (linux, macos, windows, ubuntu-release; nosuggests expected fail)
 - All vignettes build successfully with Pandoc
-- All tests pass (338 tests including multiline annotation support)
+- All tests pass (527+ tests including multiline annotation, auto-detection, and logging support)
 - Comprehensive multiline PUT annotation support implemented
 
 ### Documentation Quality
@@ -106,6 +106,7 @@ putior is an R package that extracts structured annotations from source code fil
 10. **Metadata Display (Issue #3)** - Show source file info in diagram nodes with `show_source_info` parameter
 11. **Clickable Hyperlinks (Issue #4)** - Make nodes clickable with `enable_clicks` and `click_protocol` parameters
 12. **Auto-Annotation Feature (Issue #5)** - Automatic workflow detection from code analysis (roxygen2-style)
+13. **Structured Logging** - Optional logger package integration for debugging annotation parsing and diagram generation
 
 ## Auto-Annotation Feature (GitHub Issue #5)
 
@@ -193,6 +194,47 @@ Source Files ──┬──> put()      ──> Manual Annotations ─┬─> p
 ### Reference
 - **Example**: `inst/examples/auto-annotation-example.R`
 - **Tests**: `tests/testthat/test-put_auto.R`, `tests/testthat/test-put_generate.R`
+
+## Logging System
+
+### Overview
+putior includes optional structured logging via the `logger` package for debugging annotation parsing, workflow detection, and diagram generation.
+
+### Key Characteristics
+- **Optional dependency**: `logger` in Suggests, not Imports
+- **Silent degradation**: Package works without logger installed
+- **No user-facing errors** if logger is missing
+
+### Log Levels
+| Level | Purpose |
+|-------|---------|
+| DEBUG | Fine-grained operations (file-by-file, pattern matching) |
+| INFO | Progress milestones (scan started, nodes found, diagram complete) |
+| WARN | Issues that don't stop execution (validation issues) - **default** |
+| ERROR | Fatal issues (via existing `stop()` calls) |
+
+### Configuration
+
+**Global option:**
+```r
+# Set for entire session
+options(putior.log_level = "DEBUG")
+
+# Or use the helper function
+set_putior_log_level("DEBUG")
+```
+
+**Per-call override:**
+```r
+# Override for a single call
+workflow <- put("./R/", log_level = "DEBUG")
+put_diagram(workflow, log_level = "INFO")
+```
+
+### Key Files
+- `R/logging.R` - Logging infrastructure
+- `R/zzz.R` - Package initialization
+- `tests/testthat/test-logging.R` - Logging tests
 
 ## Variable Reference Implementation (GitHub Issue #2)
 

@@ -19,7 +19,8 @@ put_diagram(
   show_source_info = FALSE,
   source_info_style = "inline",
   enable_clicks = FALSE,
-  click_protocol = "vscode"
+  click_protocol = "vscode",
+  log_level = NULL
 )
 }
 \arguments{
@@ -78,6 +79,10 @@ Default is FALSE for backward compatibility.}
 \item "file" - Standard file:// protocol
 \item "rstudio" - RStudio IDE (rstudio://open-file?path=)
 }}
+
+\item{log_level}{Character string specifying log verbosity for this call.
+Overrides the global option \code{putior.log_level} when specified.
+Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.}
 }
 \value{
 Character string containing the mermaid diagram code

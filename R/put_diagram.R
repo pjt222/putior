@@ -45,6 +45,9 @@
 #'     \item "file" - Standard file:// protocol
 #'     \item "rstudio" - RStudio IDE (rstudio://open-file?path=)
 #'   }
+#' @param log_level Character string specifying log verbosity for this call.
+#'   Overrides the global option \code{putior.log_level} when specified.
+#'   Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.
 #'
 #' @return Character string containing the mermaid diagram code
 #' @export
@@ -103,7 +106,15 @@ put_diagram <- function(workflow,
                         show_source_info = FALSE,
                         source_info_style = "inline",
                         enable_clicks = FALSE,
-                        click_protocol = "vscode") {
+                        click_protocol = "vscode",
+                        log_level = NULL) {
+  # Set log level for this call if specified
+  restore_log_level <- with_log_level(log_level)
+  on.exit(restore_log_level(), add = TRUE)
+
+  putior_log("INFO", "Starting diagram generation")
+  putior_log("DEBUG", "Diagram parameters: direction='{direction}', theme='{theme}', show_artifacts={show_artifacts}")
+
   # Input validation
   if (!is.data.frame(workflow) || nrow(workflow) == 0) {
     stop("workflow must be a non-empty data frame returned by put()")
@@ -152,6 +163,8 @@ put_diagram <- function(workflow,
     stop("No valid workflow nodes found (all IDs are missing or empty)")
   }
 
+  putior_log("DEBUG", "Processing {nrow(workflow)} workflow node(s)")
+
   # Start building the mermaid diagram
   mermaid_lines <- character()
 
@@ -165,11 +178,13 @@ put_diagram <- function(workflow,
 
   # Handle artifacts if requested
   if (show_artifacts) {
+    putior_log("DEBUG", "Creating artifact nodes for data files")
     # Create artifact nodes for data files
     artifact_nodes <- create_artifact_nodes(workflow)
-    
+
     # Combine workflow with artifact nodes
     if (nrow(artifact_nodes) > 0) {
+      putior_log("DEBUG", "Created {nrow(artifact_nodes)} artifact node(s)")
       # Add is_artifact column to original workflow if it doesn't exist
       if (!"is_artifact" %in% names(workflow)) {
         workflow$is_artifact <- FALSE
@@ -201,6 +216,7 @@ put_diagram <- function(workflow,
   }
 
   # Generate node definitions (use subgraphs if requested)
+  putior_log("DEBUG", "Generating node definitions")
   if (show_source_info && source_info_style == "subgraph") {
     node_definitions <- generate_file_subgraphs(
       combined_workflow, node_labels, show_workflow_boundaries
@@ -213,15 +229,19 @@ put_diagram <- function(workflow,
     )
   }
   mermaid_lines <- c(mermaid_lines, node_definitions)
+  putior_log("DEBUG", "Created {length(node_definitions)} node definition line(s)")
 
   # Generate connections
+  putior_log("DEBUG", "Generating connections between nodes")
   connections <- generate_connections(combined_workflow, show_files, show_artifacts)
   if (length(connections) > 0) {
     mermaid_lines <- c(mermaid_lines, "", "    %% Connections", connections)
+    putior_log("DEBUG", "Created {length(connections)} connection(s)")
   }
 
   # Add styling based on theme
   if (style_nodes && "node_type" %in% names(combined_workflow)) {
+    putior_log("DEBUG", "Applying '{theme}' theme styling")
     styling <- generate_node_styling(combined_workflow, theme, show_workflow_boundaries)
     if (length(styling) > 0) {
       mermaid_lines <- c(mermaid_lines, "", "    %% Styling", styling)
@@ -238,6 +258,9 @@ put_diagram <- function(workflow,
 
   # Combine into final diagram
   mermaid_code <- paste(mermaid_lines, collapse = "\n")
+
+  putior_log("INFO", "Diagram generation complete: {nrow(combined_workflow)} node(s), {length(connections)} connection(s)")
+  putior_log("DEBUG", "Output format: '{output}'")
 
   # Handle output
   handle_output(mermaid_code, output, file, title)

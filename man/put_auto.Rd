@@ -11,7 +11,8 @@ put_auto(
   detect_inputs = TRUE,
   detect_outputs = TRUE,
   detect_dependencies = TRUE,
-  include_line_numbers = FALSE
+  include_line_numbers = FALSE,
+  log_level = NULL
 )
 }
 \arguments{
@@ -33,6 +34,10 @@ be detected? Default: TRUE}
 
 \item{include_line_numbers}{Logical. Should line numbers be included?
 Default: FALSE}
+
+\item{log_level}{Character string specifying log verbosity for this call.
+Overrides the global option \code{putior.log_level} when specified.
+Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.}
 }
 \value{
 A data frame in the same format as \code{\link{put}()}, containing:

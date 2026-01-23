@@ -9,7 +9,8 @@ put(
   pattern = "\\\\.(R|r|py|sql|sh|jl)$",
   recursive = FALSE,
   include_line_numbers = FALSE,
-  validate = TRUE
+  validate = TRUE,
+  log_level = NULL
 )
 }
 \arguments{
@@ -27,6 +28,10 @@ Default: FALSE}
 
 \item{validate}{Logical. Should annotations be validated for common issues?
 Default: TRUE}
+
+\item{log_level}{Character string specifying log verbosity for this call.
+Overrides the global option \code{putior.log_level} when specified.
+Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.}
 }
 \value{
 A data frame containing file names and all properties found in annotations.
