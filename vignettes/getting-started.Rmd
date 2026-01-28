@@ -44,6 +44,22 @@ source(system.file("examples", "reprex.R", package = "putior"))
 
 This creates a sample multi-language workflow and demonstrates the workflow extraction capabilities of putior.
 
+### Live Example
+
+Here's a working example using putior's own source code (the package documents itself!):
+
+```{r eval=TRUE}
+library(putior)
+
+# Extract workflow from putior's own R source files
+workflow <- put(system.file("examples", "reprex.R", package = "putior"))
+
+# View the extracted workflow nodes
+print(workflow)
+```
+
+This demonstrates how putior extracts structured workflow data from annotated source files.
+
 ## Basic Workflow
 
 ### Step 1: Add PUT Annotations to Your Code
@@ -517,12 +533,12 @@ Now that you understand the basics of putior:
 
 1. **Try the complete example**: `source(system.file("examples", "reprex.R", package = "putior"))`
 2. **Explore variable references**: See how to track variables and objects with `source(system.file("examples", "variable-reference-example.R", package = "putior"))`
-3. **Add annotations to your existing projects**: Start with key data processing scripts
-4. **Build visualization tools**: Use the extracted workflow data to create flowcharts
-5. **Integrate into CI/CD**: Automatically update workflow documentation
-6. **Explore advanced features**: Check out the advanced usage vignette
+3. **Try interactive diagrams**: `source(system.file("examples", "interactive-diagrams-example.R", package = "putior"))`
+4. **Add annotations to your existing projects**: Start with key data processing scripts
+5. **Build visualization tools**: Use the extracted workflow data to create flowcharts
+6. **Integrate into CI/CD**: Automatically update workflow documentation
 
 For more detailed information, see:
 - `?put` - Complete function documentation
-- Advanced usage vignette - Complex workflows and integration
-- Best practices vignette - Team collaboration and style guides
+- `?put_diagram` - Diagram generation with interactive features
+- `?put_auto` - Automatic workflow detection from code analysis
