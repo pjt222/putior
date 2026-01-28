@@ -296,6 +296,188 @@ get_r_patterns <- function() {
         arg_position = 1,
         arg_name = "input",
         description = "yaml YAML file loader"
+      ),
+      # Database connections - DBI
+      list(
+        regex = "dbConnect\\s*\\(",
+        func = "dbConnect",
+        arg_position = 1,
+        arg_name = "drv",
+        description = "DBI database connection"
+      ),
+      list(
+        regex = "DBI::dbConnect\\s*\\(",
+        func = "DBI::dbConnect",
+        arg_position = 1,
+        arg_name = "drv",
+        description = "DBI database connection (namespaced)"
+      ),
+      list(
+        regex = "dbReadTable\\s*\\(",
+        func = "dbReadTable",
+        arg_position = 2,
+        arg_name = "name",
+        description = "DBI read table"
+      ),
+      list(
+        regex = "DBI::dbReadTable\\s*\\(",
+        func = "DBI::dbReadTable",
+        arg_position = 2,
+        arg_name = "name",
+        description = "DBI read table (namespaced)"
+      ),
+      list(
+        regex = "dbGetQuery\\s*\\(",
+        func = "dbGetQuery",
+        arg_position = 2,
+        arg_name = "statement",
+        description = "DBI get query results"
+      ),
+      list(
+        regex = "DBI::dbGetQuery\\s*\\(",
+        func = "DBI::dbGetQuery",
+        arg_position = 2,
+        arg_name = "statement",
+        description = "DBI get query results (namespaced)"
+      ),
+      list(
+        regex = "dbFetch\\s*\\(",
+        func = "dbFetch",
+        arg_position = 1,
+        arg_name = "res",
+        description = "DBI fetch results"
+      ),
+      list(
+        regex = "dbSendQuery\\s*\\(",
+        func = "dbSendQuery",
+        arg_position = 2,
+        arg_name = "statement",
+        description = "DBI send query"
+      ),
+      # ODBC/RODBC
+      list(
+        regex = "odbcConnect\\s*\\(",
+        func = "odbcConnect",
+        arg_position = 1,
+        arg_name = "dsn",
+        description = "RODBC connection"
+      ),
+      list(
+        regex = "odbcDriverConnect\\s*\\(",
+        func = "odbcDriverConnect",
+        arg_position = 1,
+        arg_name = "connection",
+        description = "RODBC driver connection"
+      ),
+      list(
+        regex = "sqlQuery\\s*\\(",
+        func = "sqlQuery",
+        arg_position = 2,
+        arg_name = "query",
+        description = "RODBC SQL query"
+      ),
+      list(
+        regex = "sqlFetch\\s*\\(",
+        func = "sqlFetch",
+        arg_position = 2,
+        arg_name = "sqtable",
+        description = "RODBC fetch table"
+      ),
+      # pool package (connection pooling)
+      list(
+        regex = "dbPool\\s*\\(",
+        func = "dbPool",
+        arg_position = 1,
+        arg_name = "drv",
+        description = "pool database connection pool"
+      ),
+      # Specific database packages
+      list(
+        regex = "dbplyr::tbl\\s*\\(",
+        func = "dbplyr::tbl",
+        arg_position = 2,
+        arg_name = "from",
+        description = "dbplyr table reference"
+      ),
+      list(
+        regex = "tbl\\s*\\([^)]*,\\s*['\"]",
+        func = "tbl",
+        arg_position = 2,
+        arg_name = "from",
+        description = "dplyr/dbplyr table reference"
+      ),
+      # DuckDB (R)
+      list(
+        regex = "duckdb\\s*\\(",
+        func = "duckdb",
+        arg_position = 1,
+        arg_name = "dbdir",
+        description = "DuckDB driver"
+      ),
+      list(
+        regex = "duckdb::duckdb\\s*\\(",
+        func = "duckdb::duckdb",
+        arg_position = 1,
+        arg_name = "dbdir",
+        description = "DuckDB driver (namespaced)"
+      ),
+      list(
+        regex = "duckdb_read_csv\\s*\\(",
+        func = "duckdb_read_csv",
+        arg_position = 2,
+        arg_name = "files",
+        description = "DuckDB read CSV"
+      ),
+      list(
+        regex = "duckdb::duckdb_read_csv\\s*\\(",
+        func = "duckdb::duckdb_read_csv",
+        arg_position = 2,
+        arg_name = "files",
+        description = "DuckDB read CSV (namespaced)"
+      ),
+      # MonetDBLite
+      list(
+        regex = "monetdblite\\s*\\(",
+        func = "monetdblite",
+        arg_position = 1,
+        arg_name = "dbdir",
+        description = "MonetDBLite connection"
+      ),
+      # Spark/sparklyr
+      list(
+        regex = "spark_connect\\s*\\(",
+        func = "spark_connect",
+        arg_position = NA,
+        arg_name = "master",
+        description = "sparklyr Spark connection"
+      ),
+      list(
+        regex = "spark_read_csv\\s*\\(",
+        func = "spark_read_csv",
+        arg_position = 2,
+        arg_name = "path",
+        description = "sparklyr read CSV"
+      ),
+      list(
+        regex = "spark_read_parquet\\s*\\(",
+        func = "spark_read_parquet",
+        arg_position = 2,
+        arg_name = "path",
+        description = "sparklyr read Parquet"
+      ),
+      list(
+        regex = "spark_read_json\\s*\\(",
+        func = "spark_read_json",
+        arg_position = 2,
+        arg_name = "path",
+        description = "sparklyr read JSON"
+      ),
+      list(
+        regex = "spark_read_jdbc\\s*\\(",
+        func = "spark_read_jdbc",
+        arg_position = NA,
+        arg_name = "options",
+        description = "sparklyr JDBC read"
       )
     ),
     output = list(
@@ -533,6 +715,172 @@ get_r_patterns <- function() {
         arg_position = 2,
         arg_name = "file",
         description = "yaml YAML writer"
+      ),
+      # Database outputs - DBI
+      list(
+        regex = "dbWriteTable\\s*\\(",
+        func = "dbWriteTable",
+        arg_position = 2,
+        arg_name = "name",
+        description = "DBI write table"
+      ),
+      list(
+        regex = "DBI::dbWriteTable\\s*\\(",
+        func = "DBI::dbWriteTable",
+        arg_position = 2,
+        arg_name = "name",
+        description = "DBI write table (namespaced)"
+      ),
+      list(
+        regex = "dbExecute\\s*\\(",
+        func = "dbExecute",
+        arg_position = 2,
+        arg_name = "statement",
+        description = "DBI execute statement"
+      ),
+      list(
+        regex = "DBI::dbExecute\\s*\\(",
+        func = "DBI::dbExecute",
+        arg_position = 2,
+        arg_name = "statement",
+        description = "DBI execute statement (namespaced)"
+      ),
+      list(
+        regex = "dbAppendTable\\s*\\(",
+        func = "dbAppendTable",
+        arg_position = 2,
+        arg_name = "name",
+        description = "DBI append to table"
+      ),
+      list(
+        regex = "dbCreateTable\\s*\\(",
+        func = "dbCreateTable",
+        arg_position = 2,
+        arg_name = "name",
+        description = "DBI create table"
+      ),
+      list(
+        regex = "dbRemoveTable\\s*\\(",
+        func = "dbRemoveTable",
+        arg_position = 2,
+        arg_name = "name",
+        description = "DBI remove table"
+      ),
+      # RODBC outputs
+      list(
+        regex = "sqlSave\\s*\\(",
+        func = "sqlSave",
+        arg_position = 2,
+        arg_name = "tablename",
+        description = "RODBC save table"
+      ),
+      list(
+        regex = "sqlUpdate\\s*\\(",
+        func = "sqlUpdate",
+        arg_position = 2,
+        arg_name = "tablename",
+        description = "RODBC update table"
+      ),
+      list(
+        regex = "sqlDrop\\s*\\(",
+        func = "sqlDrop",
+        arg_position = 2,
+        arg_name = "sqtable",
+        description = "RODBC drop table"
+      ),
+      # dbplyr/dplyr database writes
+      list(
+        regex = "copy_to\\s*\\(",
+        func = "copy_to",
+        arg_position = 3,
+        arg_name = "name",
+        description = "dplyr copy to database"
+      ),
+      list(
+        regex = "compute\\s*\\(",
+        func = "compute",
+        arg_position = 2,
+        arg_name = "name",
+        description = "dplyr compute to database"
+      ),
+      list(
+        regex = "rows_insert\\s*\\(",
+        func = "rows_insert",
+        arg_position = 1,
+        arg_name = "x",
+        description = "dplyr rows insert"
+      ),
+      list(
+        regex = "rows_update\\s*\\(",
+        func = "rows_update",
+        arg_position = 1,
+        arg_name = "x",
+        description = "dplyr rows update"
+      ),
+      list(
+        regex = "rows_upsert\\s*\\(",
+        func = "rows_upsert",
+        arg_position = 1,
+        arg_name = "x",
+        description = "dplyr rows upsert"
+      ),
+      # DuckDB outputs (R)
+      list(
+        regex = "duckdb_register\\s*\\(",
+        func = "duckdb_register",
+        arg_position = 2,
+        arg_name = "name",
+        description = "DuckDB register data frame"
+      ),
+      list(
+        regex = "duckdb::duckdb_register\\s*\\(",
+        func = "duckdb::duckdb_register",
+        arg_position = 2,
+        arg_name = "name",
+        description = "DuckDB register data frame (namespaced)"
+      ),
+      # sparklyr outputs
+      list(
+        regex = "spark_write_csv\\s*\\(",
+        func = "spark_write_csv",
+        arg_position = 2,
+        arg_name = "path",
+        description = "sparklyr write CSV"
+      ),
+      list(
+        regex = "spark_write_parquet\\s*\\(",
+        func = "spark_write_parquet",
+        arg_position = 2,
+        arg_name = "path",
+        description = "sparklyr write Parquet"
+      ),
+      list(
+        regex = "spark_write_json\\s*\\(",
+        func = "spark_write_json",
+        arg_position = 2,
+        arg_name = "path",
+        description = "sparklyr write JSON"
+      ),
+      list(
+        regex = "spark_write_jdbc\\s*\\(",
+        func = "spark_write_jdbc",
+        arg_position = NA,
+        arg_name = "options",
+        description = "sparklyr JDBC write"
+      ),
+      list(
+        regex = "spark_write_table\\s*\\(",
+        func = "spark_write_table",
+        arg_position = 2,
+        arg_name = "name",
+        description = "sparklyr write table"
+      ),
+      list(
+        regex = "sdf_copy_to\\s*\\(",
+        func = "sdf_copy_to",
+        arg_position = 3,
+        arg_name = "name",
+        description = "sparklyr copy to Spark"
       )
     ),
     dependency = list(
@@ -701,6 +1049,331 @@ get_python_patterns <- function() {
         arg_position = 1,
         arg_name = "source",
         description = "polars Parquet reader"
+      ),
+      # Database connections - SQLAlchemy
+      list(
+        regex = "create_engine\\s*\\(",
+        func = "create_engine",
+        arg_position = 1,
+        arg_name = "url",
+        description = "SQLAlchemy engine creation"
+      ),
+      list(
+        regex = "sqlalchemy\\.create_engine\\s*\\(",
+        func = "sqlalchemy.create_engine",
+        arg_position = 1,
+        arg_name = "url",
+        description = "SQLAlchemy engine creation (namespaced)"
+      ),
+      list(
+        regex = "engine\\.execute\\s*\\(",
+        func = "engine.execute",
+        arg_position = 1,
+        arg_name = "sql",
+        description = "SQLAlchemy execute query"
+      ),
+      list(
+        regex = "session\\.query\\s*\\(",
+        func = "session.query",
+        arg_position = 1,
+        arg_name = "entities",
+        description = "SQLAlchemy ORM query"
+      ),
+      # psycopg2 (PostgreSQL)
+      list(
+        regex = "psycopg2\\.connect\\s*\\(",
+        func = "psycopg2.connect",
+        arg_position = 1,
+        arg_name = "dsn",
+        description = "psycopg2 PostgreSQL connection"
+      ),
+      list(
+        regex = "pg\\.connect\\s*\\(",
+        func = "pg.connect",
+        arg_position = 1,
+        arg_name = "dsn",
+        description = "psycopg2 PostgreSQL connection (alias)"
+      ),
+      # sqlite3
+      list(
+        regex = "sqlite3\\.connect\\s*\\(",
+        func = "sqlite3.connect",
+        arg_position = 1,
+        arg_name = "database",
+        description = "sqlite3 connection"
+      ),
+      # mysql-connector
+      list(
+        regex = "mysql\\.connector\\.connect\\s*\\(",
+        func = "mysql.connector.connect",
+        arg_position = NA,
+        arg_name = "database",
+        description = "MySQL connector connection"
+      ),
+      list(
+        regex = "MySQLdb\\.connect\\s*\\(",
+        func = "MySQLdb.connect",
+        arg_position = NA,
+        arg_name = "db",
+        description = "MySQLdb connection"
+      ),
+      list(
+        regex = "pymysql\\.connect\\s*\\(",
+        func = "pymysql.connect",
+        arg_position = NA,
+        arg_name = "database",
+        description = "PyMySQL connection"
+      ),
+      # pyodbc
+      list(
+        regex = "pyodbc\\.connect\\s*\\(",
+        func = "pyodbc.connect",
+        arg_position = 1,
+        arg_name = "connstring",
+        description = "pyodbc connection"
+      ),
+      # cursor operations (read)
+      list(
+        regex = "cursor\\.execute\\s*\\([^)]*SELECT",
+        func = "cursor.execute",
+        arg_position = 1,
+        arg_name = "sql",
+        description = "Database cursor SELECT query"
+      ),
+      list(
+        regex = "cursor\\.fetchall\\s*\\(",
+        func = "cursor.fetchall",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Database cursor fetch all"
+      ),
+      list(
+        regex = "cursor\\.fetchone\\s*\\(",
+        func = "cursor.fetchone",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Database cursor fetch one"
+      ),
+      list(
+        regex = "cursor\\.fetchmany\\s*\\(",
+        func = "cursor.fetchmany",
+        arg_position = 1,
+        arg_name = "size",
+        description = "Database cursor fetch many"
+      ),
+      # asyncpg (async PostgreSQL)
+      list(
+        regex = "asyncpg\\.connect\\s*\\(",
+        func = "asyncpg.connect",
+        arg_position = 1,
+        arg_name = "dsn",
+        description = "asyncpg async PostgreSQL connection"
+      ),
+      list(
+        regex = "asyncpg\\.create_pool\\s*\\(",
+        func = "asyncpg.create_pool",
+        arg_position = 1,
+        arg_name = "dsn",
+        description = "asyncpg connection pool"
+      ),
+      # SQLModel / databases
+      list(
+        regex = "Database\\s*\\(",
+        func = "Database",
+        arg_position = 1,
+        arg_name = "url",
+        description = "databases async database"
+      ),
+      # MongoDB
+      list(
+        regex = "MongoClient\\s*\\(",
+        func = "MongoClient",
+        arg_position = 1,
+        arg_name = "host",
+        description = "pymongo MongoDB client"
+      ),
+      list(
+        regex = "pymongo\\.MongoClient\\s*\\(",
+        func = "pymongo.MongoClient",
+        arg_position = 1,
+        arg_name = "host",
+        description = "pymongo MongoDB client (namespaced)"
+      ),
+      # Redis
+      list(
+        regex = "redis\\.Redis\\s*\\(",
+        func = "redis.Redis",
+        arg_position = NA,
+        arg_name = "host",
+        description = "redis-py Redis connection"
+      ),
+      list(
+        regex = "redis\\.from_url\\s*\\(",
+        func = "redis.from_url",
+        arg_position = 1,
+        arg_name = "url",
+        description = "redis-py from URL"
+      ),
+      # DuckDB
+      list(
+        regex = "duckdb\\.connect\\s*\\(",
+        func = "duckdb.connect",
+        arg_position = 1,
+        arg_name = "database",
+        description = "DuckDB connection"
+      ),
+      list(
+        regex = "duckdb\\.read_csv\\s*\\(",
+        func = "duckdb.read_csv",
+        arg_position = 1,
+        arg_name = "path",
+        description = "DuckDB read CSV"
+      ),
+      list(
+        regex = "duckdb\\.read_parquet\\s*\\(",
+        func = "duckdb.read_parquet",
+        arg_position = 1,
+        arg_name = "path",
+        description = "DuckDB read Parquet"
+      ),
+      list(
+        regex = "duckdb\\.read_json\\s*\\(",
+        func = "duckdb.read_json",
+        arg_position = 1,
+        arg_name = "path",
+        description = "DuckDB read JSON"
+      ),
+      list(
+        regex = "\\.sql\\s*\\(",
+        func = "con.sql",
+        arg_position = 1,
+        arg_name = "query",
+        description = "DuckDB SQL query"
+      ),
+      # Neo4j
+      list(
+        regex = "GraphDatabase\\.driver\\s*\\(",
+        func = "GraphDatabase.driver",
+        arg_position = 1,
+        arg_name = "uri",
+        description = "Neo4j driver connection"
+      ),
+      list(
+        regex = "neo4j\\.GraphDatabase\\.driver\\s*\\(",
+        func = "neo4j.GraphDatabase.driver",
+        arg_position = 1,
+        arg_name = "uri",
+        description = "Neo4j driver connection (namespaced)"
+      ),
+      list(
+        regex = "session\\.run\\s*\\([^)]*MATCH",
+        func = "session.run",
+        arg_position = 1,
+        arg_name = "query",
+        description = "Neo4j Cypher MATCH query"
+      ),
+      list(
+        regex = "tx\\.run\\s*\\([^)]*MATCH",
+        func = "tx.run",
+        arg_position = 1,
+        arg_name = "query",
+        description = "Neo4j transaction MATCH query"
+      ),
+      # py2neo (Neo4j)
+      list(
+        regex = "py2neo\\.Graph\\s*\\(",
+        func = "py2neo.Graph",
+        arg_position = 1,
+        arg_name = "uri",
+        description = "py2neo Graph connection"
+      ),
+      list(
+        regex = "graph\\.run\\s*\\(",
+        func = "graph.run",
+        arg_position = 1,
+        arg_name = "cypher",
+        description = "py2neo Cypher query"
+      ),
+      # ArangoDB
+      list(
+        regex = "ArangoClient\\s*\\(",
+        func = "ArangoClient",
+        arg_position = NA,
+        arg_name = "hosts",
+        description = "python-arango client"
+      ),
+      list(
+        regex = "arango\\.ArangoClient\\s*\\(",
+        func = "arango.ArangoClient",
+        arg_position = NA,
+        arg_name = "hosts",
+        description = "python-arango client (namespaced)"
+      ),
+      list(
+        regex = "client\\.db\\s*\\(",
+        func = "client.db",
+        arg_position = 1,
+        arg_name = "name",
+        description = "ArangoDB database connection"
+      ),
+      list(
+        regex = "db\\.aql\\.execute\\s*\\(",
+        func = "db.aql.execute",
+        arg_position = 1,
+        arg_name = "query",
+        description = "ArangoDB AQL query"
+      ),
+      list(
+        regex = "collection\\.find\\s*\\(",
+        func = "collection.find",
+        arg_position = 1,
+        arg_name = "filters",
+        description = "ArangoDB collection find"
+      ),
+      # ClickHouse
+      list(
+        regex = "clickhouse_connect\\.get_client\\s*\\(",
+        func = "clickhouse_connect.get_client",
+        arg_position = NA,
+        arg_name = "host",
+        description = "ClickHouse client connection"
+      ),
+      list(
+        regex = "Client\\s*\\([^)]*host\\s*=",
+        func = "Client",
+        arg_position = NA,
+        arg_name = "host",
+        description = "ClickHouse client"
+      ),
+      # Cassandra
+      list(
+        regex = "Cluster\\s*\\(",
+        func = "Cluster",
+        arg_position = 1,
+        arg_name = "contact_points",
+        description = "Cassandra cluster connection"
+      ),
+      list(
+        regex = "cassandra\\.cluster\\.Cluster\\s*\\(",
+        func = "cassandra.cluster.Cluster",
+        arg_position = 1,
+        arg_name = "contact_points",
+        description = "Cassandra cluster connection (namespaced)"
+      ),
+      # Elasticsearch
+      list(
+        regex = "Elasticsearch\\s*\\(",
+        func = "Elasticsearch",
+        arg_position = 1,
+        arg_name = "hosts",
+        description = "Elasticsearch client"
+      ),
+      list(
+        regex = "elasticsearch\\.Elasticsearch\\s*\\(",
+        func = "elasticsearch.Elasticsearch",
+        arg_position = 1,
+        arg_name = "hosts",
+        description = "Elasticsearch client (namespaced)"
       )
     ),
     output = list(
@@ -846,6 +1519,281 @@ get_python_patterns <- function() {
         arg_position = 1,
         arg_name = "file",
         description = "polars Parquet writer"
+      ),
+      # Database outputs - pandas
+      list(
+        regex = "\\.to_sql\\s*\\(",
+        func = "df.to_sql",
+        arg_position = 1,
+        arg_name = "name",
+        description = "pandas DataFrame to SQL table"
+      ),
+      # SQLAlchemy outputs
+      list(
+        regex = "session\\.add\\s*\\(",
+        func = "session.add",
+        arg_position = 1,
+        arg_name = "instance",
+        description = "SQLAlchemy ORM add"
+      ),
+      list(
+        regex = "session\\.add_all\\s*\\(",
+        func = "session.add_all",
+        arg_position = 1,
+        arg_name = "instances",
+        description = "SQLAlchemy ORM add all"
+      ),
+      list(
+        regex = "session\\.commit\\s*\\(",
+        func = "session.commit",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "SQLAlchemy session commit"
+      ),
+      list(
+        regex = "session\\.bulk_insert_mappings\\s*\\(",
+        func = "session.bulk_insert_mappings",
+        arg_position = 1,
+        arg_name = "mapper",
+        description = "SQLAlchemy bulk insert"
+      ),
+      # cursor outputs
+      list(
+        regex = "cursor\\.execute\\s*\\([^)]*INSERT",
+        func = "cursor.execute",
+        arg_position = 1,
+        arg_name = "sql",
+        description = "Database cursor INSERT"
+      ),
+      list(
+        regex = "cursor\\.execute\\s*\\([^)]*UPDATE",
+        func = "cursor.execute",
+        arg_position = 1,
+        arg_name = "sql",
+        description = "Database cursor UPDATE"
+      ),
+      list(
+        regex = "cursor\\.execute\\s*\\([^)]*DELETE",
+        func = "cursor.execute",
+        arg_position = 1,
+        arg_name = "sql",
+        description = "Database cursor DELETE"
+      ),
+      list(
+        regex = "cursor\\.execute\\s*\\([^)]*CREATE",
+        func = "cursor.execute",
+        arg_position = 1,
+        arg_name = "sql",
+        description = "Database cursor CREATE"
+      ),
+      list(
+        regex = "cursor\\.executemany\\s*\\(",
+        func = "cursor.executemany",
+        arg_position = 1,
+        arg_name = "sql",
+        description = "Database cursor execute many"
+      ),
+      list(
+        regex = "connection\\.commit\\s*\\(",
+        func = "connection.commit",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Database connection commit"
+      ),
+      # Neo4j outputs
+      list(
+        regex = "session\\.run\\s*\\([^)]*CREATE",
+        func = "session.run",
+        arg_position = 1,
+        arg_name = "query",
+        description = "Neo4j Cypher CREATE"
+      ),
+      list(
+        regex = "session\\.run\\s*\\([^)]*MERGE",
+        func = "session.run",
+        arg_position = 1,
+        arg_name = "query",
+        description = "Neo4j Cypher MERGE"
+      ),
+      list(
+        regex = "session\\.run\\s*\\([^)]*DELETE",
+        func = "session.run",
+        arg_position = 1,
+        arg_name = "query",
+        description = "Neo4j Cypher DELETE"
+      ),
+      list(
+        regex = "session\\.run\\s*\\([^)]*SET",
+        func = "session.run",
+        arg_position = 1,
+        arg_name = "query",
+        description = "Neo4j Cypher SET"
+      ),
+      list(
+        regex = "graph\\.create\\s*\\(",
+        func = "graph.create",
+        arg_position = 1,
+        arg_name = "subgraph",
+        description = "py2neo create nodes/relationships"
+      ),
+      list(
+        regex = "graph\\.push\\s*\\(",
+        func = "graph.push",
+        arg_position = 1,
+        arg_name = "subgraph",
+        description = "py2neo push changes"
+      ),
+      # ArangoDB outputs
+      list(
+        regex = "collection\\.insert\\s*\\(",
+        func = "collection.insert",
+        arg_position = 1,
+        arg_name = "document",
+        description = "ArangoDB insert document"
+      ),
+      list(
+        regex = "collection\\.update\\s*\\(",
+        func = "collection.update",
+        arg_position = 1,
+        arg_name = "document",
+        description = "ArangoDB update document"
+      ),
+      list(
+        regex = "collection\\.delete\\s*\\(",
+        func = "collection.delete",
+        arg_position = 1,
+        arg_name = "document",
+        description = "ArangoDB delete document"
+      ),
+      list(
+        regex = "collection\\.import_bulk\\s*\\(",
+        func = "collection.import_bulk",
+        arg_position = 1,
+        arg_name = "documents",
+        description = "ArangoDB bulk import"
+      ),
+      # MongoDB outputs
+      list(
+        regex = "collection\\.insert_one\\s*\\(",
+        func = "collection.insert_one",
+        arg_position = 1,
+        arg_name = "document",
+        description = "MongoDB insert one"
+      ),
+      list(
+        regex = "collection\\.insert_many\\s*\\(",
+        func = "collection.insert_many",
+        arg_position = 1,
+        arg_name = "documents",
+        description = "MongoDB insert many"
+      ),
+      list(
+        regex = "collection\\.update_one\\s*\\(",
+        func = "collection.update_one",
+        arg_position = 1,
+        arg_name = "filter",
+        description = "MongoDB update one"
+      ),
+      list(
+        regex = "collection\\.update_many\\s*\\(",
+        func = "collection.update_many",
+        arg_position = 1,
+        arg_name = "filter",
+        description = "MongoDB update many"
+      ),
+      list(
+        regex = "collection\\.delete_one\\s*\\(",
+        func = "collection.delete_one",
+        arg_position = 1,
+        arg_name = "filter",
+        description = "MongoDB delete one"
+      ),
+      list(
+        regex = "collection\\.delete_many\\s*\\(",
+        func = "collection.delete_many",
+        arg_position = 1,
+        arg_name = "filter",
+        description = "MongoDB delete many"
+      ),
+      list(
+        regex = "collection\\.bulk_write\\s*\\(",
+        func = "collection.bulk_write",
+        arg_position = 1,
+        arg_name = "requests",
+        description = "MongoDB bulk write"
+      ),
+      # Redis outputs
+      list(
+        regex = "redis\\.set\\s*\\(|r\\.set\\s*\\(",
+        func = "redis.set",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Redis set key"
+      ),
+      list(
+        regex = "redis\\.hset\\s*\\(|r\\.hset\\s*\\(",
+        func = "redis.hset",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Redis hash set"
+      ),
+      list(
+        regex = "redis\\.lpush\\s*\\(|r\\.lpush\\s*\\(",
+        func = "redis.lpush",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Redis list push"
+      ),
+      list(
+        regex = "redis\\.sadd\\s*\\(|r\\.sadd\\s*\\(",
+        func = "redis.sadd",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Redis set add"
+      ),
+      # DuckDB outputs
+      list(
+        regex = "\\.execute\\s*\\([^)]*INSERT",
+        func = "con.execute",
+        arg_position = 1,
+        arg_name = "query",
+        description = "DuckDB INSERT"
+      ),
+      list(
+        regex = "\\.execute\\s*\\([^)]*CREATE",
+        func = "con.execute",
+        arg_position = 1,
+        arg_name = "query",
+        description = "DuckDB CREATE"
+      ),
+      list(
+        regex = "duckdb\\.write_parquet\\s*\\(",
+        func = "duckdb.write_parquet",
+        arg_position = 1,
+        arg_name = "path",
+        description = "DuckDB write Parquet"
+      ),
+      # Elasticsearch outputs
+      list(
+        regex = "es\\.index\\s*\\(",
+        func = "es.index",
+        arg_position = NA,
+        arg_name = "index",
+        description = "Elasticsearch index document"
+      ),
+      list(
+        regex = "es\\.bulk\\s*\\(",
+        func = "es.bulk",
+        arg_position = 1,
+        arg_name = "body",
+        description = "Elasticsearch bulk operation"
+      ),
+      list(
+        regex = "helpers\\.bulk\\s*\\(",
+        func = "helpers.bulk",
+        arg_position = 1,
+        arg_name = "client",
+        description = "Elasticsearch helpers bulk"
       )
     ),
     dependency = list(
