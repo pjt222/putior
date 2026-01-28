@@ -68,6 +68,7 @@ putior is an R package that extracts structured annotations from source code fil
 ### Documentation Quality
 - Vignette rating: **9.2/10** - Exceptional quality
 - Comprehensive getting-started guide with real-world examples
+- Showcase vignette with small/medium/large workflow examples
 - Complete self-documentation workflow
 - README with auto-generated examples capability
 
@@ -317,6 +318,27 @@ put_diagram(workflow, show_source_info = TRUE, enable_clicks = TRUE)
 
 ### Reference
 - **Example**: `inst/examples/interactive-diagrams-example.R`
+
+## Interactive Sandbox (Shiny App)
+
+### Overview
+putior includes an interactive Shiny app for experimenting with PUT annotations without writing files.
+
+### Launch
+```r
+run_sandbox()  # Requires shiny package
+```
+
+### Features
+- Paste or type annotated code
+- Simulate multiple files using `# ===== File: name.R =====` markers
+- Customize diagram settings (theme, direction, artifacts, etc.)
+- View extracted workflow data
+- Export generated Mermaid code
+
+### Location
+- **App**: `inst/shiny/putior-sandbox/app.R`
+- **Dependency**: shiny (in Suggests)
 
 ## Quarto Integration
 

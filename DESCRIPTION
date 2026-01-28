@@ -31,7 +31,8 @@ Suggests:
     clipr,
     uuid,
     pkgdown,
-    logger
+    logger,
+    shiny
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

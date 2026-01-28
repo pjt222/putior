@@ -64,24 +64,37 @@ This demonstrates how putior extracts structured workflow data from annotated so
 
 ### Step 1: Add PUT Annotations to Your Code
 
-PUT annotations are special comments that describe workflow nodes. Here's how to add them to your source files:
+PUT annotations are special comments that describe workflow nodes. Start simple:
 
-**R script example:**
+**Minimal annotation (just a label):**
+
+    #put label:"Load Data"
+
+That's all you need! putior will:
+- Auto-generate a unique ID
+- Default `node_type` to `"process"`
+- Default `output` to the filename
+
+**Add more detail as needed:**
+
+    #put label:"Load Data", node_type:"input", output:"data.csv"
+
+**Full R script example:**
 
     # data_processing.R
-    #put id:"load_data", label:"Load Customer Data", node_type:"input", output:"raw_data.csv"
-    
+    #put label:"Load Customer Data", node_type:"input", output:"raw_data.csv"
+
     # Your actual code
     data <- read.csv("customer_data.csv")
     write.csv(data, "raw_data.csv")
-    
-    #put id:"clean_data", label:"Clean and Validate", node_type:"process", input:"raw_data.csv", output:"clean_data.csv"
-    
+
+    #put label:"Clean and Validate", input:"raw_data.csv", output:"clean_data.csv"
+
     # Data cleaning code
     cleaned_data <- data %>%
       filter(!is.na(customer_id)) %>%
       mutate(purchase_date = as.Date(purchase_date))
-    
+
     write.csv(cleaned_data, "clean_data.csv")
 
 **Python script example:**

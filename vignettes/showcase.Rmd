@@ -1,0 +1,401 @@
+---
+title: "Showcase: Real-World Examples"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Showcase: Real-World Examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+This showcase demonstrates putior diagrams at different scales, from simple workflows to complex multi-file pipelines.
+
+## Small Workflows (3-5 nodes)
+
+Perfect for single-purpose scripts or focused analysis tasks.
+
+### Example: Simple ETL Pipeline
+
+A basic extract-transform-load workflow:
+
+```r
+# 01_extract.R
+#put label:"Extract Data", node_type:"input", output:"raw_data.csv"
+
+# 02_transform.R
+#put label:"Transform Data", input:"raw_data.csv", output:"clean_data.csv"
+
+# 03_load.R
+#put label:"Load to Database", node_type:"output", input:"clean_data.csv"
+```
+
+**Generated Diagram:**
+```mermaid
+flowchart TD
+    extract([Extract Data])
+    transform[Transform Data]
+    load[[Load to Database]]
+
+    extract --> transform
+    transform --> load
+
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class extract inputStyle
+    class transform processStyle
+    class load outputStyle
+```
+
+### Example: Report Generation
+
+A simple report generation workflow:
+
+```r
+# fetch_metrics.R
+#put label:"Fetch Metrics", node_type:"input", output:"metrics.json"
+
+# analyze.R
+#put label:"Analyze Trends", input:"metrics.json", output:"analysis.rds"
+
+# report.R
+#put label:"Generate Report", node_type:"output", input:"analysis.rds", output:"report.html"
+```
+
+**Generated Diagram:**
+```mermaid
+flowchart TD
+    fetch([Fetch Metrics])
+    analyze[Analyze Trends]
+    report[[Generate Report]]
+
+    fetch --> analyze
+    analyze --> report
+
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class fetch inputStyle
+    class analyze processStyle
+    class report outputStyle
+```
+
+## Medium Workflows (10-15 nodes)
+
+Suitable for typical data science projects with multiple processing stages.
+
+### Example: Machine Learning Pipeline
+
+A complete ML workflow from data collection to model deployment:
+
+```r
+# 01_collect_data.py
+#put label:"Collect Raw Data", node_type:"input", output:"raw_data.csv"
+
+# 02_clean_data.R
+#put label:"Clean Data", input:"raw_data.csv", output:"clean_data.csv"
+
+# 03_feature_eng.R
+#put label:"Feature Engineering", input:"clean_data.csv", output:"features.csv"
+
+# 04_split_data.R
+#put label:"Train/Test Split", input:"features.csv", output:"train.csv, test.csv"
+
+# 05_train_model.py
+#put label:"Train Model", input:"train.csv", output:"model.pkl"
+
+# 06_evaluate.py
+#put label:"Evaluate Model", input:"model.pkl, test.csv", output:"metrics.json"
+
+# 07_hyperparameter.py
+#put label:"Hyperparameter Tuning", input:"train.csv", output:"best_params.json"
+
+# 08_retrain.py
+#put label:"Retrain with Best Params", input:"train.csv, best_params.json", output:"final_model.pkl"
+
+# 09_validate.R
+#put label:"Final Validation", input:"final_model.pkl, test.csv", output:"validation_report.html"
+
+# 10_deploy.sh
+#put label:"Deploy Model", node_type:"output", input:"final_model.pkl, validation_report.html"
+```
+
+**Generated Diagram:**
+```mermaid
+flowchart TD
+    collect([Collect Raw Data])
+    clean[Clean Data]
+    feature[Feature Engineering]
+    split[Train/Test Split]
+    train[Train Model]
+    evaluate[Evaluate Model]
+    hyper[Hyperparameter Tuning]
+    retrain[Retrain with Best Params]
+    validate[Final Validation]
+    deploy[[Deploy Model]]
+
+    collect --> clean
+    clean --> feature
+    feature --> split
+    split --> train
+    split --> hyper
+    train --> evaluate
+    hyper --> retrain
+    retrain --> validate
+    validate --> deploy
+
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class collect inputStyle
+    class clean,feature,split,train,evaluate,hyper,retrain,validate processStyle
+    class deploy outputStyle
+```
+
+### Example: Multi-Source Data Integration
+
+Combining data from multiple sources:
+
+```r
+# sources/fetch_sales.R
+#put label:"Fetch Sales API", node_type:"input", output:"sales_raw.json"
+
+# sources/fetch_inventory.R
+#put label:"Fetch Inventory DB", node_type:"input", output:"inventory_raw.csv"
+
+# sources/fetch_customers.py
+#put label:"Fetch Customer CRM", node_type:"input", output:"customers_raw.csv"
+
+# transform/clean_sales.R
+#put label:"Clean Sales", input:"sales_raw.json", output:"sales_clean.csv"
+
+# transform/clean_inventory.R
+#put label:"Clean Inventory", input:"inventory_raw.csv", output:"inventory_clean.csv"
+
+# transform/clean_customers.R
+#put label:"Clean Customers", input:"customers_raw.csv", output:"customers_clean.csv"
+
+# integrate/merge_data.R
+#put label:"Merge All Sources", input:"sales_clean.csv, inventory_clean.csv, customers_clean.csv", output:"integrated_data.csv"
+
+# analyze/business_metrics.R
+#put label:"Calculate Metrics", input:"integrated_data.csv", output:"metrics.rds"
+
+# report/dashboard.R
+#put label:"Generate Dashboard", node_type:"output", input:"metrics.rds", output:"dashboard.html"
+```
+
+**Generated Diagram:**
+```mermaid
+flowchart TD
+    sales_api([Fetch Sales API])
+    inv_db([Fetch Inventory DB])
+    cust_crm([Fetch Customer CRM])
+
+    clean_sales[Clean Sales]
+    clean_inv[Clean Inventory]
+    clean_cust[Clean Customers]
+
+    merge[Merge All Sources]
+    metrics[Calculate Metrics]
+    dashboard[[Generate Dashboard]]
+
+    sales_api --> clean_sales
+    inv_db --> clean_inv
+    cust_crm --> clean_cust
+
+    clean_sales --> merge
+    clean_inv --> merge
+    clean_cust --> merge
+
+    merge --> metrics
+    metrics --> dashboard
+
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class sales_api,inv_db,cust_crm inputStyle
+    class clean_sales,clean_inv,clean_cust,merge,metrics processStyle
+    class dashboard outputStyle
+```
+
+## Large Workflows (20+ nodes)
+
+For enterprise-scale data pipelines and complex analysis systems.
+
+### Example: Complete Analytics Platform
+
+A full analytics platform with multiple parallel processing streams:
+
+```mermaid
+flowchart TD
+    subgraph Data_Sources [Data Sources]
+        web_logs([Web Logs])
+        app_events([App Events])
+        crm_data([CRM Data])
+        finance_data([Finance Data])
+    end
+
+    subgraph Ingestion [Ingestion Layer]
+        parse_logs[Parse Web Logs]
+        parse_events[Parse App Events]
+        extract_crm[Extract CRM]
+        extract_finance[Extract Finance]
+    end
+
+    subgraph Transformation [Transformation Layer]
+        clean_logs[Clean Logs]
+        clean_events[Clean Events]
+        clean_crm[Clean CRM]
+        clean_finance[Clean Finance]
+
+        enrich_logs[Enrich with Geo]
+        enrich_events[Add Session Info]
+        join_customer[Join Customer Data]
+    end
+
+    subgraph Analytics [Analytics Layer]
+        user_behavior[User Behavior Analysis]
+        conversion_funnel[Conversion Funnel]
+        revenue_analysis[Revenue Analysis]
+        cohort_analysis[Cohort Analysis]
+        ab_testing[A/B Test Results]
+    end
+
+    subgraph Output [Output Layer]
+        exec_dashboard[[Executive Dashboard]]
+        marketing_report[[Marketing Report]]
+        finance_report[[Finance Report]]
+        data_warehouse[[Data Warehouse]]
+    end
+
+    web_logs --> parse_logs
+    app_events --> parse_events
+    crm_data --> extract_crm
+    finance_data --> extract_finance
+
+    parse_logs --> clean_logs
+    parse_events --> clean_events
+    extract_crm --> clean_crm
+    extract_finance --> clean_finance
+
+    clean_logs --> enrich_logs
+    clean_events --> enrich_events
+    clean_crm --> join_customer
+    clean_finance --> revenue_analysis
+
+    enrich_logs --> user_behavior
+    enrich_events --> user_behavior
+    enrich_events --> conversion_funnel
+    join_customer --> cohort_analysis
+    join_customer --> ab_testing
+
+    user_behavior --> exec_dashboard
+    conversion_funnel --> marketing_report
+    revenue_analysis --> finance_report
+    cohort_analysis --> exec_dashboard
+    ab_testing --> marketing_report
+
+    user_behavior --> data_warehouse
+    revenue_analysis --> data_warehouse
+    cohort_analysis --> data_warehouse
+
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+
+    class web_logs,app_events,crm_data,finance_data inputStyle
+    class parse_logs,parse_events,extract_crm,extract_finance processStyle
+    class clean_logs,clean_events,clean_crm,clean_finance processStyle
+    class enrich_logs,enrich_events,join_customer processStyle
+    class user_behavior,conversion_funnel,revenue_analysis,cohort_analysis,ab_testing processStyle
+    class exec_dashboard,marketing_report,finance_report,data_warehouse outputStyle
+```
+
+## Multi-Language Workflows
+
+putior excels at documenting polyglot data pipelines.
+
+### Example: R + Python + SQL Pipeline
+
+```r
+# extract.sql
+#put label:"SQL Extract", node_type:"input", output:"raw_query_results.csv"
+
+# transform.py
+#put label:"Python Transform", input:"raw_query_results.csv", output:"transformed.parquet"
+
+# analyze.R
+#put label:"R Statistical Analysis", input:"transformed.parquet", output:"stats.rds"
+
+# visualize.R
+#put label:"R Visualization", input:"stats.rds", output:"plots.pdf"
+
+# report.py
+#put label:"Python Report Gen", node_type:"output", input:"stats.rds, plots.pdf", output:"final_report.html"
+```
+
+**Generated Diagram:**
+```mermaid
+flowchart TD
+    sql([SQL Extract])
+    python_transform[Python Transform]
+    r_stats[R Statistical Analysis]
+    r_viz[R Visualization]
+    python_report[[Python Report Gen]]
+
+    sql --> python_transform
+    python_transform --> r_stats
+    r_stats --> r_viz
+    r_stats --> python_report
+    r_viz --> python_report
+
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class sql inputStyle
+    class python_transform,r_stats,r_viz processStyle
+    class python_report outputStyle
+```
+
+## Tips for Large Workflows
+
+When working with complex workflows:
+
+1. **Use meaningful IDs**: Choose IDs that reflect the step's purpose
+2. **Group related files**: Organize scripts into subdirectories
+3. **Use subgraphs**: Group related nodes with `show_source_info = TRUE, source_info_style = "subgraph"`
+4. **Consider direction**: Use `direction = "LR"` for wide workflows, `direction = "TD"` for deep ones
+5. **Show artifacts selectively**: Use `show_artifacts = TRUE` only when data lineage matters
+
+```r
+# For large workflows, consider:
+put_diagram(workflow,
+  direction = "LR",              # Left-to-right for wide pipelines
+  show_source_info = TRUE,       # Show file names
+  source_info_style = "subgraph",# Group by file
+  theme = "minimal"              # Clean look for complex diagrams
+)
+```
+
+## Try It Yourself
+
+Run the built-in examples:
+
+```{r eval=FALSE}
+# Basic example
+source(system.file("examples", "reprex.R", package = "putior"))
+
+# Data science workflow
+source(system.file("examples", "data-science-workflow.R", package = "putior"))
+
+# Self-documentation (putior documents itself!)
+source(system.file("examples", "self-documentation.R", package = "putior"))
+```

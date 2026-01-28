@@ -530,3 +530,46 @@ is_valid_put_annotation <- function(line) {
   result <- parse_put_annotation(line)
   !is.null(result) && length(result) > 0
 }
+
+#' Launch putior Interactive Sandbox
+#'
+#' Opens an interactive Shiny application for experimenting with PUT annotations
+#' and workflow diagrams. Users can paste or type annotated code, adjust diagram
+#' settings, and see real-time diagram generation without installing the package
+#' locally.
+#'
+#' @details
+#' The sandbox app allows you to:
+#' \itemize{
+#'   \item Enter annotated code with PUT comments
+#'   \item Simulate multiple files using file markers
+#'   \item Customize diagram appearance (theme, direction, etc.)
+#'   \item View extracted workflow data
+#'   \item Copy or download generated Mermaid code
+#' }
+#'
+#' @return Launches the Shiny app in the default browser. Returns invisibly.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Launch the interactive sandbox
+#' run_sandbox()
+#' }
+#'
+#' @seealso \code{\link{put}}, \code{\link{put_diagram}}
+run_sandbox <- function() {
+  if (!requireNamespace("shiny", quietly = TRUE)) {
+    stop("The 'shiny' package is required. Install with: install.packages('shiny')",
+         call. = FALSE)
+  }
+
+  app_dir <- system.file("shiny", "putior-sandbox", package = "putior")
+
+ if (app_dir == "") {
+    stop("Could not find sandbox app. Try reinstalling putior.", call. = FALSE)
+  }
+
+  shiny::runApp(app_dir, launch.browser = TRUE)
+}

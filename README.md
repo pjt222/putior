@@ -42,7 +42,24 @@ pak::pkg_install("pjt222/putior")  # GitHub version
 
 ### Step 1: Annotate Your Code
 
-Add structured annotations to your R or Python scripts using `#put` comments:
+Add `#put` comments to describe each step in your workflow. Start simple:
+
+**Minimal annotation (just a label):**
+```r
+#put label:"Load Data"
+```
+
+That's it! putior will:
+- Auto-generate a unique ID for the node
+- Default `node_type` to `"process"`
+- Default `output` to the current filename (for connecting scripts)
+
+**Add more detail as needed:**
+```r
+#put label:"Fetch Sales Data", node_type:"input", output:"sales_data.csv"
+```
+
+**Complete example with two files:**
 
 **`01_fetch_data.R`**
 ```r
@@ -56,7 +73,7 @@ write_csv(sales_data, "sales_data.csv")
 
 **`02_clean_data.py`**
 ```python
-#put label:"Clean and Process", node_type:"process", input:"sales_data.csv", output:"clean_sales.csv"
+#put label:"Clean and Process", input:"sales_data.csv", output:"clean_sales.csv"
 
 import pandas as pd
 df = pd.read_csv("sales_data.csv")
@@ -645,6 +662,31 @@ put_diagram(workflow, output = "clipboard")
 
 ## 📝 Annotation Reference
 
+### Defaults and Auto-Detection
+
+putior is designed to work with minimal configuration. Here's what happens automatically:
+
+| Field | If Omitted | Behavior |
+|-------|------------|----------|
+| `id` | Auto-generated UUID | Unique identifier like `"a1b2c3d4-e5f6..."` |
+| `label` | None | Recommended for readability |
+| `node_type` | `"process"` | Most common type for data transformation |
+| `output` | Current filename | Enables script-to-script connections |
+
+**Minimal valid annotation:**
+```r
+#put label:"My Step"
+# That's all you need to get started!
+```
+
+**Progressively add detail:**
+```r
+#put label:"My Step"                                          # Minimal
+#put label:"My Step", node_type:"input"                       # + type
+#put label:"My Step", node_type:"input", output:"data.csv"    # + output
+#put id:"step1", label:"My Step", node_type:"input", output:"data.csv"  # Full
+```
+
 ### Basic Syntax
 
 All PUT annotations follow this format:
@@ -896,6 +938,118 @@ Try the complete example:
 ```r
 source(system.file("examples", "variable-reference-example.R", package = "putior"))
 ```
+
+## 🚀 Advanced Features
+
+putior includes powerful features for automation, interactivity, and debugging that go beyond basic annotations.
+
+### Auto-Annotation System
+
+Automatically detect workflow elements from code analysis without writing annotations:
+
+```r
+# Auto-detect inputs/outputs from code patterns
+workflow <- put_auto("./src/")
+put_diagram(workflow)
+
+# Generate annotation comments for your files (like roxygen2 skeleton)
+put_generate("./src/")                    # Print to console
+put_generate("./src/", output = "clipboard")  # Copy to clipboard
+
+# Combine manual annotations with auto-detected
+workflow <- put_merge("./src/", merge_strategy = "supplement")
+```
+
+**Use cases:** Instantly visualize unfamiliar codebases, generate annotation templates, supplement manual annotations with auto-detected I/O.
+
+### Interactive Diagrams
+
+Make your diagrams more useful with source file info and clickable nodes:
+
+```r
+# Show which file each node comes from
+put_diagram(workflow, show_source_info = TRUE)
+
+# Group nodes by source file
+put_diagram(workflow, show_source_info = TRUE, source_info_style = "subgraph")
+
+# Enable clickable nodes (opens source in VS Code)
+put_diagram(workflow, enable_clicks = TRUE)
+
+# Use different editors
+put_diagram(workflow, enable_clicks = TRUE, click_protocol = "rstudio")
+put_diagram(workflow, enable_clicks = TRUE, click_protocol = "file")
+```
+
+### Debugging with Logging
+
+Enable structured logging to debug annotation parsing and diagram generation:
+
+```r
+# Set log level for detailed output
+set_putior_log_level("DEBUG")  # Most verbose
+set_putior_log_level("INFO")   # Progress updates
+set_putior_log_level("WARN")   # Default - warnings only
+
+# Or per-call override
+workflow <- put("./src/", log_level = "DEBUG")
+put_diagram(workflow, log_level = "INFO")
+```
+
+Requires optional `logger` package: `install.packages("logger")`
+
+### Detection Pattern Customization
+
+View the patterns putior uses to auto-detect inputs and outputs:
+
+```r
+# Get all R detection patterns
+patterns <- get_detection_patterns("r")
+
+# Get only input patterns for Python
+input_patterns <- get_detection_patterns("python", type = "input")
+
+# Supported languages: r, python, sql, shell, julia
+```
+
+### Interactive Sandbox
+
+Try putior without writing any files using the built-in Shiny app:
+
+```r
+# Launch interactive sandbox (requires shiny package)
+run_sandbox()
+```
+
+The sandbox lets you:
+- Paste or type annotated code
+- Simulate multiple files
+- Customize diagram settings in real-time
+- Export generated Mermaid code
+
+## 📚 API Reference
+
+Quick reference for all exported functions:
+
+| Function | Purpose | Example |
+|----------|---------|---------|
+| `put()` | Extract annotations from files | `workflow <- put("./src/")` |
+| `put_diagram()` | Generate Mermaid diagram | `put_diagram(workflow)` |
+| `put_auto()` | Auto-detect workflow from code | `put_auto("./src/")` |
+| `put_generate()` | Generate annotation comments | `put_generate("./src/")` |
+| `put_merge()` | Combine manual + auto annotations | `put_merge("./src/")` |
+| `run_sandbox()` | Launch interactive Shiny app | `run_sandbox()` |
+| `get_detection_patterns()` | View/customize detection patterns | `get_detection_patterns("r")` |
+| `get_supported_languages()` | List supported languages | `get_supported_languages()` |
+| `set_putior_log_level()` | Configure logging verbosity | `set_putior_log_level("DEBUG")` |
+| `is_valid_put_annotation()` | Validate annotation syntax | `is_valid_put_annotation("#put ...")` |
+| `get_diagram_themes()` | List available themes | `get_diagram_themes()` |
+| `split_file_list()` | Parse comma-separated files | `split_file_list("a.csv, b.csv")` |
+
+For detailed documentation, see:
+- Function help: `?put`, `?put_diagram`, `?put_auto`
+- [pkgdown site](https://pjt222.github.io/putior/)
+- [Getting Started vignette](https://pjt222.github.io/putior/articles/getting-started.html)
 
 ## 🔄 Self-Documentation: putior Documents Itself!
 

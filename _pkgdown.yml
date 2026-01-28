@@ -173,6 +173,8 @@ navbar:
       menu:
       - text: Getting Started with putior
         href: articles/getting-started.html
+      - text: "Showcase: Real-World Examples"
+        href: articles/showcase.html
 
 reference:
 - title: "Core Functions"
