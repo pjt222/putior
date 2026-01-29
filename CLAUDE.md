@@ -62,13 +62,16 @@ putior is an R package that extracts structured annotations from source code fil
 - **Win-builder R-release**: ✅ 1 NOTE (new submission only)
 - **R-hub**: ✅ 4/5 platforms PASS (linux, macos, windows, ubuntu-release; nosuggests expected fail)
 - All vignettes build successfully with Pandoc
-- All tests pass (527+ tests including multiline annotation, auto-detection, and logging support)
+- All tests pass (990+ tests including multiline annotation, auto-detection, logging, and LLM patterns)
 - Comprehensive multiline PUT annotation support implemented
 
 ### Documentation Quality
 - Vignette rating: **9.2/10** - Exceptional quality
-- Comprehensive getting-started guide with real-world examples
-- Showcase vignette with small/medium/large workflow examples
+- **4 comprehensive vignettes**:
+  - `getting-started.Rmd` - Introduction and basic usage
+  - `features-tour.Rmd` - Advanced features guide (auto-annotation, interactive diagrams, logging)
+  - `api-reference.Rmd` - Complete function documentation with parameter tables
+  - `showcase.Rmd` - Real-world examples (ETL, ML, bioinformatics, finance, web scraping)
 - Complete self-documentation workflow
 - README with auto-generated examples capability
 
@@ -108,6 +111,9 @@ putior is an R package that extracts structured annotations from source code fil
 11. **Clickable Hyperlinks (Issue #4)** - Make nodes clickable with `enable_clicks` and `click_protocol` parameters
 12. **Auto-Annotation Feature (Issue #5)** - Automatic workflow detection from code analysis (roxygen2-style)
 13. **Structured Logging** - Optional logger package integration for debugging annotation parsing and diagram generation
+14. **Documentation Suite (Issues #5-9)** - Features Tour, API Reference, and expanded Showcase vignettes
+15. **Shiny Sandbox Enhancements (Issue #7)** - Copy-to-clipboard button and optional shinyAce syntax highlighting
+16. **LLM Detection Patterns (Issue #10)** - 54 patterns for modern AI/ML libraries (ellmer, langchain, transformers, etc.)
 
 ## Auto-Annotation Feature (GitHub Issue #5)
 
@@ -237,6 +243,51 @@ put_diagram(workflow, log_level = "INFO")
 - `R/zzz.R` - Package initialization
 - `tests/testthat/test-logging.R` - Logging tests
 
+## LLM Detection Patterns (GitHub Issue #10)
+
+### Overview
+putior auto-detects modern AI/ML library usage for workflow visualization. This enables automatic documentation of LLM-powered data pipelines.
+
+### Supported Libraries
+
+**R Patterns (15 patterns):**
+| Library | Functions |
+|---------|-----------|
+| ellmer | `chat()`, `chat_openai()`, `chat_claude()`, `chat_ollama()`, `chat_gemini()`, `chat_groq()`, `chat_azure()` |
+| tidyllm | `llm_message()`, `send_prompt()` |
+| httr2 | API requests to OpenAI, Anthropic, Groq |
+
+**Python Input Patterns (27 patterns):**
+| Library | Functions |
+|---------|-----------|
+| ollama | `ollama.chat()`, `ollama.generate()`, `ollama.embeddings()` |
+| openai | `OpenAI()`, `client.chat.completions.create()`, `client.embeddings.create()` |
+| anthropic | `Anthropic()`, `client.messages.create()` |
+| langchain | `ChatOpenAI()`, `ChatAnthropic()`, `ChatOllama()`, `LLMChain()`, `ChatGoogleGenerativeAI()` |
+| transformers | `pipeline()`, `AutoModelForCausalLM.from_pretrained()`, `AutoTokenizer.from_pretrained()` |
+| litellm | `litellm.completion()`, `litellm.embedding()` |
+| vllm | `LLM()`, `vllm.LLM()` |
+| google | `genai.GenerativeModel()`, `model.generate_content()` |
+| groq | `Groq()` |
+
+**Python Output Patterns (12 patterns):**
+| Category | Functions |
+|----------|-----------|
+| Transformers | `model.save_pretrained()`, `tokenizer.save_pretrained()`, `trainer.save_model()` |
+| PyTorch | `torch.save()`, `torch.onnx.export()` |
+| Keras | `model.save()`, `model.save_weights()` |
+| MLflow | `mlflow.log_model()`, `mlflow.sklearn.log_model()`, `mlflow.pytorch.log_model()` |
+
+### Key Insights from Implementation
+1. **Pattern specificity matters**: LLM client patterns (e.g., `OpenAI()`) are generic enough to catch initialization but specific enough to avoid false positives
+2. **Output patterns for models**: Model saving is as important as inference for tracking ML workflows
+3. **Multi-provider support**: Modern codebases often use multiple LLM providers - ellmer in R abstracts this nicely
+4. **Transformers ecosystem**: The Hugging Face transformers library has consistent patterns (`from_pretrained`, `save_pretrained`) that are easy to detect
+
+### Reference
+- **Tests**: `tests/testthat/test-llm-patterns.R` (467 tests)
+- **Patterns**: `R/detection_patterns.R` (search for "LLM/AI")
+
 ## Variable Reference Implementation (GitHub Issue #2)
 
 ### Key Concepts for `.internal` Extension
@@ -331,14 +382,16 @@ run_sandbox()  # Requires shiny package
 
 ### Features
 - Paste or type annotated code
+- **Syntax highlighting** via shinyAce (optional, degrades gracefully)
 - Simulate multiple files using `# ===== File: name.R =====` markers
 - Customize diagram settings (theme, direction, artifacts, etc.)
 - View extracted workflow data
 - Export generated Mermaid code
+- **Copy to clipboard button** for quick Mermaid code export
 
 ### Location
 - **App**: `inst/shiny/putior-sandbox/app.R`
-- **Dependency**: shiny (in Suggests)
+- **Dependencies**: shiny (required), shinyAce (optional, in Suggests)
 
 ## Quarto Integration
 

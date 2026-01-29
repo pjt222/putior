@@ -478,6 +478,93 @@ get_r_patterns <- function() {
         arg_position = NA,
         arg_name = "options",
         description = "sparklyr JDBC read"
+      ),
+      # LLM/AI API Integrations - ellmer package (tidyverse-style LLM interface)
+      list(
+        regex = "chat\\s*\\(",
+        func = "chat",
+        arg_position = 1,
+        arg_name = "provider",
+        description = "ellmer chat interface"
+      ),
+      list(
+        regex = "chat_ollama\\s*\\(",
+        func = "chat_ollama",
+        arg_position = NA,
+        arg_name = "model",
+        description = "ellmer Ollama chat"
+      ),
+      list(
+        regex = "chat_openai\\s*\\(",
+        func = "chat_openai",
+        arg_position = NA,
+        arg_name = "model",
+        description = "ellmer OpenAI chat"
+      ),
+      list(
+        regex = "chat_claude\\s*\\(",
+        func = "chat_claude",
+        arg_position = NA,
+        arg_name = "model",
+        description = "ellmer Claude/Anthropic chat"
+      ),
+      list(
+        regex = "chat_gemini\\s*\\(",
+        func = "chat_gemini",
+        arg_position = NA,
+        arg_name = "model",
+        description = "ellmer Google Gemini chat"
+      ),
+      list(
+        regex = "chat_groq\\s*\\(",
+        func = "chat_groq",
+        arg_position = NA,
+        arg_name = "model",
+        description = "ellmer Groq chat"
+      ),
+      list(
+        regex = "chat_azure\\s*\\(",
+        func = "chat_azure",
+        arg_position = NA,
+        arg_name = "deployment_id",
+        description = "ellmer Azure OpenAI"
+      ),
+      # tidyllm package
+      list(
+        regex = "llm_message\\s*\\(",
+        func = "llm_message",
+        arg_position = 1,
+        arg_name = "content",
+        description = "tidyllm message"
+      ),
+      list(
+        regex = "send_prompt\\s*\\(",
+        func = "send_prompt",
+        arg_position = 1,
+        arg_name = "prompt",
+        description = "tidyllm send prompt"
+      ),
+      # httr2 calls to LLM APIs
+      list(
+        regex = "request\\s*\\([^)]*openai\\.com",
+        func = "request",
+        arg_position = 1,
+        arg_name = "base_url",
+        description = "httr2 OpenAI API"
+      ),
+      list(
+        regex = "request\\s*\\([^)]*anthropic\\.com",
+        func = "request",
+        arg_position = 1,
+        arg_name = "base_url",
+        description = "httr2 Anthropic API"
+      ),
+      list(
+        regex = "request\\s*\\([^)]*api\\.groq\\.com",
+        func = "request",
+        arg_position = 1,
+        arg_name = "base_url",
+        description = "httr2 Groq API"
       )
     ),
     output = list(
@@ -1374,6 +1461,197 @@ get_python_patterns <- function() {
         arg_position = 1,
         arg_name = "hosts",
         description = "Elasticsearch client (namespaced)"
+      ),
+      # LLM/AI Libraries - ollama
+      list(
+        regex = "ollama\\.chat\\s*\\(",
+        func = "ollama.chat",
+        arg_position = NA,
+        arg_name = "model",
+        description = "Ollama chat"
+      ),
+      list(
+        regex = "ollama\\.generate\\s*\\(",
+        func = "ollama.generate",
+        arg_position = NA,
+        arg_name = "model",
+        description = "Ollama generate"
+      ),
+      list(
+        regex = "ollama\\.embeddings\\s*\\(",
+        func = "ollama.embeddings",
+        arg_position = NA,
+        arg_name = "model",
+        description = "Ollama embeddings"
+      ),
+      # openai
+      list(
+        regex = "client\\.chat\\.completions\\.create\\s*\\(",
+        func = "client.chat.completions.create",
+        arg_position = NA,
+        arg_name = "model",
+        description = "OpenAI chat (v1 API)"
+      ),
+      list(
+        regex = "client\\.embeddings\\.create\\s*\\(",
+        func = "client.embeddings.create",
+        arg_position = NA,
+        arg_name = "model",
+        description = "OpenAI embeddings"
+      ),
+      list(
+        regex = "OpenAI\\s*\\(",
+        func = "OpenAI",
+        arg_position = NA,
+        arg_name = "api_key",
+        description = "OpenAI client init"
+      ),
+      list(
+        regex = "openai\\.ChatCompletion\\.create\\s*\\(",
+        func = "openai.ChatCompletion.create",
+        arg_position = NA,
+        arg_name = "model",
+        description = "OpenAI chat (legacy API)"
+      ),
+      # anthropic
+      list(
+        regex = "anthropic\\.Anthropic\\s*\\(",
+        func = "anthropic.Anthropic",
+        arg_position = NA,
+        arg_name = "api_key",
+        description = "Anthropic client"
+      ),
+      list(
+        regex = "Anthropic\\s*\\(",
+        func = "Anthropic",
+        arg_position = NA,
+        arg_name = "api_key",
+        description = "Anthropic client init"
+      ),
+      list(
+        regex = "client\\.messages\\.create\\s*\\(",
+        func = "client.messages.create",
+        arg_position = NA,
+        arg_name = "model",
+        description = "Anthropic messages"
+      ),
+      # langchain
+      list(
+        regex = "ChatOpenAI\\s*\\(",
+        func = "ChatOpenAI",
+        arg_position = NA,
+        arg_name = "model",
+        description = "LangChain OpenAI"
+      ),
+      list(
+        regex = "ChatAnthropic\\s*\\(",
+        func = "ChatAnthropic",
+        arg_position = NA,
+        arg_name = "model",
+        description = "LangChain Anthropic"
+      ),
+      list(
+        regex = "ChatOllama\\s*\\(",
+        func = "ChatOllama",
+        arg_position = NA,
+        arg_name = "model",
+        description = "LangChain Ollama"
+      ),
+      list(
+        regex = "LLMChain\\s*\\(",
+        func = "LLMChain",
+        arg_position = NA,
+        arg_name = "llm",
+        description = "LangChain LLM chain"
+      ),
+      list(
+        regex = "ChatGoogleGenerativeAI\\s*\\(",
+        func = "ChatGoogleGenerativeAI",
+        arg_position = NA,
+        arg_name = "model",
+        description = "LangChain Google Gemini"
+      ),
+      # transformers (Hugging Face)
+      list(
+        regex = "pipeline\\s*\\(['\"]text-generation['\"]",
+        func = "pipeline",
+        arg_position = 1,
+        arg_name = "task",
+        description = "Transformers text-gen pipeline"
+      ),
+      list(
+        regex = "AutoModelForCausalLM\\.from_pretrained\\s*\\(",
+        func = "AutoModelForCausalLM.from_pretrained",
+        arg_position = 1,
+        arg_name = "pretrained_model_name_or_path",
+        description = "Transformers causal LM"
+      ),
+      list(
+        regex = "AutoTokenizer\\.from_pretrained\\s*\\(",
+        func = "AutoTokenizer.from_pretrained",
+        arg_position = 1,
+        arg_name = "pretrained_model_name_or_path",
+        description = "Transformers tokenizer"
+      ),
+      list(
+        regex = "AutoModel\\.from_pretrained\\s*\\(",
+        func = "AutoModel.from_pretrained",
+        arg_position = 1,
+        arg_name = "pretrained_model_name_or_path",
+        description = "Transformers auto model"
+      ),
+      # litellm
+      list(
+        regex = "litellm\\.completion\\s*\\(",
+        func = "litellm.completion",
+        arg_position = NA,
+        arg_name = "model",
+        description = "LiteLLM completion"
+      ),
+      list(
+        regex = "litellm\\.embedding\\s*\\(",
+        func = "litellm.embedding",
+        arg_position = NA,
+        arg_name = "model",
+        description = "LiteLLM embedding"
+      ),
+      # vllm
+      list(
+        regex = "LLM\\s*\\(['\"]",
+        func = "LLM",
+        arg_position = 1,
+        arg_name = "model",
+        description = "vLLM model server"
+      ),
+      list(
+        regex = "vllm\\.LLM\\s*\\(",
+        func = "vllm.LLM",
+        arg_position = 1,
+        arg_name = "model",
+        description = "vLLM model server (namespaced)"
+      ),
+      # google generativeai
+      list(
+        regex = "genai\\.GenerativeModel\\s*\\(",
+        func = "genai.GenerativeModel",
+        arg_position = 1,
+        arg_name = "model_name",
+        description = "Google Generative AI model"
+      ),
+      list(
+        regex = "model\\.generate_content\\s*\\(",
+        func = "model.generate_content",
+        arg_position = 1,
+        arg_name = "contents",
+        description = "Google Gemini generate"
+      ),
+      # groq
+      list(
+        regex = "Groq\\s*\\(",
+        func = "Groq",
+        arg_position = NA,
+        arg_name = "api_key",
+        description = "Groq client init"
       )
     ),
     output = list(
@@ -1794,6 +2072,81 @@ get_python_patterns <- function() {
         arg_position = 1,
         arg_name = "client",
         description = "Elasticsearch helpers bulk"
+      ),
+      # LLM/AI Model Outputs - Transformers
+      list(
+        regex = "model\\.save_pretrained\\s*\\(",
+        func = "model.save_pretrained",
+        arg_position = 1,
+        arg_name = "save_directory",
+        description = "Transformers save model"
+      ),
+      list(
+        regex = "tokenizer\\.save_pretrained\\s*\\(",
+        func = "tokenizer.save_pretrained",
+        arg_position = 1,
+        arg_name = "save_directory",
+        description = "Transformers save tokenizer"
+      ),
+      list(
+        regex = "trainer\\.save_model\\s*\\(",
+        func = "trainer.save_model",
+        arg_position = 1,
+        arg_name = "output_dir",
+        description = "Transformers Trainer save"
+      ),
+      # PyTorch model saving
+      list(
+        regex = "torch\\.save\\s*\\(",
+        func = "torch.save",
+        arg_position = 2,
+        arg_name = "f",
+        description = "PyTorch save model"
+      ),
+      # ONNX export
+      list(
+        regex = "torch\\.onnx\\.export\\s*\\(",
+        func = "torch.onnx.export",
+        arg_position = 2,
+        arg_name = "f",
+        description = "PyTorch ONNX export"
+      ),
+      # TensorFlow/Keras model saving
+      list(
+        regex = "model\\.save\\s*\\(['\"]",
+        func = "model.save",
+        arg_position = 1,
+        arg_name = "filepath",
+        description = "Keras save model"
+      ),
+      list(
+        regex = "model\\.save_weights\\s*\\(",
+        func = "model.save_weights",
+        arg_position = 1,
+        arg_name = "filepath",
+        description = "Keras save weights"
+      ),
+      # MLflow
+      list(
+        regex = "mlflow\\.log_model\\s*\\(",
+        func = "mlflow.log_model",
+        arg_position = 1,
+        arg_name = "artifact_path",
+        description = "MLflow log model"
+      ),
+      list(
+        regex = "mlflow\\.sklearn\\.log_model\\s*\\(",
+        func = "mlflow.sklearn.log_model",
+        arg_position = 1,
+        arg_name = "sk_model",
+        description = "MLflow log sklearn model"
+      ),
+      list(
+        regex = "mlflow\\.pytorch\\.log_model\\s*\\(",
+        func = "mlflow.pytorch.log_model",
+        arg_position = 1,
+        arg_name = "pytorch_model",
+        description = "MLflow log PyTorch model"
       )
     ),
     dependency = list(

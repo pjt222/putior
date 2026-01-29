@@ -44,6 +44,9 @@ pak::pkg_install("pjt222/putior")  # GitHub version
 
 Add `#put` comments to describe each step in your workflow. Start simple:
 
+> [!TIP]
+> **One line is enough!** The simplest annotation is `#put label:"My Step"` - ID, type, and output are auto-generated.
+
 **Minimal annotation (just a label):**
 ```r
 #put label:"Load Data"

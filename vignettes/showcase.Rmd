@@ -365,6 +365,256 @@ flowchart TD
     class python_report outputStyle
 ```
 
+## Domain-Specific Examples
+
+Real-world workflows from various data science domains.
+
+### Bioinformatics Pipeline
+
+A genomics analysis workflow processing FASTA sequences:
+
+```r
+# sequences/fetch_sequences.R
+#put label:"Fetch FASTA Sequences", node_type:"input", output:"raw_sequences.fasta"
+
+# sequences/quality_control.py
+#put label:"Quality Control", input:"raw_sequences.fasta", output:"filtered_sequences.fasta, qc_report.html"
+
+# alignment/run_blast.sh
+#put label:"BLAST Alignment", input:"filtered_sequences.fasta", output:"blast_results.xml"
+
+# alignment/parse_blast.R
+#put label:"Parse BLAST Results", input:"blast_results.xml", output:"alignments.csv"
+
+# analysis/differential_expression.R
+#put label:"Differential Expression", input:"alignments.csv", output:"de_results.rds"
+
+# analysis/pathway_analysis.R
+#put label:"Pathway Enrichment", input:"de_results.rds", output:"pathways.csv"
+
+# report/bioinformatics_report.R
+#put label:"Generate Report", node_type:"output", input:"de_results.rds, pathways.csv, qc_report.html", output:"analysis_report.html"
+```
+
+**Generated Diagram:**
+```mermaid
+flowchart TD
+    fetch([Fetch FASTA Sequences])
+    qc[Quality Control]
+    blast[BLAST Alignment]
+    parse[Parse BLAST Results]
+    de[Differential Expression]
+    pathway[Pathway Enrichment]
+    report[[Generate Report]]
+
+    fetch --> qc
+    qc --> blast
+    blast --> parse
+    parse --> de
+    de --> pathway
+    de --> report
+    pathway --> report
+    qc --> report
+
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class fetch inputStyle
+    class qc,blast,parse,de,pathway processStyle
+    class report outputStyle
+```
+
+### Financial Analysis Pipeline
+
+Portfolio analysis and risk assessment workflow:
+
+```r
+# data/fetch_market_data.py
+#put label:"Fetch Market Data", node_type:"input", output:"market_prices.parquet"
+
+# data/fetch_holdings.R
+#put label:"Load Portfolio Holdings", node_type:"input", output:"holdings.csv"
+
+# analysis/calculate_returns.R
+#put label:"Calculate Returns", input:"market_prices.parquet, holdings.csv", output:"returns.rds"
+
+# analysis/risk_metrics.R
+#put label:"Compute Risk Metrics", input:"returns.rds", output:"var_results.rds, sharpe_ratios.csv"
+
+# analysis/attribution.py
+#put label:"Performance Attribution", input:"returns.rds, holdings.csv", output:"attribution.json"
+
+# optimization/portfolio_optimize.R
+#put label:"Portfolio Optimization", input:"returns.rds, var_results.rds", output:"optimal_weights.csv"
+
+# report/risk_dashboard.R
+#put label:"Risk Dashboard", node_type:"output", input:"var_results.rds, sharpe_ratios.csv, attribution.json, optimal_weights.csv", output:"risk_report.html"
+```
+
+**Generated Diagram:**
+```mermaid
+flowchart TD
+    market([Fetch Market Data])
+    holdings([Load Portfolio Holdings])
+    returns[Calculate Returns]
+    risk[Compute Risk Metrics]
+    attrib[Performance Attribution]
+    optimize[Portfolio Optimization]
+    dashboard[[Risk Dashboard]]
+
+    market --> returns
+    holdings --> returns
+    returns --> risk
+    returns --> attrib
+    holdings --> attrib
+    risk --> optimize
+    returns --> optimize
+    risk --> dashboard
+    attrib --> dashboard
+    optimize --> dashboard
+
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class market,holdings inputStyle
+    class returns,risk,attrib,optimize processStyle
+    class dashboard outputStyle
+```
+
+### Web Scraping Pipeline
+
+Data extraction from web sources:
+
+```r
+# scrape/fetch_urls.py
+#put label:"Fetch URL List", node_type:"input", output:"target_urls.txt"
+
+# scrape/scrape_pages.py
+#put label:"Scrape Web Pages", input:"target_urls.txt", output:"raw_html.json"
+
+# extract/parse_html.py
+#put label:"Parse HTML Content", input:"raw_html.json", output:"extracted_text.json"
+
+# extract/extract_entities.py
+#put label:"Named Entity Recognition", input:"extracted_text.json", output:"entities.csv"
+
+# transform/clean_data.R
+#put label:"Clean and Normalize", input:"entities.csv", output:"clean_entities.csv"
+
+# transform/deduplicate.R
+#put label:"Remove Duplicates", input:"clean_entities.csv", output:"unique_entities.csv"
+
+# load/save_to_db.py
+#put label:"Load to Database", node_type:"output", input:"unique_entities.csv"
+```
+
+**Generated Diagram:**
+```mermaid
+flowchart TD
+    urls([Fetch URL List])
+    scrape[Scrape Web Pages]
+    parse[Parse HTML Content]
+    ner[Named Entity Recognition]
+    clean[Clean and Normalize]
+    dedup[Remove Duplicates]
+    db[[Load to Database]]
+
+    urls --> scrape
+    scrape --> parse
+    parse --> ner
+    ner --> clean
+    clean --> dedup
+    dedup --> db
+
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class urls inputStyle
+    class scrape,parse,ner,clean,dedup processStyle
+    class db outputStyle
+```
+
+### Multi-Language ML Pipeline
+
+A realistic ML workflow using R for data prep, Python for training, and R for reporting:
+
+```r
+# data/load_raw_data.R
+#put label:"Load Raw Data (R)", node_type:"input", output:"raw_data.rds"
+
+# data/eda_analysis.R
+#put label:"Exploratory Analysis (R)", input:"raw_data.rds", output:"eda_report.html, data_summary.json"
+
+# preprocessing/feature_engineering.R
+#put label:"Feature Engineering (R)", input:"raw_data.rds, data_summary.json", output:"features.parquet"
+
+# preprocessing/split_data.R
+#put label:"Train/Test Split (R)", input:"features.parquet", output:"train.parquet, test.parquet"
+
+# training/train_model.py
+#put label:"Train XGBoost (Python)", input:"train.parquet", output:"model.pkl, training_metrics.json"
+
+# training/hyperparameter_search.py
+#put label:"Hyperparameter Tuning (Python)", input:"train.parquet", output:"best_params.json"
+
+# training/final_model.py
+#put label:"Final Model Training (Python)", input:"train.parquet, best_params.json", output:"final_model.pkl"
+
+# evaluation/model_evaluation.py
+#put label:"Model Evaluation (Python)", input:"final_model.pkl, test.parquet", output:"predictions.csv, eval_metrics.json"
+
+# reporting/model_report.R
+#put label:"Model Report (R)", node_type:"output", input:"eval_metrics.json, training_metrics.json, eda_report.html", output:"final_report.html"
+
+# deployment/export_model.py
+#put label:"Export for Production (Python)", node_type:"output", input:"final_model.pkl", output:"model_artifact.tar.gz"
+```
+
+**Generated Diagram:**
+```mermaid
+flowchart TD
+    load([Load Raw Data - R])
+    eda[Exploratory Analysis - R]
+    features[Feature Engineering - R]
+    split[Train/Test Split - R]
+    train[Train XGBoost - Python]
+    hyper[Hyperparameter Tuning - Python]
+    final[Final Model Training - Python]
+    eval[Model Evaluation - Python]
+    report[[Model Report - R]]
+    export[[Export for Production - Python]]
+
+    load --> eda
+    load --> features
+    eda --> features
+    features --> split
+    split --> train
+    split --> hyper
+    hyper --> final
+    split --> final
+    final --> eval
+    split --> eval
+    eval --> report
+    train --> report
+    eda --> report
+    final --> export
+
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class load inputStyle
+    class eda,features,split,train,hyper,final,eval processStyle
+    class report,export outputStyle
+```
+
+This example demonstrates:
+- **R for data handling**: Loading, EDA, feature engineering, splitting
+- **Python for ML**: XGBoost training, hyperparameter search, evaluation
+- **R for reporting**: Combining results into a final report
+- **Python for deployment**: Packaging model artifacts
+
+---
+
 ## Tips for Large Workflows
 
 When working with complex workflows:

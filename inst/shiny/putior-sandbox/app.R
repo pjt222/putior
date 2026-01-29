@@ -4,6 +4,9 @@
 library(shiny)
 library(putior)
 
+# Check if shinyAce is available for syntax highlighting
+has_shinyAce <- requireNamespace("shinyAce", quietly = TRUE)
+
 # Sample code for users to try
 sample_r_code <- '# Example R script with PUT annotations
 #put label:"Load Data", node_type:"input", output:"data.csv"
@@ -124,6 +127,26 @@ ui <- fluidPage(
 
         mermaid.init(undefined, div);
       });
+
+      // Copy to clipboard function
+      Shiny.addCustomMessageHandler('copyToClipboard', function(text) {
+        navigator.clipboard.writeText(text).then(function() {
+          // Show success notification
+          var btn = document.getElementById('copy_mermaid');
+          var originalText = btn.textContent;
+          btn.textContent = 'Copied!';
+          btn.classList.add('btn-success');
+          btn.classList.remove('btn-secondary');
+          setTimeout(function() {
+            btn.textContent = originalText;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-secondary');
+          }, 2000);
+        }).catch(function(err) {
+          console.error('Failed to copy text: ', err);
+          alert('Failed to copy to clipboard. Please copy manually.');
+        });
+      });
     "))
   ),
 
@@ -149,13 +172,27 @@ ui <- fluidPage(
         selected = "multi"
       ),
 
-      # Code input
-      textAreaInput("code", "Annotated Code:",
-        value = sample_multi_file,
-        rows = 20,
-        width = "100%",
-        placeholder = "Paste your annotated code here..."
-      ),
+      # Code input - use shinyAce if available for syntax highlighting
+      if (has_shinyAce) {
+        shinyAce::aceEditor(
+          "code",
+          value = sample_multi_file,
+          mode = "r",
+          theme = "tomorrow",
+          height = "400px",
+          fontSize = 13,
+          showLineNumbers = TRUE,
+          highlightActiveLine = TRUE,
+          placeholder = "Paste your annotated code here..."
+        )
+      } else {
+        textAreaInput("code", "Annotated Code:",
+          value = sample_multi_file,
+          rows = 20,
+          width = "100%",
+          placeholder = "Paste your annotated code here..."
+        )
+      },
       p("Use '# ===== File: filename.R =====' to simulate multiple files", class = "help-text"),
 
       hr(),
@@ -203,7 +240,13 @@ ui <- fluidPage(
 
       br(), br(),
 
-      downloadButton("download_md", "Download Mermaid Code", width = "100%")
+      downloadButton("download_md", "Download Mermaid Code", width = "100%"),
+
+      br(), br(),
+
+      actionButton("copy_mermaid", "Copy Mermaid to Clipboard",
+                   class = "btn-secondary", width = "100%",
+                   icon = icon("clipboard"))
     ),
 
     mainPanel(
@@ -281,7 +324,12 @@ server <- function(input, output, session) {
       "python" = sample_python_code,
       "multi" = sample_multi_file
     )
-    updateTextAreaInput(session, "code", value = code)
+    # Update editor - works for both shinyAce and textAreaInput
+    if (has_shinyAce) {
+      shinyAce::updateAceEditor(session, "code", value = code)
+    } else {
+      updateTextAreaInput(session, "code", value = code)
+    }
   })
 
   # Parse code into simulated files
@@ -416,6 +464,15 @@ server <- function(input, output, session) {
 
     workflow[, cols_available, drop = FALSE]
   }, striped = TRUE, hover = TRUE, bordered = TRUE)
+
+  # Copy to clipboard handler
+
+  observeEvent(input$copy_mermaid, {
+    code <- mermaid_code()
+    if (!is.null(code)) {
+      session$sendCustomMessage("copyToClipboard", code)
+    }
+  })
 
   # Download handler
   output$download_md <- downloadHandler(
