@@ -115,22 +115,53 @@ put_diagram <- function(workflow,
   putior_log("INFO", "Starting diagram generation")
   putior_log("DEBUG", "Diagram parameters: direction='{direction}', theme='{theme}', show_artifacts={show_artifacts}")
 
+
   # Input validation
-  if (!is.data.frame(workflow) || nrow(workflow) == 0) {
-    stop("workflow must be a non-empty data frame returned by put()")
+  if (!is.data.frame(workflow)) {
+    stop(
+      "workflow must be a data frame returned by put() or put_auto().\n",
+      "Received: ", class(workflow)[1], "\n",
+      "Example usage:\n",
+      "  workflow <- put(\"./src/\")\n",
+      "  put_diagram(workflow)",
+      call. = FALSE
+    )
+  }
+
+  if (nrow(workflow) == 0) {
+    stop(
+      "workflow is empty (0 rows).\n",
+      "No PUT annotations were found. Please check that:\n",
+      "- Your source files contain PUT annotations\n",
+      "- The file pattern matches your source files\n",
+      "- The correct comment prefix is used for your language\n",
+      "See putior_help(\"annotation\") for annotation syntax.",
+      call. = FALSE
+    )
   }
 
   required_cols <- c("id", "file_name")
-  if (!all(required_cols %in% names(workflow))) {
-    stop("workflow must contain 'id' and 'file_name' columns")
+  missing_cols <- required_cols[!required_cols %in% names(workflow)]
+  if (length(missing_cols) > 0) {
+    stop(
+      "workflow is missing required column(s): ", paste(missing_cols, collapse = ", "), "\n",
+      "Expected columns: ", paste(required_cols, collapse = ", "), "\n",
+      "This typically means the data frame was not created by put() or put_auto().\n",
+      "Example:\n",
+      "  workflow <- put(\"./src/\")\n",
+      "  put_diagram(workflow)",
+      call. = FALSE
+    )
   }
 
   # Validate theme
   valid_themes <- c("light", "dark", "auto", "minimal", "github")
   if (!theme %in% valid_themes) {
     warning(
-      "Invalid theme '", theme, "'. Using 'light'. Valid themes: ",
-      paste(valid_themes, collapse = ", ")
+      "Invalid theme '", theme, "'. Using 'light'.\n",
+      "Valid themes: ", paste(valid_themes, collapse = ", "), "\n",
+      "See putior_help(\"themes\") or get_diagram_themes() for descriptions.",
+      call. = FALSE
     )
     theme <- "light"
   }
@@ -139,9 +170,11 @@ put_diagram <- function(workflow,
   valid_styles <- c("inline", "subgraph")
   if (!source_info_style %in% valid_styles) {
     warning(
-      "Invalid source_info_style '", source_info_style,
-      "'. Using 'inline'. Valid styles: ",
-      paste(valid_styles, collapse = ", ")
+      "Invalid source_info_style '", source_info_style, "'. Using 'inline'.\n",
+      "Valid styles: ", paste(valid_styles, collapse = ", "), "\n",
+      "- inline: Append file name to node labels\n",
+      "- subgraph: Group nodes by source file",
+      call. = FALSE
     )
     source_info_style <- "inline"
   }
@@ -150,9 +183,12 @@ put_diagram <- function(workflow,
   valid_protocols <- c("vscode", "file", "rstudio")
   if (enable_clicks && !click_protocol %in% valid_protocols) {
     warning(
-      "Invalid click_protocol '", click_protocol,
-      "'. Using 'vscode'. Valid protocols: ",
-      paste(valid_protocols, collapse = ", ")
+      "Invalid click_protocol '", click_protocol, "'. Using 'vscode'.\n",
+      "Valid protocols: ", paste(valid_protocols, collapse = ", "), "\n",
+      "- vscode: VS Code editor (vscode://file/path:line)\n",
+      "- file: Standard file:// protocol\n",
+      "- rstudio: RStudio IDE (rstudio://open-file?path=)",
+      call. = FALSE
     )
     click_protocol <- "vscode"
   }
@@ -160,7 +196,18 @@ put_diagram <- function(workflow,
   # Clean the workflow data
   workflow <- workflow[!is.na(workflow$id) & workflow$id != "", ]
   if (nrow(workflow) == 0) {
-    stop("No valid workflow nodes found (all IDs are missing or empty)")
+    stop(
+      "No valid workflow nodes found (all IDs are missing or empty).\n",
+      "This can happen if:\n",
+      "- PUT annotations don't include 'id' properties and uuid package is not installed\n",
+      "- The annotation syntax is incorrect\n",
+      "Solution: Either add explicit IDs to your annotations:\n",
+      "  #put id:\"my_node\", label:\"Description\"\n",
+      "Or install the uuid package for auto-generation:\n",
+      "  install.packages(\"uuid\")\n",
+      "See putior_help(\"annotation\") for syntax details.",
+      call. = FALSE
+    )
   }
 
   putior_log("DEBUG", "Processing {nrow(workflow)} workflow node(s)")
@@ -1021,7 +1068,12 @@ handle_output <- function(mermaid_code, output = "console", file = NULL, title =
         clipr::write_clip(paste0("```mermaid\n", mermaid_code, "\n```"))
         message("Diagram copied to clipboard")
       } else {
-        warning("clipr package not available. Install with: install.packages('clipr')")
+        warning(
+          "clipr package not available for clipboard access.\n",
+          "The diagram has been printed to console instead.\n",
+          "To enable clipboard support, install with: install.packages(\"clipr\")",
+          call. = FALSE
+        )
         cat("```mermaid\n")
         cat(mermaid_code)
         cat("\n```\n")

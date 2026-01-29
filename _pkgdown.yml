@@ -179,6 +179,8 @@ navbar:
         href: articles/api-reference.html
       - text: "Showcase: Real-World Examples"
         href: articles/showcase.html
+      - text: Troubleshooting Guide
+        href: articles/troubleshooting.html
     cheatsheet:
       text: Cheatsheet
       icon: fa-file-pdf

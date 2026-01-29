@@ -76,11 +76,25 @@ put_auto <- function(path,
 
   # Input validation
   if (!is.character(path) || length(path) != 1) {
-    stop("'path' must be a single character string")
+    stop(
+      "'path' must be a single character string.\n",
+      "Received: ", class(path)[1],
+      if (length(path) > 1) paste0(" with ", length(path), " elements") else "",
+      ".\n",
+      "Example: put_auto(\"./src/\") or put_auto(\"script.R\")",
+      call. = FALSE
+    )
   }
 
   if (!file.exists(path)) {
-    stop("Path does not exist: ", path)
+    stop(
+      "Path does not exist: '", path, "'\n",
+      "Please check:\n",
+      "- The path is spelled correctly\n",
+      "- The directory or file exists\n",
+      "- You have read permissions for this location",
+      call. = FALSE
+    )
   }
 
   # Handle both files and directories
@@ -194,23 +208,50 @@ put_generate <- function(path,
                          style = "multiline") {
   # Input validation
   if (!is.character(path) || length(path) != 1) {
-    stop("'path' must be a single character string")
+    stop(
+      "'path' must be a single character string.\n",
+      "Received: ", class(path)[1],
+      if (length(path) > 1) paste0(" with ", length(path), " elements") else "",
+      ".\n",
+      "Example: put_generate(\"./src/\") or put_generate(\"script.R\")",
+      call. = FALSE
+    )
   }
 
   if (!file.exists(path)) {
-    stop("Path does not exist: ", path)
+    stop(
+      "Path does not exist: '", path, "'\n",
+      "Please check:\n",
+      "- The path is spelled correctly\n",
+      "- The directory or file exists\n",
+      "- You have read permissions for this location",
+      call. = FALSE
+    )
   }
 
   valid_outputs <- c("console", "clipboard", "file")
   if (!output %in% valid_outputs) {
-    stop("Invalid output: ", output, ". Valid options: ",
-         paste(valid_outputs, collapse = ", "))
+    stop(
+      "Invalid output: '", output, "'\n",
+      "Valid options: ", paste(valid_outputs, collapse = ", "), "\n",
+      "Examples:\n",
+      "  put_generate(path, output = \"console\")   # Print to screen\n",
+      "  put_generate(path, output = \"clipboard\") # Copy to clipboard\n",
+      "  put_generate(path, output = \"file\")      # Write to .put files",
+      call. = FALSE
+    )
   }
 
   valid_styles <- c("single", "multiline")
   if (!style %in% valid_styles) {
-    stop("Invalid style: ", style, ". Valid options: ",
-         paste(valid_styles, collapse = ", "))
+    stop(
+      "Invalid style: '", style, "'\n",
+      "Valid options: ", paste(valid_styles, collapse = ", "), "\n",
+      "- single: One-line annotation format\n",
+      "- multiline: Multi-line format with backslash continuation\n",
+      "See putior_help(\"annotation\") for syntax examples.",
+      call. = FALSE
+    )
   }
 
   # Handle both files and directories
@@ -260,7 +301,12 @@ put_generate <- function(path,
         clipr::write_clip(combined)
         message("Annotations copied to clipboard")
       } else {
-        warning("clipr package not available. Install with: install.packages('clipr')")
+        warning(
+          "clipr package not available for clipboard access.\n",
+          "The annotations have been printed to console instead.\n",
+          "To enable clipboard support, install with: install.packages(\"clipr\")",
+          call. = FALSE
+        )
         cat(combined, "\n")
       }
     },
@@ -326,8 +372,14 @@ put_merge <- function(path,
   # Input validation
   valid_strategies <- c("manual_priority", "supplement", "union")
   if (!merge_strategy %in% valid_strategies) {
-    stop("Invalid merge_strategy: ", merge_strategy, ". Valid options: ",
-         paste(valid_strategies, collapse = ", "))
+    stop(
+      "Invalid merge_strategy: '", merge_strategy, "'\n",
+      "Valid options: ", paste(valid_strategies, collapse = ", "), "\n",
+      "- manual_priority: Manual annotations override auto-detected\n",
+      "- supplement: Auto fills in missing input/output fields only\n",
+      "- union: Combine all detected I/O from both sources",
+      call. = FALSE
+    )
   }
 
   # Get manual annotations

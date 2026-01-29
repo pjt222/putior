@@ -95,8 +95,15 @@ set_putior_log_level <- function(level = "WARN") {
   level <- toupper(level)
 
   if (!level %in% valid_levels) {
-    stop("Invalid log level: '", level, "'. Valid levels: ",
-         paste(valid_levels, collapse = ", "), call. = FALSE)
+    stop(
+      "Invalid log level: '", level, "'\n",
+      "Valid levels: ", paste(valid_levels, collapse = ", "), "\n",
+      "- DEBUG: Fine-grained internal operations\n",
+      "- INFO: Progress milestones\n",
+      "- WARN: Issues that don't stop execution (default)\n",
+      "- ERROR: Fatal issues",
+      call. = FALSE
+    )
   }
 
   old_level <- getOption("putior.log_level", "WARN")

@@ -157,11 +157,11 @@ test_that("put_diagram() handles file output", {
 
 test_that("put_diagram() validates input", {
   # Empty workflow
-  expect_error(put_diagram(data.frame()), "non-empty data frame")
+  expect_error(put_diagram(data.frame()), "empty.*0 rows")
 
   # Missing required columns
   bad_workflow <- data.frame(x = 1, y = 2)
-  expect_error(put_diagram(bad_workflow), "must contain 'id' and 'file_name' columns")
+  expect_error(put_diagram(bad_workflow), "missing required column")
 
   # All IDs missing
   workflow_no_ids <- data.frame(

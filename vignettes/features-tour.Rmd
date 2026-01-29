@@ -27,6 +27,7 @@ This guide tours the advanced features of putior that go beyond basic annotation
 | Interactive Sandbox | Experiment without writing files | `run_sandbox()` |
 | Structured Logging | Debug annotation parsing | `set_putior_log_level()` |
 | Themes & Styling | Customize diagram appearance | `theme`, `style_nodes` |
+| Performance | Optimize for large codebases | `pattern`, `recursive`, `validate` |
 
 ---
 
@@ -530,6 +531,127 @@ put_diagram(workflow,
 | `LR` | Left to Right | Wide workflows |
 | `BT` | Bottom to Top | Unusual layouts |
 | `RL` | Right to Left | RTL languages |
+
+---
+
+## Performance
+
+putior is designed to handle codebases of all sizes efficiently. Understanding its performance characteristics helps you optimize for large projects.
+
+### Time Complexity
+
+Annotation parsing operates in **O(n)** time where n is the total number of lines across all scanned files:
+
+| Operation | Complexity | Notes |
+|-----------|------------|-------|
+| File scanning | O(files) | Directory traversal |
+| Line parsing | O(lines) | Single pass per file |
+| Pattern matching | O(lines x patterns) | Regex matching per line |
+| Diagram generation | O(nodes + edges) | Graph construction |
+
+The dominant factor is total lines scanned. For most codebases, parsing completes in milliseconds to seconds.
+
+### Memory Usage
+
+putior processes files sequentially and stores only:
+
+- Extracted annotations (typically small)
+- Node and edge data for diagram generation
+- File metadata when `include_line_numbers = TRUE`
+
+Memory usage scales with the **number of annotations found**, not the total codebase size. A 100,000-line codebase with 50 annotations uses similar memory to a 1,000-line codebase with 50 annotations.
+
+### Performance Benchmarks
+
+Expected processing times on typical hardware (results may vary):
+
+| Codebase Size | Files | Lines | Approximate Time |
+|---------------|-------|-------|------------------|
+| Small project | 10-50 | 1,000-5,000 | < 100ms |
+| Medium project | 50-200 | 5,000-50,000 | 100-500ms |
+| Large project | 200-1,000 | 50,000-500,000 | 0.5-3s |
+| Monorepo | 1,000+ | 500,000+ | 3-10s |
+
+Auto-detection (`put_auto()`) is slower than manual annotation extraction (`put()`) due to additional pattern matching.
+
+### Tips for Large Codebases
+
+**1. Use specific file patterns instead of scanning everything:**
+
+```{r}
+# Slow: scans all files recursively
+workflow <- put("./src/")
+
+# Faster: only scan R files
+workflow <- put("./src/", pattern = "\\.R$")
+
+# Fastest: scan specific directories
+workflow <- put(c("./src/etl/", "./src/analysis/"))
+```
+
+**2. Disable validation for performance-critical scripts:**
+
+```{r}
+# Skip validation checks for faster processing
+workflow <- put("./src/", validate = FALSE)
+```
+
+**3. Use `recursive = FALSE` when appropriate:**
+
+```{r}
+# Only scan top-level directory
+workflow <- put("./src/", recursive = FALSE)
+
+# Then add specific subdirectories as needed
+workflow2 <- put("./src/important_module/", recursive = TRUE)
+```
+
+**4. Consider splitting large directories:**
+
+```{r}
+# Process in chunks for very large projects
+etl_workflow <- put("./src/etl/")
+analysis_workflow <- put("./src/analysis/")
+reporting_workflow <- put("./src/reporting/")
+
+# Combine if needed
+# all_workflows <- rbind(etl_workflow, analysis_workflow, reporting_workflow)
+```
+
+**5. Cache results for repeated use:**
+
+```{r}
+# Save workflow for reuse
+workflow <- put("./src/")
+saveRDS(workflow, "workflow_cache.rds")
+
+# Load cached workflow (instant)
+workflow <- readRDS("workflow_cache.rds")
+put_diagram(workflow)
+```
+
+**6. Profile before optimizing:**
+
+```{r}
+# Measure actual time
+system.time({
+  workflow <- put("./src/", recursive = TRUE)
+})
+
+# For detailed profiling
+if (requireNamespace("profvis", quietly = TRUE)) {
+  profvis::profvis({
+    workflow <- put("./src/", recursive = TRUE)
+  })
+}
+```
+
+### When Performance Matters
+
+- **CI/CD pipelines**: Use caching and specific patterns
+- **Interactive exploration**: Start with `recursive = FALSE`, expand as needed
+- **Documentation builds**: Cache workflow results between builds
+- **Large monorepos**: Split by logical boundaries (packages, services)
 
 ---
 

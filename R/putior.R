@@ -122,11 +122,25 @@ put <- function(path,
 
   # Input validation
   if (!is.character(path) || length(path) != 1) {
-    stop("'path' must be a single character string")
+    stop(
+      "'path' must be a single character string.\n",
+      "Received: ", class(path)[1],
+      if (length(path) > 1) paste0(" with ", length(path), " elements") else "",
+      ".\n",
+      "Example: put(\"./src/\") or put(\"script.R\")",
+      call. = FALSE
+    )
   }
 
   if (!file.exists(path)) {
-    stop("Path does not exist: ", path)
+    stop(
+      "Path does not exist: '", path, "'\n",
+      "Please check:\n",
+      "- The path is spelled correctly\n",
+      "- The directory or file exists\n",
+      "- You have read permissions for this location",
+      call. = FALSE
+    )
   }
 
   # Handle both files and directories
@@ -148,7 +162,14 @@ put <- function(path,
 
   if (length(files) == 0) {
     putior_log("WARN", "No files matching pattern '{pattern}' found in: {path}")
-    warning("No files matching pattern '", pattern, "' found in: ", path)
+    warning(
+      "No files matching pattern '", pattern, "' found in: ", path, "\n",
+      "Check that:\n",
+      "- The directory contains source files with the expected extensions\n",
+      "- The pattern matches your file types (default matches .R, .py, .sql, .sh, .jl)\n",
+      "- For other languages, specify a pattern like: pattern = \"\\\\.js$\"",
+      call. = FALSE
+    )
     return(empty_result_df(include_line_numbers))
   }
 
@@ -186,8 +207,15 @@ put <- function(path,
       duplicate_ids <- df$id[duplicated(df$id) & !is.na(df$id)]
       if (length(duplicate_ids) > 0) {
         putior_log("WARN", "Duplicate node IDs found: {paste(unique(duplicate_ids), collapse=', ')}")
-        warning("Duplicate node IDs found: ", paste(unique(duplicate_ids), collapse = ", "),
-                "\nEach node must have a unique ID within the workflow.")
+        warning(
+          "Duplicate node IDs found: ", paste(unique(duplicate_ids), collapse = ", "), "\n",
+          "Each node must have a unique ID within the workflow.\n",
+          "Solutions:\n",
+          "- Use unique 'id' values in your PUT annotations\n",
+          "- Omit 'id' to enable auto-generation (requires uuid package)\n",
+          "Use include_line_numbers = TRUE to locate duplicates.",
+          call. = FALSE
+        )
       }
     }
 
@@ -328,7 +356,10 @@ process_single_file <- function(file, include_line_numbers, validate) {
         } else if (validate) {
           warning(
             "Invalid PUT annotation syntax in ", basename(file), " line ", line_idx, ":\n",
-            full_content
+            "  ", full_content, "\n",
+            "Expected format: #put id:\"node_id\", label:\"Description\"\n",
+            "See putior_help(\"annotation\") for syntax details.",
+            call. = FALSE
           )
         }
       }
@@ -595,14 +626,23 @@ is_valid_put_annotation <- function(line) {
 #' @seealso \code{\link{put}}, \code{\link{put_diagram}}
 run_sandbox <- function() {
   if (!requireNamespace("shiny", quietly = TRUE)) {
-    stop("The 'shiny' package is required. Install with: install.packages('shiny')",
-         call. = FALSE)
+    stop(
+      "The 'shiny' package is required for the interactive sandbox.\n",
+      "Install it with: install.packages(\"shiny\")\n",
+      "For optional syntax highlighting, also install: install.packages(\"shinyAce\")",
+      call. = FALSE
+    )
   }
 
   app_dir <- system.file("shiny", "putior-sandbox", package = "putior")
 
- if (app_dir == "") {
-    stop("Could not find sandbox app. Try reinstalling putior.", call. = FALSE)
+  if (app_dir == "") {
+    stop(
+      "Could not find the sandbox app.\n",
+      "This may indicate a corrupted package installation.\n",
+      "Try reinstalling putior with: install.packages(\"putior\")",
+      call. = FALSE
+    )
   }
 
   shiny::runApp(app_dir, launch.browser = TRUE)

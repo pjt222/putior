@@ -325,7 +325,7 @@ test_that("get_detection_patterns() validates language", {
 test_that("get_detection_patterns() validates type", {
   expect_error(
     get_detection_patterns("r", type = "invalid_type"),
-    "Invalid type"
+    "Invalid pattern type"
   )
 })
 

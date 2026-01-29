@@ -5,12 +5,38 @@
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/putior)](https://cran.r-project.org/package=putior)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![Cheatsheet](https://img.shields.io/badge/cheatsheet-PDF-blue.svg)](https://github.com/pjt222/putior/blob/main/inst/cheatsheet/putior-cheatsheet.pdf)
 
 > **Extract beautiful workflow diagrams from your code annotations**
 
 ![putior demo](man/figures/demo.gif)
 
 **putior** (PUT + Input + Output + R) is an R package that extracts structured annotations from source code files and creates beautiful Mermaid flowchart diagrams. Perfect for documenting data pipelines, workflows, and understanding complex codebases.
+
+<details>
+<summary><strong>📑 Table of Contents</strong></summary>
+
+- [Key Features](#-key-features)
+- [TL;DR](#-tldr)
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [Common Data Science Pattern](#-common-data-science-pattern)
+- [Visualization Examples](#-visualization-examples)
+- [Using the Diagrams](#-using-the-diagrams)
+- [Visualization Modes](#-visualization-modes)
+- [Theme System](#-theme-system)
+- [Customization Options](#-customization-options)
+- [Annotation Reference](#-annotation-reference)
+- [Advanced Usage](#️-advanced-usage)
+- [Advanced Features](#-advanced-features)
+- [API Reference](#-api-reference)
+- [Self-Documentation](#-self-documentation-putior-documents-itself)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [How putior Compares](#-how-putior-compares-to-other-r-packages)
+- [Acknowledgments](#-acknowledgments)
+
+</details>
 
 ## 🌟 Key Features
 
@@ -21,6 +47,8 @@
 - **Cross-language support** - Works with 30+ file types including R, Python, SQL, JavaScript, TypeScript, Go, Rust, and more
 - **Flexible output** - Console, file, or clipboard export
 - **Customizable styling** - Control colors, direction, and node shapes
+
+> **New to putior?** Check out the [**Cheatsheet (PDF)**](https://github.com/pjt222/putior/blob/main/inst/cheatsheet/putior-cheatsheet.pdf) for a quick visual reference!
 
 ## ⚡ TL;DR
 

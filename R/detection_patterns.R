@@ -49,8 +49,14 @@ get_detection_patterns <- function(language = "r", type = NULL) {
                        "javascript", "typescript", "go", "rust",
                        "java", "c", "cpp", "matlab", "ruby", "lua")
   if (!language %in% valid_languages) {
-    stop("Unsupported language: ", language,
-         ". Supported languages: ", paste(valid_languages, collapse = ", "))
+    stop(
+      "Unsupported language for auto-detection: '", language, "'\n",
+      "Languages with detection patterns: ", paste(valid_languages, collapse = ", "), "\n",
+      "Note: All languages support PUT annotation parsing.\n",
+      "See list_supported_languages(detection_only = TRUE) for auto-detection support.\n",
+      "See putior_help(\"patterns\") for details on detection patterns.",
+      call. = FALSE
+    )
   }
 
   patterns <- switch(language,
@@ -74,8 +80,14 @@ get_detection_patterns <- function(language = "r", type = NULL) {
   if (!is.null(type)) {
     valid_types <- c("input", "output", "dependency")
     if (!type %in% valid_types) {
-      stop("Invalid type: ", type,
-           ". Valid types: ", paste(valid_types, collapse = ", "))
+      stop(
+        "Invalid pattern type: '", type, "'\n",
+        "Valid types: ", paste(valid_types, collapse = ", "), "\n",
+        "- input: Patterns for detecting file inputs (read.csv, pd.read_excel, etc.)\n",
+        "- output: Patterns for detecting file outputs (write.csv, ggsave, etc.)\n",
+        "- dependency: Patterns for detecting script dependencies (source(), etc.)",
+        call. = FALSE
+      )
     }
     return(patterns[[type]])
   }
