@@ -201,8 +201,11 @@ get_comment_group <- function(ext) {
 #' @keywords internal
 build_file_pattern <- function(detection_only = FALSE) {
   if (detection_only) {
-    # Only languages with detection pattern support
-    exts <- c("R", "r", "py", "sql", "sh", "jl")
+    # Only languages with detection pattern support (15 languages)
+    exts <- c("R", "r", "py", "sql", "sh", "jl",
+              "js", "jsx", "ts", "tsx", "go", "rs",
+              "java", "c", "cpp", "h", "hpp", "m",
+              "rb", "lua")
   } else {
     # All supported extensions (annotation parsing only)
     exts <- get_supported_extensions()
@@ -234,8 +237,10 @@ build_file_pattern <- function(detection_only = FALSE) {
 #' list_supported_languages(detection_only = TRUE)
 list_supported_languages <- function(detection_only = FALSE) {
   if (detection_only) {
-    # Languages with detection pattern support
-    return(c("r", "python", "sql", "shell", "julia"))
+    # Languages with detection pattern support (15 languages)
+    return(c("r", "python", "sql", "shell", "julia",
+             "javascript", "typescript", "go", "rust",
+             "java", "c", "cpp", "matlab", "ruby", "lua"))
   }
 
   # All languages with annotation parsing support

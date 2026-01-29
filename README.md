@@ -1072,7 +1072,10 @@ patterns <- get_detection_patterns("r")
 # Get only input patterns for Python
 input_patterns <- get_detection_patterns("python", type = "input")
 
-# Supported languages: r, python, sql, shell, julia
+# Supported languages with auto-detection (15 languages, 860+ patterns):
+# r, python, sql, shell, julia, javascript, typescript, go, rust,
+# java, c, cpp, matlab, ruby, lua
+list_supported_languages(detection_only = TRUE)
 ```
 
 ### Interactive Sandbox

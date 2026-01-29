@@ -267,7 +267,7 @@ names(r_patterns)
 # Get only input patterns for R
 input_patterns <- get_detection_patterns("r", type = "input")
 length(input_patterns)
-#> [1] 58  # R has 58 input patterns!
+#> [1] 58  # R has 58+ input patterns!
 
 # View a specific pattern
 input_patterns[[1]]
@@ -294,9 +294,11 @@ list_supported_languages()
 #> [16] "java"      "go"         "rust"       "swift"      "kotlin"
 #> [21] "csharp"    "php"        "scala"      "matlab"     "latex"
 
-# Languages with auto-detection patterns
+# Languages with auto-detection patterns (15 languages, 860+ patterns)
 list_supported_languages(detection_only = TRUE)
-#> [1] "r"      "python" "sql"    "shell"  "julia"
+#> [1] "r"          "python"     "sql"        "shell"      "julia"
+#> [6] "javascript" "typescript" "go"         "rust"       "java"
+#> [11] "c"         "cpp"        "matlab"     "ruby"       "lua"
 
 # Get comment prefix for any extension
 get_comment_prefix("sql")
@@ -333,6 +335,46 @@ get_comment_prefix("m")
 | matplotlib | `plt.savefig` |
 | polars | `pl.read_csv`, `.write_csv` |
 | Database | `create_engine`, `cursor.execute` |
+
+**JavaScript/TypeScript Patterns Include:**
+
+| Category | Examples |
+|----------|----------|
+| Node.js fs | `fs.readFile`, `fs.writeFile`, `fs.createReadStream` |
+| HTTP | `fetch`, `axios.get`, `got` |
+| Database | `mongoose.connect`, `knex`, `prisma` |
+| Express.js | `req.body`, `res.json`, `res.sendFile` |
+| Modules | `require`, `import`, `export` |
+
+**Go Patterns Include:**
+
+| Category | Examples |
+|----------|----------|
+| os/io | `os.Open`, `os.ReadFile`, `os.Create` |
+| bufio | `bufio.NewReader`, `bufio.NewScanner` |
+| encoding | `json.NewDecoder`, `csv.NewReader` |
+| database/sql | `sql.Open`, `db.Query`, `db.Exec` |
+| gorm | `gorm.Open`, `db.Find`, `db.Create` |
+
+**Java Patterns Include:**
+
+| Category | Examples |
+|----------|----------|
+| Classic I/O | `FileInputStream`, `BufferedReader` |
+| NIO | `Files.readAllLines`, `Files.write` |
+| JDBC | `DriverManager.getConnection`, `executeQuery` |
+| Jackson | `objectMapper.readValue`, `objectMapper.writeValue` |
+| Spring Boot | `@RequestBody`, `ResponseEntity`, `repository.save` |
+
+**Rust Patterns Include:**
+
+| Category | Examples |
+|----------|----------|
+| std::fs | `File::open`, `fs::read_to_string`, `fs::write` |
+| serde | `serde_json::from_reader`, `serde_json::to_writer` |
+| csv | `csv::Reader::from_path`, `csv::Writer::from_path` |
+| sqlx | `sqlx::connect`, `sqlx::query` |
+| reqwest | `reqwest::get`, `Client::new` |
 
 ---
 

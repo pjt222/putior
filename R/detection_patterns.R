@@ -45,7 +45,9 @@ NULL
 get_detection_patterns <- function(language = "r", type = NULL) {
   language <- tolower(language)
 
-  valid_languages <- c("r", "python", "sql", "shell", "julia")
+  valid_languages <- c("r", "python", "sql", "shell", "julia",
+                       "javascript", "typescript", "go", "rust",
+                       "java", "c", "cpp", "matlab", "ruby", "lua")
   if (!language %in% valid_languages) {
     stop("Unsupported language: ", language,
          ". Supported languages: ", paste(valid_languages, collapse = ", "))
@@ -56,7 +58,17 @@ get_detection_patterns <- function(language = "r", type = NULL) {
     "python" = get_python_patterns(),
     "sql" = get_sql_patterns(),
     "shell" = get_shell_patterns(),
-    "julia" = get_julia_patterns()
+    "julia" = get_julia_patterns(),
+    "javascript" = get_javascript_patterns(),
+    "typescript" = get_typescript_patterns(),
+    "go" = get_go_patterns(),
+    "rust" = get_rust_patterns(),
+    "java" = get_java_patterns(),
+    "c" = get_c_patterns(),
+    "cpp" = get_cpp_patterns(),
+    "matlab" = get_matlab_patterns(),
+    "ruby" = get_ruby_patterns(),
+    "lua" = get_lua_patterns()
   )
 
   if (!is.null(type)) {
@@ -2561,7 +2573,3352 @@ get_julia_patterns <- function() {
   )
 }
 
+#' Get JavaScript Detection Patterns
+#' @return List of JavaScript detection patterns
+#' @keywords internal
+get_javascript_patterns <- function() {
+  list(
+    input = list(
+      # Node.js fs module - sync
+      list(
+        regex = "fs\\.readFileSync\\s*\\(",
+        func = "fs.readFileSync",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Node.js sync file reader"
+      ),
+      list(
+        regex = "fs\\.readFile\\s*\\(",
+        func = "fs.readFile",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Node.js async file reader"
+      ),
+      list(
+        regex = "fs\\.createReadStream\\s*\\(",
+        func = "fs.createReadStream",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Node.js read stream"
+      ),
+      list(
+        regex = "fs\\.promises\\.readFile\\s*\\(",
+        func = "fs.promises.readFile",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Node.js promise-based file reader"
+      ),
+      list(
+        regex = "fsPromises\\.readFile\\s*\\(",
+        func = "fsPromises.readFile",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Node.js promise-based file reader (alias)"
+      ),
+      list(
+        regex = "fs\\.readdir\\s*\\(",
+        func = "fs.readdir",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Node.js directory reader"
+      ),
+      list(
+        regex = "fs\\.readdirSync\\s*\\(",
+        func = "fs.readdirSync",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Node.js sync directory reader"
+      ),
+      # require/import
+      list(
+        regex = "require\\s*\\(['\"]",
+        func = "require",
+        arg_position = 1,
+        arg_name = "id",
+        description = "CommonJS require"
+      ),
+      list(
+        regex = "import\\s+.*\\s+from\\s+['\"]",
+        func = "import",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "ES module import"
+      ),
+      list(
+        regex = "import\\s*\\(['\"]",
+        func = "import()",
+        arg_position = 1,
+        arg_name = NULL,
+        description = "Dynamic import"
+      ),
+      # HTTP clients
+      list(
+        regex = "fetch\\s*\\(",
+        func = "fetch",
+        arg_position = 1,
+        arg_name = "url",
+        description = "Fetch API"
+      ),
+      list(
+        regex = "axios\\.get\\s*\\(",
+        func = "axios.get",
+        arg_position = 1,
+        arg_name = "url",
+        description = "Axios GET request"
+      ),
+      list(
+        regex = "axios\\.post\\s*\\(",
+        func = "axios.post",
+        arg_position = 1,
+        arg_name = "url",
+        description = "Axios POST request"
+      ),
+      list(
+        regex = "axios\\s*\\(",
+        func = "axios",
+        arg_position = 1,
+        arg_name = "config",
+        description = "Axios request"
+      ),
+      list(
+        regex = "got\\s*\\(",
+        func = "got",
+        arg_position = 1,
+        arg_name = "url",
+        description = "Got HTTP client"
+      ),
+      list(
+        regex = "superagent\\.get\\s*\\(",
+        func = "superagent.get",
+        arg_position = 1,
+        arg_name = "url",
+        description = "SuperAgent GET"
+      ),
+      # JSON parsing from file
+      list(
+        regex = "JSON\\.parse\\s*\\(\\s*fs\\.",
+        func = "JSON.parse(fs)",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "JSON parse from file"
+      ),
+      # Database clients
+      list(
+        regex = "mongoose\\.connect\\s*\\(",
+        func = "mongoose.connect",
+        arg_position = 1,
+        arg_name = "uri",
+        description = "Mongoose MongoDB connection"
+      ),
+      list(
+        regex = "MongoClient\\.connect\\s*\\(",
+        func = "MongoClient.connect",
+        arg_position = 1,
+        arg_name = "url",
+        description = "MongoDB native driver"
+      ),
+      list(
+        regex = "new\\s+MongoClient\\s*\\(",
+        func = "new MongoClient",
+        arg_position = 1,
+        arg_name = "url",
+        description = "MongoDB native client"
+      ),
+      list(
+        regex = "knex\\s*\\(",
+        func = "knex",
+        arg_position = 1,
+        arg_name = "config",
+        description = "Knex.js query builder"
+      ),
+      list(
+        regex = "new\\s+Sequelize\\s*\\(",
+        func = "new Sequelize",
+        arg_position = 1,
+        arg_name = "database",
+        description = "Sequelize ORM"
+      ),
+      list(
+        regex = "prisma\\.\\$connect\\s*\\(",
+        func = "prisma.$connect",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Prisma connect"
+      ),
+      list(
+        regex = "new\\s+PrismaClient\\s*\\(",
+        func = "new PrismaClient",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Prisma client"
+      ),
+      list(
+        regex = "createConnection\\s*\\(",
+        func = "createConnection",
+        arg_position = 1,
+        arg_name = "config",
+        description = "MySQL/TypeORM connection"
+      ),
+      list(
+        regex = "createPool\\s*\\(",
+        func = "createPool",
+        arg_position = 1,
+        arg_name = "config",
+        description = "MySQL connection pool"
+      ),
+      list(
+        regex = "new\\s+Pool\\s*\\(",
+        func = "new Pool",
+        arg_position = 1,
+        arg_name = "config",
+        description = "PostgreSQL pool (pg)"
+      ),
+      list(
+        regex = "new\\s+Client\\s*\\(",
+        func = "new Client",
+        arg_position = 1,
+        arg_name = "config",
+        description = "PostgreSQL client (pg)"
+      ),
+      # Express.js request inputs
+      list(
+        regex = "req\\.body",
+        func = "req.body",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Express request body"
+      ),
+      list(
+        regex = "req\\.params",
+        func = "req.params",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Express route parameters"
+      ),
+      list(
+        regex = "req\\.query",
+        func = "req.query",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Express query string"
+      ),
+      list(
+        regex = "req\\.file",
+        func = "req.file",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Express file upload (multer)"
+      ),
+      list(
+        regex = "req\\.files",
+        func = "req.files",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Express file uploads (multer)"
+      ),
+      # Node streams
+      list(
+        regex = "pipeline\\s*\\(",
+        func = "pipeline",
+        arg_position = 1,
+        arg_name = "source",
+        description = "Node.js stream pipeline"
+      ),
+      # Redis
+      list(
+        regex = "redis\\.createClient\\s*\\(",
+        func = "redis.createClient",
+        arg_position = NA,
+        arg_name = "options",
+        description = "Redis client"
+      ),
+      list(
+        regex = "new\\s+Redis\\s*\\(",
+        func = "new Redis",
+        arg_position = NA,
+        arg_name = "options",
+        description = "ioredis client"
+      ),
+      # CSV parsing
+      list(
+        regex = "csv-parse|csv-parser|papaparse",
+        func = "csv-parse",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "CSV parser library"
+      ),
+      list(
+        regex = "Papa\\.parse\\s*\\(",
+        func = "Papa.parse",
+        arg_position = 1,
+        arg_name = "input",
+        description = "PapaParse CSV parser"
+      )
+    ),
+    output = list(
+      # Node.js fs module - sync
+      list(
+        regex = "fs\\.writeFileSync\\s*\\(",
+        func = "fs.writeFileSync",
+        arg_position = 1,
+        arg_name = "file",
+        description = "Node.js sync file writer"
+      ),
+      list(
+        regex = "fs\\.writeFile\\s*\\(",
+        func = "fs.writeFile",
+        arg_position = 1,
+        arg_name = "file",
+        description = "Node.js async file writer"
+      ),
+      list(
+        regex = "fs\\.createWriteStream\\s*\\(",
+        func = "fs.createWriteStream",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Node.js write stream"
+      ),
+      list(
+        regex = "fs\\.promises\\.writeFile\\s*\\(",
+        func = "fs.promises.writeFile",
+        arg_position = 1,
+        arg_name = "file",
+        description = "Node.js promise-based file writer"
+      ),
+      list(
+        regex = "fsPromises\\.writeFile\\s*\\(",
+        func = "fsPromises.writeFile",
+        arg_position = 1,
+        arg_name = "file",
+        description = "Node.js promise-based file writer (alias)"
+      ),
+      list(
+        regex = "fs\\.appendFile\\s*\\(",
+        func = "fs.appendFile",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Node.js file append"
+      ),
+      list(
+        regex = "fs\\.appendFileSync\\s*\\(",
+        func = "fs.appendFileSync",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Node.js sync file append"
+      ),
+      # Module exports
+      list(
+        regex = "module\\.exports\\s*=",
+        func = "module.exports",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "CommonJS export"
+      ),
+      list(
+        regex = "export\\s+default",
+        func = "export default",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "ES module default export"
+      ),
+      list(
+        regex = "export\\s+\\{",
+        func = "export",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "ES module named export"
+      ),
+      # Database writes
+      list(
+        regex = "\\.insertOne\\s*\\(",
+        func = "collection.insertOne",
+        arg_position = 1,
+        arg_name = "doc",
+        description = "MongoDB insert one"
+      ),
+      list(
+        regex = "\\.insertMany\\s*\\(",
+        func = "collection.insertMany",
+        arg_position = 1,
+        arg_name = "docs",
+        description = "MongoDB insert many"
+      ),
+      list(
+        regex = "\\.updateOne\\s*\\(",
+        func = "collection.updateOne",
+        arg_position = 1,
+        arg_name = "filter",
+        description = "MongoDB update one"
+      ),
+      list(
+        regex = "\\.updateMany\\s*\\(",
+        func = "collection.updateMany",
+        arg_position = 1,
+        arg_name = "filter",
+        description = "MongoDB update many"
+      ),
+      list(
+        regex = "Model\\.create\\s*\\(",
+        func = "Model.create",
+        arg_position = 1,
+        arg_name = "doc",
+        description = "Mongoose/Sequelize create"
+      ),
+      list(
+        regex = "\\.save\\s*\\(",
+        func = "model.save",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Mongoose/Sequelize save"
+      ),
+      list(
+        regex = "prisma\\..*\\.create\\s*\\(",
+        func = "prisma.create",
+        arg_position = 1,
+        arg_name = "data",
+        description = "Prisma create"
+      ),
+      list(
+        regex = "prisma\\..*\\.createMany\\s*\\(",
+        func = "prisma.createMany",
+        arg_position = 1,
+        arg_name = "data",
+        description = "Prisma create many"
+      ),
+      # Express.js responses
+      list(
+        regex = "res\\.send\\s*\\(",
+        func = "res.send",
+        arg_position = 1,
+        arg_name = "body",
+        description = "Express send response"
+      ),
+      list(
+        regex = "res\\.json\\s*\\(",
+        func = "res.json",
+        arg_position = 1,
+        arg_name = "obj",
+        description = "Express JSON response"
+      ),
+      list(
+        regex = "res\\.download\\s*\\(",
+        func = "res.download",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Express file download"
+      ),
+      list(
+        regex = "res\\.sendFile\\s*\\(",
+        func = "res.sendFile",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Express send file"
+      ),
+      list(
+        regex = "res\\.render\\s*\\(",
+        func = "res.render",
+        arg_position = 1,
+        arg_name = "view",
+        description = "Express render view"
+      ),
+      # Logging
+      list(
+        regex = "console\\.log\\s*\\(",
+        func = "console.log",
+        arg_position = 1,
+        arg_name = "data",
+        description = "Console log"
+      ),
+      list(
+        regex = "winston\\.log\\s*\\(",
+        func = "winston.log",
+        arg_position = 1,
+        arg_name = "level",
+        description = "Winston logger"
+      ),
+      list(
+        regex = "logger\\.info\\s*\\(",
+        func = "logger.info",
+        arg_position = 1,
+        arg_name = "message",
+        description = "Logger info"
+      ),
+      list(
+        regex = "pino\\s*\\(",
+        func = "pino",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Pino logger"
+      ),
+      # CSV output
+      list(
+        regex = "stringify\\s*\\(",
+        func = "csv-stringify",
+        arg_position = 1,
+        arg_name = "records",
+        description = "CSV stringify"
+      ),
+      list(
+        regex = "Papa\\.unparse\\s*\\(",
+        func = "Papa.unparse",
+        arg_position = 1,
+        arg_name = "data",
+        description = "PapaParse CSV output"
+      )
+    ),
+    dependency = list(
+      list(
+        regex = "require\\s*\\(['\"]",
+        func = "require",
+        arg_position = 1,
+        arg_name = "id",
+        description = "CommonJS require"
+      ),
+      list(
+        regex = "import\\s+.*\\s+from\\s+['\"]",
+        func = "import",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "ES module import"
+      ),
+      list(
+        regex = "import\\s*\\(['\"]",
+        func = "import()",
+        arg_position = 1,
+        arg_name = NULL,
+        description = "Dynamic import"
+      ),
+      list(
+        regex = "export\\s+",
+        func = "export",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "ES module export"
+      )
+    )
+  )
+}
+
+#' Get TypeScript Detection Patterns
+#' @return List of TypeScript detection patterns
+#' @keywords internal
+get_typescript_patterns <- function() {
+  # Start with JavaScript patterns as base
+  js_patterns <- get_javascript_patterns()
+
+  # Add TypeScript-specific patterns
+  ts_input <- c(js_patterns$input, list(
+    # Type reference directives
+    list(
+      regex = "///\\s*<reference\\s+path\\s*=",
+      func = "/// <reference path>",
+      arg_position = NA,
+      arg_name = "path",
+      description = "TypeScript path reference"
+    ),
+    list(
+      regex = "///\\s*<reference\\s+types\\s*=",
+      func = "/// <reference types>",
+      arg_position = NA,
+      arg_name = "types",
+      description = "TypeScript types reference"
+    ),
+    # NestJS decorators
+    list(
+      regex = "@Controller\\s*\\(",
+      func = "@Controller",
+      arg_position = 1,
+      arg_name = "prefix",
+      description = "NestJS controller decorator"
+    ),
+    list(
+      regex = "@Get\\s*\\(",
+      func = "@Get",
+      arg_position = 1,
+      arg_name = "path",
+      description = "NestJS GET endpoint"
+    ),
+    list(
+      regex = "@Post\\s*\\(",
+      func = "@Post",
+      arg_position = 1,
+      arg_name = "path",
+      description = "NestJS POST endpoint"
+    ),
+    list(
+      regex = "@Body\\s*\\(",
+      func = "@Body",
+      arg_position = NA,
+      arg_name = NULL,
+      description = "NestJS request body"
+    ),
+    list(
+      regex = "@Param\\s*\\(",
+      func = "@Param",
+      arg_position = 1,
+      arg_name = "property",
+      description = "NestJS route parameter"
+    ),
+    list(
+      regex = "@Query\\s*\\(",
+      func = "@Query",
+      arg_position = 1,
+      arg_name = "property",
+      description = "NestJS query parameter"
+    ),
+    # TypeORM
+    list(
+      regex = "new\\s+DataSource\\s*\\(",
+      func = "new DataSource",
+      arg_position = 1,
+      arg_name = "options",
+      description = "TypeORM data source"
+    ),
+    list(
+      regex = "getRepository\\s*\\(",
+      func = "getRepository",
+      arg_position = 1,
+        arg_name = "entity",
+      description = "TypeORM repository"
+    ),
+    list(
+      regex = "\\.find\\s*\\(",
+      func = "repository.find",
+      arg_position = NA,
+      arg_name = "options",
+      description = "TypeORM find"
+    ),
+    list(
+      regex = "\\.findOne\\s*\\(",
+      func = "repository.findOne",
+      arg_position = NA,
+      arg_name = "options",
+      description = "TypeORM find one"
+    )
+  ))
+
+  ts_output <- c(js_patterns$output, list(
+    # NestJS responses
+    list(
+      regex = "@Injectable\\s*\\(",
+      func = "@Injectable",
+      arg_position = NA,
+      arg_name = NULL,
+      description = "NestJS injectable service"
+    ),
+    # TypeORM write operations
+    list(
+      regex = "\\.save\\s*\\(",
+      func = "repository.save",
+      arg_position = 1,
+      arg_name = "entity",
+      description = "TypeORM save"
+    ),
+    list(
+      regex = "\\.insert\\s*\\(",
+      func = "repository.insert",
+      arg_position = 1,
+      arg_name = "entity",
+      description = "TypeORM insert"
+    ),
+    list(
+      regex = "\\.update\\s*\\(",
+      func = "repository.update",
+      arg_position = 1,
+      arg_name = "criteria",
+      description = "TypeORM update"
+    ),
+    list(
+      regex = "\\.delete\\s*\\(",
+      func = "repository.delete",
+      arg_position = 1,
+      arg_name = "criteria",
+      description = "TypeORM delete"
+    )
+  ))
+
+  list(
+    input = ts_input,
+    output = ts_output,
+    dependency = js_patterns$dependency
+  )
+}
+
+#' Get Go Detection Patterns
+#' @return List of Go detection patterns
+#' @keywords internal
+get_go_patterns <- function() {
+  list(
+    input = list(
+      # os package
+      list(
+        regex = "os\\.Open\\s*\\(",
+        func = "os.Open",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Go file open"
+      ),
+      list(
+        regex = "os\\.ReadFile\\s*\\(",
+        func = "os.ReadFile",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Go read file"
+      ),
+      list(
+        regex = "ioutil\\.ReadFile\\s*\\(",
+        func = "ioutil.ReadFile",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "Go ioutil read file (deprecated)"
+      ),
+      list(
+        regex = "os\\.ReadDir\\s*\\(",
+        func = "os.ReadDir",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Go read directory"
+      ),
+      list(
+        regex = "os\\.Stat\\s*\\(",
+        func = "os.Stat",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Go file stat"
+      ),
+      list(
+        regex = "os\\.Getenv\\s*\\(",
+        func = "os.Getenv",
+        arg_position = 1,
+        arg_name = "key",
+        description = "Go environment variable"
+      ),
+      # bufio package
+      list(
+        regex = "bufio\\.NewReader\\s*\\(",
+        func = "bufio.NewReader",
+        arg_position = 1,
+        arg_name = "rd",
+        description = "Go buffered reader"
+      ),
+      list(
+        regex = "bufio\\.NewScanner\\s*\\(",
+        func = "bufio.NewScanner",
+        arg_position = 1,
+        arg_name = "r",
+        description = "Go scanner"
+      ),
+      # encoding/json
+      list(
+        regex = "json\\.NewDecoder\\s*\\(",
+        func = "json.NewDecoder",
+        arg_position = 1,
+        arg_name = "r",
+        description = "Go JSON decoder"
+      ),
+      list(
+        regex = "json\\.Unmarshal\\s*\\(",
+        func = "json.Unmarshal",
+        arg_position = 1,
+        arg_name = "data",
+        description = "Go JSON unmarshal"
+      ),
+      # encoding/csv
+      list(
+        regex = "csv\\.NewReader\\s*\\(",
+        func = "csv.NewReader",
+        arg_position = 1,
+        arg_name = "r",
+        description = "Go CSV reader"
+      ),
+      # database/sql
+      list(
+        regex = "sql\\.Open\\s*\\(",
+        func = "sql.Open",
+        arg_position = 1,
+        arg_name = "driverName",
+        description = "Go SQL connection"
+      ),
+      list(
+        regex = "db\\.Query\\s*\\(",
+        func = "db.Query",
+        arg_position = 1,
+        arg_name = "query",
+        description = "Go SQL query"
+      ),
+      list(
+        regex = "db\\.QueryRow\\s*\\(",
+        func = "db.QueryRow",
+        arg_position = 1,
+        arg_name = "query",
+        description = "Go SQL query row"
+      ),
+      list(
+        regex = "rows\\.Scan\\s*\\(",
+        func = "rows.Scan",
+        arg_position = NA,
+        arg_name = "dest",
+        description = "Go SQL scan"
+      ),
+      # gorm
+      list(
+        regex = "gorm\\.Open\\s*\\(",
+        func = "gorm.Open",
+        arg_position = 1,
+        arg_name = "dialector",
+        description = "GORM connection"
+      ),
+      list(
+        regex = "\\.Find\\s*\\(",
+        func = "db.Find",
+        arg_position = 1,
+        arg_name = "dest",
+        description = "GORM find"
+      ),
+      list(
+        regex = "\\.First\\s*\\(",
+        func = "db.First",
+        arg_position = 1,
+        arg_name = "dest",
+        description = "GORM first"
+      ),
+      list(
+        regex = "\\.Where\\s*\\(",
+        func = "db.Where",
+        arg_position = 1,
+        arg_name = "query",
+        description = "GORM where"
+      ),
+      # net/http
+      list(
+        regex = "http\\.Get\\s*\\(",
+        func = "http.Get",
+        arg_position = 1,
+        arg_name = "url",
+        description = "Go HTTP GET"
+      ),
+      list(
+        regex = "http\\.NewRequest\\s*\\(",
+        func = "http.NewRequest",
+        arg_position = 1,
+        arg_name = "method",
+        description = "Go HTTP request"
+      ),
+      list(
+        regex = "http\\.DefaultClient\\.Do\\s*\\(",
+        func = "http.DefaultClient.Do",
+        arg_position = 1,
+        arg_name = "req",
+        description = "Go HTTP do request"
+      ),
+      # yaml
+      list(
+        regex = "yaml\\.Unmarshal\\s*\\(",
+        func = "yaml.Unmarshal",
+        arg_position = 1,
+        arg_name = "in",
+        description = "Go YAML unmarshal"
+      ),
+      # toml
+      list(
+        regex = "toml\\.Unmarshal\\s*\\(",
+        func = "toml.Unmarshal",
+        arg_position = 1,
+        arg_name = "data",
+        description = "Go TOML unmarshal"
+      ),
+      list(
+        regex = "toml\\.DecodeFile\\s*\\(",
+        func = "toml.DecodeFile",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Go TOML decode file"
+      )
+    ),
+    output = list(
+      # os package
+      list(
+        regex = "os\\.Create\\s*\\(",
+        func = "os.Create",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Go create file"
+      ),
+      list(
+        regex = "os\\.WriteFile\\s*\\(",
+        func = "os.WriteFile",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Go write file"
+      ),
+      list(
+        regex = "ioutil\\.WriteFile\\s*\\(",
+        func = "ioutil.WriteFile",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "Go ioutil write file (deprecated)"
+      ),
+      list(
+        regex = "os\\.OpenFile\\s*\\(",
+        func = "os.OpenFile",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Go open file (with flags)"
+      ),
+      # bufio package
+      list(
+        regex = "bufio\\.NewWriter\\s*\\(",
+        func = "bufio.NewWriter",
+        arg_position = 1,
+        arg_name = "w",
+        description = "Go buffered writer"
+      ),
+      # fmt package
+      list(
+        regex = "fmt\\.Fprintf\\s*\\(",
+        func = "fmt.Fprintf",
+        arg_position = 1,
+        arg_name = "w",
+        description = "Go formatted print to writer"
+      ),
+      list(
+        regex = "fmt\\.Fprintln\\s*\\(",
+        func = "fmt.Fprintln",
+        arg_position = 1,
+        arg_name = "w",
+        description = "Go print line to writer"
+      ),
+      # encoding/json
+      list(
+        regex = "json\\.NewEncoder\\s*\\(",
+        func = "json.NewEncoder",
+        arg_position = 1,
+        arg_name = "w",
+        description = "Go JSON encoder"
+      ),
+      list(
+        regex = "json\\.Marshal\\s*\\(",
+        func = "json.Marshal",
+        arg_position = 1,
+        arg_name = "v",
+        description = "Go JSON marshal"
+      ),
+      # encoding/csv
+      list(
+        regex = "csv\\.NewWriter\\s*\\(",
+        func = "csv.NewWriter",
+        arg_position = 1,
+        arg_name = "w",
+        description = "Go CSV writer"
+      ),
+      # database/sql
+      list(
+        regex = "db\\.Exec\\s*\\(",
+        func = "db.Exec",
+        arg_position = 1,
+        arg_name = "query",
+        description = "Go SQL exec"
+      ),
+      # gorm
+      list(
+        regex = "\\.Create\\s*\\(",
+        func = "db.Create",
+        arg_position = 1,
+        arg_name = "value",
+        description = "GORM create"
+      ),
+      list(
+        regex = "\\.Save\\s*\\(",
+        func = "db.Save",
+        arg_position = 1,
+        arg_name = "value",
+        description = "GORM save"
+      ),
+      list(
+        regex = "\\.Update\\s*\\(",
+        func = "db.Update",
+        arg_position = 1,
+        arg_name = "column",
+        description = "GORM update"
+      ),
+      list(
+        regex = "\\.Delete\\s*\\(",
+        func = "db.Delete",
+        arg_position = 1,
+        arg_name = "value",
+        description = "GORM delete"
+      ),
+      # log
+      list(
+        regex = "log\\.Printf\\s*\\(",
+        func = "log.Printf",
+        arg_position = 1,
+        arg_name = "format",
+        description = "Go log printf"
+      ),
+      list(
+        regex = "log\\.Println\\s*\\(",
+        func = "log.Println",
+        arg_position = NA,
+        arg_name = "v",
+        description = "Go log println"
+      ),
+      # yaml
+      list(
+        regex = "yaml\\.Marshal\\s*\\(",
+        func = "yaml.Marshal",
+        arg_position = 1,
+        arg_name = "in",
+        description = "Go YAML marshal"
+      )
+    ),
+    dependency = list(
+      list(
+        regex = "import\\s+[\"(]",
+        func = "import",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Go import statement"
+      )
+    )
+  )
+}
+
+#' Get Rust Detection Patterns
+#' @return List of Rust detection patterns
+#' @keywords internal
+get_rust_patterns <- function() {
+  list(
+    input = list(
+      # std::fs
+      list(
+        regex = "File::open\\s*\\(",
+        func = "File::open",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Rust file open"
+      ),
+      list(
+        regex = "fs::read\\s*\\(",
+        func = "fs::read",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Rust read file to bytes"
+      ),
+      list(
+        regex = "fs::read_to_string\\s*\\(",
+        func = "fs::read_to_string",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Rust read file to string"
+      ),
+      list(
+        regex = "fs::read_dir\\s*\\(",
+        func = "fs::read_dir",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Rust read directory"
+      ),
+      list(
+        regex = "fs::metadata\\s*\\(",
+        func = "fs::metadata",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Rust file metadata"
+      ),
+      # BufReader
+      list(
+        regex = "BufReader::new\\s*\\(",
+        func = "BufReader::new",
+        arg_position = 1,
+        arg_name = "inner",
+        description = "Rust buffered reader"
+      ),
+      list(
+        regex = "\\.read_line\\s*\\(",
+        func = "read_line",
+        arg_position = 1,
+        arg_name = "buf",
+        description = "Rust read line"
+      ),
+      list(
+        regex = "\\.read_to_string\\s*\\(",
+        func = "read_to_string",
+        arg_position = 1,
+        arg_name = "buf",
+        description = "Rust read to string"
+      ),
+      list(
+        regex = "\\.read_to_end\\s*\\(",
+        func = "read_to_end",
+        arg_position = 1,
+        arg_name = "buf",
+        description = "Rust read to end"
+      ),
+      # serde_json
+      list(
+        regex = "serde_json::from_reader\\s*\\(",
+        func = "serde_json::from_reader",
+        arg_position = 1,
+        arg_name = "rdr",
+        description = "Serde JSON from reader"
+      ),
+      list(
+        regex = "serde_json::from_str\\s*\\(",
+        func = "serde_json::from_str",
+        arg_position = 1,
+        arg_name = "s",
+        description = "Serde JSON from string"
+      ),
+      list(
+        regex = "serde_json::from_slice\\s*\\(",
+        func = "serde_json::from_slice",
+        arg_position = 1,
+        arg_name = "v",
+        description = "Serde JSON from slice"
+      ),
+      # csv
+      list(
+        regex = "csv::Reader::from_path\\s*\\(",
+        func = "csv::Reader::from_path",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Rust CSV reader"
+      ),
+      list(
+        regex = "csv::Reader::from_reader\\s*\\(",
+        func = "csv::Reader::from_reader",
+        arg_position = 1,
+        arg_name = "rdr",
+        description = "Rust CSV from reader"
+      ),
+      list(
+        regex = "ReaderBuilder::new\\s*\\(\\)",
+        func = "ReaderBuilder::new",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Rust CSV reader builder"
+      ),
+      # Database - sqlx
+      list(
+        regex = "sqlx::connect\\s*\\(",
+        func = "sqlx::connect",
+        arg_position = 1,
+        arg_name = "url",
+        description = "sqlx database connect"
+      ),
+      list(
+        regex = "Pool::connect\\s*\\(",
+        func = "Pool::connect",
+        arg_position = 1,
+        arg_name = "url",
+        description = "sqlx pool connect"
+      ),
+      list(
+        regex = "sqlx::query\\s*\\(",
+        func = "sqlx::query",
+        arg_position = 1,
+        arg_name = "sql",
+        description = "sqlx query"
+      ),
+      list(
+        regex = "sqlx::query_as\\s*\\(",
+        func = "sqlx::query_as",
+        arg_position = 1,
+        arg_name = "sql",
+        description = "sqlx query as type"
+      ),
+      list(
+        regex = "\\.fetch_all\\s*\\(",
+        func = "fetch_all",
+        arg_position = 1,
+        arg_name = "executor",
+        description = "sqlx fetch all"
+      ),
+      list(
+        regex = "\\.fetch_one\\s*\\(",
+        func = "fetch_one",
+        arg_position = 1,
+        arg_name = "executor",
+        description = "sqlx fetch one"
+      ),
+      # diesel
+      list(
+        regex = "diesel::connection\\s*\\(",
+        func = "diesel::connection",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Diesel connection"
+      ),
+      list(
+        regex = "establish_connection\\s*\\(",
+        func = "establish_connection",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Diesel establish connection"
+      ),
+      list(
+        regex = "\\.load\\s*::<",
+        func = "load",
+        arg_position = NA,
+        arg_name = "conn",
+        description = "Diesel load"
+      ),
+      # reqwest
+      list(
+        regex = "reqwest::get\\s*\\(",
+        func = "reqwest::get",
+        arg_position = 1,
+        arg_name = "url",
+        description = "reqwest GET"
+      ),
+      list(
+        regex = "Client::new\\s*\\(",
+        func = "Client::new",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "reqwest client"
+      ),
+      list(
+        regex = "\\.get\\s*\\(['\"]http",
+        func = "client.get",
+        arg_position = 1,
+        arg_name = "url",
+        description = "HTTP GET request"
+      ),
+      # toml
+      list(
+        regex = "toml::from_str\\s*\\(",
+        func = "toml::from_str",
+        arg_position = 1,
+        arg_name = "s",
+        description = "TOML from string"
+      ),
+      # yaml
+      list(
+        regex = "serde_yaml::from_reader\\s*\\(",
+        func = "serde_yaml::from_reader",
+        arg_position = 1,
+        arg_name = "rdr",
+        description = "Serde YAML from reader"
+      ),
+      list(
+        regex = "serde_yaml::from_str\\s*\\(",
+        func = "serde_yaml::from_str",
+        arg_position = 1,
+        arg_name = "s",
+        description = "Serde YAML from string"
+      ),
+      # env
+      list(
+        regex = "std::env::var\\s*\\(",
+        func = "std::env::var",
+        arg_position = 1,
+        arg_name = "key",
+        description = "Rust environment variable"
+      ),
+      list(
+        regex = "env::var\\s*\\(",
+        func = "env::var",
+        arg_position = 1,
+        arg_name = "key",
+        description = "Rust environment variable"
+      )
+    ),
+    output = list(
+      # std::fs
+      list(
+        regex = "File::create\\s*\\(",
+        func = "File::create",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Rust create file"
+      ),
+      list(
+        regex = "fs::write\\s*\\(",
+        func = "fs::write",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Rust write file"
+      ),
+      list(
+        regex = "fs::copy\\s*\\(",
+        func = "fs::copy",
+        arg_position = 1,
+        arg_name = "from",
+        description = "Rust copy file"
+      ),
+      list(
+        regex = "fs::create_dir\\s*\\(",
+        func = "fs::create_dir",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Rust create directory"
+      ),
+      list(
+        regex = "fs::create_dir_all\\s*\\(",
+        func = "fs::create_dir_all",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Rust create directory recursive"
+      ),
+      # BufWriter
+      list(
+        regex = "BufWriter::new\\s*\\(",
+        func = "BufWriter::new",
+        arg_position = 1,
+        arg_name = "inner",
+        description = "Rust buffered writer"
+      ),
+      list(
+        regex = "\\.write_all\\s*\\(",
+        func = "write_all",
+        arg_position = 1,
+        arg_name = "buf",
+        description = "Rust write all"
+      ),
+      list(
+        regex = "writeln!\\s*\\(",
+        func = "writeln!",
+        arg_position = 1,
+        arg_name = "dst",
+        description = "Rust writeln macro"
+      ),
+      list(
+        regex = "write!\\s*\\(",
+        func = "write!",
+        arg_position = 1,
+        arg_name = "dst",
+        description = "Rust write macro"
+      ),
+      # serde_json
+      list(
+        regex = "serde_json::to_writer\\s*\\(",
+        func = "serde_json::to_writer",
+        arg_position = 1,
+        arg_name = "writer",
+        description = "Serde JSON to writer"
+      ),
+      list(
+        regex = "serde_json::to_string\\s*\\(",
+        func = "serde_json::to_string",
+        arg_position = 1,
+        arg_name = "value",
+        description = "Serde JSON to string"
+      ),
+      # csv
+      list(
+        regex = "csv::Writer::from_path\\s*\\(",
+        func = "csv::Writer::from_path",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Rust CSV writer"
+      ),
+      list(
+        regex = "csv::Writer::from_writer\\s*\\(",
+        func = "csv::Writer::from_writer",
+        arg_position = 1,
+        arg_name = "wtr",
+        description = "Rust CSV from writer"
+      ),
+      list(
+        regex = "\\.write_record\\s*\\(",
+        func = "write_record",
+        arg_position = 1,
+        arg_name = "record",
+        description = "Rust CSV write record"
+      ),
+      list(
+        regex = "\\.serialize\\s*\\(",
+        func = "serialize",
+        arg_position = 1,
+        arg_name = "record",
+        description = "Rust CSV serialize"
+      ),
+      # sqlx/diesel write
+      list(
+        regex = "sqlx::query!\\s*\\([^)]*INSERT",
+        func = "sqlx::query! INSERT",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "sqlx INSERT query"
+      ),
+      list(
+        regex = "sqlx::query!\\s*\\([^)]*UPDATE",
+        func = "sqlx::query! UPDATE",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "sqlx UPDATE query"
+      ),
+      list(
+        regex = "diesel::insert_into\\s*\\(",
+        func = "diesel::insert_into",
+        arg_position = 1,
+        arg_name = "target",
+        description = "Diesel insert"
+      ),
+      list(
+        regex = "diesel::update\\s*\\(",
+        func = "diesel::update",
+        arg_position = 1,
+        arg_name = "target",
+        description = "Diesel update"
+      ),
+      # logging
+      list(
+        regex = "println!\\s*\\(",
+        func = "println!",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Rust println"
+      ),
+      list(
+        regex = "eprintln!\\s*\\(",
+        func = "eprintln!",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Rust eprintln"
+      ),
+      list(
+        regex = "log::info!\\s*\\(",
+        func = "log::info!",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Rust log info"
+      ),
+      list(
+        regex = "tracing::info!\\s*\\(",
+        func = "tracing::info!",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Rust tracing info"
+      ),
+      # yaml/toml
+      list(
+        regex = "serde_yaml::to_writer\\s*\\(",
+        func = "serde_yaml::to_writer",
+        arg_position = 1,
+        arg_name = "writer",
+        description = "Serde YAML to writer"
+      ),
+      list(
+        regex = "toml::to_string\\s*\\(",
+        func = "toml::to_string",
+        arg_position = 1,
+        arg_name = "value",
+        description = "TOML to string"
+      )
+    ),
+    dependency = list(
+      list(
+        regex = "use\\s+[a-zA-Z_]",
+        func = "use",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Rust use statement"
+      ),
+      list(
+        regex = "mod\\s+[a-zA-Z_]",
+        func = "mod",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Rust module declaration"
+      ),
+      list(
+        regex = "include!\\s*\\(",
+        func = "include!",
+        arg_position = 1,
+        arg_name = "file",
+        description = "Rust include macro"
+      )
+    )
+  )
+}
+
+#' Get Java Detection Patterns
+#' @return List of Java detection patterns
+#' @keywords internal
+get_java_patterns <- function() {
+  list(
+    input = list(
+      # Classic Java I/O
+      list(
+        regex = "new\\s+FileInputStream\\s*\\(",
+        func = "new FileInputStream",
+        arg_position = 1,
+        arg_name = "file",
+        description = "Java FileInputStream"
+      ),
+      list(
+        regex = "new\\s+FileReader\\s*\\(",
+        func = "new FileReader",
+        arg_position = 1,
+        arg_name = "file",
+        description = "Java FileReader"
+      ),
+      list(
+        regex = "new\\s+BufferedReader\\s*\\(",
+        func = "new BufferedReader",
+        arg_position = 1,
+        arg_name = "in",
+        description = "Java BufferedReader"
+      ),
+      list(
+        regex = "new\\s+Scanner\\s*\\(\\s*new\\s+File",
+        func = "new Scanner(File)",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Java Scanner from File"
+      ),
+      list(
+        regex = "new\\s+ObjectInputStream\\s*\\(",
+        func = "new ObjectInputStream",
+        arg_position = 1,
+        arg_name = "in",
+        description = "Java ObjectInputStream"
+      ),
+      # Java NIO
+      list(
+        regex = "Files\\.readAllLines\\s*\\(",
+        func = "Files.readAllLines",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Java NIO read all lines"
+      ),
+      list(
+        regex = "Files\\.readString\\s*\\(",
+        func = "Files.readString",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Java NIO read string"
+      ),
+      list(
+        regex = "Files\\.readAllBytes\\s*\\(",
+        func = "Files.readAllBytes",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Java NIO read all bytes"
+      ),
+      list(
+        regex = "Files\\.newBufferedReader\\s*\\(",
+        func = "Files.newBufferedReader",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Java NIO buffered reader"
+      ),
+      list(
+        regex = "Files\\.newInputStream\\s*\\(",
+        func = "Files.newInputStream",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Java NIO input stream"
+      ),
+      list(
+        regex = "Files\\.lines\\s*\\(",
+        func = "Files.lines",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Java NIO lines stream"
+      ),
+      list(
+        regex = "Files\\.list\\s*\\(",
+        func = "Files.list",
+        arg_position = 1,
+        arg_name = "dir",
+        description = "Java NIO list directory"
+      ),
+      # JDBC
+      list(
+        regex = "DriverManager\\.getConnection\\s*\\(",
+        func = "DriverManager.getConnection",
+        arg_position = 1,
+        arg_name = "url",
+        description = "JDBC connection"
+      ),
+      list(
+        regex = "\\.executeQuery\\s*\\(",
+        func = "statement.executeQuery",
+        arg_position = 1,
+        arg_name = "sql",
+        description = "JDBC execute query"
+      ),
+      list(
+        regex = "resultSet\\.get",
+        func = "resultSet.get",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "JDBC ResultSet getter"
+      ),
+      list(
+        regex = "\\.prepareStatement\\s*\\(",
+        func = "connection.prepareStatement",
+        arg_position = 1,
+        arg_name = "sql",
+        description = "JDBC prepared statement"
+      ),
+      # Jackson
+      list(
+        regex = "objectMapper\\.readValue\\s*\\(",
+        func = "objectMapper.readValue",
+        arg_position = 1,
+        arg_name = "src",
+        description = "Jackson read JSON"
+      ),
+      list(
+        regex = "new\\s+ObjectMapper\\s*\\(",
+        func = "new ObjectMapper",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Jackson ObjectMapper"
+      ),
+      list(
+        regex = "JsonParser",
+        func = "JsonParser",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Jackson JSON parser"
+      ),
+      # Spring Boot
+      list(
+        regex = "@RequestBody",
+        func = "@RequestBody",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Spring request body"
+      ),
+      list(
+        regex = "@RequestParam",
+        func = "@RequestParam",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Spring request parameter"
+      ),
+      list(
+        regex = "@PathVariable",
+        func = "@PathVariable",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Spring path variable"
+      ),
+      list(
+        regex = "MultipartFile",
+        func = "MultipartFile",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Spring file upload"
+      ),
+      list(
+        regex = "@RequestPart",
+        func = "@RequestPart",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Spring multipart request"
+      ),
+      # Spring Data JPA
+      list(
+        regex = "repository\\.findById\\s*\\(",
+        func = "repository.findById",
+        arg_position = 1,
+        arg_name = "id",
+        description = "Spring Data find by ID"
+      ),
+      list(
+        regex = "repository\\.findAll\\s*\\(",
+        func = "repository.findAll",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Spring Data find all"
+      ),
+      list(
+        regex = "repository\\.findBy",
+        func = "repository.findBy",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Spring Data find by"
+      ),
+      list(
+        regex = "JpaRepository",
+        func = "JpaRepository",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Spring JpaRepository"
+      ),
+      list(
+        regex = "CrudRepository",
+        func = "CrudRepository",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Spring CrudRepository"
+      ),
+      # Hibernate
+      list(
+        regex = "session\\.get\\s*\\(",
+        func = "session.get",
+        arg_position = 1,
+        arg_name = "entityType",
+        description = "Hibernate session get"
+      ),
+      list(
+        regex = "session\\.load\\s*\\(",
+        func = "session.load",
+        arg_position = 1,
+        arg_name = "entityType",
+        description = "Hibernate session load"
+      ),
+      list(
+        regex = "entityManager\\.find\\s*\\(",
+        func = "entityManager.find",
+        arg_position = 1,
+        arg_name = "entityClass",
+        description = "JPA EntityManager find"
+      ),
+      list(
+        regex = "entityManager\\.createQuery\\s*\\(",
+        func = "entityManager.createQuery",
+        arg_position = 1,
+        arg_name = "qlString",
+        description = "JPA create query"
+      ),
+      # Properties/Config
+      list(
+        regex = "new\\s+Properties\\s*\\(",
+        func = "new Properties",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Java Properties"
+      ),
+      list(
+        regex = "\\.load\\s*\\(",
+        func = "properties.load",
+        arg_position = 1,
+        arg_name = "inStream",
+        description = "Properties load"
+      ),
+      # Environment
+      list(
+        regex = "System\\.getenv\\s*\\(",
+        func = "System.getenv",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Java environment variable"
+      ),
+      list(
+        regex = "System\\.getProperty\\s*\\(",
+        func = "System.getProperty",
+        arg_position = 1,
+        arg_name = "key",
+        description = "Java system property"
+      )
+    ),
+    output = list(
+      # Classic Java I/O
+      list(
+        regex = "new\\s+FileOutputStream\\s*\\(",
+        func = "new FileOutputStream",
+        arg_position = 1,
+        arg_name = "file",
+        description = "Java FileOutputStream"
+      ),
+      list(
+        regex = "new\\s+FileWriter\\s*\\(",
+        func = "new FileWriter",
+        arg_position = 1,
+        arg_name = "file",
+        description = "Java FileWriter"
+      ),
+      list(
+        regex = "new\\s+BufferedWriter\\s*\\(",
+        func = "new BufferedWriter",
+        arg_position = 1,
+        arg_name = "out",
+        description = "Java BufferedWriter"
+      ),
+      list(
+        regex = "new\\s+PrintWriter\\s*\\(",
+        func = "new PrintWriter",
+        arg_position = 1,
+        arg_name = "file",
+        description = "Java PrintWriter"
+      ),
+      list(
+        regex = "new\\s+ObjectOutputStream\\s*\\(",
+        func = "new ObjectOutputStream",
+        arg_position = 1,
+        arg_name = "out",
+        description = "Java ObjectOutputStream"
+      ),
+      # Java NIO
+      list(
+        regex = "Files\\.write\\s*\\(",
+        func = "Files.write",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Java NIO write"
+      ),
+      list(
+        regex = "Files\\.writeString\\s*\\(",
+        func = "Files.writeString",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Java NIO write string"
+      ),
+      list(
+        regex = "Files\\.newBufferedWriter\\s*\\(",
+        func = "Files.newBufferedWriter",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Java NIO buffered writer"
+      ),
+      list(
+        regex = "Files\\.newOutputStream\\s*\\(",
+        func = "Files.newOutputStream",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Java NIO output stream"
+      ),
+      list(
+        regex = "Files\\.copy\\s*\\(",
+        func = "Files.copy",
+        arg_position = 1,
+        arg_name = "source",
+        description = "Java NIO copy"
+      ),
+      list(
+        regex = "Files\\.createDirectory\\s*\\(",
+        func = "Files.createDirectory",
+        arg_position = 1,
+        arg_name = "dir",
+        description = "Java NIO create directory"
+      ),
+      list(
+        regex = "Files\\.createDirectories\\s*\\(",
+        func = "Files.createDirectories",
+        arg_position = 1,
+        arg_name = "dir",
+        description = "Java NIO create directories"
+      ),
+      # JDBC
+      list(
+        regex = "\\.executeUpdate\\s*\\(",
+        func = "statement.executeUpdate",
+        arg_position = 1,
+        arg_name = "sql",
+        description = "JDBC execute update"
+      ),
+      list(
+        regex = "\\.execute\\s*\\(",
+        func = "statement.execute",
+        arg_position = 1,
+        arg_name = "sql",
+        description = "JDBC execute"
+      ),
+      list(
+        regex = "preparedStatement\\.execute",
+        func = "preparedStatement.execute",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "JDBC prepared execute"
+      ),
+      # Jackson
+      list(
+        regex = "objectMapper\\.writeValue\\s*\\(",
+        func = "objectMapper.writeValue",
+        arg_position = 1,
+        arg_name = "file",
+        description = "Jackson write JSON"
+      ),
+      list(
+        regex = "objectMapper\\.writeValueAsString\\s*\\(",
+        func = "objectMapper.writeValueAsString",
+        arg_position = 1,
+        arg_name = "value",
+        description = "Jackson write as string"
+      ),
+      list(
+        regex = "JsonGenerator",
+        func = "JsonGenerator",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Jackson JSON generator"
+      ),
+      # Spring Boot responses
+      list(
+        regex = "ResponseEntity",
+        func = "ResponseEntity",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Spring ResponseEntity"
+      ),
+      list(
+        regex = "@ResponseBody",
+        func = "@ResponseBody",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Spring response body"
+      ),
+      list(
+        regex = "ResponseEntity\\.ok\\s*\\(",
+        func = "ResponseEntity.ok",
+        arg_position = 1,
+        arg_name = "body",
+        description = "Spring OK response"
+      ),
+      # Spring Data JPA
+      list(
+        regex = "repository\\.save\\s*\\(",
+        func = "repository.save",
+        arg_position = 1,
+        arg_name = "entity",
+        description = "Spring Data save"
+      ),
+      list(
+        regex = "repository\\.saveAll\\s*\\(",
+        func = "repository.saveAll",
+        arg_position = 1,
+        arg_name = "entities",
+        description = "Spring Data save all"
+      ),
+      list(
+        regex = "repository\\.delete\\s*\\(",
+        func = "repository.delete",
+        arg_position = 1,
+        arg_name = "entity",
+        description = "Spring Data delete"
+      ),
+      # Hibernate
+      list(
+        regex = "session\\.save\\s*\\(",
+        func = "session.save",
+        arg_position = 1,
+        arg_name = "object",
+        description = "Hibernate save"
+      ),
+      list(
+        regex = "session\\.update\\s*\\(",
+        func = "session.update",
+        arg_position = 1,
+        arg_name = "object",
+        description = "Hibernate update"
+      ),
+      list(
+        regex = "session\\.persist\\s*\\(",
+        func = "session.persist",
+        arg_position = 1,
+        arg_name = "object",
+        description = "Hibernate persist"
+      ),
+      list(
+        regex = "entityManager\\.persist\\s*\\(",
+        func = "entityManager.persist",
+        arg_position = 1,
+        arg_name = "entity",
+        description = "JPA persist"
+      ),
+      list(
+        regex = "entityManager\\.merge\\s*\\(",
+        func = "entityManager.merge",
+        arg_position = 1,
+        arg_name = "entity",
+        description = "JPA merge"
+      ),
+      # Logging
+      list(
+        regex = "logger\\.info\\s*\\(",
+        func = "logger.info",
+        arg_position = 1,
+        arg_name = "msg",
+        description = "SLF4J info"
+      ),
+      list(
+        regex = "log\\.info\\s*\\(",
+        func = "log.info",
+        arg_position = 1,
+        arg_name = "msg",
+        description = "Logger info"
+      ),
+      list(
+        regex = "log\\.debug\\s*\\(",
+        func = "log.debug",
+        arg_position = 1,
+        arg_name = "msg",
+        description = "Logger debug"
+      ),
+      list(
+        regex = "LoggerFactory\\.getLogger\\s*\\(",
+        func = "LoggerFactory.getLogger",
+        arg_position = 1,
+        arg_name = "clazz",
+        description = "SLF4J logger factory"
+      ),
+      list(
+        regex = "System\\.out\\.println\\s*\\(",
+        func = "System.out.println",
+        arg_position = 1,
+        arg_name = "x",
+        description = "Java println"
+      )
+    ),
+    dependency = list(
+      list(
+        regex = "import\\s+[a-zA-Z]",
+        func = "import",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Java import statement"
+      ),
+      list(
+        regex = "package\\s+[a-zA-Z]",
+        func = "package",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Java package declaration"
+      )
+    )
+  )
+}
+
+#' Get C Detection Patterns
+#' @return List of C detection patterns
+#' @keywords internal
+get_c_patterns <- function() {
+  list(
+    input = list(
+      # stdio.h
+      list(
+        regex = "fopen\\s*\\([^)]*['\"]r",
+        func = "fopen",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "C file open (read)"
+      ),
+      list(
+        regex = "fread\\s*\\(",
+        func = "fread",
+        arg_position = 4,
+        arg_name = "stream",
+        description = "C file read"
+      ),
+      list(
+        regex = "fgets\\s*\\(",
+        func = "fgets",
+        arg_position = 3,
+        arg_name = "stream",
+        description = "C get string from file"
+      ),
+      list(
+        regex = "fscanf\\s*\\(",
+        func = "fscanf",
+        arg_position = 1,
+        arg_name = "stream",
+        description = "C formatted scan from file"
+      ),
+      list(
+        regex = "fgetc\\s*\\(",
+        func = "fgetc",
+        arg_position = 1,
+        arg_name = "stream",
+        description = "C get character from file"
+      ),
+      list(
+        regex = "getc\\s*\\(",
+        func = "getc",
+        arg_position = 1,
+        arg_name = "stream",
+        description = "C get character"
+      ),
+      # unistd.h / fcntl.h (POSIX)
+      list(
+        regex = "open\\s*\\([^)]*O_RDONLY",
+        func = "open",
+        arg_position = 1,
+        arg_name = "pathname",
+        description = "POSIX file open (read)"
+      ),
+      list(
+        regex = "read\\s*\\(",
+        func = "read",
+        arg_position = 1,
+        arg_name = "fd",
+        description = "POSIX read"
+      ),
+      # Environment
+      list(
+        regex = "getenv\\s*\\(",
+        func = "getenv",
+        arg_position = 1,
+        arg_name = "name",
+        description = "C get environment variable"
+      ),
+      # Memory-mapped files
+      list(
+        regex = "mmap\\s*\\(",
+        func = "mmap",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "C memory map"
+      ),
+      # Directory reading
+      list(
+        regex = "opendir\\s*\\(",
+        func = "opendir",
+        arg_position = 1,
+        arg_name = "name",
+        description = "C open directory"
+      ),
+      list(
+        regex = "readdir\\s*\\(",
+        func = "readdir",
+        arg_position = 1,
+        arg_name = "dirp",
+        description = "C read directory"
+      )
+    ),
+    output = list(
+      # stdio.h
+      list(
+        regex = "fopen\\s*\\([^)]*['\"]w",
+        func = "fopen",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "C file open (write)"
+      ),
+      list(
+        regex = "fopen\\s*\\([^)]*['\"]a",
+        func = "fopen",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "C file open (append)"
+      ),
+      list(
+        regex = "fwrite\\s*\\(",
+        func = "fwrite",
+        arg_position = 4,
+        arg_name = "stream",
+        description = "C file write"
+      ),
+      list(
+        regex = "fputs\\s*\\(",
+        func = "fputs",
+        arg_position = 2,
+        arg_name = "stream",
+        description = "C put string to file"
+      ),
+      list(
+        regex = "fprintf\\s*\\(",
+        func = "fprintf",
+        arg_position = 1,
+        arg_name = "stream",
+        description = "C formatted print to file"
+      ),
+      list(
+        regex = "fputc\\s*\\(",
+        func = "fputc",
+        arg_position = 2,
+        arg_name = "stream",
+        description = "C put character to file"
+      ),
+      list(
+        regex = "putc\\s*\\(",
+        func = "putc",
+        arg_position = 2,
+        arg_name = "stream",
+        description = "C put character"
+      ),
+      # unistd.h (POSIX)
+      list(
+        regex = "open\\s*\\([^)]*O_WRONLY|open\\s*\\([^)]*O_CREAT",
+        func = "open",
+        arg_position = 1,
+        arg_name = "pathname",
+        description = "POSIX file open (write)"
+      ),
+      list(
+        regex = "write\\s*\\(",
+        func = "write",
+        arg_position = 1,
+        arg_name = "fd",
+        description = "POSIX write"
+      ),
+      # Standard output
+      list(
+        regex = "printf\\s*\\(",
+        func = "printf",
+        arg_position = 1,
+        arg_name = "format",
+        description = "C printf"
+      ),
+      list(
+        regex = "puts\\s*\\(",
+        func = "puts",
+        arg_position = 1,
+        arg_name = "s",
+        description = "C puts"
+      )
+    ),
+    dependency = list(
+      list(
+        regex = "#include\\s*[<\"]",
+        func = "#include",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "C include directive"
+      )
+    )
+  )
+}
+
+#' Get C++ Detection Patterns
+#' @return List of C++ detection patterns
+#' @keywords internal
+get_cpp_patterns <- function() {
+  # Start with C patterns as base
+  c_patterns <- get_c_patterns()
+
+  cpp_input <- c(c_patterns$input, list(
+    # fstream
+    list(
+      regex = "std::ifstream|ifstream",
+      func = "ifstream",
+      arg_position = 1,
+      arg_name = "filename",
+      description = "C++ input file stream"
+    ),
+    list(
+      regex = "std::fstream.*std::ios::in|fstream.*ios::in",
+      func = "fstream",
+      arg_position = 1,
+      arg_name = "filename",
+      description = "C++ file stream (input)"
+    ),
+    # istream operations
+    list(
+      regex = "std::getline\\s*\\(",
+      func = "std::getline",
+      arg_position = 1,
+      arg_name = "is",
+      description = "C++ getline"
+    ),
+    list(
+      regex = "std::cin\\s*>>",
+      func = "std::cin",
+      arg_position = NA,
+      arg_name = NULL,
+      description = "C++ standard input"
+    ),
+    list(
+      regex = ">>\\s*[a-zA-Z_]",
+      func = "operator>>",
+      arg_position = NA,
+      arg_name = NULL,
+      description = "C++ stream extraction"
+    ),
+    # boost::filesystem
+    list(
+      regex = "boost::filesystem::ifstream",
+      func = "boost::filesystem::ifstream",
+      arg_position = 1,
+      arg_name = "path",
+      description = "Boost input file stream"
+    ),
+    list(
+      regex = "std::filesystem::directory_iterator",
+      func = "std::filesystem::directory_iterator",
+      arg_position = 1,
+      arg_name = "path",
+      description = "C++17 directory iterator"
+    ),
+    # stringstream
+    list(
+      regex = "std::istringstream|istringstream",
+      func = "istringstream",
+      arg_position = 1,
+      arg_name = "str",
+      description = "C++ input string stream"
+    ),
+    list(
+      regex = "std::stringstream|stringstream",
+      func = "stringstream",
+      arg_position = 1,
+      arg_name = "str",
+      description = "C++ string stream"
+    )
+  ))
+
+  cpp_output <- c(c_patterns$output, list(
+    # fstream
+    list(
+      regex = "std::ofstream|ofstream",
+      func = "ofstream",
+      arg_position = 1,
+      arg_name = "filename",
+      description = "C++ output file stream"
+    ),
+    list(
+      regex = "std::fstream.*std::ios::out|fstream.*ios::out",
+      func = "fstream",
+      arg_position = 1,
+      arg_name = "filename",
+      description = "C++ file stream (output)"
+    ),
+    # ostream operations
+    list(
+      regex = "std::cout\\s*<<",
+      func = "std::cout",
+      arg_position = NA,
+      arg_name = NULL,
+      description = "C++ standard output"
+    ),
+    list(
+      regex = "std::cerr\\s*<<",
+      func = "std::cerr",
+      arg_position = NA,
+      arg_name = NULL,
+      description = "C++ error output"
+    ),
+    list(
+      regex = "<<\\s*std::endl",
+      func = "std::endl",
+      arg_position = NA,
+      arg_name = NULL,
+      description = "C++ endl manipulator"
+    ),
+    # boost::filesystem
+    list(
+      regex = "boost::filesystem::ofstream",
+      func = "boost::filesystem::ofstream",
+      arg_position = 1,
+      arg_name = "path",
+      description = "Boost output file stream"
+    ),
+    list(
+      regex = "std::filesystem::create_directory",
+      func = "std::filesystem::create_directory",
+      arg_position = 1,
+      arg_name = "path",
+      description = "C++17 create directory"
+    ),
+    list(
+      regex = "std::filesystem::copy",
+      func = "std::filesystem::copy",
+      arg_position = 1,
+      arg_name = "from",
+      description = "C++17 copy file"
+    ),
+    # stringstream
+    list(
+      regex = "std::ostringstream|ostringstream",
+      func = "ostringstream",
+      arg_position = NA,
+      arg_name = NULL,
+      description = "C++ output string stream"
+    )
+  ))
+
+  list(
+    input = cpp_input,
+    output = cpp_output,
+    dependency = c(c_patterns$dependency, list(
+      list(
+        regex = "using\\s+namespace\\s+",
+        func = "using namespace",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "C++ using namespace"
+      ),
+      list(
+        regex = "using\\s+[a-zA-Z_]",
+        func = "using",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "C++ using declaration"
+      )
+    ))
+  )
+}
+
+#' Get MATLAB Detection Patterns
+#' @return List of MATLAB detection patterns
+#' @keywords internal
+get_matlab_patterns <- function() {
+  list(
+    input = list(
+      # Data loading
+      list(
+        regex = "load\\s*\\(",
+        func = "load",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB load data"
+      ),
+      list(
+        regex = "importdata\\s*\\(",
+        func = "importdata",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB import data"
+      ),
+      list(
+        regex = "readtable\\s*\\(",
+        func = "readtable",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB read table"
+      ),
+      list(
+        regex = "readmatrix\\s*\\(",
+        func = "readmatrix",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB read matrix"
+      ),
+      list(
+        regex = "readcell\\s*\\(",
+        func = "readcell",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB read cell array"
+      ),
+      # CSV/Excel
+      list(
+        regex = "csvread\\s*\\(",
+        func = "csvread",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB CSV read"
+      ),
+      list(
+        regex = "xlsread\\s*\\(",
+        func = "xlsread",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB Excel read"
+      ),
+      list(
+        regex = "readmatrix\\s*\\([^)]*\\.xlsx",
+        func = "readmatrix",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB read Excel"
+      ),
+      # Text/formatted
+      list(
+        regex = "textscan\\s*\\(",
+        func = "textscan",
+        arg_position = 1,
+        arg_name = "fileID",
+        description = "MATLAB text scan"
+      ),
+      list(
+        regex = "fscanf\\s*\\(",
+        func = "fscanf",
+        arg_position = 1,
+        arg_name = "fileID",
+        description = "MATLAB formatted read"
+      ),
+      list(
+        regex = "fread\\s*\\(",
+        func = "fread",
+        arg_position = 1,
+        arg_name = "fileID",
+        description = "MATLAB binary read"
+      ),
+      list(
+        regex = "fgetl\\s*\\(",
+        func = "fgetl",
+        arg_position = 1,
+        arg_name = "fileID",
+        description = "MATLAB get line"
+      ),
+      list(
+        regex = "fgets\\s*\\(",
+        func = "fgets",
+        arg_position = 1,
+        arg_name = "fileID",
+        description = "MATLAB get string"
+      ),
+      # File open
+      list(
+        regex = "fopen\\s*\\([^)]*['\"]r",
+        func = "fopen",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB file open (read)"
+      ),
+      # Image/Audio/Video
+      list(
+        regex = "imread\\s*\\(",
+        func = "imread",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB read image"
+      ),
+      list(
+        regex = "audioread\\s*\\(",
+        func = "audioread",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB read audio"
+      ),
+      list(
+        regex = "VideoReader\\s*\\(",
+        func = "VideoReader",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB video reader"
+      ),
+      # JSON
+      list(
+        regex = "jsondecode\\s*\\(",
+        func = "jsondecode",
+        arg_position = 1,
+        arg_name = "text",
+        description = "MATLAB JSON decode"
+      ),
+      list(
+        regex = "fileread\\s*\\(",
+        func = "fileread",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB file read"
+      ),
+      # HDF5/netCDF
+      list(
+        regex = "h5read\\s*\\(",
+        func = "h5read",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB HDF5 read"
+      ),
+      list(
+        regex = "ncread\\s*\\(",
+        func = "ncread",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB netCDF read"
+      )
+    ),
+    output = list(
+      # Data saving
+      list(
+        regex = "save\\s*\\(",
+        func = "save",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB save data"
+      ),
+      list(
+        regex = "writetable\\s*\\(",
+        func = "writetable",
+        arg_position = 2,
+        arg_name = "filename",
+        description = "MATLAB write table"
+      ),
+      list(
+        regex = "writematrix\\s*\\(",
+        func = "writematrix",
+        arg_position = 2,
+        arg_name = "filename",
+        description = "MATLAB write matrix"
+      ),
+      list(
+        regex = "writecell\\s*\\(",
+        func = "writecell",
+        arg_position = 2,
+        arg_name = "filename",
+        description = "MATLAB write cell array"
+      ),
+      # CSV/Excel
+      list(
+        regex = "csvwrite\\s*\\(",
+        func = "csvwrite",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB CSV write"
+      ),
+      list(
+        regex = "xlswrite\\s*\\(",
+        func = "xlswrite",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB Excel write"
+      ),
+      # Text/formatted
+      list(
+        regex = "fprintf\\s*\\(",
+        func = "fprintf",
+        arg_position = 1,
+        arg_name = "fileID",
+        description = "MATLAB formatted write"
+      ),
+      list(
+        regex = "fwrite\\s*\\(",
+        func = "fwrite",
+        arg_position = 1,
+        arg_name = "fileID",
+        description = "MATLAB binary write"
+      ),
+      # File open
+      list(
+        regex = "fopen\\s*\\([^)]*['\"]w",
+        func = "fopen",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB file open (write)"
+      ),
+      list(
+        regex = "fopen\\s*\\([^)]*['\"]a",
+        func = "fopen",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB file open (append)"
+      ),
+      # Image/Audio/Video
+      list(
+        regex = "imwrite\\s*\\(",
+        func = "imwrite",
+        arg_position = 2,
+        arg_name = "filename",
+        description = "MATLAB write image"
+      ),
+      list(
+        regex = "audiowrite\\s*\\(",
+        func = "audiowrite",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB write audio"
+      ),
+      list(
+        regex = "VideoWriter\\s*\\(",
+        func = "VideoWriter",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB video writer"
+      ),
+      # Graphics
+      list(
+        regex = "print\\s*\\(",
+        func = "print",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB print figure"
+      ),
+      list(
+        regex = "saveas\\s*\\(",
+        func = "saveas",
+        arg_position = 2,
+        arg_name = "filename",
+        description = "MATLAB save as"
+      ),
+      list(
+        regex = "savefig\\s*\\(",
+        func = "savefig",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB save figure"
+      ),
+      list(
+        regex = "exportgraphics\\s*\\(",
+        func = "exportgraphics",
+        arg_position = 2,
+        arg_name = "filename",
+        description = "MATLAB export graphics"
+      ),
+      # JSON
+      list(
+        regex = "jsonencode\\s*\\(",
+        func = "jsonencode",
+        arg_position = 1,
+        arg_name = "data",
+        description = "MATLAB JSON encode"
+      ),
+      # HDF5/netCDF
+      list(
+        regex = "h5write\\s*\\(",
+        func = "h5write",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB HDF5 write"
+      ),
+      list(
+        regex = "ncwrite\\s*\\(",
+        func = "ncwrite",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "MATLAB netCDF write"
+      ),
+      # Display
+      list(
+        regex = "disp\\s*\\(",
+        func = "disp",
+        arg_position = 1,
+        arg_name = "X",
+        description = "MATLAB display"
+      )
+    ),
+    dependency = list(
+      list(
+        regex = "run\\s*\\(",
+        func = "run",
+        arg_position = 1,
+        arg_name = "script",
+        description = "MATLAB run script"
+      ),
+      list(
+        regex = "addpath\\s*\\(",
+        func = "addpath",
+        arg_position = 1,
+        arg_name = "folderName",
+        description = "MATLAB add path"
+      )
+    )
+  )
+}
+
+#' Get Ruby Detection Patterns
+#' @return List of Ruby detection patterns
+#' @keywords internal
+get_ruby_patterns <- function() {
+  list(
+    input = list(
+      # Core File operations
+      list(
+        regex = "File\\.read\\s*\\(",
+        func = "File.read",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Ruby file read"
+      ),
+      list(
+        regex = "File\\.open\\s*\\([^)]*['\"]r",
+        func = "File.open",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "Ruby file open (read)"
+      ),
+      list(
+        regex = "File\\.readlines\\s*\\(",
+        func = "File.readlines",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Ruby read lines"
+      ),
+      list(
+        regex = "File\\.foreach\\s*\\(",
+        func = "File.foreach",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Ruby iterate lines"
+      ),
+      list(
+        regex = "File\\.binread\\s*\\(",
+        func = "File.binread",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Ruby binary read"
+      ),
+      # IO operations
+      list(
+        regex = "IO\\.read\\s*\\(",
+        func = "IO.read",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Ruby IO read"
+      ),
+      list(
+        regex = "IO\\.readlines\\s*\\(",
+        func = "IO.readlines",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Ruby IO readlines"
+      ),
+      list(
+        regex = "IO\\.foreach\\s*\\(",
+        func = "IO.foreach",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Ruby IO foreach"
+      ),
+      # CSV
+      list(
+        regex = "CSV\\.read\\s*\\(",
+        func = "CSV.read",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Ruby CSV read"
+      ),
+      list(
+        regex = "CSV\\.foreach\\s*\\(",
+        func = "CSV.foreach",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Ruby CSV foreach"
+      ),
+      list(
+        regex = "CSV\\.parse\\s*\\(",
+        func = "CSV.parse",
+        arg_position = 1,
+        arg_name = "str",
+        description = "Ruby CSV parse"
+      ),
+      # JSON
+      list(
+        regex = "JSON\\.parse\\s*\\(",
+        func = "JSON.parse",
+        arg_position = 1,
+        arg_name = "source",
+        description = "Ruby JSON parse"
+      ),
+      list(
+        regex = "JSON\\.load\\s*\\(",
+        func = "JSON.load",
+        arg_position = 1,
+        arg_name = "source",
+        description = "Ruby JSON load"
+      ),
+      # YAML
+      list(
+        regex = "YAML\\.load_file\\s*\\(",
+        func = "YAML.load_file",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "Ruby YAML load file"
+      ),
+      list(
+        regex = "YAML\\.safe_load\\s*\\(",
+        func = "YAML.safe_load",
+        arg_position = 1,
+        arg_name = "yaml",
+        description = "Ruby YAML safe load"
+      ),
+      # Marshal
+      list(
+        regex = "Marshal\\.load\\s*\\(",
+        func = "Marshal.load",
+        arg_position = 1,
+        arg_name = "source",
+        description = "Ruby Marshal load"
+      ),
+      # Database - ActiveRecord
+      list(
+        regex = "ActiveRecord::Base\\.establish_connection",
+        func = "ActiveRecord::Base.establish_connection",
+        arg_position = 1,
+        arg_name = "config",
+        description = "ActiveRecord connection"
+      ),
+      list(
+        regex = "\\.find\\s*\\(",
+        func = "Model.find",
+        arg_position = 1,
+        arg_name = "id",
+        description = "ActiveRecord find"
+      ),
+      list(
+        regex = "\\.find_by\\s*\\(",
+        func = "Model.find_by",
+        arg_position = NA,
+        arg_name = "arg",
+        description = "ActiveRecord find_by"
+      ),
+      list(
+        regex = "\\.where\\s*\\(",
+        func = "Model.where",
+        arg_position = 1,
+        arg_name = "opts",
+        description = "ActiveRecord where"
+      ),
+      list(
+        regex = "\\.all\\b",
+        func = "Model.all",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "ActiveRecord all"
+      ),
+      list(
+        regex = "\\.first\\b",
+        func = "Model.first",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "ActiveRecord first"
+      ),
+      # Sequel
+      list(
+        regex = "Sequel\\.connect\\s*\\(",
+        func = "Sequel.connect",
+        arg_position = 1,
+        arg_name = "url",
+        description = "Sequel database connection"
+      ),
+      # pg (PostgreSQL)
+      list(
+        regex = "PG\\.connect\\s*\\(",
+        func = "PG.connect",
+        arg_position = NA,
+        arg_name = "options",
+        description = "Ruby PostgreSQL connection"
+      ),
+      # mysql2
+      list(
+        regex = "Mysql2::Client\\.new\\s*\\(",
+        func = "Mysql2::Client.new",
+        arg_position = NA,
+        arg_name = "options",
+        description = "Ruby MySQL connection"
+      ),
+      # Rails params
+      list(
+        regex = "params\\[:",
+        func = "params[]",
+        arg_position = NA,
+        arg_name = "key",
+        description = "Rails params"
+      ),
+      # Rails ActiveStorage
+      list(
+        regex = "blob\\.download",
+        func = "blob.download",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Rails ActiveStorage download"
+      ),
+      list(
+        regex = "\\.attachment\\.download",
+        func = "attachment.download",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Rails attachment download"
+      ),
+      # HTTP clients
+      list(
+        regex = "Net::HTTP\\.get\\s*\\(",
+        func = "Net::HTTP.get",
+        arg_position = 1,
+        arg_name = "uri",
+        description = "Ruby HTTP GET"
+      ),
+      list(
+        regex = "Faraday\\.get\\s*\\(",
+        func = "Faraday.get",
+        arg_position = 1,
+        arg_name = "url",
+        description = "Faraday GET"
+      ),
+      list(
+        regex = "HTTParty\\.get\\s*\\(",
+        func = "HTTParty.get",
+        arg_position = 1,
+        arg_name = "path",
+        description = "HTTParty GET"
+      ),
+      list(
+        regex = "RestClient\\.get\\s*\\(",
+        func = "RestClient.get",
+        arg_position = 1,
+        arg_name = "url",
+        description = "RestClient GET"
+      )
+    ),
+    output = list(
+      # Core File operations
+      list(
+        regex = "File\\.write\\s*\\(",
+        func = "File.write",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Ruby file write"
+      ),
+      list(
+        regex = "File\\.open\\s*\\([^)]*['\"]w",
+        func = "File.open",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "Ruby file open (write)"
+      ),
+      list(
+        regex = "File\\.open\\s*\\([^)]*['\"]a",
+        func = "File.open",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "Ruby file open (append)"
+      ),
+      list(
+        regex = "File\\.binwrite\\s*\\(",
+        func = "File.binwrite",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Ruby binary write"
+      ),
+      # IO operations
+      list(
+        regex = "IO\\.write\\s*\\(",
+        func = "IO.write",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Ruby IO write"
+      ),
+      list(
+        regex = "IO\\.binwrite\\s*\\(",
+        func = "IO.binwrite",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Ruby IO binwrite"
+      ),
+      # CSV
+      list(
+        regex = "CSV\\.open\\s*\\(",
+        func = "CSV.open",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "Ruby CSV open"
+      ),
+      list(
+        regex = "CSV\\.generate\\s*",
+        func = "CSV.generate",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Ruby CSV generate"
+      ),
+      # JSON
+      list(
+        regex = "JSON\\.generate\\s*\\(",
+        func = "JSON.generate",
+        arg_position = 1,
+        arg_name = "obj",
+        description = "Ruby JSON generate"
+      ),
+      list(
+        regex = "\\.to_json",
+        func = "to_json",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Ruby to JSON"
+      ),
+      # YAML
+      list(
+        regex = "YAML\\.dump\\s*\\(",
+        func = "YAML.dump",
+        arg_position = 1,
+        arg_name = "obj",
+        description = "Ruby YAML dump"
+      ),
+      list(
+        regex = "\\.to_yaml",
+        func = "to_yaml",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Ruby to YAML"
+      ),
+      # Marshal
+      list(
+        regex = "Marshal\\.dump\\s*\\(",
+        func = "Marshal.dump",
+        arg_position = 1,
+        arg_name = "obj",
+        description = "Ruby Marshal dump"
+      ),
+      # Rails responses
+      list(
+        regex = "render\\s+json:",
+        func = "render json:",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Rails render JSON"
+      ),
+      list(
+        regex = "render\\s+xml:",
+        func = "render xml:",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Rails render XML"
+      ),
+      list(
+        regex = "send_data\\s*",
+        func = "send_data",
+        arg_position = 1,
+        arg_name = "data",
+        description = "Rails send data"
+      ),
+      list(
+        regex = "send_file\\s*",
+        func = "send_file",
+        arg_position = 1,
+        arg_name = "path",
+        description = "Rails send file"
+      ),
+      # Rails ActiveStorage
+      list(
+        regex = "\\.attach\\s*\\(",
+        func = "attach",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Rails ActiveStorage attach"
+      ),
+      # ActiveRecord write
+      list(
+        regex = "\\.create\\s*\\(",
+        func = "Model.create",
+        arg_position = NA,
+        arg_name = "attributes",
+        description = "ActiveRecord create"
+      ),
+      list(
+        regex = "\\.create!\\s*\\(",
+        func = "Model.create!",
+        arg_position = NA,
+        arg_name = "attributes",
+        description = "ActiveRecord create!"
+      ),
+      list(
+        regex = "\\.save\\b",
+        func = "model.save",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "ActiveRecord save"
+      ),
+      list(
+        regex = "\\.save!\\b",
+        func = "model.save!",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "ActiveRecord save!"
+      ),
+      list(
+        regex = "\\.update\\s*\\(",
+        func = "model.update",
+        arg_position = NA,
+        arg_name = "attributes",
+        description = "ActiveRecord update"
+      ),
+      list(
+        regex = "\\.destroy\\b",
+        func = "model.destroy",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "ActiveRecord destroy"
+      ),
+      # Logging
+      list(
+        regex = "Rails\\.logger",
+        func = "Rails.logger",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Rails logger"
+      ),
+      list(
+        regex = "Logger\\.new\\s*\\(",
+        func = "Logger.new",
+        arg_position = 1,
+        arg_name = "logdev",
+        description = "Ruby Logger"
+      ),
+      list(
+        regex = "puts\\s+",
+        func = "puts",
+        arg_position = 1,
+        arg_name = "obj",
+        description = "Ruby puts"
+      ),
+      list(
+        regex = "print\\s+",
+        func = "print",
+        arg_position = 1,
+        arg_name = "obj",
+        description = "Ruby print"
+      )
+    ),
+    dependency = list(
+      list(
+        regex = "require\\s+['\"]",
+        func = "require",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Ruby require"
+      ),
+      list(
+        regex = "require_relative\\s+['\"]",
+        func = "require_relative",
+        arg_position = 1,
+        arg_name = "name",
+        description = "Ruby require_relative"
+      ),
+      list(
+        regex = "load\\s+['\"]",
+        func = "load",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "Ruby load"
+      ),
+      list(
+        regex = "autoload\\s+:",
+        func = "autoload",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Ruby autoload"
+      )
+    )
+  )
+}
+
+#' Get Lua Detection Patterns
+#' @return List of Lua detection patterns
+#' @keywords internal
+get_lua_patterns <- function() {
+  list(
+    input = list(
+      # io library
+      list(
+        regex = "io\\.open\\s*\\([^)]*['\"]r",
+        func = "io.open",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "Lua file open (read)"
+      ),
+      list(
+        regex = "io\\.input\\s*\\(",
+        func = "io.input",
+        arg_position = 1,
+        arg_name = "file",
+        description = "Lua set input file"
+      ),
+      list(
+        regex = "io\\.read\\s*\\(",
+        func = "io.read",
+        arg_position = NA,
+        arg_name = "format",
+        description = "Lua read"
+      ),
+      list(
+        regex = "io\\.lines\\s*\\(",
+        func = "io.lines",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "Lua iterate lines"
+      ),
+      list(
+        regex = "file:read\\s*\\(",
+        func = "file:read",
+        arg_position = NA,
+        arg_name = "format",
+        description = "Lua file read method"
+      ),
+      list(
+        regex = "file:lines\\s*\\(",
+        func = "file:lines",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Lua file lines method"
+      ),
+      # Loading scripts
+      list(
+        regex = "loadfile\\s*\\(",
+        func = "loadfile",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "Lua load file"
+      ),
+      list(
+        regex = "dofile\\s*\\(",
+        func = "dofile",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "Lua do file"
+      ),
+      # Environment
+      list(
+        regex = "os\\.getenv\\s*\\(",
+        func = "os.getenv",
+        arg_position = 1,
+        arg_name = "varname",
+        description = "Lua environment variable"
+      )
+    ),
+    output = list(
+      # io library
+      list(
+        regex = "io\\.open\\s*\\([^)]*['\"]w",
+        func = "io.open",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "Lua file open (write)"
+      ),
+      list(
+        regex = "io\\.open\\s*\\([^)]*['\"]a",
+        func = "io.open",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "Lua file open (append)"
+      ),
+      list(
+        regex = "io\\.output\\s*\\(",
+        func = "io.output",
+        arg_position = 1,
+        arg_name = "file",
+        description = "Lua set output file"
+      ),
+      list(
+        regex = "io\\.write\\s*\\(",
+        func = "io.write",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Lua write"
+      ),
+      list(
+        regex = "file:write\\s*\\(",
+        func = "file:write",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Lua file write method"
+      ),
+      list(
+        regex = "file:flush\\s*\\(",
+        func = "file:flush",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Lua file flush"
+      ),
+      # Print
+      list(
+        regex = "print\\s*\\(",
+        func = "print",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Lua print"
+      ),
+      list(
+        regex = "io\\.stderr:write\\s*\\(",
+        func = "io.stderr:write",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Lua stderr write"
+      )
+    ),
+    dependency = list(
+      list(
+        regex = "require\\s*['\"]",
+        func = "require",
+        arg_position = 1,
+        arg_name = "modname",
+        description = "Lua require"
+      ),
+      list(
+        regex = "dofile\\s*\\(",
+        func = "dofile",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "Lua dofile"
+      ),
+      list(
+        regex = "loadfile\\s*\\(",
+        func = "loadfile",
+        arg_position = 1,
+        arg_name = "filename",
+        description = "Lua loadfile"
+      )
+    )
+  )
+}
+
 # NOTE: list_supported_languages() has been moved to R/language_registry.R
 # It now supports a detection_only parameter to distinguish between:
-# - Languages with full auto-detection support (R, Python, SQL, Shell, Julia)
-# - Languages with annotation parsing only (JS, TS, Go, Rust, etc.)
+# - Languages with full auto-detection support
+# - Languages with annotation parsing only

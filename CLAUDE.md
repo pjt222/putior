@@ -115,6 +115,7 @@ putior is an R package that extracts structured annotations from source code fil
 15. **Shiny Sandbox Enhancements (Issue #7)** - Copy-to-clipboard button and optional shinyAce syntax highlighting
 16. **LLM Detection Patterns (Issue #10)** - 54 patterns for modern AI/ML libraries (ellmer, langchain, transformers, etc.)
 17. **Multi-Language Comment Syntax** - Support for 30+ languages with automatic comment prefix detection (`#`, `--`, `//`, `%`)
+18. **Full Language Detection Patterns** - Added auto-detection patterns for 10 new languages (JS, TS, Go, Rust, Java, C, C++, MATLAB, Ruby, Lua), bringing total to 15 languages with 862 patterns
 
 ## Multi-Language Comment Syntax Support
 
@@ -164,7 +165,45 @@ results = compute_statistics(data);
 
 ### Key Files
 - `R/language_registry.R` - Language groups and comment prefix detection
+- `R/detection_patterns.R` - Auto-detection patterns for 15 languages
 - `tests/testthat/test-language-registry.R` - Tests for multi-language support (147 tests)
+- `tests/testthat/test-new-language-patterns.R` - Tests for new language detection patterns
+
+## Auto-Detection Pattern Coverage
+
+### Overview
+putior supports auto-detection of file inputs, outputs, and dependencies for 15 programming languages with **862 patterns total**.
+
+### Languages with Auto-Detection (15 languages)
+
+| Language | Total | Key Libraries/Frameworks |
+|----------|-------|--------------------------|
+| R | 124 | readr, data.table, DBI, arrow, ellmer, sparklyr |
+| Python | 159 | pandas, numpy, sqlalchemy, transformers, langchain |
+| JavaScript | 71 | Node.js fs, Express.js, mongoose, Prisma, axios |
+| TypeScript | 88 | All JS + NestJS, TypeORM, decorators |
+| Java | 73 | NIO, JDBC, Jackson, Spring Boot, Hibernate |
+| Ruby | 64 | File, CSV, YAML, Rails, ActiveRecord, Sequel |
+| Rust | 60 | std::fs, serde, sqlx, diesel, reqwest |
+| Go | 44 | os, bufio, database/sql, gorm, net/http |
+| C++ | 44 | All C + fstream, boost, std::filesystem |
+| MATLAB | 44 | readtable, imread, h5read, VideoReader |
+| Julia | 27 | CSV.jl, DataFrames, JLD2, Arrow.jl |
+| C | 24 | stdio.h, POSIX, mmap |
+| Lua | 20 | io library, loadfile, dofile |
+| Shell | 12 | cat, redirects, source |
+| SQL | 8 | FROM, JOIN, COPY |
+
+### Usage
+```r
+# Get patterns for any supported language
+patterns <- get_detection_patterns("javascript")  # or "go", "rust", "java", etc.
+
+# List languages with detection support
+list_supported_languages(detection_only = TRUE)
+#> [1] "r" "python" "sql" "shell" "julia" "javascript" "typescript"
+#> [8] "go" "rust" "java" "c" "cpp" "matlab" "ruby" "lua"
+```
 
 ## Auto-Annotation Feature (GitHub Issue #5)
 

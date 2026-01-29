@@ -145,16 +145,25 @@ test_that("list_supported_languages(detection_only = TRUE) returns subset", {
   # Detection-only should be a subset
   expect_true(length(detection_langs) < length(all_langs))
 
-  # Should include languages with detection patterns
+  # Should include languages with detection patterns (15 total)
   expect_true("r" %in% detection_langs)
   expect_true("python" %in% detection_langs)
   expect_true("sql" %in% detection_langs)
   expect_true("shell" %in% detection_langs)
   expect_true("julia" %in% detection_langs)
+  expect_true("javascript" %in% detection_langs)
+  expect_true("typescript" %in% detection_langs)
+  expect_true("go" %in% detection_langs)
+  expect_true("rust" %in% detection_langs)
+  expect_true("java" %in% detection_langs)
+  expect_true("c" %in% detection_langs)
+  expect_true("cpp" %in% detection_langs)
+  expect_true("matlab" %in% detection_langs)
+  expect_true("ruby" %in% detection_langs)
+  expect_true("lua" %in% detection_langs)
 
-  # Should NOT include languages without detection patterns yet
-  expect_false("javascript" %in% detection_langs)
-  expect_false("typescript" %in% detection_langs)
+  # Should have 15 languages with detection patterns
+  expect_equal(length(detection_langs), 15)
 })
 
 # ============================================================================
