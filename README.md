@@ -8,6 +8,8 @@
 
 > **Extract beautiful workflow diagrams from your code annotations**
 
+![putior demo](man/figures/demo.gif)
+
 **putior** (PUT + Input + Output + R) is an R package that extracts structured annotations from source code files and creates beautiful Mermaid flowchart diagrams. Perfect for documenting data pipelines, workflows, and understanding complex codebases.
 
 ## 🌟 Key Features
@@ -19,6 +21,33 @@
 - **Cross-language support** - Works with R, Python, SQL, shell scripts, and Julia
 - **Flexible output** - Console, file, or clipboard export
 - **Customizable styling** - Control colors, direction, and node shapes
+
+## ⚡ TL;DR
+
+```r
+# 1. Add annotation to your script
+#put label:"Load Data", output:"clean.csv"
+
+# 2. Generate diagram
+library(putior)
+put_diagram(put("./"))
+```
+
+<details>
+<summary>See result</summary>
+
+```mermaid
+flowchart TD
+    node1[Load Data]
+    artifact_clean_csv[(clean.csv)]
+    node1 --> artifact_clean_csv
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class node1 processStyle
+    classDef artifactStyle fill:#f3f4f6,stroke:#6b7280,stroke-width:1px,color:#374151
+    class artifact_clean_csv artifactStyle
+```
+
+</details>
 
 ## 📦 Installation
 
@@ -1155,6 +1184,44 @@ putior fills a unique niche in the R ecosystem by combining annotation-based wor
 - **🎨 Beautiful Output**: GitHub-ready Mermaid diagrams with multiple themes
 - **📦 Lightweight**: Minimal dependencies (only requires `tools` package)
 - **🔍 Two Views**: Simple script connections + complete data artifact flow
+
+### Documentation vs Execution: putior and Pipeline Tools
+
+A common question: *"How does putior relate to targets/drake/Airflow?"*
+
+**Key insight**: putior *documents* workflows, while targets/drake/Airflow *execute* them. They're complementary!
+
+| Tool | Purpose | Relationship to putior |
+|------|---------|------------------------|
+| **putior** | Document & visualize workflows | - |
+| [targets](https://cran.r-project.org/package=targets) | Execute R pipelines | putior can document targets pipelines |
+| [drake](https://cran.r-project.org/package=drake) | Execute R pipelines (predecessor to targets) | putior can document drake plans |
+| [Airflow](https://airflow.apache.org/) | Orchestrate complex DAGs | putior can document Airflow DAGs |
+| [Nextflow](https://www.nextflow.io/) | Execute bioinformatics pipelines | putior can document Nextflow workflows |
+
+**Example: Using putior WITH targets**
+
+```r
+# _targets.R
+#put label:"Load Raw Data", node_type:"input", output:"raw_data"
+tar_target(raw_data, read_csv("data/sales.csv"))
+
+#put label:"Clean Data", input:"raw_data", output:"clean_data"
+tar_target(clean_data, clean_sales(raw_data))
+
+#put label:"Generate Report", node_type:"output", input:"clean_data"
+tar_target(report, render_report(clean_data))
+```
+
+```r
+# Document your targets pipeline
+library(putior)
+put_diagram(put("_targets.R"), title = "Sales Analysis Pipeline")
+```
+
+This gives you:
+- **targets**: Handles caching, parallel execution, dependency tracking
+- **putior**: Creates visual documentation for README, wikis, onboarding
 
 ## 🙏 Acknowledgments
 

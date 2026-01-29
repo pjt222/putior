@@ -1,0 +1,9 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#dbeafe', 'primaryTextColor': '#1e40af', 'primaryBorderColor': '#2563eb', 'secondaryColor': '#ede9fe', 'secondaryTextColor': '#5b21b6', 'secondaryBorderColor': '#7c3aed', 'lineColor': '#64748b', 'fontSize': '18px' }}}%%
+flowchart TD
+    load(["Load Data"])
+    analyze["Analyze"]
+    load --> analyze
+    class load primary
+    class analyze secondary
+    classDef primary fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef secondary fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
