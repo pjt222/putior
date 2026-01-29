@@ -15,5 +15,6 @@ Named list containing all extracted properties, or NULL if invalid
 \description{
 Parses a single line containing a PUT annotation and extracts key-value pairs.
 Supports flexible syntax with optional spaces and pipe separators.
+Handles multiple comment prefix styles: # (hash), -- (dash), // (slash), \% (percent).
 }
 \keyword{internal}

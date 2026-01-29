@@ -4,7 +4,7 @@ This file provides guidance to AI assistants when working with code in this repo
 
 ## Repository Overview
 
-putior is an R package that extracts structured annotations from source code files and generates Mermaid flowchart diagrams for visualizing workflows and data pipelines. It supports R, Python, SQL, Shell, and Julia files.
+putior is an R package that extracts structured annotations from source code files and generates Mermaid flowchart diagrams for visualizing workflows and data pipelines. It supports 30+ programming languages including R, Python, SQL, JavaScript, TypeScript, Go, Rust, and more, with automatic comment syntax detection.
 
 **Status**: Production-ready, passing all checks, excellent documentation
 
@@ -62,7 +62,7 @@ putior is an R package that extracts structured annotations from source code fil
 - **Win-builder R-release**: ✅ 1 NOTE (new submission only)
 - **R-hub**: ✅ 4/5 platforms PASS (linux, macos, windows, ubuntu-release; nosuggests expected fail)
 - All vignettes build successfully with Pandoc
-- All tests pass (990+ tests including multiline annotation, auto-detection, logging, and LLM patterns)
+- All tests pass (1,140+ tests including multiline annotation, auto-detection, logging, LLM patterns, and multi-language support)
 - Comprehensive multiline PUT annotation support implemented
 
 ### Documentation Quality
@@ -114,6 +114,57 @@ putior is an R package that extracts structured annotations from source code fil
 14. **Documentation Suite (Issues #5-9)** - Features Tour, API Reference, and expanded Showcase vignettes
 15. **Shiny Sandbox Enhancements (Issue #7)** - Copy-to-clipboard button and optional shinyAce syntax highlighting
 16. **LLM Detection Patterns (Issue #10)** - 54 patterns for modern AI/ML libraries (ellmer, langchain, transformers, etc.)
+17. **Multi-Language Comment Syntax** - Support for 30+ languages with automatic comment prefix detection (`#`, `--`, `//`, `%`)
+
+## Multi-Language Comment Syntax Support
+
+### Overview
+putior now automatically detects the correct comment prefix based on file extension:
+
+| Comment Style | Languages | Extensions |
+|---------------|-----------|------------|
+| `#put` | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml` |
+| `--put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |
+| `//put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs` |
+| `%put` | MATLAB, LaTeX | `.m`, `.tex` |
+
+### Key Functions
+```r
+# Get comment prefix for an extension
+get_comment_prefix("sql")  # Returns "--"
+get_comment_prefix("js")   # Returns "//"
+get_comment_prefix("m")    # Returns "%"
+
+# List all supported extensions
+get_supported_extensions()
+
+# List all supported languages
+list_supported_languages()              # All languages
+list_supported_languages(detection_only = TRUE)  # Only with auto-detection patterns
+```
+
+### Example Annotations
+```sql
+-- query.sql
+--put id:"load_data", label:"Load Customer Data", output:"customers"
+SELECT * FROM customers;
+```
+
+```javascript
+// process.js
+//put id:"transform", label:"Transform JSON", input:"data.json", output:"output.json"
+const transformed = data.map(process);
+```
+
+```matlab
+% analysis.m
+%put id:"compute", label:"Statistical Analysis", input:"data.mat", output:"results.mat"
+results = compute_statistics(data);
+```
+
+### Key Files
+- `R/language_registry.R` - Language groups and comment prefix detection
+- `tests/testthat/test-language-registry.R` - Tests for multi-language support (147 tests)
 
 ## Auto-Annotation Feature (GitHub Issue #5)
 

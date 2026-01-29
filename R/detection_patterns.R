@@ -2561,16 +2561,7 @@ get_julia_patterns <- function() {
   )
 }
 
-#' List Supported Languages for Auto-Detection
-#'
-#' Returns a character vector of programming languages supported by the
-#' auto-detection feature.
-#'
-#' @return Character vector of supported language identifiers
-#' @export
-#'
-#' @examples
-#' list_supported_languages()
-list_supported_languages <- function() {
-  c("r", "python", "sql", "shell", "julia")
-}
+# NOTE: list_supported_languages() has been moved to R/language_registry.R
+# It now supports a detection_only parameter to distinguish between:
+# - Languages with full auto-detection support (R, Python, SQL, Shell, Julia)
+# - Languages with annotation parsing only (JS, TS, Go, Rust, etc.)

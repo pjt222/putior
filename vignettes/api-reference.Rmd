@@ -29,6 +29,8 @@ This vignette provides comprehensive documentation for all exported functions in
 | `put_merge()` | Auto-Annotation | Combine manual and auto annotations |
 | `get_detection_patterns()` | Configuration | View/customize detection patterns |
 | `list_supported_languages()` | Configuration | List supported programming languages |
+| `get_comment_prefix()` | Configuration | Get comment prefix for file extension |
+| `get_supported_extensions()` | Configuration | List all supported file extensions |
 | `get_diagram_themes()` | Configuration | List available diagram themes |
 | `set_putior_log_level()` | Configuration | Configure logging verbosity |
 | `is_valid_put_annotation()` | Utilities | Validate annotation syntax |
@@ -396,22 +398,109 @@ length(output_patterns)  # Number of output patterns
 
 ### `list_supported_languages()` - List Supported Languages
 
-Returns the programming languages supported by auto-detection.
+Returns the programming languages supported by putior.
 
 **Usage:**
 ```r
-list_supported_languages()
+list_supported_languages(detection_only = FALSE)
 ```
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `detection_only` | logical | `FALSE` | If TRUE, only languages with auto-detection patterns |
 
 **Returns:**
 
-Character vector: `c("r", "python", "sql", "shell", "julia")`
+Character vector of supported language names.
 
 **Examples:**
 
 ```{r}
+# All languages with annotation support (25+)
 list_supported_languages()
+#> [1] "r"          "python"     "shell"      "julia"      "ruby"
+#> [6] "perl"       "yaml"       "toml"       "sql"        "lua"
+#> ...
+
+# Only languages with auto-detection patterns
+list_supported_languages(detection_only = TRUE)
 #> [1] "r"      "python" "sql"    "shell"  "julia"
+```
+
+---
+
+### `get_comment_prefix()` - Get Comment Prefix for Extension
+
+Returns the appropriate comment prefix for a given file extension.
+
+**Usage:**
+```r
+get_comment_prefix(ext)
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `ext` | character | File extension (without dot) |
+
+**Returns:**
+
+Character string: the comment prefix for that language.
+
+**Comment Prefix Groups:**
+
+| Prefix | Languages |
+|--------|-----------|
+| `#` | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML |
+| `--` | SQL, Lua, Haskell |
+| `//` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala |
+| `%` | MATLAB, LaTeX |
+
+**Examples:**
+
+```{r}
+get_comment_prefix("r")
+#> [1] "#"
+
+get_comment_prefix("sql")
+#> [1] "--"
+
+get_comment_prefix("js")
+#> [1] "//"
+
+get_comment_prefix("m")
+#> [1] "%"
+
+# Unknown extensions default to "#"
+get_comment_prefix("xyz")
+#> [1] "#"
+```
+
+---
+
+### `get_supported_extensions()` - List All Supported Extensions
+
+Returns all file extensions that putior can process.
+
+**Usage:**
+```r
+get_supported_extensions()
+```
+
+**Returns:**
+
+Character vector of supported file extensions (without dots).
+
+**Examples:**
+
+```{r}
+get_supported_extensions()
+#> [1] "r"     "py"    "sh"    "bash"  "jl"    "rb"    "pl"    "yaml"
+#> [9] "yml"   "toml"  "sql"   "lua"   "hs"    "js"    "ts"    "jsx"
+#> ...
 ```
 
 ---
@@ -505,11 +594,26 @@ Logical: `TRUE` if valid PUT annotation, `FALSE` otherwise.
 **Examples:**
 
 ```{r}
-# Valid annotations
+# Valid annotations - hash style (R, Python)
 is_valid_put_annotation('#put label:"My Step"')
 #> [1] TRUE
 
 is_valid_put_annotation('#put id:"step1", label:"Process Data", node_type:"process"')
+#> [1] TRUE
+
+# Valid annotations - dash style (SQL)
+is_valid_put_annotation('--put label:"Load Data"')
+#> [1] TRUE
+
+is_valid_put_annotation('-- put id:"query", label:"SQL Query"')
+#> [1] TRUE
+
+# Valid annotations - slash style (JavaScript)
+is_valid_put_annotation('//put label:"Process JSON"')
+#> [1] TRUE
+
+# Valid annotations - percent style (MATLAB)
+is_valid_put_annotation('%put label:"Compute Statistics"')
 #> [1] TRUE
 
 # Invalid annotations

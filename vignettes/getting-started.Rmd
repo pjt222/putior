@@ -178,6 +178,35 @@ PUT annotations support several formats to fit different coding styles:
     #put id:'my_node', label:'Single quotes'        # Single quotes
     #put id:"my_node", label:'Mixed quotes'         # Mixed quote styles
 
+### Multi-Language Support
+
+putior automatically uses the correct comment prefix based on file extension:
+
+| Comment Style | Languages | Extensions |
+|---------------|-----------|------------|
+| `#put` | R, Python, Shell, Julia, Ruby, YAML | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.yaml` |
+| `--put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |
+| `//put` | JavaScript, TypeScript, C, Java, Go, Rust | `.js`, `.ts`, `.c`, `.java`, `.go`, `.rs` |
+| `%put` | MATLAB, LaTeX | `.m`, `.tex` |
+
+**SQL Example:**
+
+    -- query.sql
+    --put id:"load_data", label:"Load Customer Data", output:"customers"
+    SELECT * FROM customers WHERE active = 1;
+
+**JavaScript Example:**
+
+    // process.js
+    //put id:"transform", label:"Transform JSON", input:"data.json", output:"output.json"
+    const transformed = data.map(item => process(item));
+
+**MATLAB Example:**
+
+    % analysis.m
+    %put id:"compute", label:"Statistical Analysis", input:"data.mat", output:"results.mat"
+    results = compute_statistics(data);
+
 ### Core Properties
 
 While putior accepts any properties you define, these are commonly used:

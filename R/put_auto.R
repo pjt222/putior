@@ -605,22 +605,8 @@ infer_node_type <- function(inputs, outputs) {
   }
 }
 
-#' Convert file extension to language identifier
-#' @param ext File extension
-#' @return Language identifier or NULL
-#' @keywords internal
-ext_to_language <- function(ext) {
-  ext <- tolower(ext)
-  switch(ext,
-    "r" = "r",
-    "py" = "python",
-    "sql" = "sql",
-    "sh" = "shell",
-    "bash" = "shell",
-    "jl" = "julia",
-    NULL
-  )
-}
+# NOTE: ext_to_language() function has been moved to R/language_registry.R
+# It now supports additional languages: JavaScript, TypeScript, C/C++, Java, Go, Rust, etc.
 
 #' Generate annotation text for a single file
 #' @param file Path to source file
@@ -637,6 +623,11 @@ generate_annotation_for_file <- function(file, style = "multiline") {
 
   # Build annotation parts
   file_name <- basename(file)
+  file_ext <- tolower(tools::file_ext(file))
+
+  # Get the appropriate comment prefix for this file type
+  comment_prefix <- get_comment_prefix(file_ext)
+
   parts <- list()
 
   parts$id <- paste0('id:"', elements$id, '"')
@@ -654,22 +645,22 @@ generate_annotation_for_file <- function(file, style = "multiline") {
     parts$output <- paste0('output:"', elements$output, '"')
   }
 
-  # Format based on style
+  # Format based on style, using the appropriate comment prefix
   if (style == "single") {
-    annotation <- paste0("#put ", paste(unlist(parts), collapse = ", "))
+    annotation <- paste0(comment_prefix, "put ", paste(unlist(parts), collapse = ", "))
   } else {
     # Multiline format
     annotation_lines <- c(
-      paste0("# Suggested annotations for: ", file_name),
-      paste0("#put ", parts$id, ", ", parts$label, ", \\")
+      paste0(comment_prefix, " Suggested annotations for: ", file_name),
+      paste0(comment_prefix, "put ", parts$id, ", ", parts$label, ", \\")
     )
 
     remaining <- parts[!names(parts) %in% c("id", "label")]
     for (i in seq_along(remaining)) {
       if (i < length(remaining)) {
-        annotation_lines <- c(annotation_lines, paste0("#    ", remaining[[i]], ", \\"))
+        annotation_lines <- c(annotation_lines, paste0(comment_prefix, "    ", remaining[[i]], ", \\"))
       } else {
-        annotation_lines <- c(annotation_lines, paste0("#    ", remaining[[i]]))
+        annotation_lines <- c(annotation_lines, paste0(comment_prefix, "    ", remaining[[i]]))
       }
     }
 
@@ -688,8 +679,14 @@ insert_annotation_into_file <- function(file, annotation) {
     # Read existing content
     content <- readLines(file, warn = FALSE, encoding = "UTF-8")
 
-    # Check if file already has PUT annotation
-    has_put <- any(grepl("^\\s*#\\s*put", content, ignore.case = FALSE))
+    # Get the appropriate comment prefix for this file type
+    file_ext <- tolower(tools::file_ext(file))
+    comment_prefix <- get_comment_prefix(file_ext)
+    escaped_prefix <- gsub("([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1", comment_prefix)
+
+    # Check if file already has PUT annotation (using the appropriate prefix)
+    put_pattern <- sprintf("^\\s*%s\\s*put", escaped_prefix)
+    has_put <- any(grepl(put_pattern, content, ignore.case = FALSE))
 
     if (has_put) {
       message("Skipping ", basename(file), " - already has PUT annotation")
@@ -697,13 +694,15 @@ insert_annotation_into_file <- function(file, annotation) {
     }
 
     # Find insertion point (after any shebang or initial comments)
+    # Build pattern to match header comments using the file's comment prefix
+    header_comment_pattern <- sprintf("^%s", escaped_prefix)
     insert_line <- 1
     for (i in seq_along(content)) {
       line <- content[i]
-      # Skip shebang, roxygen comments, and file header comments
+      # Skip shebang, roxygen comments (R-specific), and file header comments
       if (grepl("^#!", line) ||
           grepl("^#'", line) ||
-          (i <= 3 && grepl("^#", line))) {
+          (i <= 3 && grepl(header_comment_pattern, line))) {
         insert_line <- i + 1
       } else {
         break

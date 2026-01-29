@@ -40,5 +40,6 @@
 ^inst/cheatsheet/.*\.R$
 ^inst/cheatsheet/diagrams$
 ^inst/cheatsheet/node_modules$
+^inst/cheatsheet/node_modules/
 ^inst/cheatsheet/package\.json$
 ^inst/cheatsheet/package-lock\.json$

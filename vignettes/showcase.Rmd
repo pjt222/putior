@@ -321,20 +321,74 @@ flowchart TD
 
 ## Multi-Language Workflows
 
-putior excels at documenting polyglot data pipelines.
+putior excels at documenting polyglot data pipelines with **automatic comment syntax detection** for 30+ languages.
+
+### Language-Specific Comment Syntax
+
+| Comment Style | Languages | Example |
+|---------------|-----------|---------|
+| `#put` | R, Python, Shell, Julia, Ruby, YAML | `#put label:"Process Data"` |
+| `--put` | SQL, Lua, Haskell | `--put label:"Query Database"` |
+| `//put` | JavaScript, TypeScript, C, Go, Rust, Java | `//put label:"Transform JSON"` |
+| `%put` | MATLAB, LaTeX | `%put label:"Compute Matrix"` |
+
+### JavaScript/TypeScript Example
+
+```javascript
+// api_handler.js
+//put label:"API Handler", node_type:"input", output:"api_response.json"
+const response = await fetch('/api/data');
+const data = await response.json();
+
+//put label:"Data Validation", input:"api_response.json", output:"validated.json"
+const validated = validateSchema(data);
+```
+
+### Go Example
+
+```go
+// processor.go
+//put label:"Data Processor", input:"input.json", output:"output.json"
+func ProcessData(input []byte) ([]byte, error) {
+    // Processing logic
+}
+```
+
+### MATLAB Example
+
+```matlab
+% signal_analysis.m
+%put label:"Signal Processing", node_type:"input", output:"signal_data.mat"
+data = load('raw_signal.mat');
+
+%put label:"FFT Analysis", input:"signal_data.mat", output:"frequency_spectrum.mat"
+spectrum = fft(data.signal);
 
 ### Example: R + Python + SQL Pipeline
 
-```r
-# extract.sql
-#put label:"SQL Extract", node_type:"input", output:"raw_query_results.csv"
+Each language uses its native comment syntax:
 
-# transform.py
+```sql
+-- extract.sql (SQL uses -- comments)
+--put label:"SQL Extract", node_type:"input", output:"raw_query_results.csv"
+SELECT * FROM sales WHERE date > '2024-01-01';
+```
+
+```python
+# transform.py (Python uses # comments)
 #put label:"Python Transform", input:"raw_query_results.csv", output:"transformed.parquet"
+import pandas as pd
+df = pd.read_csv("raw_query_results.csv")
+```
 
-# analyze.R
+```r
+# analyze.R (R uses # comments)
 #put label:"R Statistical Analysis", input:"transformed.parquet", output:"stats.rds"
+library(arrow)
+data <- read_parquet("transformed.parquet")
+```
 
+```r
 # visualize.R
 #put label:"R Visualization", input:"stats.rds", output:"plots.pdf"
 

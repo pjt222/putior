@@ -286,8 +286,25 @@ input_patterns[[1]]
 ### Supported Languages
 
 ```{r}
+# All languages with annotation support
 list_supported_languages()
+#> [1] "r"          "python"     "shell"      "julia"      "ruby"
+#> [6] "perl"       "yaml"       "toml"       "sql"        "lua"
+#> [11] "haskell"   "javascript" "typescript" "c"          "cpp"
+#> [16] "java"      "go"         "rust"       "swift"      "kotlin"
+#> [21] "csharp"    "php"        "scala"      "matlab"     "latex"
+
+# Languages with auto-detection patterns
+list_supported_languages(detection_only = TRUE)
 #> [1] "r"      "python" "sql"    "shell"  "julia"
+
+# Get comment prefix for any extension
+get_comment_prefix("sql")
+#> [1] "--"
+get_comment_prefix("js")
+#> [1] "//"
+get_comment_prefix("m")
+#> [1] "%"
 ```
 
 ### Pattern Categories

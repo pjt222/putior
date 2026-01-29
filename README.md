@@ -18,7 +18,7 @@
 - **Beautiful diagrams** - Generate professional Mermaid flowcharts
 - **File flow tracking** - Automatically connects scripts based on input/output files  
 - **Multiple themes** - 5 built-in themes including GitHub-optimized
-- **Cross-language support** - Works with R, Python, SQL, shell scripts, and Julia
+- **Cross-language support** - Works with 30+ file types including R, Python, SQL, JavaScript, TypeScript, Go, Rust, and more
 - **Flexible output** - Console, file, or clipboard export
 - **Customizable styling** - Control colors, direction, and node shapes
 
@@ -807,6 +807,33 @@ put_diagram(workflow, show_workflow_boundaries = FALSE)
 #put id:"predict", label:"Generate Predictions", node_type:"output", input:"model.pkl, test_data.csv", output:"predictions.csv"
 ```
 
+**SQL Scripts:**
+```sql
+--put id:"load_customers", label:"Load Customer Data", node_type:"input", output:"customers"
+SELECT * FROM raw_customers WHERE active = 1;
+
+--put id:"aggregate_sales", label:"Aggregate Sales", input:"customers", output:"sales_summary"
+SELECT customer_id, SUM(amount) FROM orders GROUP BY customer_id;
+```
+
+**JavaScript/TypeScript:**
+```javascript
+//put id:"fetch_api", label:"Fetch API Data", node_type:"input", output:"api_data.json"
+const data = await fetch('/api/data').then(r => r.json());
+
+//put id:"process_data", label:"Process JSON", input:"api_data.json", output:"processed.json"
+const processed = transformData(data);
+```
+
+**MATLAB:**
+```matlab
+%put id:"load_matrix", label:"Load Data Matrix", node_type:"input", output:"matrix_data"
+data = load('experiment.mat');
+
+%put id:"analyze", label:"Statistical Analysis", input:"matrix_data", output:"results.mat"
+results = analyze(data);
+```
+
 **Multiple Annotations Per File:**
 ```r
 # analysis.R
@@ -855,12 +882,16 @@ flowchart TD
 
 ### Supported File Types
 
-putior automatically detects and processes these file types:
-- **R**: `.R`, `.r`
-- **Python**: `.py`
-- **SQL**: `.sql`
-- **Shell**: `.sh`
-- **Julia**: `.jl`
+putior automatically detects and processes 30+ file types, with language-specific comment syntax:
+
+| Comment Style | Languages | Extensions |
+|---------------|-----------|------------|
+| `#put` | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`, `.yml`, `.toml` |
+| `--put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |
+| `//put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala | `.js`, `.ts`, `.jsx`, `.tsx`, `.c`, `.cpp`, `.java`, `.go`, `.rs`, `.swift`, `.kt`, `.cs`, `.php`, `.scala` |
+| `%put` | MATLAB, LaTeX | `.m`, `.tex` |
+
+**Unknown extensions default to `#` prefix.**
 
 ## 🛠️ Advanced Usage
 
@@ -1072,7 +1103,9 @@ Quick reference for all exported functions:
 | `put_merge()` | Combine manual + auto annotations | `put_merge("./src/")` |
 | `run_sandbox()` | Launch interactive Shiny app | `run_sandbox()` |
 | `get_detection_patterns()` | View/customize detection patterns | `get_detection_patterns("r")` |
-| `get_supported_languages()` | List supported languages | `get_supported_languages()` |
+| `list_supported_languages()` | List supported languages | `list_supported_languages()` |
+| `get_comment_prefix()` | Get comment prefix for extension | `get_comment_prefix("sql")` → `"--"` |
+| `get_supported_extensions()` | List all supported extensions | `get_supported_extensions()` |
 | `set_putior_log_level()` | Configure logging verbosity | `set_putior_log_level("DEBUG")` |
 | `is_valid_put_annotation()` | Validate annotation syntax | `is_valid_put_annotation("#put ...")` |
 | `get_diagram_themes()` | List available themes | `get_diagram_themes()` |
@@ -1254,4 +1287,4 @@ Each of these packages excels in their domain, and putior complements them by fo
 
 ---
 
-**Made with ❤️ for polyglot data science workflows across R, Python, Julia, SQL, Shell, and beyond**
+**Made with ❤️ for polyglot data science workflows across R, Python, Julia, SQL, JavaScript, Go, Rust, and 30+ languages**
