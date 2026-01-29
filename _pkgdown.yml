@@ -159,7 +159,7 @@ home:
 
 navbar:
   structure:
-    left: [intro, reference, articles, news]
+    left: [intro, reference, articles, cheatsheet, news]
     right: [search, github]
   components:
     home:
@@ -179,6 +179,10 @@ navbar:
         href: articles/api-reference.html
       - text: "Showcase: Real-World Examples"
         href: articles/showcase.html
+    cheatsheet:
+      text: Cheatsheet
+      icon: fa-file-pdf
+      href: https://github.com/pjt222/putior/raw/main/inst/cheatsheet/putior-cheatsheet.pdf
 
 reference:
 - title: "Core Functions"

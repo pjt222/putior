@@ -33,3 +33,12 @@
 ^CRAN-SUBMISSION$
 ^docs-dev$
 ^my_workflow\.md$
+^inst/cheatsheet/.*\.qmd$
+^inst/cheatsheet/.*\.tex$
+^inst/cheatsheet/.*\.html$
+^inst/cheatsheet/.*\.js$
+^inst/cheatsheet/.*\.R$
+^inst/cheatsheet/diagrams$
+^inst/cheatsheet/node_modules$
+^inst/cheatsheet/package\.json$
+^inst/cheatsheet/package-lock\.json$
