@@ -205,6 +205,49 @@ list_supported_languages(detection_only = TRUE)
 #> [8] "go" "rust" "java" "c" "cpp" "matlab" "ruby" "lua"
 ```
 
+### Key Implementation Insights
+
+**1. Pattern Inheritance Architecture**
+- TypeScript patterns extend JavaScript patterns (call `get_javascript_patterns()` as base)
+- C++ patterns extend C patterns (same approach)
+- This reduces duplication and ensures consistency
+- New language-specific patterns are appended to the base list
+
+**2. Framework-Specific Patterns are High-Value**
+- Generic file I/O patterns (e.g., `fopen`) catch basic usage
+- Framework patterns (Spring Boot, Rails, Express) catch real-world code
+- ORM patterns (Hibernate, ActiveRecord, Prisma, GORM) are particularly valuable for data workflows
+- Web framework request/response patterns help track API data flow
+
+**3. Pattern Structure Consistency**
+Each pattern has the same structure across all languages:
+```r
+list(
+  regex = "pattern_to_match",      # Regex for code detection
+  func = "function_name",          # Human-readable function name
+  arg_position = 1,                # Position of file argument (or NA)
+  arg_name = "file",               # Named argument (or NULL)
+  description = "Brief description"
+)
+```
+
+**4. Three Pattern Categories per Language**
+- **input**: File/data reading operations
+- **output**: File/data writing operations
+- **dependency**: Module/import statements (for tracking script relationships)
+
+**5. Regex Design Principles**
+- Use `\\s*\\(` to match function calls with optional whitespace
+- Use `['\"]` to match either quote style
+- For method chains, use `\\.method\\s*\\(` pattern
+- Escape special regex characters: `\\.`, `\\$`, `\\[`
+
+**6. Testing Strategy**
+- Test that patterns exist for expected functions
+- Test that regex compiles without error
+- Test that patterns match realistic code snippets
+- Test pattern counts to catch accidental deletions
+
 ## Auto-Annotation Feature (GitHub Issue #5)
 
 ### Overview
