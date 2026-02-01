@@ -720,6 +720,7 @@ put_generate("./unfamiliar_project/", output = "clipboard")
 
 - [Quick Start](quick-start.html) - First diagram in 2 minutes
 - [Annotation Guide](annotation-guide.html) - Complete syntax reference
+- [Quick Reference](quick-reference.html) - Cheat sheet for daily use
 - [API Reference](api-reference.html) - Complete function documentation
 - [Showcase](showcase.html) - Real-world examples
 

@@ -577,6 +577,7 @@ Problematic example:
 | Guide | Description |
 |-------|-------------|
 | [Quick Start](quick-start.html) | Create your first diagram in 2 minutes |
+| [Quick Reference](quick-reference.html) | Cheat sheet for daily use |
 | [Features Tour](features-tour.html) | Auto-detection, logging, interactive diagrams |
 | [API Reference](api-reference.html) | Complete function documentation |
 | [Showcase](showcase.html) | Real-world examples (ETL, ML, bioinformatics) |

@@ -144,6 +144,7 @@ run_sandbox()  # Opens Shiny app
 | Guide | When to Read |
 |-------|--------------|
 | [Annotation Guide](annotation-guide.html) | Complete syntax reference, multiline annotations, best practices |
+| [Quick Reference](quick-reference.html) | Printable cheat sheet for daily use |
 | [Features Tour](features-tour.html) | Auto-detection, logging, interactive diagrams, metadata display |
 | [API Reference](api-reference.html) | All functions and parameters |
 | [Showcase](showcase.html) | Real-world examples (ETL, ML pipelines, bioinformatics) |

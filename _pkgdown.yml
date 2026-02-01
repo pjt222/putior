@@ -175,6 +175,8 @@ navbar:
         href: articles/quick-start.html
       - text: Annotation Guide
         href: articles/annotation-guide.html
+      - text: Quick Reference
+        href: articles/quick-reference.html
       - text: Features Tour
         href: articles/features-tour.html
       - text: API Reference

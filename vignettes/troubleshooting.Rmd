@@ -734,6 +734,7 @@ If you're still stuck:
 1. **Check the vignettes**:
    - [Quick Start](quick-start.html) - First diagram in 2 minutes
    - [Annotation Guide](annotation-guide.html) - Complete syntax reference
+   - [Quick Reference](quick-reference.html) - Cheat sheet
    - [Features Tour](features-tour.html) - Advanced features
    - [API Reference](api-reference.html) - Complete function docs
 

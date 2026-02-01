@@ -1,0 +1,92 @@
+---
+title: "Quick Reference"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quick Reference}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Annotation Syntax
+
+```
+#put id:"node_id", label:"Description", node_type:"process", input:"in.csv", output:"out.csv"
+```
+
+| Field | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `label` | Yes | - | Human-readable name |
+| `id` | No | UUID | Unique identifier |
+| `node_type` | No | `process` | `input`, `process`, `output`, `decision` |
+| `input` | No | - | Comma-separated input files |
+| `output` | No | filename | Comma-separated output files |
+
+**Multiline**: End lines with `\` for continuation.
+
+---
+
+## Comment Prefixes by Language
+
+| Prefix | Languages | Extensions |
+|--------|-----------|------------|
+| `#put` | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML, Rust, Kotlin, C#, Haskell | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`, `.toml`, `.rs`, `.kt`, `.cs`, `.hs` |
+| `--put` | SQL, Lua | `.sql`, `.lua` |
+| `//put` | JavaScript, TypeScript, C, C++, Java, Go, Swift, PHP, Scala, Groovy, D | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.swift`, `.php`, `.scala`, `.groovy`, `.d` |
+| `%put` | MATLAB, LaTeX | `.m`, `.tex` |
+
+---
+
+## Core Functions
+
+| Function | Purpose | Example |
+|----------|---------|---------|
+| `put()` | Extract annotations | `put("./src/")` |
+| `put_diagram()` | Generate Mermaid diagram | `put_diagram(workflow)` |
+| `put_auto()` | Auto-detect workflow | `put_auto("./src/")` |
+| `put_generate()` | Generate annotation suggestions | `put_generate("./src/")` |
+| `put_merge()` | Merge manual + auto | `put_merge("./src/")` |
+
+---
+
+## Common Patterns
+
+```r
+workflow <- put("./src/")                        # Scan directory
+put_diagram(workflow)                            # Generate diagram
+workflow <- put("./", recursive = TRUE)          # Include subdirs
+workflow <- put_auto("./src/")                   # Auto-detect (no annotations)
+put_diagram(workflow, theme = "dark", direction = "LR")  # Theme + direction
+put_diagram(workflow, show_artifacts = FALSE)    # Hide data files
+put_diagram(workflow, output = "workflow.md")    # Save to file
+put_diagram(workflow, show_source_info = TRUE)   # Show source info
+workflow <- put("./", log_level = "DEBUG")       # Debug logging
+```
+
+## Diagram Themes
+
+| Theme | Description |
+|-------|-------------|
+| `light` | Bright colors (default) |
+| `dark` | Muted colors for dark mode |
+| `auto` | GitHub-adaptive |
+| `minimal` | Grayscale, print-friendly |
+| `github` | Optimized for README files |
+
+**Directions**: `TB` (top-bottom, default), `LR` (left-right), `BT`, `RL`
+
+---
+
+## Node Types
+
+| Type | Shape | Use For |
+|------|-------|---------|
+| `input` | Stadium | Data loading, API calls |
+| `process` | Rectangle | Transformations, analysis |
+| `output` | Stadium | Reports, exports |
+| `decision` | Diamond | Conditional logic |
+
+---
+
+## See Also
+
+- [Quick Start](quick-start.html) | [Annotation Guide](annotation-guide.html) | [API Reference](api-reference.html)

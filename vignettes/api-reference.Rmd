@@ -756,5 +756,6 @@ set_putior_log_level("WARN")
 
 - [Quick Start](quick-start.html) - First diagram in 2 minutes
 - [Annotation Guide](annotation-guide.html) - Complete syntax reference
+- [Quick Reference](quick-reference.html) - Cheat sheet for daily use
 - [Features Tour](features-tour.html) - Overview of advanced features
 - [Showcase](showcase.html) - Real-world examples
