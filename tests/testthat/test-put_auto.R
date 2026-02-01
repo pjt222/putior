@@ -132,7 +132,8 @@ test_that("put_auto() handles empty directory", {
 })
 
 test_that("put_auto() handles non-existent path", {
-  expect_error(put_auto("/path/that/does/not/exist"), "Path does not exist")
+  nonexistent_path <- file.path(tempdir(), "nonexistent", "path", "that", "does", "not", "exist")
+  expect_error(put_auto(nonexistent_path), "Path does not exist")
 })
 
 test_that("put_auto() handles single file", {

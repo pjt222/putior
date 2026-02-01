@@ -183,7 +183,7 @@ PUT annotations support several formats to fit different coding styles:
 putior automatically uses the correct comment prefix based on file extension:
 
 | Comment Style | Languages | Extensions |
-|---------------|-----------|------------|
+| :--- | :--- | :--- |
 | `#put` | R, Python, Shell, Julia, Ruby, YAML | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.yaml` |
 | `--put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |
 | `//put` | JavaScript, TypeScript, C, Java, Go, Rust | `.js`, `.ts`, `.c`, `.java`, `.go`, `.rs` |

@@ -4,10 +4,13 @@
 
 library(magick)
 
+# Theme constants
+DEFAULT_BG_COLOR <- "#1a1b26"
+
 # Helper function to render Mermaid diagram using mmdc (Mermaid CLI)
 # Produces high-quality crisp diagrams with custom background
 # Handles Windows R + WSL mmdc cross-platform scenario
-render_mermaid_diagram <- function(mmd_file, bg_color = "#1a1b26", scale = 3) {
+render_mermaid_diagram <- function(mmd_file, bg_color = DEFAULT_BG_COLOR, scale = 3) {
   output_png <- tempfile(fileext = ".png")
 
   # Detect platform and construct appropriate command

@@ -52,13 +52,15 @@ render_mermaid_diagram <- function(mermaid_code, output_file, bg_color = "white"
   cat("Rendering:", basename(output_file), "...\n")
   result <- system(cmd, intern = FALSE, ignore.stdout = TRUE, ignore.stderr = TRUE)
 
-  # Clean up temp file
-  unlink(mmd_file)
-
   if (result != 0 || !file.exists(output_file)) {
+    # Clean up temp file on failure
+    unlink(mmd_file)
     warning("Failed to render diagram. Is mmdc installed? Run: npm install -g @mermaid-js/mermaid-cli")
     return(FALSE)
   }
+
+  # Clean up temp file on success
+  unlink(mmd_file)
 
   cat("  Created:", output_file, "\n")
   TRUE

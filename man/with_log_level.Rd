@@ -16,4 +16,15 @@ A function that restores the original level when called
 Internal helper for temporarily setting log level during function execution.
 Restores the previous level when done.
 }
+\examples{
+\dontrun{
+# Temporarily increase log level
+reset_level <- with_log_level("DEBUG")
+on.exit(reset_level(), add = TRUE)
+# ... code with DEBUG logging ...
+}
+}
+\seealso{
+\code{\link{set_putior_log_level}} for the public interface
+}
 \keyword{internal}

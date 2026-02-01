@@ -144,6 +144,14 @@ has_logger <- function() {
 #'
 #' @param level Character string specifying the temporary log level
 #' @return A function that restores the original level when called
+#' @seealso \code{\link{set_putior_log_level}} for the public interface
+#' @examples
+#' \dontrun{
+#' # Temporarily increase log level
+#' reset_level <- with_log_level("DEBUG")
+#' on.exit(reset_level(), add = TRUE)
+#' # ... code with DEBUG logging ...
+#' }
 #' @keywords internal
 with_log_level <- function(level) {
   if (is.null(level)) {

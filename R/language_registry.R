@@ -95,6 +95,51 @@ get_supported_extensions <- function() {
   unique(extensions)
 }
 
+# Package-level constant for extension to language mapping
+# These are the canonical language names used by get_detection_patterns()
+.LANGUAGE_MAP <- list(
+  # Hash group
+  "r" = "r",
+  "py" = "python",
+  "sh" = "shell",
+  "bash" = "shell",
+  "jl" = "julia",
+  "rb" = "ruby",
+  "pl" = "perl",
+  "yaml" = "yaml",
+  "yml" = "yaml",
+  "toml" = "toml",
+
+  # Dash group
+  "sql" = "sql",
+  "lua" = "lua",
+  "hs" = "haskell",
+
+  # Slash group
+  "js" = "javascript",
+  "ts" = "typescript",
+  "jsx" = "javascript",
+  "tsx" = "typescript",
+  "c" = "c",
+  "cpp" = "cpp",
+  "h" = "c",
+  "hpp" = "cpp",
+  "java" = "java",
+  "go" = "go",
+  "rs" = "rust",
+  "swift" = "swift",
+  "kt" = "kotlin",
+  "cs" = "csharp",
+  "php" = "php",
+  "scala" = "scala",
+  "groovy" = "groovy",
+  "d" = "d",
+
+  # Percent group
+  "m" = "matlab",
+  "tex" = "latex"
+)
+
 #' Get Language Name from File Extension
 #'
 #' Converts a file extension to a standardized language name used internally
@@ -114,53 +159,8 @@ get_supported_extensions <- function() {
 ext_to_language <- function(ext) {
   ext <- tolower(ext)
 
-  # Direct mappings for languages with detection patterns
-  # These are the canonical language names used by get_detection_patterns()
-  language_map <- list(
-    # Hash group
-    "r" = "r",
-    "py" = "python",
-    "sh" = "shell",
-    "bash" = "shell",
-    "jl" = "julia",
-    "rb" = "ruby",
-    "pl" = "perl",
-    "yaml" = "yaml",
-    "yml" = "yaml",
-    "toml" = "toml",
-
-    # Dash group
-    "sql" = "sql",
-    "lua" = "lua",
-    "hs" = "haskell",
-
-    # Slash group
-    "js" = "javascript",
-    "ts" = "typescript",
-    "jsx" = "javascript",
-    "tsx" = "typescript",
-    "c" = "c",
-    "cpp" = "cpp",
-    "h" = "c",
-    "hpp" = "cpp",
-    "java" = "java",
-    "go" = "go",
-    "rs" = "rust",
-    "swift" = "swift",
-    "kt" = "kotlin",
-    "cs" = "csharp",
-    "php" = "php",
-    "scala" = "scala",
-    "groovy" = "groovy",
-    "d" = "d",
-
-    # Percent group
-    "m" = "matlab",
-    "tex" = "latex"
-  )
-
-  if (ext %in% names(language_map)) {
-    return(language_map[[ext]])
+  if (ext %in% names(.LANGUAGE_MAP)) {
+    return(.LANGUAGE_MAP[[ext]])
   }
 
   return(NULL)
