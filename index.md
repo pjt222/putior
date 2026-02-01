@@ -1212,8 +1212,11 @@ For detailed documentation, see: - Function help:
 [`?put`](https://pjt222.github.io/putior/reference/put.md),
 [`?put_diagram`](https://pjt222.github.io/putior/reference/put_diagram.md),
 [`?put_auto`](https://pjt222.github.io/putior/reference/put_auto.md) -
-[pkgdown site](https://pjt222.github.io/putior/) - [Getting Started
-vignette](https://pjt222.github.io/putior/articles/getting-started.html)
+[pkgdown site](https://pjt222.github.io/putior/) - [Quick
+Start](https://pjt222.github.io/putior/articles/quick-start.html) -
+First diagram in 2 minutes - [Annotation
+Guide](https://pjt222.github.io/putior/articles/annotation-guide.html) -
+Complete syntax reference
 
 ## 🔄 Self-Documentation: putior Documents Itself!
 

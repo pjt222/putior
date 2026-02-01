@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Getting Started with putior • putior</title>
+<title>Annotation Guide • putior</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -18,7 +18,7 @@
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Getting Started with putior">
+<meta property="og:title" content="Annotation Guide">
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.3/dist/mermaid.min.js"></script><script>
   // Initialize mermaid with configuration
   window.mermaidConfig = {
@@ -140,12 +140,14 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="active nav-item"><a class="nav-link" href="../articles/getting-started.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/quick-start.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
+<li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started with putior</a></li>
+<li><a class="dropdown-item" href="../articles/quick-start.html">Quick Start</a></li>
+    <li><a class="dropdown-item" href="../articles/annotation-guide.html">Annotation Guide</a></li>
+    <li><a class="dropdown-item" href="../articles/quick-reference.html">Quick Reference</a></li>
     <li><a class="dropdown-item" href="../articles/features-tour.html">Features Tour</a></li>
     <li><a class="dropdown-item" href="../articles/api-reference.html">API Reference</a></li>
     <li><a class="dropdown-item" href="../articles/showcase.html">Showcase: Real-World Examples</a></li>
@@ -173,11 +175,11 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Getting Started with putior</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Annotation Guide</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/pjt222/putior/blob/main/vignettes/getting-started.Rmd" class="external-link"><code>vignettes/getting-started.Rmd</code></a></small>
-      <div class="d-none name"><code>getting-started.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/pjt222/putior/blob/main/vignettes/annotation-guide.Rmd" class="external-link"><code>vignettes/annotation-guide.Rmd</code></a></small>
+      <div class="d-none name"><code>annotation-guide.Rmd</code></div>
     </div>
 
     
@@ -187,71 +189,21 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>The <code>putior</code> package helps you document and visualize
-workflows by extracting structured annotations from your R and Python
-source files. This vignette shows you how to get started with PUT
-annotations and workflow extraction.</p>
+<p>This guide provides a complete reference for PUT annotation syntax.
+It covers all annotation formats, multi-language support, multiline
+annotations, and best practices.</p>
+<blockquote>
+<p><strong>New to putior?</strong> Start with the <a href="quick-start.html">Quick Start</a> guide to create your first
+diagram in 2 minutes.</p>
+</blockquote>
 <p><strong>PUT</strong> stands for <strong>P</strong>UT +
 <strong>I</strong>nput + <strong>O</strong>utput + <strong>R</strong>,
 reflecting the package’s core purpose: tracking data inputs and outputs
 through your analysis pipeline using special annotations.</p>
 </div>
 <div class="section level2">
-<h2 id="why-use-putior">Why Use putior?<a class="anchor" aria-label="anchor" href="#why-use-putior"></a>
+<h2 id="annotation-basics">Annotation Basics<a class="anchor" aria-label="anchor" href="#annotation-basics"></a>
 </h2>
-<ul>
-<li>
-<strong>Automatic documentation</strong>: Your workflow
-documentation stays in sync with your code</li>
-<li>
-<strong>Multi-language support</strong>: Works with R, Python, SQL,
-and other file types</li>
-<li>
-<strong>Data lineage tracking</strong>: See how data flows through
-your processing steps</li>
-<li>
-<strong>Team collaboration</strong>: Help colleagues understand
-complex workflows</li>
-<li>
-<strong>Visual workflow creation</strong>: Extract structured data
-ready for flowchart generation</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
-</h2>
-<p>The fastest way to see putior in action is to run the built-in
-example:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Run the complete example</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"reprex.R"</span>, package <span class="op">=</span> <span class="st">"putior"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>This creates a sample multi-language workflow and demonstrates the
-workflow extraction capabilities of putior.</p>
-<div class="section level3">
-<h3 id="live-example">Live Example<a class="anchor" aria-label="anchor" href="#live-example"></a>
-</h3>
-<p>Here’s a working example using putior’s own source code (the package
-documents itself!):</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pjt222.github.io/putior/">putior</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Extract workflow from putior's own R source files</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"reprex.R"</span>, package <span class="op">=</span> <span class="st">"putior"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># View the extracted workflow nodes</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] file_name file_path file_type</span></span>
-<span><span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre></div>
-<p>This demonstrates how putior extracts structured workflow data from
-annotated source files.</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="basic-workflow">Basic Workflow<a class="anchor" aria-label="anchor" href="#basic-workflow"></a>
-</h2>
-<div class="section level3">
-<h3 id="step-1-add-put-annotations-to-your-code">Step 1: Add PUT Annotations to Your Code<a class="anchor" aria-label="anchor" href="#step-1-add-put-annotations-to-your-code"></a>
-</h3>
 <p>PUT annotations are special comments that describe workflow nodes.
 Start simple:</p>
 <p><strong>Minimal annotation (just a label):</strong></p>
@@ -297,58 +249,77 @@ sales_summary = {
 # Save results
 with open("sales_report.json", "w") as f:
     json.dump(sales_summary, f)</code></pre>
+<p><strong>Resulting diagram from both files:</strong></p>
+<pre class="mermaid"><code>flowchart TD
+    load_data([Load Customer Data])
+    clean_data[Clean and Validate]
+    analyze_sales[Sales Analysis]
+
+    %% Connections
+    load_data --&gt; clean_data
+    clean_data --&gt; analyze_sales
+
+    %% Styling
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    class load_data inputStyle
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class clean_data processStyle
+    class analyze_sales processStyle</code></pre>
 </div>
-<div class="section level3">
-<h3 id="step-2-extract-the-workflow">Step 2: Extract the Workflow<a class="anchor" aria-label="anchor" href="#step-2-extract-the-workflow"></a>
-</h3>
+<div class="section level2">
+<h2 id="extracting-annotations">Extracting Annotations<a class="anchor" aria-label="anchor" href="#extracting-annotations"></a>
+</h2>
 <p>Use the <code><a href="../reference/put.html">put()</a></code> function to scan your files and extract
 workflow information:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Scan all R and Python files in a directory</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># View the extracted workflow</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span></code></pre></div>
-<p>Expected output:</p>
-<pre><code><span><span class="co">#&gt;           file_name file_type          input              label            id</span></span>
-<span><span class="co">#&gt; 1 data_processing.R         r           &lt;NA&gt; Load Customer Data     load_data</span></span>
-<span><span class="co">#&gt; 2 data_processing.R         r   raw_data.csv Clean and Validate    clean_data</span></span>
-<span><span class="co">#&gt; 3       analysis.py        py clean_data.csv     Sales Analysis analyze_sales</span></span>
-<span><span class="co">#&gt;   node_type            output</span></span>
-<span><span class="co">#&gt; 1     input      raw_data.csv</span></span>
-<span><span class="co">#&gt; 2   process    clean_data.csv</span></span>
-<span><span class="co">#&gt; 3   process sales_report.json</span></span></code></pre>
-</div>
-<div class="section level3">
-<h3 id="step-3-understand-the-results">Step 3: Understand the Results<a class="anchor" aria-label="anchor" href="#step-3-understand-the-results"></a>
-</h3>
-<p>The output is a data frame where each row represents a workflow node.
-The columns include:</p>
-<ul>
-<li>
-<strong>file_name</strong>: Which script contains this node</li>
-<li>
-<strong>file_type</strong>: Programming language (r, py, sql,
-etc.)</li>
-<li>
-<strong>id</strong>: Unique identifier for the node</li>
-<li>
-<strong>label</strong>: Human-readable description</li>
-<li>
-<strong>node_type</strong>: Type of operation (input, process,
-output)</li>
-<li>
-<strong>input</strong>: Files consumed by this step</li>
-<li>
-<strong>output</strong>: Files produced by this step</li>
-<li>
-<strong>Custom properties</strong>: Any additional metadata you
-defined</li>
-</ul>
-</div>
+<p>The output is a data frame where each row represents a workflow
+node:</p>
+<table class="table">
+<thead><tr class="header">
+<th>Column</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>file_name</code></td>
+<td>Which script contains this node</td>
+</tr>
+<tr class="even">
+<td><code>file_type</code></td>
+<td>Programming language (r, py, sql, etc.)</td>
+</tr>
+<tr class="odd">
+<td><code>id</code></td>
+<td>Unique identifier for the node</td>
+</tr>
+<tr class="even">
+<td><code>label</code></td>
+<td>Human-readable description</td>
+</tr>
+<tr class="odd">
+<td><code>node_type</code></td>
+<td>Type of operation (input, process, output)</td>
+</tr>
+<tr class="even">
+<td><code>input</code></td>
+<td>Files consumed by this step</td>
+</tr>
+<tr class="odd">
+<td><code>output</code></td>
+<td>Files produced by this step</td>
+</tr>
+</tbody>
+</table>
+<p>Custom properties you define are also included as additional
+columns.</p>
 </div>
 <div class="section level2">
-<h2 id="put-annotation-syntax">PUT Annotation Syntax<a class="anchor" aria-label="anchor" href="#put-annotation-syntax"></a>
+<h2 id="complete-syntax-reference">Complete Syntax Reference<a class="anchor" aria-label="anchor" href="#complete-syntax-reference"></a>
 </h2>
 <div class="section level3">
 <h3 id="basic-format">Basic Format<a class="anchor" aria-label="anchor" href="#basic-format"></a>
@@ -366,6 +337,71 @@ styles:</p>
 <span><span class="co">#put| id:"my_node", label:"My Process"          # Pipe separator</span></span>
 <span><span class="co">#put id:'my_node', label:'Single quotes'        # Single quotes</span></span>
 <span><span class="co">#put id:"my_node", label:'Mixed quotes'         # Mixed quote styles</span></span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="multiline-annotations">Multiline Annotations<a class="anchor" aria-label="anchor" href="#multiline-annotations"></a>
+</h3>
+<p>For complex annotations with many properties, use backslash
+(<code>\</code>) continuation:</p>
+<p><strong>R/Python style:</strong></p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#put id:"complex_etl", \</span></span>
+<span><span class="co">#    label:"Complex ETL Process", \</span></span>
+<span><span class="co">#    node_type:"process", \</span></span>
+<span><span class="co">#    input:"raw_data.csv, config.yaml", \</span></span>
+<span><span class="co">#    output:"processed.parquet", \</span></span>
+<span><span class="co">#    author:"Data Team", \</span></span>
+<span><span class="co">#    version:"2.0"</span></span></code></pre></div>
+<p><strong>SQL style:</strong></p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co">--put id:"load_customers", \</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co">--    label:"Load Customer Data", \</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">--    node_type:"input", \</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">--    output:"customers_table"</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> raw_customers;</span></code></pre></div>
+<p><strong>JavaScript/TypeScript style:</strong></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co">//put id:"api_handler", \</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">//    label:"Process API Request", \</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">//    input:"request.json", \</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">//    output:"response.json"</span></span></code></pre></div>
+<p><strong>Rules for multiline annotations:</strong></p>
+<ol style="list-style-type: decimal">
+<li>End each line (except the last) with a backslash <code>\</code>
+</li>
+<li>Start continuation lines with the same comment prefix</li>
+<li>Continuation lines can have leading whitespace for readability</li>
+<li>Properties can span multiple lines</li>
+<li>The backslash must be the last character on the line (no trailing
+spaces)</li>
+</ol>
+<p><strong>Example with many properties:</strong></p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#put id:"train_model", \</span></span>
+<span><span class="co">#    label:"Train Random Forest Model", \</span></span>
+<span><span class="co">#    node_type:"process", \</span></span>
+<span><span class="co">#    input:"features.csv, labels.csv", \</span></span>
+<span><span class="co">#    output:"model.rds, metrics.json", \</span></span>
+<span><span class="co">#    group:"machine_learning", \</span></span>
+<span><span class="co">#    stage:"3", \</span></span>
+<span><span class="co">#    estimated_time:"45min", \</span></span>
+<span><span class="co">#    memory_intensive:"true"</span></span></code></pre></div>
+<blockquote>
+<p><strong>When Multiline Annotations Don’t Work:</strong></p>
+<ul>
+<li>
+<strong>Trailing spaces</strong>: Ensure backslash is the
+<em>last</em> character (no spaces after)</li>
+<li>
+<strong>Missing prefix</strong>: Each continuation line needs the
+comment prefix (<code>#</code>, <code>--</code>, <code>//</code>)</li>
+<li>
+<strong>Fallback</strong>: If multiline fails, use a single long
+line - readability is secondary to functionality</li>
+<li>
+<strong>Debug</strong>: Use
+<code>set_putior_log_level("DEBUG")</code> to see exactly how lines are
+being parsed</li>
+</ul>
+</blockquote>
 </div>
 <div class="section level3">
 <h3 id="multi-language-support">Multi-Language Support<a class="anchor" aria-label="anchor" href="#multi-language-support"></a>
@@ -496,6 +532,27 @@ export, visualization</li>
 <strong><code>decision</code></strong>: Conditional logic, branching
 workflows</li>
 </ul>
+<p><strong>Visual representation of node types:</strong></p>
+<pre class="mermaid"><code>flowchart TD
+    load([Load Data (input)])
+    transform[Transform (process)]
+    export[[Export (output)]]
+    check{Validate? (decision)}
+
+    %% Connections
+    load --&gt; transform
+    transform --&gt; export
+    transform --&gt; check
+
+    %% Styling
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    class load inputStyle
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class transform processStyle
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class export outputStyle
+    classDef decisionStyle fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    class check decisionStyle</code></pre>
 </div>
 <div class="section level3">
 <h3 id="custom-properties">Custom Properties<a class="anchor" aria-label="anchor" href="#custom-properties"></a>
@@ -513,7 +570,7 @@ workflow management systems.</p>
 <h3 id="processing-individual-files">Processing Individual Files<a class="anchor" aria-label="anchor" href="#processing-individual-files"></a>
 </h3>
 <p>You can process single files instead of entire directories:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Process a single file</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./scripts/analysis.R"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -521,7 +578,7 @@ workflow management systems.</p>
 <h3 id="recursive-directory-scanning">Recursive Directory Scanning<a class="anchor" aria-label="anchor" href="#recursive-directory-scanning"></a>
 </h3>
 <p>Include subdirectories in your scan:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Search subdirectories recursively</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./project/"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -529,7 +586,7 @@ workflow management systems.</p>
 <h3 id="custom-file-patterns">Custom File Patterns<a class="anchor" aria-label="anchor" href="#custom-file-patterns"></a>
 </h3>
 <p>Control which files are processed:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Only R files</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, pattern <span class="op">=</span> <span class="st">"\\.R$"</span><span class="op">)</span></span>
 <span></span>
@@ -543,7 +600,7 @@ workflow management systems.</p>
 <h3 id="including-line-numbers">Including Line Numbers<a class="anchor" aria-label="anchor" href="#including-line-numbers"></a>
 </h3>
 <p>For debugging annotation issues, include line numbers:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Include line numbers for debugging</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, include_line_numbers <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -551,7 +608,7 @@ workflow management systems.</p>
 <h3 id="validation-control">Validation Control<a class="anchor" aria-label="anchor" href="#validation-control"></a>
 </h3>
 <p>Control annotation validation:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Enable validation (default) - provides helpful warnings</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, validate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
@@ -563,7 +620,7 @@ workflow management systems.</p>
 </h3>
 <p>If you omit the <code>id</code> field, putior will automatically
 generate a unique UUID:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Annotations without explicit IDs get auto-generated UUIDs</span></span>
 <span><span class="co">#put label:"Load Data", node_type:"input", output:"data.csv"</span></span>
 <span><span class="co">#put label:"Process Data", node_type:"process", input:"data.csv", output:"clean.csv"</span></span>
@@ -579,7 +636,7 @@ generate a unique UUID:</p>
 </h3>
 <p>If you omit the <code>output</code> field, putior automatically uses
 the file name as the output:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># In process_data.R:</span></span>
 <span><span class="co">#put label:"Process Step", node_type:"process", input:"raw.csv"</span></span>
 <span><span class="co"># No output specified - will default to "process_data.R"</span></span>
@@ -595,7 +652,7 @@ when explicit output files aren’t specified.</p>
 </h3>
 <p>When you have scripts that source other scripts, use this annotation
 pattern:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># In main.R (sources other scripts):</span></span>
 <span><span class="co">#put label:"Main Analysis", input:"load_data.R,process_data.R", output:"report.pdf"</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"load_data.R"</span><span class="op">)</span>    <span class="co"># Reading load_data.R into main.R</span></span>
@@ -636,7 +693,7 @@ workflows - Example: <code>my_data.RData</code>,
 <div class="section level3">
 <h3 id="correct-usage-pattern">Correct Usage Pattern<a class="anchor" aria-label="anchor" href="#correct-usage-pattern"></a>
 </h3>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Script 1: Create variable and save it</span></span>
 <span><span class="co">#put id:"create_data", output:"dataset.internal, dataset.RData"</span></span>
 <span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span><span class="op">)</span></span>
@@ -651,7 +708,7 @@ workflows - Example: <code>my_data.RData</code>,
 <div class="section level3">
 <h3 id="what-not-to-do">What NOT to Do<a class="anchor" aria-label="anchor" href="#what-not-to-do"></a>
 </h3>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># INCORRECT: Using .internal as input between scripts</span></span>
 <span><span class="co">#put input:"dataset.internal"  # This is wrong!</span></span>
 <span></span>
@@ -662,7 +719,7 @@ workflows - Example: <code>my_data.RData</code>,
 <h3 id="complete-example">Complete Example<a class="anchor" aria-label="anchor" href="#complete-example"></a>
 </h3>
 <p>Try the comprehensive variable reference example:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"variable-reference-example.R"</span>, package <span class="op">=</span> <span class="st">"putior"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>This creates a connected 4-script workflow demonstrating proper
 <code>.internal</code> usage and file-based data flow.</p>
@@ -746,7 +803,7 @@ with open("raw_api_data.json", "w") as f:
 <div class="section level3">
 <h3 id="extract-the-complete-workflow">4. Extract the Complete Workflow<a class="anchor" aria-label="anchor" href="#extract-the-complete-workflow"></a>
 </h3>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Extract workflow from all files</span></span>
 <span><span class="va">complete_workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./sales_project/"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">complete_workflow</span><span class="op">)</span></span></code></pre></div>
@@ -801,102 +858,84 @@ Report</p>
 <div class="section level2">
 <h2 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a>
 </h2>
-<div class="section level3">
-<h3 id="no-annotations-found">No Annotations Found<a class="anchor" aria-label="anchor" href="#no-annotations-found"></a>
-</h3>
-<p>If <code><a href="../reference/put.html">put()</a></code> returns an empty data frame:</p>
-<ol style="list-style-type: decimal">
+<p>Having issues with annotations? See the <a href="troubleshooting.html">Troubleshooting Guide</a> for:</p>
+<ul>
 <li>
-<strong>Check file patterns</strong>: Ensure your files match the
-pattern (default: R, Python, SQL, shell, Julia)</li>
+<strong><a href="troubleshooting.html#most-common-issues">Most
+Common Issues</a></strong> - Start here for quick solutions</li>
 <li>
-<strong>Verify annotation syntax</strong>: Use
-<code><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation()</a></code> to test individual
-annotations</li>
+<strong><a href="troubleshooting.html#annotation-syntax-errors">Annotation Syntax
+Errors</a></strong> - Quote mismatches, invalid properties</li>
 <li>
-<strong>Check file paths</strong>: Ensure the directory exists and
-contains the expected files</li>
-</ol>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Test annotation syntax</span></span>
-<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'#put name:"test", label:"Test Node"'</span><span class="op">)</span> <span class="co"># Should return TRUE</span></span>
-<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">"#put invalid syntax"</span><span class="op">)</span> <span class="co"># Should return FALSE</span></span>
-<span></span>
-<span><span class="co"># Check what files are found</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="st">"./src/"</span>, pattern <span class="op">=</span> <span class="st">"\\.(R|py)$"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="validation-warnings">Validation Warnings<a class="anchor" aria-label="anchor" href="#validation-warnings"></a>
-</h3>
-<p>If you see validation warnings:</p>
-<ol style="list-style-type: decimal">
+<strong><a href="troubleshooting.html#file-pattern-matching-issues">File Pattern
+Matching</a></strong> - Files not being scanned</li>
 <li>
-<strong>Missing name</strong>: Add a <code>name</code> property to
-all annotations</li>
-<li>
-<strong>Invalid node_type</strong>: Use standard types
-(<code>input</code>, <code>process</code>, <code>output</code>)</li>
-<li>
-<strong>File extensions</strong>: Ensure file references include
-extensions</li>
-</ol>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Enable detailed validation output</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, validate <span class="op">=</span> <span class="cn">TRUE</span>, include_line_numbers <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="parsing-issues">Parsing Issues<a class="anchor" aria-label="anchor" href="#parsing-issues"></a>
-</h3>
-<p>If annotations aren’t parsed correctly:</p>
-<ol style="list-style-type: decimal">
-<li>
-<strong>Check quotes</strong>: Ensure all values are properly
-quoted</li>
-<li>
-<strong>Escape commas</strong>: Values with commas should be in
-quotes</li>
-<li>
-<strong>Avoid nested quotes</strong>: Use consistent quote
-styles</li>
-</ol>
-<p>Good example:</p>
-<pre><code><span><span class="co">#put name:"step1", description:"Process data, clean outliers", type:"process"</span></span></code></pre>
-<p>Problematic example:</p>
-<pre><code><span><span class="co">#put name:"step1", description:Process data, clean outliers, type:process</span></span></code></pre>
-</div>
+<strong><a href="troubleshooting.html#debugging-with-logging">Debugging with
+Logging</a></strong> - Enable detailed output</li>
+</ul>
+<p><strong>Quick diagnostic:</strong></p>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Test if your annotation is valid</span></span>
+<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'#put id:"test", label:"Test Node"'</span><span class="op">)</span>  <span class="co"># Should be TRUE</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="next-steps">Next Steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
+<h2 id="see-also">See Also<a class="anchor" aria-label="anchor" href="#see-also"></a>
 </h2>
-<p>Now that you understand the basics of putior:</p>
-<ol style="list-style-type: decimal">
+<table class="table">
+<colgroup>
+<col width="35%">
+<col width="65%">
+</colgroup>
+<thead><tr class="header">
+<th>Guide</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><a href="quick-start.html">Quick Start</a></td>
+<td>Create your first diagram in 2 minutes</td>
+</tr>
+<tr class="even">
+<td><a href="quick-reference.html">Quick Reference</a></td>
+<td>Cheat sheet for daily use</td>
+</tr>
+<tr class="odd">
+<td><a href="features-tour.html">Features Tour</a></td>
+<td>Auto-detection, logging, interactive diagrams</td>
+</tr>
+<tr class="even">
+<td><a href="api-reference.html">API Reference</a></td>
+<td>Complete function documentation</td>
+</tr>
+<tr class="odd">
+<td><a href="showcase.html">Showcase</a></td>
+<td>Real-world examples (ETL, ML, bioinformatics)</td>
+</tr>
+<tr class="even">
+<td><a href="troubleshooting.html">Troubleshooting</a></td>
+<td>Common issues and solutions</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Built-in examples:</strong></p>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Complete workflow example</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"reprex.R"</span>, package <span class="op">=</span> <span class="st">"putior"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Variable reference example</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"variable-reference-example.R"</span>, package <span class="op">=</span> <span class="st">"putior"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Interactive diagrams example</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"interactive-diagrams-example.R"</span>, package <span class="op">=</span> <span class="st">"putior"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Function help:</strong></p>
+<ul>
 <li>
-<strong>Try the complete example</strong>:
-<code>source(system.file("examples", "reprex.R", package = "putior"))</code>
-</li>
+<code><a href="../reference/put.html">?put</a></code> - Extract annotations from files</li>
 <li>
-<strong>Explore variable references</strong>: See how to track
-variables and objects with
-<code>source(system.file("examples", "variable-reference-example.R", package = "putior"))</code>
-</li>
+<code><a href="../reference/put_diagram.html">?put_diagram</a></code> - Generate Mermaid diagrams</li>
 <li>
-<strong>Try interactive diagrams</strong>:
-<code>source(system.file("examples", "interactive-diagrams-example.R", package = "putior"))</code>
-</li>
-<li>
-<strong>Add annotations to your existing projects</strong>: Start
-with key data processing scripts</li>
-<li>
-<strong>Build visualization tools</strong>: Use the extracted
-workflow data to create flowcharts</li>
-<li>
-<strong>Integrate into CI/CD</strong>: Automatically update workflow
-documentation</li>
-</ol>
-<p>For more detailed information, see: - <code><a href="../reference/put.html">?put</a></code> - Complete
-function documentation - <code><a href="../reference/put_diagram.html">?put_diagram</a></code> - Diagram generation
-with interactive features - <code><a href="../reference/put_auto.html">?put_auto</a></code> - Automatic workflow
-detection from code analysis</p>
+<code><a href="../reference/put_auto.html">?put_auto</a></code> - Auto-detect workflow from code</li>
+</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

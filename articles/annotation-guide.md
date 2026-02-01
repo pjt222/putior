@@ -1,4 +1,4 @@
-# Getting Started with putior
+# Annotation Guide
 
 ``` r
 library(putior)
@@ -6,62 +6,19 @@ library(putior)
 
 ## Introduction
 
-The `putior` package helps you document and visualize workflows by
-extracting structured annotations from your R and Python source files.
-This vignette shows you how to get started with PUT annotations and
-workflow extraction.
+This guide provides a complete reference for PUT annotation syntax. It
+covers all annotation formats, multi-language support, multiline
+annotations, and best practices.
+
+> **New to putior?** Start with the [Quick
+> Start](https://pjt222.github.io/putior/articles/quick-start.md) guide
+> to create your first diagram in 2 minutes.
 
 **PUT** stands for **P**UT + **I**nput + **O**utput + **R**, reflecting
 the package’s core purpose: tracking data inputs and outputs through
 your analysis pipeline using special annotations.
 
-## Why Use putior?
-
-- **Automatic documentation**: Your workflow documentation stays in sync
-  with your code
-- **Multi-language support**: Works with R, Python, SQL, and other file
-  types
-- **Data lineage tracking**: See how data flows through your processing
-  steps
-- **Team collaboration**: Help colleagues understand complex workflows
-- **Visual workflow creation**: Extract structured data ready for
-  flowchart generation
-
-## Quick Start
-
-The fastest way to see putior in action is to run the built-in example:
-
-``` r
-# Run the complete example
-source(system.file("examples", "reprex.R", package = "putior"))
-```
-
-This creates a sample multi-language workflow and demonstrates the
-workflow extraction capabilities of putior.
-
-### Live Example
-
-Here’s a working example using putior’s own source code (the package
-documents itself!):
-
-``` r
-library(putior)
-
-# Extract workflow from putior's own R source files
-workflow <- put(system.file("examples", "reprex.R", package = "putior"))
-
-# View the extracted workflow nodes
-print(workflow)
-#> [1] file_name file_path file_type
-#> <0 rows> (or 0-length row.names)
-```
-
-This demonstrates how putior extracts structured workflow data from
-annotated source files.
-
-## Basic Workflow
-
-### Step 1: Add PUT Annotations to Your Code
+## Annotation Basics
 
 PUT annotations are special comments that describe workflow nodes. Start
 simple:
@@ -117,7 +74,27 @@ That’s all you need! putior will: - Auto-generate a unique ID - Default
     with open("sales_report.json", "w") as f:
         json.dump(sales_summary, f)
 
-### Step 2: Extract the Workflow
+**Resulting diagram from both files:**
+
+``` mermaid
+flowchart TD
+    load_data([Load Customer Data])
+    clean_data[Clean and Validate]
+    analyze_sales[Sales Analysis]
+
+    %% Connections
+    load_data --> clean_data
+    clean_data --> analyze_sales
+
+    %% Styling
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    class load_data inputStyle
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class clean_data processStyle
+    class analyze_sales processStyle
+```
+
+## Extracting Annotations
 
 Use the [`put()`](https://pjt222.github.io/putior/reference/put.md)
 function to scan your files and extract workflow information:
@@ -130,32 +107,21 @@ workflow <- put("./src/")
 print(workflow)
 ```
 
-Expected output:
+The output is a data frame where each row represents a workflow node:
 
-    #>           file_name file_type          input              label            id
-    #> 1 data_processing.R         r           <NA> Load Customer Data     load_data
-    #> 2 data_processing.R         r   raw_data.csv Clean and Validate    clean_data
-    #> 3       analysis.py        py clean_data.csv     Sales Analysis analyze_sales
-    #>   node_type            output
-    #> 1     input      raw_data.csv
-    #> 2   process    clean_data.csv
-    #> 3   process sales_report.json
+| Column      | Description                                |
+|-------------|--------------------------------------------|
+| `file_name` | Which script contains this node            |
+| `file_type` | Programming language (r, py, sql, etc.)    |
+| `id`        | Unique identifier for the node             |
+| `label`     | Human-readable description                 |
+| `node_type` | Type of operation (input, process, output) |
+| `input`     | Files consumed by this step                |
+| `output`    | Files produced by this step                |
 
-### Step 3: Understand the Results
+Custom properties you define are also included as additional columns.
 
-The output is a data frame where each row represents a workflow node.
-The columns include:
-
-- **file_name**: Which script contains this node
-- **file_type**: Programming language (r, py, sql, etc.)
-- **id**: Unique identifier for the node
-- **label**: Human-readable description
-- **node_type**: Type of operation (input, process, output)
-- **input**: Files consumed by this step
-- **output**: Files produced by this step
-- **Custom properties**: Any additional metadata you defined
-
-## PUT Annotation Syntax
+## Complete Syntax Reference
 
 ### Basic Format
 
@@ -172,6 +138,76 @@ PUT annotations support several formats to fit different coding styles:
     #put| id:"my_node", label:"My Process"          # Pipe separator
     #put id:'my_node', label:'Single quotes'        # Single quotes
     #put id:"my_node", label:'Mixed quotes'         # Mixed quote styles
+
+### Multiline Annotations
+
+For complex annotations with many properties, use backslash (`\`)
+continuation:
+
+**R/Python style:**
+
+``` r
+#put id:"complex_etl", \
+#    label:"Complex ETL Process", \
+#    node_type:"process", \
+#    input:"raw_data.csv, config.yaml", \
+#    output:"processed.parquet", \
+#    author:"Data Team", \
+#    version:"2.0"
+```
+
+**SQL style:**
+
+``` sql
+--put id:"load_customers", \
+--    label:"Load Customer Data", \
+--    node_type:"input", \
+--    output:"customers_table"
+SELECT * FROM raw_customers;
+```
+
+**JavaScript/TypeScript style:**
+
+``` javascript
+//put id:"api_handler", \
+//    label:"Process API Request", \
+//    input:"request.json", \
+//    output:"response.json"
+```
+
+**Rules for multiline annotations:**
+
+1.  End each line (except the last) with a backslash `\`
+2.  Start continuation lines with the same comment prefix
+3.  Continuation lines can have leading whitespace for readability
+4.  Properties can span multiple lines
+5.  The backslash must be the last character on the line (no trailing
+    spaces)
+
+**Example with many properties:**
+
+``` r
+#put id:"train_model", \
+#    label:"Train Random Forest Model", \
+#    node_type:"process", \
+#    input:"features.csv, labels.csv", \
+#    output:"model.rds, metrics.json", \
+#    group:"machine_learning", \
+#    stage:"3", \
+#    estimated_time:"45min", \
+#    memory_intensive:"true"
+```
+
+> **When Multiline Annotations Don’t Work:**
+>
+> - **Trailing spaces**: Ensure backslash is the *last* character (no
+>   spaces after)
+> - **Missing prefix**: Each continuation line needs the comment prefix
+>   (`#`, `--`, `//`)
+> - **Fallback**: If multiline fails, use a single long line -
+>   readability is secondary to functionality
+> - **Debug**: Use `set_putior_log_level("DEBUG")` to see exactly how
+>   lines are being parsed
 
 ### Multi-Language Support
 
@@ -224,6 +260,31 @@ types:
 - **`process`**: Data transformation, analysis, computation
 - **`output`**: Report generation, data export, visualization
 - **`decision`**: Conditional logic, branching workflows
+
+**Visual representation of node types:**
+
+``` mermaid
+flowchart TD
+    load([Load Data (input)])
+    transform[Transform (process)]
+    export[[Export (output)]]
+    check{Validate? (decision)}
+
+    %% Connections
+    load --> transform
+    transform --> export
+    transform --> check
+
+    %% Styling
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    class load inputStyle
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class transform processStyle
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class export outputStyle
+    classDef decisionStyle fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    class check decisionStyle
+```
 
 ### Custom Properties
 
@@ -529,80 +590,58 @@ Use grouping properties to organize complex workflows:
 
 ## Troubleshooting
 
-### No Annotations Found
+Having issues with annotations? See the [Troubleshooting
+Guide](https://pjt222.github.io/putior/articles/troubleshooting.md) for:
 
-If [`put()`](https://pjt222.github.io/putior/reference/put.md) returns
-an empty data frame:
+- **[Most Common
+  Issues](https://pjt222.github.io/putior/articles/troubleshooting.html#most-common-issues)** -
+  Start here for quick solutions
+- **[Annotation Syntax
+  Errors](https://pjt222.github.io/putior/articles/troubleshooting.html#annotation-syntax-errors)** -
+  Quote mismatches, invalid properties
+- **[File Pattern
+  Matching](https://pjt222.github.io/putior/articles/troubleshooting.html#file-pattern-matching-issues)** -
+  Files not being scanned
+- **[Debugging with
+  Logging](https://pjt222.github.io/putior/articles/troubleshooting.html#debugging-with-logging)** -
+  Enable detailed output
 
-1.  **Check file patterns**: Ensure your files match the pattern
-    (default: R, Python, SQL, shell, Julia)
-2.  **Verify annotation syntax**: Use
-    [`is_valid_put_annotation()`](https://pjt222.github.io/putior/reference/is_valid_put_annotation.md)
-    to test individual annotations
-3.  **Check file paths**: Ensure the directory exists and contains the
-    expected files
-
-``` r
-# Test annotation syntax
-is_valid_put_annotation('#put name:"test", label:"Test Node"') # Should return TRUE
-is_valid_put_annotation("#put invalid syntax") # Should return FALSE
-
-# Check what files are found
-list.files("./src/", pattern = "\\.(R|py)$")
-```
-
-### Validation Warnings
-
-If you see validation warnings:
-
-1.  **Missing name**: Add a `name` property to all annotations
-2.  **Invalid node_type**: Use standard types (`input`, `process`,
-    `output`)
-3.  **File extensions**: Ensure file references include extensions
+**Quick diagnostic:**
 
 ``` r
-# Enable detailed validation output
-workflow <- put("./src/", validate = TRUE, include_line_numbers = TRUE)
+# Test if your annotation is valid
+is_valid_put_annotation('#put id:"test", label:"Test Node"')  # Should be TRUE
 ```
 
-### Parsing Issues
+## See Also
 
-If annotations aren’t parsed correctly:
+| Guide                                                                          | Description                                   |
+|--------------------------------------------------------------------------------|-----------------------------------------------|
+| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)         | Create your first diagram in 2 minutes        |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md) | Cheat sheet for daily use                     |
+| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md)     | Auto-detection, logging, interactive diagrams |
+| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)     | Complete function documentation               |
+| [Showcase](https://pjt222.github.io/putior/articles/showcase.md)               | Real-world examples (ETL, ML, bioinformatics) |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md) | Common issues and solutions                   |
 
-1.  **Check quotes**: Ensure all values are properly quoted
-2.  **Escape commas**: Values with commas should be in quotes
-3.  **Avoid nested quotes**: Use consistent quote styles
+**Built-in examples:**
 
-Good example:
+``` r
+# Complete workflow example
+source(system.file("examples", "reprex.R", package = "putior"))
 
-    #put name:"step1", description:"Process data, clean outliers", type:"process"
+# Variable reference example
+source(system.file("examples", "variable-reference-example.R", package = "putior"))
 
-Problematic example:
+# Interactive diagrams example
+source(system.file("examples", "interactive-diagrams-example.R", package = "putior"))
+```
 
-    #put name:"step1", description:Process data, clean outliers, type:process
+**Function help:**
 
-## Next Steps
-
-Now that you understand the basics of putior:
-
-1.  **Try the complete example**:
-    `source(system.file("examples", "reprex.R", package = "putior"))`
-2.  **Explore variable references**: See how to track variables and
-    objects with
-    `source(system.file("examples", "variable-reference-example.R", package = "putior"))`
-3.  **Try interactive diagrams**:
-    `source(system.file("examples", "interactive-diagrams-example.R", package = "putior"))`
-4.  **Add annotations to your existing projects**: Start with key data
-    processing scripts
-5.  **Build visualization tools**: Use the extracted workflow data to
-    create flowcharts
-6.  **Integrate into CI/CD**: Automatically update workflow
-    documentation
-
-For more detailed information, see: -
-[`?put`](https://pjt222.github.io/putior/reference/put.md) - Complete
-function documentation -
-[`?put_diagram`](https://pjt222.github.io/putior/reference/put_diagram.md) -
-Diagram generation with interactive features -
-[`?put_auto`](https://pjt222.github.io/putior/reference/put_auto.md) -
-Automatic workflow detection from code analysis
+- [`?put`](https://pjt222.github.io/putior/reference/put.md) - Extract
+  annotations from files
+- [`?put_diagram`](https://pjt222.github.io/putior/reference/put_diagram.md) -
+  Generate Mermaid diagrams
+- [`?put_auto`](https://pjt222.github.io/putior/reference/put_auto.md) -
+  Auto-detect workflow from code

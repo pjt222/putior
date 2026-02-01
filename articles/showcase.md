@@ -727,6 +727,171 @@ artifacts
 
 ------------------------------------------------------------------------
 
+## Improving Existing Annotations
+
+Real-world codebases often have messy, incomplete annotations. Here’s
+how to clean them up.
+
+### Before: A Messy Starting Point
+
+This ETL script has common problems:
+
+``` r
+# etl_pipeline.R - typical messy annotations
+
+#put id:"step1", output:"data"
+# ^ Problem: Vague ID and output name
+
+raw <- read.csv("sales_2024.csv")
+
+#put id:"2", input:"data"
+# ^ Problem: Inconsistent ID style (numeric), output missing
+
+clean <- raw[complete.cases(raw), ]
+clean$date <- as.Date(clean$date)
+
+# (No annotation here - important step is undocumented!)
+aggregated <- aggregate(amount ~ region, clean, sum)
+
+#put label:"final step"
+# ^ Problem: Missing ID, vague label, no input/output
+
+write.csv(aggregated, "regional_sales.csv")
+```
+
+**Resulting diagram (disconnected, unclear):**
+
+``` mermaid
+flowchart TD
+    step1[step1]
+    node_2[2]
+    final_step_1[final step]
+
+    %% Connections
+    step1 --> node_2
+
+    %% Styling
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class step1 processStyle
+    class node_2 processStyle
+    class final_step_1 processStyle
+```
+
+### Step-by-Step Improvement
+
+**Step 1: Audit current state**
+
+``` r
+workflow <- put("etl_pipeline.R", validate = TRUE)
+print(workflow)  # See what's detected
+# Validation warnings will highlight issues
+```
+
+**Step 2: Use auto-detection to find gaps**
+
+``` r
+auto <- put_auto("etl_pipeline.R")
+print(auto)  # Shows file I/O that wasn't annotated
+```
+
+**Step 3: Generate annotation templates**
+
+``` r
+put_generate("etl_pipeline.R")
+# Outputs suggested annotations based on code patterns
+```
+
+**Step 4: Apply fixes with naming conventions**
+
+| Convention         | Example                     | Benefit          |
+|--------------------|-----------------------------|------------------|
+| Descriptive IDs    | `extract_sales` not `step1` | Self-documenting |
+| Verb + noun labels | “Load Sales Data”           | Clear action     |
+| Full file names    | `sales_2024.csv` not `data` | Traceable        |
+| Consistent style   | `snake_case` IDs            | Maintainable     |
+
+### After: Clean Annotations
+
+``` r
+# etl_pipeline.R - improved annotations
+
+#put id:"extract_sales", label:"Load Sales Data", \
+#    node_type:"input", output:"sales_2024.csv"
+raw <- read.csv("sales_2024.csv")
+
+#put id:"clean_data", label:"Clean & Validate", \
+#    input:"sales_2024.csv", output:"clean_sales.internal"
+clean <- raw[complete.cases(raw), ]
+clean$date <- as.Date(clean$date)
+
+#put id:"aggregate_regions", label:"Aggregate by Region", \
+#    input:"clean_sales.internal", output:"aggregated.internal"
+aggregated <- aggregate(amount ~ region, clean, sum)
+
+#put id:"export_results", label:"Export Regional Report", \
+#    node_type:"output", input:"aggregated.internal", output:"regional_sales.csv"
+write.csv(aggregated, "regional_sales.csv")
+```
+
+**Resulting diagram (connected, clear flow):**
+
+``` mermaid
+flowchart TD
+    extract_sales([Load Sales Data])
+    clean_data[Clean & Validate]
+    aggregate_regions[Aggregate by Region]
+    export_results[[Export Regional Report]]
+
+    %% Connections
+    extract_sales --> clean_data
+    clean_data --> aggregate_regions
+    aggregate_regions --> export_results
+
+    %% Styling
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    class extract_sales inputStyle
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class clean_data processStyle
+    class aggregate_regions processStyle
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class export_results outputStyle
+```
+
+### Key Improvements Made
+
+| Before               | After                            | Why                     |
+|----------------------|----------------------------------|-------------------------|
+| `id:"step1"`         | `id:"extract_sales"`             | Descriptive, searchable |
+| `output:"data"`      | `output:"sales_2024.csv"`        | Actual file name        |
+| Missing annotation   | Added for aggregation step       | Complete workflow       |
+| `label:"final step"` | `label:"Export Regional Report"` | Specific action         |
+| No node_type         | Explicit input/process/output    | Proper diagram shapes   |
+
+### Workflow for Legacy Code
+
+For existing codebases without any annotations:
+
+``` r
+# 1. Start with auto-detection
+auto_workflow <- put_auto("./legacy_code/", recursive = TRUE)
+put_diagram(auto_workflow)  # Get initial picture
+
+# 2. Generate annotation suggestions
+put_generate("./legacy_code/", output = "clipboard")
+# Paste into files and customize
+
+# 3. Add manual annotations for key files
+# Focus on main entry points first
+
+# 4. Merge for complete picture
+final <- put_merge("./legacy_code/",
+                   merge_strategy = "supplement",
+                   recursive = TRUE)
+put_diagram(final, show_source_info = TRUE)
+```
+
+------------------------------------------------------------------------
+
 ## Tips for Large Workflows
 
 When working with complex workflows:
@@ -764,3 +929,33 @@ source(system.file("examples", "data-science-workflow.R", package = "putior"))
 # Self-documentation (putior documents itself!)
 source(system.file("examples", "self-documentation.R", package = "putior"))
 ```
+
+------------------------------------------------------------------------
+
+## See Also
+
+**Functions used in these examples:**
+
+| Function                                                                    | Purpose               | Documentation                                                                                                         |
+|-----------------------------------------------------------------------------|-----------------------|-----------------------------------------------------------------------------------------------------------------------|
+| [`put()`](https://pjt222.github.io/putior/reference/put.md)                 | Extract annotations   | [API Reference](https://pjt222.github.io/putior/articles/api-reference.html#put)                                      |
+| [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md) | Generate diagrams     | [API Reference](https://pjt222.github.io/putior/articles/api-reference.html#put_diagram)                              |
+| [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md)       | Auto-detect workflows | [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#put_auto---detect-workflow-automatically) |
+| [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md)     | Combine manual + auto | [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#put_merge---combine-manual--auto)         |
+
+**Related guides:**
+
+- [Quick
+  Start](https://pjt222.github.io/putior/articles/quick-start.md) -
+  Create your first diagram
+- [Quick
+  Reference](https://pjt222.github.io/putior/articles/quick-reference.md) -
+  Cheat sheet for daily use
+- [Annotation
+  Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) -
+  Complete syntax reference
+- [Features
+  Tour](https://pjt222.github.io/putior/articles/features-tour.md) -
+  Interactive diagrams, themes, logging
+- [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md) -
+  Common issues and solutions

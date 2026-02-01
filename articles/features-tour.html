@@ -140,12 +140,14 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/getting-started.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/quick-start.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started with putior</a></li>
+<li><a class="dropdown-item" href="../articles/quick-start.html">Quick Start</a></li>
+    <li><a class="dropdown-item" href="../articles/annotation-guide.html">Annotation Guide</a></li>
+    <li><a class="dropdown-item" href="../articles/quick-reference.html">Quick Reference</a></li>
     <li><a class="dropdown-item" href="../articles/features-tour.html">Features Tour</a></li>
     <li><a class="dropdown-item" href="../articles/api-reference.html">API Reference</a></li>
     <li><a class="dropdown-item" href="../articles/showcase.html">Showcase: Real-World Examples</a></li>
@@ -278,7 +280,8 @@ understand code quickly</li>
 <code>put_auto()</code> - Detect Workflow Automatically<a class="anchor" aria-label="anchor" href="#put_auto---detect-workflow-automatically"></a>
 </h3>
 <p>Analyzes source code patterns to detect file inputs, outputs, and
-dependencies without requiring any annotations.</p>
+dependencies without requiring any annotations. <em>(<a href="api-reference.html#put_auto---auto-detect-workflow">Full API
+docs</a>)</em></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pjt222.github.io/putior/">putior</a></span><span class="op">)</span></span>
 <span></span>
@@ -290,11 +293,29 @@ dependencies without requiring any annotations.</p>
 <span></span>
 <span><span class="co"># Generate diagram</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Example Auto-Detection Result:</strong></p>
+<pre class="mermaid"><code>flowchart TD
+    load_data_R_1[load_data.R]
+    process_R_1[process.R]
+    report_R_1[report.R]
+
+    %% Connections
+    load_data_R_1 --&gt; process_R_1
+    process_R_1 --&gt; report_R_1
+
+    %% Styling
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class load_data_R_1 processStyle
+    class process_R_1 processStyle
+    class report_R_1 processStyle</code></pre>
+<p><em>Note: Auto-detected labels default to file names. Use
+<code><a href="../reference/put_generate.html">put_generate()</a></code> to create annotation templates with better
+labels.</em></p>
 <p><strong>What Gets Detected:</strong></p>
 <p>For R code: - <strong>Inputs</strong>: <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv()</a></code>,
 <code><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv()</a></code>, <code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS()</a></code>, <code><a href="https://rdrr.io/r/base/load.html" class="external-link">load()</a></code>,
 <code>fread()</code>, <code>read_excel()</code>,
-<code>fromJSON()</code>, <code>read_parquet()</code>, database
+<code><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">fromJSON()</a></code>, <code>read_parquet()</code>, database
 connections, etc. - <strong>Outputs</strong>: <code><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv()</a></code>,
 <code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS()</a></code>, <code>ggsave()</code>,
 <code>write_parquet()</code>, database writes, etc. -
@@ -307,20 +328,39 @@ connections, etc. - <strong>Outputs</strong>: <code><a href="https://rdrr.io/r/u
 <code>json.dump()</code>, <code>plt.savefig()</code>, database writes,
 etc.</p>
 <p><strong>Control Detection:</strong></p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Only detect inputs and outputs (skip dependencies)</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./src/"</span>, detect_dependencies <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Only detect outputs</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./src/"</span>, detect_inputs <span class="op">=</span> <span class="cn">FALSE</span>, detect_dependencies <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<blockquote>
+<p><strong>When Things Go Wrong with Auto-Detection:</strong></p>
+<p><strong>Problem: Detects wrong files or patterns</strong> - Use
+<code><a href="../reference/put_merge.html">put_merge()</a></code> with
+<code>merge_strategy = "manual_priority"</code> to override with manual
+annotations - Exclude files with specific <code>pattern</code> argument:
+<code>put_auto("./src/", pattern = "^(?!test_).*\\.R$")</code></p>
+<p><strong>Problem: Misses important file I/O</strong> - Check if your
+library is supported:
+<code>grep("yourfunc", sapply(get_detection_patterns("r")$input, \</code>[[`,
+“func”))` - Add manual annotations for unsupported patterns - <a href="https://github.com/pjt222/putior/issues" class="external-link">Request new patterns</a>
+via GitHub issue</p>
+<p><strong>Problem: Too much noise in results</strong> - Use
+<code>detect_dependencies = FALSE</code> to skip <code><a href="https://rdrr.io/r/base/source.html" class="external-link">source()</a></code>
+detection - Filter results:
+<code>workflow[workflow$node_type != "dependency", ]</code> - Switch to
+manual annotations for precise control</p>
+</blockquote>
 </div>
 <div class="section level3">
 <h3 id="put_generate---generate-annotation-comments">
 <code>put_generate()</code> - Generate Annotation Comments<a class="anchor" aria-label="anchor" href="#put_generate---generate-annotation-comments"></a>
 </h3>
 <p>Creates PUT annotation comments that you can add to your source
-files. Think of it like roxygen2’s skeleton generation.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+files. Think of it like roxygen2’s skeleton generation. <em>(<a href="api-reference.html#put_generate---generate-annotation-templates">Full
+API docs</a>)</em></p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Print suggested annotations to console</span></span>
 <span><span class="fu"><a href="../reference/put_generate.html">put_generate</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Example Output:</strong></p>
@@ -330,11 +370,11 @@ files. Think of it like roxygen2’s skeleton generation.</p>
 <span><span class="co"># For file: analyze.R</span></span>
 <span><span class="co">#put id:"analyze", label:"Analyze", node_type:"process", input:"clean_data.csv", output:"results.json"</span></span></code></pre>
 <p><strong>Copy to Clipboard:</strong></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Copy annotations to clipboard for pasting</span></span>
 <span><span class="fu"><a href="../reference/put_generate.html">put_generate</a></span><span class="op">(</span><span class="st">"./src/"</span>, output <span class="op">=</span> <span class="st">"clipboard"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Annotation Styles:</strong></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Single-line style (default)</span></span>
 <span><span class="fu"><a href="../reference/put_generate.html">put_generate</a></span><span class="op">(</span><span class="st">"./src/"</span>, style <span class="op">=</span> <span class="st">"single"</span><span class="op">)</span></span>
 <span><span class="co"># Output: #put id:"step1", label:"Step 1", input:"a.csv", output:"b.csv"</span></span>
@@ -352,8 +392,9 @@ files. Think of it like roxygen2’s skeleton generation.</p>
 <code>put_merge()</code> - Combine Manual + Auto<a class="anchor" aria-label="anchor" href="#put_merge---combine-manual-auto"></a>
 </h3>
 <p>Combines your manual annotations with auto-detected ones using
-configurable merge strategies.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+configurable merge strategies. <em>(<a href="api-reference.html#put_merge---merge-manual-and-auto">Full API
+docs</a>)</em></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Manual annotations take priority</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_merge.html">put_merge</a></span><span class="op">(</span><span class="st">"./src/"</span>, merge_strategy <span class="op">=</span> <span class="st">"manual_priority"</span><span class="op">)</span></span>
 <span></span>
@@ -387,6 +428,35 @@ configurable merge strategies.</p>
 </tr>
 </tbody>
 </table>
+<p><strong>Before/After Merge Example:</strong></p>
+<p><em>Manual annotations only (sparse):</em></p>
+<pre class="mermaid"><code>flowchart TD
+    extract([Extract Data])
+    load[[Load to DB]]
+
+    %% Styling
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    class extract inputStyle
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class load outputStyle</code></pre>
+<p><em>After merge with <code>supplement</code> strategy (auto-detected
+I/O added):</em></p>
+<pre class="mermaid"><code>flowchart TD
+    extract([Extract Data])
+    transform[etl.R]
+    load[[Load to DB]]
+
+    %% Connections
+    extract --&gt; transform
+    transform --&gt; load
+
+    %% Styling
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    class extract inputStyle
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class transform processStyle
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class load outputStyle</code></pre>
 </div>
 <div class="section level3">
 <h3 id="auto-annotation-workflow">Auto-Annotation Workflow<a class="anchor" aria-label="anchor" href="#auto-annotation-workflow"></a>
@@ -395,7 +465,7 @@ configurable merge strategies.</p>
                │                                       │
                └──&gt; put_auto() ──&gt; Auto Annotations  ──┘</code></pre>
 <p><strong>Typical Usage Pattern:</strong></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Start with auto-detection to understand code</span></span>
 <span><span class="va">auto</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./new_project/"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">auto</span><span class="op">)</span></span>
@@ -419,8 +489,9 @@ clickable nodes.</p>
 <h3 id="show_source_info---display-file-information">
 <code>show_source_info</code> - Display File Information<a class="anchor" aria-label="anchor" href="#show_source_info---display-file-information"></a>
 </h3>
-<p>Show which source file each workflow node comes from.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<p>Show which source file each workflow node comes from. <em>(<a href="api-reference.html#put_diagram---generate-mermaid-diagram">API
+Reference</a>)</em></p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, include_line_numbers <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Inline style - shows file name below node label</span></span>
@@ -440,7 +511,7 @@ clickable nodes.</p>
     class process processStyle</code></pre>
 <p><strong>Subgraph Style:</strong></p>
 <p>Group nodes by source file using subgraphs:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>,</span>
 <span>            show_source_info <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>            source_info_style <span class="op">=</span> <span class="st">"subgraph"</span><span class="op">)</span></span></code></pre></div>
@@ -468,8 +539,9 @@ clickable nodes.</p>
 <code>enable_clicks</code> - Clickable Nodes<a class="anchor" aria-label="anchor" href="#enable_clicks---clickable-nodes"></a>
 </h3>
 <p>Make diagram nodes clickable to open the source file directly in your
-editor.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+editor. <em>(<a href="api-reference.html#put_diagram---generate-mermaid-diagram">API
+Reference</a>)</em></p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, include_line_numbers <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Enable clicks with VS Code protocol</span></span>
@@ -506,7 +578,7 @@ editor.</p>
 </tbody>
 </table>
 <p><strong>Combined Interactive Features:</strong></p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>,</span>
 <span>            show_source_info <span class="op">=</span> <span class="cn">TRUE</span>,      <span class="co"># Show file names</span></span>
 <span>            source_info_style <span class="op">=</span> <span class="st">"inline"</span>,  <span class="co"># Inline display</span></span>
@@ -524,7 +596,7 @@ and outputs.</p>
 <h3 id="get_detection_patterns---view-patterns">
 <code>get_detection_patterns()</code> - View Patterns<a class="anchor" aria-label="anchor" href="#get_detection_patterns---view-patterns"></a>
 </h3>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get all R patterns</span></span>
 <span><span class="va">r_patterns</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_detection_patterns.html">get_detection_patterns</a></span><span class="op">(</span><span class="st">"r"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">r_patterns</span><span class="op">)</span></span>
@@ -551,7 +623,7 @@ and outputs.</p>
 <div class="section level3">
 <h3 id="supported-languages">Supported Languages<a class="anchor" aria-label="anchor" href="#supported-languages"></a>
 </h3>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># All languages with annotation support</span></span>
 <span><span class="fu"><a href="../reference/list_supported_languages.html">list_supported_languages</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "r"          "python"     "shell"      "julia"      "ruby"</span></span>
@@ -872,7 +944,7 @@ without creating files.</p>
 <div class="section level3">
 <h3 id="launch-the-sandbox">Launch the Sandbox<a class="anchor" aria-label="anchor" href="#launch-the-sandbox"></a>
 </h3>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/run_sandbox.html">run_sandbox</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -884,7 +956,7 @@ syntax highlighting (requires <code>shinyAce</code>)</p></li>
 <li><p><strong>Multi-file Simulation</strong>: Use special markers to
 simulate multiple files:</p></li>
 </ol>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># ===== File: 01_load.R =====</span></span>
 <span><span class="co">#put label:"Load Data", node_type:"input", output:"data.csv"</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"source.csv"</span><span class="op">)</span></span>
@@ -940,7 +1012,7 @@ code</li>
 <div class="section level3">
 <h3 id="enable-logging">Enable Logging<a class="anchor" aria-label="anchor" href="#enable-logging"></a>
 </h3>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install logger if needed</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"logger"</span><span class="op">)</span></span>
 <span></span>
@@ -986,7 +1058,7 @@ complete</td>
 <div class="section level3">
 <h3 id="per-call-override">Per-Call Override<a class="anchor" aria-label="anchor" href="#per-call-override"></a>
 </h3>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Override for a single call without changing global setting</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, log_level <span class="op">=</span> <span class="st">"DEBUG"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, log_level <span class="op">=</span> <span class="st">"INFO"</span><span class="op">)</span></span></code></pre></div>
@@ -995,12 +1067,12 @@ complete</td>
 <h3 id="debugging-scenarios">Debugging Scenarios<a class="anchor" aria-label="anchor" href="#debugging-scenarios"></a>
 </h3>
 <p><strong>Why isn’t my annotation found?</strong></p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/set_putior_log_level.html">set_putior_log_level</a></span><span class="op">(</span><span class="st">"DEBUG"</span><span class="op">)</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./problem_file.R"</span>, include_line_numbers <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># Check logs for pattern matching details</span></span></code></pre></div>
 <p><strong>Why are nodes not connected?</strong></p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/set_putior_log_level.html">set_putior_log_level</a></span><span class="op">(</span><span class="st">"INFO"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_artifacts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># Logs show connection logic</span></span></code></pre></div>
@@ -1013,7 +1085,7 @@ complete</td>
 <div class="section level3">
 <h3 id="available-themes">Available Themes<a class="anchor" aria-label="anchor" href="#available-themes"></a>
 </h3>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_diagram_themes.html">get_diagram_themes</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "light"   "dark"    "auto"    "minimal" "github"</span></span></code></pre></div>
 <table class="table">
@@ -1054,7 +1126,7 @@ complete</td>
 <div class="section level3">
 <h3 id="theme-examples">Theme Examples<a class="anchor" aria-label="anchor" href="#theme-examples"></a>
 </h3>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># GitHub (recommended for README)</span></span>
@@ -1069,7 +1141,7 @@ complete</td>
 <div class="section level3">
 <h3 id="styling-options">Styling Options<a class="anchor" aria-label="anchor" href="#styling-options"></a>
 </h3>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>,</span>
 <span>  theme <span class="op">=</span> <span class="st">"github"</span>,              <span class="co"># Color theme</span></span>
 <span>  direction <span class="op">=</span> <span class="st">"TD"</span>,              <span class="co"># Flow direction</span></span>
@@ -1110,6 +1182,32 @@ complete</td>
 </tr>
 </tbody>
 </table>
+<blockquote>
+<p><strong>When Things Go Wrong with Diagrams:</strong></p>
+<p><strong>Problem: Diagram doesn’t render (shows raw text)</strong> -
+Test your Mermaid code at <a href="https://mermaid.live" class="external-link">mermaid.live</a> to identify syntax issues -
+For pkgdown sites, ensure Mermaid.js is included in
+<code>_pkgdown.yml</code> - Use <code>output = "raw"</code> and render
+manually with Mermaid CLI:
+<code>mmdc -i diagram.mmd -o diagram.svg</code></p>
+<p><strong>Problem: Nodes overlap or layout looks wrong</strong> - Try
+different directions: <code>direction = "LR"</code> often works better
+for wide workflows - Split large workflows into subgraphs:
+<code>show_source_info = TRUE, source_info_style = "subgraph"</code> -
+Use explicit IDs to control node ordering (Mermaid renders in ID
+order)</p>
+<p><strong>Problem: Too many nodes, diagram is unreadable</strong> -
+Hide data file nodes: <code>show_artifacts = FALSE</code> - Filter
+workflow before rendering:
+<code>workflow[workflow$file_name != "test.R", ]</code> - Split into
+multiple diagrams by directory or stage</p>
+<p><strong>Problem: Need to manually edit the Mermaid output</strong> -
+Use <code>output = "raw"</code> to get editable Mermaid code - Save to
+file:
+<code>put_diagram(workflow, output = "file", file = "workflow.mmd")</code>
+- Edit the <code>.mmd</code> file and render with your preferred
+tool</p>
+</blockquote>
 <hr>
 </div>
 </div>
@@ -1218,7 +1316,7 @@ matching.</p>
 </h3>
 <p><strong>1. Use specific file patterns instead of scanning
 everything:</strong></p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Slow: scans all files recursively</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
 <span></span>
@@ -1229,19 +1327,19 @@ everything:</strong></p>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"./src/etl/"</span>, <span class="st">"./src/analysis/"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><strong>2. Disable validation for performance-critical
 scripts:</strong></p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Skip validation checks for faster processing</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, validate <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><strong>3. Use <code>recursive = FALSE</code> when
 appropriate:</strong></p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Only scan top-level directory</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, recursive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Then add specific subdirectories as needed</span></span>
 <span><span class="va">workflow2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/important_module/"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><strong>4. Consider splitting large directories:</strong></p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Process in chunks for very large projects</span></span>
 <span><span class="va">etl_workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/etl/"</span><span class="op">)</span></span>
 <span><span class="va">analysis_workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/analysis/"</span><span class="op">)</span></span>
@@ -1250,7 +1348,7 @@ appropriate:</strong></p>
 <span><span class="co"># Combine if needed</span></span>
 <span><span class="co"># all_workflows &lt;- rbind(etl_workflow, analysis_workflow, reporting_workflow)</span></span></code></pre></div>
 <p><strong>5. Cache results for repeated use:</strong></p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Save workflow for reuse</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">workflow</span>, <span class="st">"workflow_cache.rds"</span><span class="op">)</span></span>
@@ -1259,7 +1357,7 @@ appropriate:</strong></p>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"workflow_cache.rds"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span></code></pre></div>
 <p><strong>6. Profile before optimizing:</strong></p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Measure actual time</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
 <span>  <span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -1298,7 +1396,7 @@ between builds</li>
 <div class="section level3">
 <h3 id="complete-interactive-documentation-workflow">Complete Interactive Documentation Workflow<a class="anchor" aria-label="anchor" href="#complete-interactive-documentation-workflow"></a>
 </h3>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pjt222.github.io/putior/">putior</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># 1. Enable logging for debugging</span></span>
@@ -1334,7 +1432,7 @@ between builds</li>
 <div class="section level3">
 <h3 id="quick-visualization-of-unknown-code">Quick Visualization of Unknown Code<a class="anchor" aria-label="anchor" href="#quick-visualization-of-unknown-code"></a>
 </h3>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Instantly understand a new codebase</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./unfamiliar_project/"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_artifacts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -1349,8 +1447,14 @@ between builds</li>
 </h2>
 <ul>
 <li>
-<a href="getting-started.html">Getting Started</a> - Basic
-annotation syntax</li>
+<a href="quick-start.html">Quick Start</a> - First diagram in 2
+minutes</li>
+<li>
+<a href="annotation-guide.html">Annotation Guide</a> - Complete
+syntax reference</li>
+<li>
+<a href="quick-reference.html">Quick Reference</a> - Cheat sheet for
+daily use</li>
 <li>
 <a href="api-reference.html">API Reference</a> - Complete function
 documentation</li>
@@ -1362,7 +1466,7 @@ documentation</li>
 <div class="section level2">
 <h2 id="try-the-examples">Try the Examples<a class="anchor" aria-label="anchor" href="#try-the-examples"></a>
 </h2>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Auto-annotation example</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"auto-annotation-example.R"</span>, package <span class="op">=</span> <span class="st">"putior"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>

@@ -46,14 +46,14 @@ put(
 
 **Parameters:**
 
-| Parameter              | Type      | Default                    | Description                                  |
-|------------------------|-----------|----------------------------|----------------------------------------------|
-| `path`                 | character | `"."`                      | File or directory path to scan               |
-| `pattern`              | character | `"\\.(R|r|py|sql|sh|jl)$"` | Regex pattern for file matching              |
-| `recursive`            | logical   | `FALSE`                    | Search subdirectories                        |
-| `include_line_numbers` | logical   | `FALSE`                    | Include line numbers in output               |
-| `validate`             | logical   | `TRUE`                     | Show validation warnings                     |
-| `log_level`            | character | `NULL`                     | Override log level (“DEBUG”, “INFO”, “WARN”) |
+| Parameter              | Type      | Default                    | Description                                                                                                                          |
+|------------------------|-----------|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `path`                 | character | `"."`                      | File or directory path to scan                                                                                                       |
+| `pattern`              | character | `"\\.(R|r|py|sql|sh|jl)$"` | Regex pattern for file matching                                                                                                      |
+| `recursive`            | logical   | `FALSE`                    | Search subdirectories                                                                                                                |
+| `include_line_numbers` | logical   | `FALSE`                    | Include line numbers in output                                                                                                       |
+| `validate`             | logical   | `TRUE`                     | Show validation warnings                                                                                                             |
+| `log_level`            | character | `NULL`                     | Override log level. See [Debugging with Logging](https://pjt222.github.io/putior/articles/features-tour.html#debugging-with-logging) |
 
 **Returns:**
 
@@ -122,24 +122,24 @@ put_diagram(
 
 **Parameters:**
 
-| Parameter                  | Type       | Default     | Description                                                                    |
-|----------------------------|------------|-------------|--------------------------------------------------------------------------------|
-| `workflow`                 | data.frame | (required)  | Workflow data from [`put()`](https://pjt222.github.io/putior/reference/put.md) |
-| `output`                   | character  | `"console"` | Output mode: “console”, “file”, “clipboard”, “raw”                             |
-| `file`                     | character  | `NULL`      | Output file path (when output = “file”)                                        |
-| `direction`                | character  | `"TD"`      | Flow direction: “TD”, “LR”, “BT”, “RL”                                         |
-| `theme`                    | character  | `"github"`  | Theme: “github”, “light”, “dark”, “auto”, “minimal”                            |
-| `show_artifacts`           | logical    | `FALSE`     | Show data file nodes                                                           |
-| `show_files`               | logical    | `FALSE`     | Show file names on connections                                                 |
-| `style_nodes`              | logical    | `TRUE`      | Apply color styling to nodes                                                   |
-| `show_workflow_boundaries` | logical    | `TRUE`      | Special styling for start/end nodes                                            |
-| `node_labels`              | character  | `"label"`   | Label style: “name”, “label”, “both”                                           |
-| `title`                    | character  | `NULL`      | Optional diagram title                                                         |
-| `show_source_info`         | logical    | `FALSE`     | Display source file info in nodes                                              |
-| `source_info_style`        | character  | `"inline"`  | Source info style: “inline”, “subgraph”                                        |
-| `enable_clicks`            | logical    | `FALSE`     | Make nodes clickable                                                           |
-| `click_protocol`           | character  | `"vscode"`  | Click protocol: “vscode”, “rstudio”, “file”                                    |
-| `log_level`                | character  | `NULL`      | Override log level                                                             |
+| Parameter                  | Type       | Default     | Description                                                                                                                                                     |
+|----------------------------|------------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `workflow`                 | data.frame | (required)  | Workflow data from [`put()`](https://pjt222.github.io/putior/reference/put.md)                                                                                  |
+| `output`                   | character  | `"console"` | Output mode: “console”, “file”, “clipboard”, “raw”                                                                                                              |
+| `file`                     | character  | `NULL`      | Output file path (when output = “file”)                                                                                                                         |
+| `direction`                | character  | `"TD"`      | Flow direction: “TD”, “LR”, “BT”, “RL”                                                                                                                          |
+| `theme`                    | character  | `"github"`  | Theme: “github”, “light”, “dark”, “auto”, “minimal”                                                                                                             |
+| `show_artifacts`           | logical    | `FALSE`     | Show data file nodes                                                                                                                                            |
+| `show_files`               | logical    | `FALSE`     | Show file names on connections                                                                                                                                  |
+| `style_nodes`              | logical    | `TRUE`      | Apply color styling to nodes                                                                                                                                    |
+| `show_workflow_boundaries` | logical    | `TRUE`      | Special styling for start/end nodes                                                                                                                             |
+| `node_labels`              | character  | `"label"`   | Label style: “name”, “label”, “both”                                                                                                                            |
+| `title`                    | character  | `NULL`      | Optional diagram title                                                                                                                                          |
+| `show_source_info`         | logical    | `FALSE`     | Display source file info in nodes. See [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#show_source_info---display-file-information) |
+| `source_info_style`        | character  | `"inline"`  | Source info style: “inline”, “subgraph”                                                                                                                         |
+| `enable_clicks`            | logical    | `FALSE`     | Make nodes clickable. See [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#enable_clicks---clickable-nodes)                          |
+| `click_protocol`           | character  | `"vscode"`  | Click protocol: “vscode”, “rstudio”, “file”                                                                                                                     |
+| `log_level`                | character  | `NULL`      | Override log level. See [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#debugging-with-logging)                                     |
 
 **Returns:**
 
@@ -762,9 +762,15 @@ set_putior_log_level("WARN")
 
 ## See Also
 
-- [Getting
-  Started](https://pjt222.github.io/putior/articles/getting-started.md) -
-  Introduction and basic usage
+- [Quick
+  Start](https://pjt222.github.io/putior/articles/quick-start.md) -
+  First diagram in 2 minutes
+- [Annotation
+  Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) -
+  Complete syntax reference
+- [Quick
+  Reference](https://pjt222.github.io/putior/articles/quick-reference.md) -
+  Cheat sheet for daily use
 - [Features
   Tour](https://pjt222.github.io/putior/articles/features-tour.md) -
   Overview of advanced features

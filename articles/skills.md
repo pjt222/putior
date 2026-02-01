@@ -1,5 +1,67 @@
 # AI Skills Reference
 
+### About This Vignette
+
+This vignette documents putior’s capabilities for **AI assistants**
+(like Claude, ChatGPT, or GitHub Copilot). It’s designed to be read by
+language models to understand how to use putior effectively.
+
+#### For Humans
+
+If you’re a human reader, you probably want one of these instead:
+
+| Guide                                                                            | Description                            |
+|----------------------------------------------------------------------------------|----------------------------------------|
+| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)           | Create your first diagram in 2 minutes |
+| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference              |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md)   | Printable cheat sheet                  |
+| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)       | Full function documentation            |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md)   | Common issues and solutions            |
+
+#### For AI Assistants
+
+This content is automatically available via:
+
+- **[`putior_skills()`](https://pjt222.github.io/putior/reference/putior_skills.md)** -
+  Returns this documentation as a string
+- **MCP server** - Exposed as a tool via
+  [`putior_mcp_server()`](https://pjt222.github.io/putior/reference/putior_mcp_server.md)
+- **ACP server** - Available via `/runs` endpoint from
+  [`putior_acp_server()`](https://pjt222.github.io/putior/reference/putior_acp_server.md)
+
+#### Programmatic Access
+
+``` r
+# Get skills documentation as a string
+skills_text <- putior_skills()
+
+# Use in prompt engineering
+prompt <- paste("You have access to putior:", skills_text)
+
+# Or access via MCP tools
+tools <- putior_mcp_tools()
+```
+
+#### MCP/ACP Integration
+
+When running as an MCP or ACP server, AI assistants can:
+
+1.  **Discover capabilities** via `putior_skills` tool
+2.  **Extract annotations** via `put` tool
+3.  **Generate diagrams** via `put_diagram` tool
+4.  **Auto-detect workflows** via `put_auto` tool
+
+See the [MCP Server section in
+CLAUDE.md](https://github.com/pjt222/putior/blob/main/CLAUDE.md#mcp-server-integration)
+for setup instructions.
+
+------------------------------------------------------------------------
+
+### Skills Documentation
+
+The content below is the same as returned by
+[`putior_skills()`](https://pjt222.github.io/putior/reference/putior_skills.md):
+
 ## putior Skills
 
 Skills for AI coding assistants to help users document and visualize

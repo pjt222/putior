@@ -37,7 +37,8 @@ skeletons.
 ### `put_auto()` - Detect Workflow Automatically
 
 Analyzes source code patterns to detect file inputs, outputs, and
-dependencies without requiring any annotations.
+dependencies without requiring any annotations. *([Full API
+docs](https://pjt222.github.io/putior/articles/api-reference.html#put_auto---auto-detect-workflow))*
 
 ``` r
 library(putior)
@@ -52,6 +53,29 @@ print(workflow)
 put_diagram(workflow)
 ```
 
+**Example Auto-Detection Result:**
+
+``` mermaid
+flowchart TD
+    load_data_R_1[load_data.R]
+    process_R_1[process.R]
+    report_R_1[report.R]
+
+    %% Connections
+    load_data_R_1 --> process_R_1
+    process_R_1 --> report_R_1
+
+    %% Styling
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class load_data_R_1 processStyle
+    class process_R_1 processStyle
+    class report_R_1 processStyle
+```
+
+*Note: Auto-detected labels default to file names. Use
+[`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md)
+to create annotation templates with better labels.*
+
 **What Gets Detected:**
 
 For R code: - **Inputs**:
@@ -59,8 +83,9 @@ For R code: - **Inputs**:
 [`read_csv()`](https://readr.tidyverse.org/reference/read_delim.html),
 [`readRDS()`](https://rdrr.io/r/base/readRDS.html),
 [`load()`](https://rdrr.io/r/base/load.html), `fread()`, `read_excel()`,
-`fromJSON()`, `read_parquet()`, database connections, etc. -
-**Outputs**: [`write.csv()`](https://rdrr.io/r/utils/write.table.html),
+[`fromJSON()`](https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html),
+`read_parquet()`, database connections, etc. - **Outputs**:
+[`write.csv()`](https://rdrr.io/r/utils/write.table.html),
 [`saveRDS()`](https://rdrr.io/r/base/readRDS.html), `ggsave()`,
 `write_parquet()`, database writes, etc. - **Dependencies**:
 [`source()`](https://rdrr.io/r/base/source.html),
@@ -80,10 +105,32 @@ workflow <- put_auto("./src/", detect_dependencies = FALSE)
 workflow <- put_auto("./src/", detect_inputs = FALSE, detect_dependencies = FALSE)
 ```
 
+> **When Things Go Wrong with Auto-Detection:**
+>
+> **Problem: Detects wrong files or patterns** - Use
+> [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md)
+> with `merge_strategy = "manual_priority"` to override with manual
+> annotations - Exclude files with specific `pattern` argument:
+> `put_auto("./src/", pattern = "^(?!test_).*\\.R$")`
+>
+> **Problem: Misses important file I/O** - Check if your library is
+> supported:
+> `grep("yourfunc", sapply(get_detection_patterns("r")$input, \`\[\[\`,
+> “func”))\` - Add manual annotations for unsupported patterns -
+> [Request new patterns](https://github.com/pjt222/putior/issues) via
+> GitHub issue
+>
+> **Problem: Too much noise in results** - Use
+> `detect_dependencies = FALSE` to skip
+> [`source()`](https://rdrr.io/r/base/source.html) detection - Filter
+> results: `workflow[workflow$node_type != "dependency", ]` - Switch to
+> manual annotations for precise control
+
 ### `put_generate()` - Generate Annotation Comments
 
 Creates PUT annotation comments that you can add to your source files.
-Think of it like roxygen2’s skeleton generation.
+Think of it like roxygen2’s skeleton generation. *([Full API
+docs](https://pjt222.github.io/putior/articles/api-reference.html#put_generate---generate-annotation-templates))*
 
 ``` r
 # Print suggested annotations to console
@@ -124,7 +171,8 @@ put_generate("./src/", style = "multiline")
 ### `put_merge()` - Combine Manual + Auto
 
 Combines your manual annotations with auto-detected ones using
-configurable merge strategies.
+configurable merge strategies. *([Full API
+docs](https://pjt222.github.io/putior/articles/api-reference.html#put_merge---merge-manual-and-auto))*
 
 ``` r
 # Manual annotations take priority
@@ -144,6 +192,43 @@ workflow <- put_merge("./src/", merge_strategy = "union")
 | `manual_priority` | You want full control, auto only adds missing files  |
 | `supplement`      | Your annotations have labels but missing I/O details |
 | `union`           | You want the most complete picture possible          |
+
+**Before/After Merge Example:**
+
+*Manual annotations only (sparse):*
+
+``` mermaid
+flowchart TD
+    extract([Extract Data])
+    load[[Load to DB]]
+
+    %% Styling
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    class extract inputStyle
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class load outputStyle
+```
+
+*After merge with `supplement` strategy (auto-detected I/O added):*
+
+``` mermaid
+flowchart TD
+    extract([Extract Data])
+    transform[etl.R]
+    load[[Load to DB]]
+
+    %% Connections
+    extract --> transform
+    transform --> load
+
+    %% Styling
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    class extract inputStyle
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class transform processStyle
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class load outputStyle
+```
 
 ### Auto-Annotation Workflow
 
@@ -176,7 +261,8 @@ clickable nodes.
 
 ### `show_source_info` - Display File Information
 
-Show which source file each workflow node comes from.
+Show which source file each workflow node comes from. *([API
+Reference](https://pjt222.github.io/putior/articles/api-reference.html#put_diagram---generate-mermaid-diagram))*
 
 ``` r
 workflow <- put("./src/", include_line_numbers = TRUE)
@@ -237,7 +323,8 @@ flowchart TD
 ### `enable_clicks` - Clickable Nodes
 
 Make diagram nodes clickable to open the source file directly in your
-editor.
+editor. *([API
+Reference](https://pjt222.github.io/putior/articles/api-reference.html#put_diagram---generate-mermaid-diagram))*
 
 ``` r
 workflow <- put("./src/", include_line_numbers = TRUE)
@@ -560,6 +647,30 @@ put_diagram(workflow,
 | `BT`      | Bottom to Top | Unusual layouts |
 | `RL`      | Right to Left | RTL languages   |
 
+> **When Things Go Wrong with Diagrams:**
+>
+> **Problem: Diagram doesn’t render (shows raw text)** - Test your
+> Mermaid code at [mermaid.live](https://mermaid.live) to identify
+> syntax issues - For pkgdown sites, ensure Mermaid.js is included in
+> `_pkgdown.yml` - Use `output = "raw"` and render manually with Mermaid
+> CLI: `mmdc -i diagram.mmd -o diagram.svg`
+>
+> **Problem: Nodes overlap or layout looks wrong** - Try different
+> directions: `direction = "LR"` often works better for wide workflows -
+> Split large workflows into subgraphs:
+> `show_source_info = TRUE, source_info_style = "subgraph"` - Use
+> explicit IDs to control node ordering (Mermaid renders in ID order)
+>
+> **Problem: Too many nodes, diagram is unreadable** - Hide data file
+> nodes: `show_artifacts = FALSE` - Filter workflow before rendering:
+> `workflow[workflow$file_name != "test.R", ]` - Split into multiple
+> diagrams by directory or stage
+>
+> **Problem: Need to manually edit the Mermaid output** - Use
+> `output = "raw"` to get editable Mermaid code - Save to file:
+> `put_diagram(workflow, output = "file", file = "workflow.mmd")` - Edit
+> the `.mmd` file and render with your preferred tool
+
 ------------------------------------------------------------------------
 
 ## Performance
@@ -747,9 +858,15 @@ put_generate("./unfamiliar_project/", output = "clipboard")
 
 ## See Also
 
-- [Getting
-  Started](https://pjt222.github.io/putior/articles/getting-started.md) -
-  Basic annotation syntax
+- [Quick
+  Start](https://pjt222.github.io/putior/articles/quick-start.md) -
+  First diagram in 2 minutes
+- [Annotation
+  Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) -
+  Complete syntax reference
+- [Quick
+  Reference](https://pjt222.github.io/putior/articles/quick-reference.md) -
+  Cheat sheet for daily use
 - [API
   Reference](https://pjt222.github.io/putior/articles/api-reference.md) -
   Complete function documentation

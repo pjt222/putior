@@ -140,12 +140,14 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/getting-started.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/quick-start.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started with putior</a></li>
+<li><a class="dropdown-item" href="../articles/quick-start.html">Quick Start</a></li>
+    <li><a class="dropdown-item" href="../articles/annotation-guide.html">Annotation Guide</a></li>
+    <li><a class="dropdown-item" href="../articles/quick-reference.html">Quick Reference</a></li>
     <li><a class="dropdown-item" href="../articles/features-tour.html">Features Tour</a></li>
     <li><a class="dropdown-item" href="../articles/api-reference.html">API Reference</a></li>
     <li><a class="dropdown-item" href="../articles/showcase.html">Showcase: Real-World Examples</a></li>
@@ -182,6 +184,109 @@
 
     
     
+<div class="section level3">
+<h3 id="about-this-vignette">About This Vignette<a class="anchor" aria-label="anchor" href="#about-this-vignette"></a>
+</h3>
+<p>This vignette documents putior’s capabilities for <strong>AI
+assistants</strong> (like Claude, ChatGPT, or GitHub Copilot). It’s
+designed to be read by language models to understand how to use putior
+effectively.</p>
+<div class="section level4">
+<h4 id="for-humans">For Humans<a class="anchor" aria-label="anchor" href="#for-humans"></a>
+</h4>
+<p>If you’re a human reader, you probably want one of these instead:</p>
+<table class="table">
+<colgroup>
+<col width="35%">
+<col width="65%">
+</colgroup>
+<thead><tr class="header">
+<th>Guide</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><a href="quick-start.html">Quick Start</a></td>
+<td>Create your first diagram in 2 minutes</td>
+</tr>
+<tr class="even">
+<td><a href="annotation-guide.html">Annotation Guide</a></td>
+<td>Complete syntax reference</td>
+</tr>
+<tr class="odd">
+<td><a href="quick-reference.html">Quick Reference</a></td>
+<td>Printable cheat sheet</td>
+</tr>
+<tr class="even">
+<td><a href="api-reference.html">API Reference</a></td>
+<td>Full function documentation</td>
+</tr>
+<tr class="odd">
+<td><a href="troubleshooting.html">Troubleshooting</a></td>
+<td>Common issues and solutions</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level4">
+<h4 id="for-ai-assistants">For AI Assistants<a class="anchor" aria-label="anchor" href="#for-ai-assistants"></a>
+</h4>
+<p>This content is automatically available via:</p>
+<ul>
+<li>
+<strong><code><a href="../reference/putior_skills.html">putior_skills()</a></code></strong> - Returns this
+documentation as a string</li>
+<li>
+<strong>MCP server</strong> - Exposed as a tool via
+<code><a href="../reference/putior_mcp_server.html">putior_mcp_server()</a></code>
+</li>
+<li>
+<strong>ACP server</strong> - Available via <code>/runs</code>
+endpoint from <code><a href="../reference/putior_acp_server.html">putior_acp_server()</a></code>
+</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="programmatic-access">Programmatic Access<a class="anchor" aria-label="anchor" href="#programmatic-access"></a>
+</h4>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get skills documentation as a string</span></span>
+<span><span class="va">skills_text</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/putior_skills.html">putior_skills</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use in prompt engineering</span></span>
+<span><span class="va">prompt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"You have access to putior:"</span>, <span class="va">skills_text</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Or access via MCP tools</span></span>
+<span><span class="va">tools</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/putior_mcp_tools.html">putior_mcp_tools</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="mcpacp-integration">MCP/ACP Integration<a class="anchor" aria-label="anchor" href="#mcpacp-integration"></a>
+</h4>
+<p>When running as an MCP or ACP server, AI assistants can:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Discover capabilities</strong> via
+<code>putior_skills</code> tool</li>
+<li>
+<strong>Extract annotations</strong> via <code>put</code> tool</li>
+<li>
+<strong>Generate diagrams</strong> via <code>put_diagram</code>
+tool</li>
+<li>
+<strong>Auto-detect workflows</strong> via <code>put_auto</code>
+tool</li>
+</ol>
+<p>See the <a href="https://github.com/pjt222/putior/blob/main/CLAUDE.md#mcp-server-integration" class="external-link">MCP
+Server section in CLAUDE.md</a> for setup instructions.</p>
+<hr>
+</div>
+</div>
+<div class="section level3">
+<h3 id="skills-documentation">Skills Documentation<a class="anchor" aria-label="anchor" href="#skills-documentation"></a>
+</h3>
+<p>The content below is the same as returned by
+<code><a href="../reference/putior_skills.html">putior_skills()</a></code>:</p>
+</div>
 <div class="section level2">
 <h2 id="putior-skills">putior Skills<a class="anchor" aria-label="anchor" href="#putior-skills"></a>
 </h2>
@@ -221,7 +326,7 @@ content as a string.</p>
 <div class="section level3">
 <h3 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h3>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Extract annotations from source files</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./R/"</span><span class="op">)</span></span>
 <span></span>
@@ -236,7 +341,7 @@ content as a string.</p>
 </h3>
 <p>Add <code>#put</code> comments to source files to define workflow
 nodes:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#put id:"load", label:"Load Data", output:"raw_data.csv"</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"input.csv"</span><span class="op">)</span></span>
 <span></span>
@@ -299,7 +404,7 @@ nodes:</p>
 <h4 id="multiline-annotations">Multiline Annotations<a class="anchor" aria-label="anchor" href="#multiline-annotations"></a>
 </h4>
 <p>Use backslash for continuation:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#put id:"complex_step", \</span></span>
 <span><span class="co">#put   label:"Multi-step Process", \</span></span>
 <span><span class="co">#put   input:"file1.csv, file2.csv", \</span></span>
@@ -360,15 +465,15 @@ PHP</td>
 <div class="section level4">
 <h4 id="examples-by-language">Examples by Language<a class="anchor" aria-label="anchor" href="#examples-by-language"></a>
 </h4>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co">-- query.sql</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">--put id:"fetch", label:"Fetch Customers", output:"customers"</span></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> customers;</span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">// transform.js</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">//put id:"process", label:"Transform JSON", input:"data.json", output:"output.json"</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="kw">const</span> result <span class="op">=</span> data<span class="op">.</span><span class="fu">map</span>(transform)<span class="op">;</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">% analysis.m</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">%put id:"stats", label:"Statistical Analysis", input:"data.mat", output:"results.mat"</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="va">results</span> <span class="op">=</span> <span class="va">compute_statistics</span>(<span class="va">data</span>)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">-- query.sql</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">--put id:"fetch", label:"Fetch Customers", output:"customers"</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> customers;</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">// transform.js</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">//put id:"process", label:"Transform JSON", input:"data.json", output:"output.json"</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="kw">const</span> result <span class="op">=</span> data<span class="op">.</span><span class="fu">map</span>(transform)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">% analysis.m</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">%put id:"stats", label:"Statistical Analysis", input:"data.mat", output:"results.mat"</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="va">results</span> <span class="op">=</span> <span class="va">compute_statistics</span>(<span class="va">data</span>)<span class="op">;</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -378,7 +483,7 @@ PHP</td>
 <h4 id="put---extract-annotations">
 <code>put()</code> - Extract Annotations<a class="anchor" aria-label="anchor" href="#put---extract-annotations"></a>
 </h4>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Scan directory for annotations</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./R/"</span><span class="op">)</span></span>
 <span></span>
@@ -395,7 +500,7 @@ PHP</td>
 <h4 id="put_diagram---generate-diagrams">
 <code>put_diagram()</code> - Generate Diagrams<a class="anchor" aria-label="anchor" href="#put_diagram---generate-diagrams"></a>
 </h4>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Basic diagram</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span>
 <span></span>
@@ -423,7 +528,7 @@ PHP</td>
 <code>put_auto()</code> - Auto-Detect Workflow<a class="anchor" aria-label="anchor" href="#put_auto---auto-detect-workflow"></a>
 </h4>
 <p>Analyze code to detect inputs/outputs without annotations:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Auto-detect from R files</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./R/"</span><span class="op">)</span></span>
 <span></span>
@@ -441,7 +546,7 @@ PHP</td>
 <h4 id="put_generate---generate-annotation-templates">
 <code>put_generate()</code> - Generate Annotation Templates<a class="anchor" aria-label="anchor" href="#put_generate---generate-annotation-templates"></a>
 </h4>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Print suggested annotations</span></span>
 <span><span class="fu"><a href="../reference/put_generate.html">put_generate</a></span><span class="op">(</span><span class="st">"./R/"</span><span class="op">)</span></span>
 <span></span>
@@ -554,7 +659,7 @@ transformers, litellm, vllm, groq</p>
 <div class="section level3">
 <h3 id="helper-functions">Helper Functions<a class="anchor" aria-label="anchor" href="#helper-functions"></a>
 </h3>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get comment prefix for extension</span></span>
 <span><span class="fu"><a href="../reference/get_comment_prefix.html">get_comment_prefix</a></span><span class="op">(</span><span class="st">"sql"</span><span class="op">)</span>   <span class="co"># Returns "--"</span></span>
 <span><span class="fu"><a href="../reference/get_comment_prefix.html">get_comment_prefix</a></span><span class="op">(</span><span class="st">"js"</span><span class="op">)</span>    <span class="co"># Returns "//"</span></span>
@@ -582,7 +687,7 @@ transformers, litellm, vllm, groq</p>
 <div class="section level4">
 <h4 id="document-existing-codebase">Document Existing Codebase<a class="anchor" aria-label="anchor" href="#document-existing-codebase"></a>
 </h4>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Auto-generate annotation suggestions</span></span>
 <span><span class="fu"><a href="../reference/put_generate.html">put_generate</a></span><span class="op">(</span><span class="st">"./R/"</span>, output <span class="op">=</span> <span class="st">"clipboard"</span><span class="op">)</span></span>
 <span></span>
@@ -594,7 +699,7 @@ transformers, litellm, vllm, groq</p>
 <div class="section level4">
 <h4 id="quick-visualization-without-annotations">Quick Visualization Without Annotations<a class="anchor" aria-label="anchor" href="#quick-visualization-without-annotations"></a>
 </h4>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Instant workflow diagram from code analysis</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_artifacts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -602,7 +707,7 @@ transformers, litellm, vllm, groq</p>
 <div class="section level4">
 <h4 id="hybrid-approach">Hybrid Approach<a class="anchor" aria-label="anchor" href="#hybrid-approach"></a>
 </h4>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Manual annotations for key files, auto-detect the rest</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_merge.html">put_merge</a></span><span class="op">(</span><span class="st">"./src/"</span>, merge_strategy <span class="op">=</span> <span class="st">"supplement"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span></code></pre></div>
@@ -610,7 +715,7 @@ transformers, litellm, vllm, groq</p>
 <div class="section level4">
 <h4 id="export-for-documentation">Export for Documentation<a class="anchor" aria-label="anchor" href="#export-for-documentation"></a>
 </h4>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Save Mermaid diagram to markdown file</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"docs/workflow.md"</span><span class="op">)</span></span>
 <span></span>
@@ -674,13 +779,13 @@ transformers, litellm, vllm, groq</p>
 <h3 id="interactive-sandbox">Interactive Sandbox<a class="anchor" aria-label="anchor" href="#interactive-sandbox"></a>
 </h3>
 <p>Launch browser-based annotation playground:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/run_sandbox.html">run_sandbox</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># Requires shiny package</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="quartormarkdown-integration">Quarto/RMarkdown Integration<a class="anchor" aria-label="anchor" href="#quartormarkdown-integration"></a>
 </h3>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># In R chunk</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./R/"</span><span class="op">)</span></span>
 <span><span class="va">mermaid_code</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span></span></code></pre></div>
@@ -691,7 +796,7 @@ chunk.</p>
 <h3 id="logging">Logging<a class="anchor" aria-label="anchor" href="#logging"></a>
 </h3>
 <p>Enable debug output for troubleshooting:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set globally</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>putior.log_level <span class="op">=</span> <span class="st">"DEBUG"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/set_putior_log_level.html">set_putior_log_level</a></span><span class="op">(</span><span class="st">"DEBUG"</span><span class="op">)</span></span>

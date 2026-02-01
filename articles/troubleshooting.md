@@ -4,6 +4,158 @@ This guide helps you diagnose and resolve common issues when working
 with putior. Each section covers a specific category of problems with
 practical solutions.
 
+## Contents
+
+- [Most Common Issues](#most-common-issues) - Start here!
+- [Quick Diagnostics](#quick-diagnostics)
+- [Annotation Syntax Errors](#annotation-syntax-errors)
+- [File Pattern Matching Issues](#file-pattern-matching-issues)
+- [Diagram Rendering Problems](#diagram-rendering-problems)
+- [Multi-Language Support Issues](#multi-language-support-issues)
+- [Performance Tips](#performance-tips-for-large-codebases)
+- [Debugging with Logging](#debugging-with-logging)
+- [FAQ](#frequently-asked-questions)
+- [Getting Help](#getting-help)
+
+------------------------------------------------------------------------
+
+## Most Common Issues
+
+These are the top 5 issues users encounter. Check these first!
+
+### 1. Annotations Not Detected
+
+**Frequency:** 🔴 Very Common
+
+**Problem:** [`put()`](https://pjt222.github.io/putior/reference/put.md)
+returns an empty data frame even though you have annotations in your
+files.
+
+**Cause:** Wrong comment prefix for your file type.
+
+**Solution:** Use the correct comment prefix for your language:
+
+| Language          | Correct Prefix | Example                |
+|-------------------|----------------|------------------------|
+| R, Python         | `#put`         | `#put label:"Step 1"`  |
+| SQL, Lua          | `--put`        | `--put label:"Step 1"` |
+| JavaScript, Go, C | `//put`        | `//put label:"Step 1"` |
+| MATLAB            | `%put`         | `%put label:"Step 1"`  |
+
+``` r
+# Check what prefix your file type needs
+get_comment_prefix("sql")  # Returns "--"
+get_comment_prefix("js")   # Returns "//"
+```
+
+------------------------------------------------------------------------
+
+### 2. Nodes Not Connecting in Diagram
+
+**Frequency:** 🔴 Very Common
+
+**Problem:** Diagram shows isolated nodes instead of a connected
+workflow.
+
+**Cause:** Typo in input/output names - they must match exactly.
+
+**Solution:** Check that output of one node matches input of the next:
+
+``` r
+# WRONG - Names don't match
+#put id:"step1", output:"data.csv"      # Outputs "data.csv"
+#put id:"step2", input:"Data.csv"       # Expects "Data.csv" (case mismatch!)
+
+# CORRECT - Exact match
+#put id:"step1", output:"data.csv"
+#put id:"step2", input:"data.csv"
+```
+
+**Diagnostic:**
+
+``` r
+workflow <- put("./src/")
+# Check for mismatches
+unique(workflow$output)
+unique(workflow$input)
+```
+
+------------------------------------------------------------------------
+
+### 3. Diagram Not Rendering
+
+**Frequency:** 🟡 Occasional
+
+**Problem:** Mermaid code appears as text instead of a diagram.
+
+**Cause:** Mermaid.js not loaded, or syntax error in generated code.
+
+**Solution:**
+
+1.  **For pkgdown sites:** Ensure Mermaid is included in `_pkgdown.yml`
+2.  **For R Markdown:** Use raw output and a Mermaid-enabled viewer
+3.  **Quick test:** Paste the output into
+    [mermaid.live](https://mermaid.live)
+
+``` r
+# Get raw Mermaid code to debug
+mermaid_code <- put_diagram(workflow, output = "raw")
+cat(mermaid_code)  # Copy this to mermaid.live to test
+```
+
+------------------------------------------------------------------------
+
+### 4. Auto-Detection Missing Expected Patterns
+
+**Frequency:** 🟡 Occasional
+
+**Problem:**
+[`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md)
+doesn’t detect file reads/writes you expected.
+
+**Cause:** Library or function not in detection patterns.
+
+**Solution:**
+
+1.  Check if your library is supported:
+
+``` r
+patterns <- get_detection_patterns("r")
+# Search for your function
+grep("readr", sapply(patterns$input, `[[`, "func"), value = TRUE)
+```
+
+2.  Use manual annotations for unsupported patterns
+3.  Request new patterns via [GitHub
+    issue](https://github.com/pjt222/putior/issues)
+
+------------------------------------------------------------------------
+
+### 5. Wrong Language Detection
+
+**Frequency:** 🟢 Rare
+
+**Problem:** File parsed with wrong comment syntax.
+
+**Cause:** Unusual file extension or ambiguous extension (e.g., `.m` for
+MATLAB vs Objective-C).
+
+**Solution:**
+
+``` r
+# Check what language is detected for your extension
+ext_to_language("m")   # Returns "matlab"
+ext_to_language("jl")  # Returns "julia"
+
+# List all supported extensions
+get_supported_extensions()
+```
+
+If your extension isn’t recognized, use the standard extension or add
+manual annotations with the correct comment prefix.
+
+------------------------------------------------------------------------
+
 ## Quick Diagnostics
 
 Before diving into specific issues, run these quick checks:
@@ -460,9 +612,43 @@ get_comment_prefix(ext)  # Returns "#" as fallback
 get_supported_extensions()
 ```
 
-**Solution**: For unsupported extensions, putior falls back to `#`
-prefix. You can still use annotations with hash comments, or request
-support for new languages.
+**Escape Hatches for Unsupported File Types:**
+
+**Option 1: Use fallback `#` prefix** (if your language supports `#`
+comments)
+
+    # In your .xyz file (if it supports # comments)
+    #put id:"step1", label:"Process Data"
+
+**Option 2: Create a wrapper annotation file**
+
+``` r
+# workflow-annotations.R
+# This file documents the workflow for unsupported file types
+
+#put id:"xyz_step1", label:"Process in XYZ format", input:"data.xyz", output:"result.xyz"
+#put id:"xyz_step2", label:"Convert output", input:"result.xyz", output:"final.csv"
+
+# Then scan this file instead
+workflow <- put("workflow-annotations.R")
+```
+
+**Option 3: Use text input for ad-hoc annotations**
+
+``` r
+# Define workflow without files
+workflow <- put(text = '
+#put id:"step1", label:"Custom Step 1", output:"data.xyz"
+#put id:"step2", label:"Custom Step 2", input:"data.xyz"
+')
+put_diagram(workflow)
+```
+
+**Option 4: Request new language support**
+
+[Open a GitHub issue](https://github.com/pjt222/putior/issues) with: -
+Language name and file extension - Comment syntax used by the language -
+Example code showing typical file I/O patterns (for auto-detection)
 
 ------------------------------------------------------------------------
 
@@ -730,9 +916,15 @@ If you’re still stuck:
 
 1.  **Check the vignettes**:
 
-    - [Getting
-      Started](https://pjt222.github.io/putior/articles/getting-started.md) -
-      Basic usage
+    - [Quick
+      Start](https://pjt222.github.io/putior/articles/quick-start.md) -
+      First diagram in 2 minutes
+    - [Annotation
+      Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) -
+      Complete syntax reference
+    - [Quick
+      Reference](https://pjt222.github.io/putior/articles/quick-reference.md) -
+      Cheat sheet
     - [Features
       Tour](https://pjt222.github.io/putior/articles/features-tour.md) -
       Advanced features

@@ -140,12 +140,14 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/getting-started.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/quick-start.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started with putior</a></li>
+<li><a class="dropdown-item" href="../articles/quick-start.html">Quick Start</a></li>
+    <li><a class="dropdown-item" href="../articles/annotation-guide.html">Annotation Guide</a></li>
+    <li><a class="dropdown-item" href="../articles/quick-reference.html">Quick Reference</a></li>
     <li><a class="dropdown-item" href="../articles/features-tour.html">Features Tour</a></li>
     <li><a class="dropdown-item" href="../articles/api-reference.html">API Reference</a></li>
     <li><a class="dropdown-item" href="../articles/showcase.html">Showcase: Real-World Examples</a></li>
@@ -883,6 +885,213 @@ ML</strong>: XGBoost training, hyperparameter search, evaluation -
 </div>
 </div>
 <div class="section level2">
+<h2 id="improving-existing-annotations">Improving Existing Annotations<a class="anchor" aria-label="anchor" href="#improving-existing-annotations"></a>
+</h2>
+<p>Real-world codebases often have messy, incomplete annotations. Here’s
+how to clean them up.</p>
+<div class="section level3">
+<h3 id="before-a-messy-starting-point">Before: A Messy Starting Point<a class="anchor" aria-label="anchor" href="#before-a-messy-starting-point"></a>
+</h3>
+<p>This ETL script has common problems:</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># etl_pipeline.R - typical messy annotations</span></span>
+<span></span>
+<span><span class="co">#put id:"step1", output:"data"</span></span>
+<span><span class="co"># ^ Problem: Vague ID and output name</span></span>
+<span></span>
+<span><span class="va">raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"sales_2024.csv"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#put id:"2", input:"data"</span></span>
+<span><span class="co"># ^ Problem: Inconsistent ID style (numeric), output missing</span></span>
+<span></span>
+<span><span class="va">clean</span> <span class="op">&lt;-</span> <span class="va">raw</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html" class="external-link">complete.cases</a></span><span class="op">(</span><span class="va">raw</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="va">clean</span><span class="op">$</span><span class="va">date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">clean</span><span class="op">$</span><span class="va">date</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># (No annotation here - important step is undocumented!)</span></span>
+<span><span class="va">aggregated</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="va">amount</span> <span class="op">~</span> <span class="va">region</span>, <span class="va">clean</span>, <span class="va">sum</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#put label:"final step"</span></span>
+<span><span class="co"># ^ Problem: Missing ID, vague label, no input/output</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">aggregated</span>, <span class="st">"regional_sales.csv"</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Resulting diagram (disconnected, unclear):</strong></p>
+<pre class="mermaid"><code>flowchart TD
+    step1[step1]
+    node_2[2]
+    final_step_1[final step]
+
+    %% Connections
+    step1 --&gt; node_2
+
+    %% Styling
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class step1 processStyle
+    class node_2 processStyle
+    class final_step_1 processStyle</code></pre>
+</div>
+<div class="section level3">
+<h3 id="step-by-step-improvement">Step-by-Step Improvement<a class="anchor" aria-label="anchor" href="#step-by-step-improvement"></a>
+</h3>
+<p><strong>Step 1: Audit current state</strong></p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"etl_pipeline.R"</span>, validate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span>  <span class="co"># See what's detected</span></span>
+<span><span class="co"># Validation warnings will highlight issues</span></span></code></pre></div>
+<p><strong>Step 2: Use auto-detection to find gaps</strong></p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">auto</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"etl_pipeline.R"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">auto</span><span class="op">)</span>  <span class="co"># Shows file I/O that wasn't annotated</span></span></code></pre></div>
+<p><strong>Step 3: Generate annotation templates</strong></p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/put_generate.html">put_generate</a></span><span class="op">(</span><span class="st">"etl_pipeline.R"</span><span class="op">)</span></span>
+<span><span class="co"># Outputs suggested annotations based on code patterns</span></span></code></pre></div>
+<p><strong>Step 4: Apply fixes with naming conventions</strong></p>
+<table class="table">
+<thead><tr class="header">
+<th>Convention</th>
+<th>Example</th>
+<th>Benefit</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Descriptive IDs</td>
+<td>
+<code>extract_sales</code> not <code>step1</code>
+</td>
+<td>Self-documenting</td>
+</tr>
+<tr class="even">
+<td>Verb + noun labels</td>
+<td>“Load Sales Data”</td>
+<td>Clear action</td>
+</tr>
+<tr class="odd">
+<td>Full file names</td>
+<td>
+<code>sales_2024.csv</code> not <code>data</code>
+</td>
+<td>Traceable</td>
+</tr>
+<tr class="even">
+<td>Consistent style</td>
+<td>
+<code>snake_case</code> IDs</td>
+<td>Maintainable</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="after-clean-annotations">After: Clean Annotations<a class="anchor" aria-label="anchor" href="#after-clean-annotations"></a>
+</h3>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># etl_pipeline.R - improved annotations</span></span>
+<span></span>
+<span><span class="co">#put id:"extract_sales", label:"Load Sales Data", \</span></span>
+<span><span class="co">#    node_type:"input", output:"sales_2024.csv"</span></span>
+<span><span class="va">raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"sales_2024.csv"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#put id:"clean_data", label:"Clean &amp; Validate", \</span></span>
+<span><span class="co">#    input:"sales_2024.csv", output:"clean_sales.internal"</span></span>
+<span><span class="va">clean</span> <span class="op">&lt;-</span> <span class="va">raw</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html" class="external-link">complete.cases</a></span><span class="op">(</span><span class="va">raw</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="va">clean</span><span class="op">$</span><span class="va">date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">clean</span><span class="op">$</span><span class="va">date</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#put id:"aggregate_regions", label:"Aggregate by Region", \</span></span>
+<span><span class="co">#    input:"clean_sales.internal", output:"aggregated.internal"</span></span>
+<span><span class="va">aggregated</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="va">amount</span> <span class="op">~</span> <span class="va">region</span>, <span class="va">clean</span>, <span class="va">sum</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#put id:"export_results", label:"Export Regional Report", \</span></span>
+<span><span class="co">#    node_type:"output", input:"aggregated.internal", output:"regional_sales.csv"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">aggregated</span>, <span class="st">"regional_sales.csv"</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Resulting diagram (connected, clear flow):</strong></p>
+<pre class="mermaid"><code>flowchart TD
+    extract_sales([Load Sales Data])
+    clean_data[Clean &amp; Validate]
+    aggregate_regions[Aggregate by Region]
+    export_results[[Export Regional Report]]
+
+    %% Connections
+    extract_sales --&gt; clean_data
+    clean_data --&gt; aggregate_regions
+    aggregate_regions --&gt; export_results
+
+    %% Styling
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    class extract_sales inputStyle
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class clean_data processStyle
+    class aggregate_regions processStyle
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class export_results outputStyle</code></pre>
+</div>
+<div class="section level3">
+<h3 id="key-improvements-made">Key Improvements Made<a class="anchor" aria-label="anchor" href="#key-improvements-made"></a>
+</h3>
+<table class="table">
+<colgroup>
+<col width="40%">
+<col width="35%">
+<col width="25%">
+</colgroup>
+<thead><tr class="header">
+<th>Before</th>
+<th>After</th>
+<th>Why</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>id:"step1"</code></td>
+<td><code>id:"extract_sales"</code></td>
+<td>Descriptive, searchable</td>
+</tr>
+<tr class="even">
+<td><code>output:"data"</code></td>
+<td><code>output:"sales_2024.csv"</code></td>
+<td>Actual file name</td>
+</tr>
+<tr class="odd">
+<td>Missing annotation</td>
+<td>Added for aggregation step</td>
+<td>Complete workflow</td>
+</tr>
+<tr class="even">
+<td><code>label:"final step"</code></td>
+<td><code>label:"Export Regional Report"</code></td>
+<td>Specific action</td>
+</tr>
+<tr class="odd">
+<td>No node_type</td>
+<td>Explicit input/process/output</td>
+<td>Proper diagram shapes</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="workflow-for-legacy-code">Workflow for Legacy Code<a class="anchor" aria-label="anchor" href="#workflow-for-legacy-code"></a>
+</h3>
+<p>For existing codebases without any annotations:</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 1. Start with auto-detection</span></span>
+<span><span class="va">auto_workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./legacy_code/"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">auto_workflow</span><span class="op">)</span>  <span class="co"># Get initial picture</span></span>
+<span></span>
+<span><span class="co"># 2. Generate annotation suggestions</span></span>
+<span><span class="fu"><a href="../reference/put_generate.html">put_generate</a></span><span class="op">(</span><span class="st">"./legacy_code/"</span>, output <span class="op">=</span> <span class="st">"clipboard"</span><span class="op">)</span></span>
+<span><span class="co"># Paste into files and customize</span></span>
+<span></span>
+<span><span class="co"># 3. Add manual annotations for key files</span></span>
+<span><span class="co"># Focus on main entry points first</span></span>
+<span></span>
+<span><span class="co"># 4. Merge for complete picture</span></span>
+<span><span class="va">final</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_merge.html">put_merge</a></span><span class="op">(</span><span class="st">"./legacy_code/"</span>,</span>
+<span>                   merge_strategy <span class="op">=</span> <span class="st">"supplement"</span>,</span>
+<span>                   recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">final</span>, show_source_info <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<hr>
+</div>
+</div>
+<div class="section level2">
 <h2 id="tips-for-large-workflows">Tips for Large Workflows<a class="anchor" aria-label="anchor" href="#tips-for-large-workflows"></a>
 </h2>
 <p>When working with complex workflows:</p>
@@ -905,7 +1114,7 @@ subdirectories</li>
 <strong>Show artifacts selectively</strong>: Use
 <code>show_artifacts = TRUE</code> only when data lineage matters</li>
 </ol>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For large workflows, consider:</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>,</span>
 <span>  direction <span class="op">=</span> <span class="st">"LR"</span>,              <span class="co"># Left-to-right for wide pipelines</span></span>
@@ -918,7 +1127,7 @@ subdirectories</li>
 <h2 id="try-it-yourself">Try It Yourself<a class="anchor" aria-label="anchor" href="#try-it-yourself"></a>
 </h2>
 <p>Run the built-in examples:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Basic example</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"reprex.R"</span>, package <span class="op">=</span> <span class="st">"putior"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -927,6 +1136,66 @@ subdirectories</li>
 <span></span>
 <span><span class="co"># Self-documentation (putior documents itself!)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"self-documentation.R"</span>, package <span class="op">=</span> <span class="st">"putior"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="see-also">See Also<a class="anchor" aria-label="anchor" href="#see-also"></a>
+</h2>
+<p><strong>Functions used in these examples:</strong></p>
+<table class="table">
+<colgroup>
+<col width="29%">
+<col width="26%">
+<col width="44%">
+</colgroup>
+<thead><tr class="header">
+<th>Function</th>
+<th>Purpose</th>
+<th>Documentation</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code><a href="../reference/put.html">put()</a></code></td>
+<td>Extract annotations</td>
+<td><a href="api-reference.html#put">API Reference</a></td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/put_diagram.html">put_diagram()</a></code></td>
+<td>Generate diagrams</td>
+<td><a href="api-reference.html#put_diagram">API Reference</a></td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/put_auto.html">put_auto()</a></code></td>
+<td>Auto-detect workflows</td>
+<td><a href="features-tour.html#put_auto---detect-workflow-automatically">Features
+Tour</a></td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/put_merge.html">put_merge()</a></code></td>
+<td>Combine manual + auto</td>
+<td><a href="features-tour.html#put_merge---combine-manual--auto">Features
+Tour</a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Related guides:</strong></p>
+<ul>
+<li>
+<a href="quick-start.html">Quick Start</a> - Create your first
+diagram</li>
+<li>
+<a href="quick-reference.html">Quick Reference</a> - Cheat sheet for
+daily use</li>
+<li>
+<a href="annotation-guide.html">Annotation Guide</a> - Complete
+syntax reference</li>
+<li>
+<a href="features-tour.html">Features Tour</a> - Interactive
+diagrams, themes, logging</li>
+<li>
+<a href="troubleshooting.html">Troubleshooting</a> - Common issues
+and solutions</li>
+</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
