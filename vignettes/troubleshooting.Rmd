@@ -611,7 +611,42 @@ get_comment_prefix(ext)  # Returns "#" as fallback
 get_supported_extensions()
 ```
 
-**Solution**: For unsupported extensions, putior falls back to `#` prefix. You can still use annotations with hash comments, or request support for new languages.
+**Escape Hatches for Unsupported File Types:**
+
+**Option 1: Use fallback `#` prefix** (if your language supports `#` comments)
+```
+# In your .xyz file (if it supports # comments)
+#put id:"step1", label:"Process Data"
+```
+
+**Option 2: Create a wrapper annotation file**
+```r
+# workflow-annotations.R
+# This file documents the workflow for unsupported file types
+
+#put id:"xyz_step1", label:"Process in XYZ format", input:"data.xyz", output:"result.xyz"
+#put id:"xyz_step2", label:"Convert output", input:"result.xyz", output:"final.csv"
+
+# Then scan this file instead
+workflow <- put("workflow-annotations.R")
+```
+
+**Option 3: Use text input for ad-hoc annotations**
+```{r}
+# Define workflow without files
+workflow <- put(text = '
+#put id:"step1", label:"Custom Step 1", output:"data.xyz"
+#put id:"step2", label:"Custom Step 2", input:"data.xyz"
+')
+put_diagram(workflow)
+```
+
+**Option 4: Request new language support**
+
+[Open a GitHub issue](https://github.com/pjt222/putior/issues) with:
+- Language name and file extension
+- Comment syntax used by the language
+- Example code showing typical file I/O patterns (for auto-detection)
 
 ---
 

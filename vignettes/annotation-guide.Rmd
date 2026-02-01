@@ -199,6 +199,13 @@ SELECT * FROM raw_customers;
 #    memory_intensive:"true"
 ```
 
+> **When Multiline Annotations Don't Work:**
+>
+> - **Trailing spaces**: Ensure backslash is the *last* character (no spaces after)
+> - **Missing prefix**: Each continuation line needs the comment prefix (`#`, `--`, `//`)
+> - **Fallback**: If multiline fails, use a single long line - readability is secondary to functionality
+> - **Debug**: Use `set_putior_log_level("DEBUG")` to see exactly how lines are being parsed
+
 ### Multi-Language Support
 
 putior automatically uses the correct comment prefix based on file extension:

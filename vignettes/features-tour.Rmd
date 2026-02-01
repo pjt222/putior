@@ -101,6 +101,22 @@ workflow <- put_auto("./src/", detect_dependencies = FALSE)
 workflow <- put_auto("./src/", detect_inputs = FALSE, detect_dependencies = FALSE)
 ```
 
+> **When Things Go Wrong with Auto-Detection:**
+>
+> **Problem: Detects wrong files or patterns**
+> - Use `put_merge()` with `merge_strategy = "manual_priority"` to override with manual annotations
+> - Exclude files with specific `pattern` argument: `put_auto("./src/", pattern = "^(?!test_).*\\.R$")`
+>
+> **Problem: Misses important file I/O**
+> - Check if your library is supported: `grep("yourfunc", sapply(get_detection_patterns("r")$input, \`[[\`, "func"))`
+> - Add manual annotations for unsupported patterns
+> - [Request new patterns](https://github.com/pjt222/putior/issues) via GitHub issue
+>
+> **Problem: Too much noise in results**
+> - Use `detect_dependencies = FALSE` to skip `source()` detection
+> - Filter results: `workflow[workflow$node_type != "dependency", ]`
+> - Switch to manual annotations for precise control
+
 ### `put_generate()` - Generate Annotation Comments
 
 Creates PUT annotation comments that you can add to your source files. Think of it like roxygen2's skeleton generation. *([Full API docs](api-reference.html#put_generate---generate-annotation-templates))*
@@ -598,6 +614,28 @@ put_diagram(workflow,
 | `LR` | Left to Right | Wide workflows |
 | `BT` | Bottom to Top | Unusual layouts |
 | `RL` | Right to Left | RTL languages |
+
+> **When Things Go Wrong with Diagrams:**
+>
+> **Problem: Diagram doesn't render (shows raw text)**
+> - Test your Mermaid code at [mermaid.live](https://mermaid.live) to identify syntax issues
+> - For pkgdown sites, ensure Mermaid.js is included in `_pkgdown.yml`
+> - Use `output = "raw"` and render manually with Mermaid CLI: `mmdc -i diagram.mmd -o diagram.svg`
+>
+> **Problem: Nodes overlap or layout looks wrong**
+> - Try different directions: `direction = "LR"` often works better for wide workflows
+> - Split large workflows into subgraphs: `show_source_info = TRUE, source_info_style = "subgraph"`
+> - Use explicit IDs to control node ordering (Mermaid renders in ID order)
+>
+> **Problem: Too many nodes, diagram is unreadable**
+> - Hide data file nodes: `show_artifacts = FALSE`
+> - Filter workflow before rendering: `workflow[workflow$file_name != "test.R", ]`
+> - Split into multiple diagrams by directory or stage
+>
+> **Problem: Need to manually edit the Mermaid output**
+> - Use `output = "raw"` to get editable Mermaid code
+> - Save to file: `put_diagram(workflow, output = "file", file = "workflow.mmd")`
+> - Edit the `.mmd` file and render with your preferred tool
 
 ---
 
