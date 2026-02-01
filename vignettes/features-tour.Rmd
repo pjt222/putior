@@ -45,7 +45,7 @@ The auto-annotation system analyzes your code to detect workflow elements automa
 
 ### `put_auto()` - Detect Workflow Automatically
 
-Analyzes source code patterns to detect file inputs, outputs, and dependencies without requiring any annotations.
+Analyzes source code patterns to detect file inputs, outputs, and dependencies without requiring any annotations. *([Full API docs](api-reference.html#put_auto---auto-detect-workflow))*
 
 ```{r}
 library(putior)
@@ -103,7 +103,7 @@ workflow <- put_auto("./src/", detect_inputs = FALSE, detect_dependencies = FALS
 
 ### `put_generate()` - Generate Annotation Comments
 
-Creates PUT annotation comments that you can add to your source files. Think of it like roxygen2's skeleton generation.
+Creates PUT annotation comments that you can add to your source files. Think of it like roxygen2's skeleton generation. *([Full API docs](api-reference.html#put_generate---generate-annotation-templates))*
 
 ```{r}
 # Print suggested annotations to console
@@ -145,7 +145,7 @@ put_generate("./src/", style = "multiline")
 
 ### `put_merge()` - Combine Manual + Auto
 
-Combines your manual annotations with auto-detected ones using configurable merge strategies.
+Combines your manual annotations with auto-detected ones using configurable merge strategies. *([Full API docs](api-reference.html#put_merge---merge-manual-and-auto))*
 
 ```{r}
 # Manual annotations take priority
@@ -235,7 +235,7 @@ Make your diagrams more useful with source file information and clickable nodes.
 
 ### `show_source_info` - Display File Information
 
-Show which source file each workflow node comes from.
+Show which source file each workflow node comes from. *([API Reference](api-reference.html#put_diagram---generate-mermaid-diagram))*
 
 ```{r}
 workflow <- put("./src/", include_line_numbers = TRUE)
@@ -285,7 +285,7 @@ cat("\n```\n")
 
 ### `enable_clicks` - Clickable Nodes
 
-Make diagram nodes clickable to open the source file directly in your editor.
+Make diagram nodes clickable to open the source file directly in your editor. *([API Reference](api-reference.html#put_diagram---generate-mermaid-diagram))*
 
 ```{r}
 workflow <- put("./src/", include_line_numbers = TRUE)

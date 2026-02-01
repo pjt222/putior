@@ -664,3 +664,24 @@ source(system.file("examples", "data-science-workflow.R", package = "putior"))
 # Self-documentation (putior documents itself!)
 source(system.file("examples", "self-documentation.R", package = "putior"))
 ```
+
+---
+
+## See Also
+
+**Functions used in these examples:**
+
+| Function | Purpose | Documentation |
+|----------|---------|---------------|
+| `put()` | Extract annotations | [API Reference](api-reference.html#put) |
+| `put_diagram()` | Generate diagrams | [API Reference](api-reference.html#put_diagram) |
+| `put_auto()` | Auto-detect workflows | [Features Tour](features-tour.html#put_auto---detect-workflow-automatically) |
+| `put_merge()` | Combine manual + auto | [Features Tour](features-tour.html#put_merge---combine-manual--auto) |
+
+**Related guides:**
+
+- [Quick Start](quick-start.html) - Create your first diagram
+- [Quick Reference](quick-reference.html) - Cheat sheet for daily use
+- [Annotation Guide](annotation-guide.html) - Complete syntax reference
+- [Features Tour](features-tour.html) - Interactive diagrams, themes, logging
+- [Troubleshooting](troubleshooting.html) - Common issues and solutions

@@ -66,7 +66,7 @@ put(
 | `recursive` | logical | `FALSE` | Search subdirectories |
 | `include_line_numbers` | logical | `FALSE` | Include line numbers in output |
 | `validate` | logical | `TRUE` | Show validation warnings |
-| `log_level` | character | `NULL` | Override log level ("DEBUG", "INFO", "WARN") |
+| `log_level` | character | `NULL` | Override log level. See [Debugging with Logging](features-tour.html#debugging-with-logging) |
 
 **Returns:**
 
@@ -147,11 +147,11 @@ put_diagram(
 | `show_workflow_boundaries` | logical | `TRUE` | Special styling for start/end nodes |
 | `node_labels` | character | `"label"` | Label style: "name", "label", "both" |
 | `title` | character | `NULL` | Optional diagram title |
-| `show_source_info` | logical | `FALSE` | Display source file info in nodes |
+| `show_source_info` | logical | `FALSE` | Display source file info in nodes. See [Features Tour](features-tour.html#show_source_info---display-file-information) |
 | `source_info_style` | character | `"inline"` | Source info style: "inline", "subgraph" |
-| `enable_clicks` | logical | `FALSE` | Make nodes clickable |
+| `enable_clicks` | logical | `FALSE` | Make nodes clickable. See [Features Tour](features-tour.html#enable_clicks---clickable-nodes) |
 | `click_protocol` | character | `"vscode"` | Click protocol: "vscode", "rstudio", "file" |
-| `log_level` | character | `NULL` | Override log level |
+| `log_level` | character | `NULL` | Override log level. See [Features Tour](features-tour.html#debugging-with-logging) |
 
 **Returns:**
 

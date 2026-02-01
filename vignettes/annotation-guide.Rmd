@@ -562,51 +562,18 @@ Use grouping properties to organize complex workflows:
 
 ## Troubleshooting
 
-### No Annotations Found
+Having issues with annotations? See the [Troubleshooting Guide](troubleshooting.html) for:
 
-If `put()` returns an empty data frame:
+- **[Most Common Issues](troubleshooting.html#most-common-issues)** - Start here for quick solutions
+- **[Annotation Syntax Errors](troubleshooting.html#annotation-syntax-errors)** - Quote mismatches, invalid properties
+- **[File Pattern Matching](troubleshooting.html#file-pattern-matching-issues)** - Files not being scanned
+- **[Debugging with Logging](troubleshooting.html#debugging-with-logging)** - Enable detailed output
 
-1. **Check file patterns**: Ensure your files match the pattern (default: R, Python, SQL, shell, Julia)
-2. **Verify annotation syntax**: Use `is_valid_put_annotation()` to test individual annotations
-3. **Check file paths**: Ensure the directory exists and contains the expected files
-
+**Quick diagnostic:**
 ```{r}
-# Test annotation syntax
-is_valid_put_annotation('#put name:"test", label:"Test Node"') # Should return TRUE
-is_valid_put_annotation("#put invalid syntax") # Should return FALSE
-
-# Check what files are found
-list.files("./src/", pattern = "\\.(R|py)$")
+# Test if your annotation is valid
+is_valid_put_annotation('#put id:"test", label:"Test Node"')  # Should be TRUE
 ```
-
-### Validation Warnings
-
-If you see validation warnings:
-
-1. **Missing name**: Add a `name` property to all annotations
-2. **Invalid node_type**: Use standard types (`input`, `process`, `output`)
-3. **File extensions**: Ensure file references include extensions
-
-```r
-# Enable detailed validation output
-workflow <- put("./src/", validate = TRUE, include_line_numbers = TRUE)
-```
-
-### Parsing Issues
-
-If annotations aren't parsed correctly:
-
-1. **Check quotes**: Ensure all values are properly quoted
-2. **Escape commas**: Values with commas should be in quotes
-3. **Avoid nested quotes**: Use consistent quote styles
-
-Good example:
-
-    #put name:"step1", description:"Process data, clean outliers", type:"process"
-
-Problematic example:
-
-    #put name:"step1", description:Process data, clean outliers, type:process
 
 ## See Also
 
