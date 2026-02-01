@@ -117,6 +117,7 @@ putior is an R package that extracts structured annotations from source code fil
 17. **Multi-Language Comment Syntax** - Support for 30+ languages with automatic comment prefix detection (`#`, `--`, `//`, `%`)
 18. **Full Language Detection Patterns** - Added auto-detection patterns for 10 new languages (JS, TS, Go, Rust, Java, C, C++, MATLAB, Ruby, Lua), bringing total to 15 languages with 862 patterns
 19. **MCP Server Integration** - Expose putior functions as MCP tools for AI assistants (Claude Code, Claude Desktop)
+20. **ACP Server Integration** - Expose putior as an ACP agent for inter-agent communication via REST API
 
 ## MCP Server Integration
 
@@ -201,6 +202,88 @@ tools <- putior_mcp_tools(include = c("put", "put_diagram"))
 ### Key Files
 - `R/mcp.R` - MCP server and tool definitions
 - `tests/testthat/test-mcp.R` - MCP tests
+
+## ACP Server Integration
+
+### Overview
+putior also exposes its functionality as an ACP (Agent Communication Protocol) agent, enabling other AI agents to discover and call putior capabilities via REST API. This complements the MCP integration by enabling inter-agent communication.
+
+**MCP vs ACP:**
+- **MCP**: Model-to-tool communication (Claude ↔ putior functions)
+- **ACP**: Agent-to-agent communication (other AI agents ↔ putior agent)
+
+### Quick Setup
+
+**Start ACP Server:**
+```r
+# Start ACP server on default port (8080)
+putior::putior_acp_server()
+
+# Custom host/port
+putior::putior_acp_server(host = "0.0.0.0", port = 9000)
+```
+
+### ACP Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/agents` | GET | Discover this agent (returns manifest) |
+| `/runs` | POST | Execute a putior operation |
+| `/runs/:run_id` | GET | Get status/results of a previous run |
+
+### Testing with curl
+
+```bash
+# Discover agents
+curl http://localhost:8080/agents
+
+# Execute a scan operation
+curl -X POST http://localhost:8080/runs \
+  -H "Content-Type: application/json" \
+  -d '{"input": [{"role": "user", "parts": [{"content": "scan ./R/"}]}]}'
+
+# Execute diagram generation
+curl -X POST http://localhost:8080/runs \
+  -H "Content-Type: application/json" \
+  -d '{"input": [{"role": "user", "parts": [{"content": "generate diagram for ./R/"}]}]}'
+
+# Get help
+curl -X POST http://localhost:8080/runs \
+  -H "Content-Type: application/json" \
+  -d '{"input": [{"role": "user", "parts": [{"content": "help with annotations"}]}]}'
+```
+
+### Supported Operations
+
+The ACP agent understands natural language requests:
+
+| Operation | Example Messages |
+|-----------|------------------|
+| scan | "scan ./R/ for PUT annotations", "extract annotations" |
+| diagram | "generate a diagram", "visualize workflow", "create flowchart" |
+| auto | "auto-detect workflow", "use put_auto" |
+| generate | "generate annotation suggestions", "suggest annotations" |
+| merge | "merge annotations", "combine manual and auto" |
+| help | "help with syntax", "how to use putior" |
+| skills | "what are your capabilities", "what can you do" |
+
+### Agent Manifest
+
+```r
+# Get the agent manifest programmatically
+manifest <- putior::putior_acp_manifest()
+print(manifest$name)  # "putior"
+print(manifest$metadata$capabilities)
+print(manifest$metadata$operations)
+```
+
+### Dependencies
+- **plumber2**: REST API framework - `install.packages("plumber2")`
+- In Suggests (optional) - ACP server fails gracefully with helpful message if not installed
+
+### Key Files
+- `R/acp.R` - ACP server and endpoint handlers
+- `tests/testthat/test-acp.R` - ACP tests
 
 ## Multi-Language Comment Syntax Support
 
