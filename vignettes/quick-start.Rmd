@@ -68,20 +68,30 @@ cat("\n```\n")
 
 ---
 
-## Try It Now (No Files Needed)
+## Try It Now
 
 ```{r try-it-now, results='asis', eval=TRUE}
-# Use text input to try immediately
-demo_code <- '
-#put label:"Extract", output:"raw.csv"
-#put label:"Transform", input:"raw.csv", output:"clean.csv"
-#put label:"Load", input:"clean.csv", output:"database"
-'
+# Create a temporary file with annotations
+temp_file <- tempfile(fileext = ".R")
+writeLines(c(
+  '#put label:"Extract", output:"raw.csv"',
+  'data <- read.csv("source.csv")',
+  '',
+  '#put label:"Transform", input:"raw.csv", output:"clean.csv"',
+  'clean <- transform(data)',
+  '',
+  '#put label:"Load", input:"clean.csv", output:"database"',
+  'write_to_db(clean)'
+), temp_file)
 
-workflow <- put(text = demo_code)
+# Scan and visualize
+workflow <- put(temp_file)
 cat("```mermaid\n")
 cat(put_diagram(workflow, output = "raw"))
 cat("\n```\n")
+
+# Cleanup
+unlink(temp_file)
 ```
 
 ---
