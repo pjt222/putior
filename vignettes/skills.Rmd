@@ -7,6 +7,60 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+## About This Vignette
+
+This vignette documents putior's capabilities for **AI assistants** (like Claude, ChatGPT, or GitHub Copilot). It's designed to be read by language models to understand how to use putior effectively.
+
+### For Humans
+
+If you're a human reader, you probably want one of these instead:
+
+| Guide | Description |
+|-------|-------------|
+| [Quick Start](quick-start.html) | Create your first diagram in 2 minutes |
+| [Annotation Guide](annotation-guide.html) | Complete syntax reference |
+| [Quick Reference](quick-reference.html) | Printable cheat sheet |
+| [API Reference](api-reference.html) | Full function documentation |
+| [Troubleshooting](troubleshooting.html) | Common issues and solutions |
+
+### For AI Assistants
+
+This content is automatically available via:
+
+- **`putior_skills()`** - Returns this documentation as a string
+- **MCP server** - Exposed as a tool via `putior_mcp_server()`
+- **ACP server** - Available via `/runs` endpoint from `putior_acp_server()`
+
+### Programmatic Access
+
+```r
+# Get skills documentation as a string
+skills_text <- putior_skills()
+
+# Use in prompt engineering
+prompt <- paste("You have access to putior:", skills_text)
+
+# Or access via MCP tools
+tools <- putior_mcp_tools()
+```
+
+### MCP/ACP Integration
+
+When running as an MCP or ACP server, AI assistants can:
+
+1. **Discover capabilities** via `putior_skills` tool
+2. **Extract annotations** via `put` tool
+3. **Generate diagrams** via `put_diagram` tool
+4. **Auto-detect workflows** via `put_auto` tool
+
+See the [MCP Server section in CLAUDE.md](https://github.com/pjt222/putior/blob/main/CLAUDE.md#mcp-server-integration) for setup instructions.
+
+---
+
+## Skills Documentation
+
+The content below is the same as returned by `putior_skills()`:
+
 ```{r, echo=FALSE, results='asis'}
 skills_path <- system.file("SKILLS.md", package = "putior")
 if (skills_path == "") {
