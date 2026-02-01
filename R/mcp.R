@@ -205,38 +205,45 @@ putior_mcp_tools <- function(include = NULL,
 #' @noRd
 make_tool_put <- function() {
   ellmer::tool(
-    .fun = put,
-    .name = "put",
-    .description = paste0(
+    fun = put,
+    description = paste0(
       "Scan source files for PUT workflow annotations. ",
       "Extracts structured annotations that define workflow nodes, ",
       "inputs, outputs, and metadata from source code comments. ",
       "Supports 30+ programming languages with automatic comment syntax detection. ",
       "Returns a data frame that can be passed to put_diagram() for visualization."
     ),
-    .annotations = list(
+    name = "put",
+    annotations = list(
       title = "Scan Files for PUT Annotations",
       readOnlyHint = TRUE,
       openWorldHint = TRUE
     ),
-    path = ellmer::type_string(
-      description = "Path to directory or file to scan for PUT annotations"
-    ),
-    pattern = ellmer::type_string(
-      description = "File pattern regex (default: R/Python/SQL/Shell/Julia files)",
-      required = FALSE
-    ),
-    recursive = ellmer::type_boolean(
-      description = "Search subdirectories recursively (default: FALSE)",
-      required = FALSE
-    ),
-    include_line_numbers = ellmer::type_boolean(
-      description = "Include line numbers in output (default: FALSE)",
-      required = FALSE
-    ),
-    validate = ellmer::type_boolean(
-      description = "Validate annotations for common issues (default: TRUE)",
-      required = FALSE
+    arguments = list(
+      path = ellmer::type_string(
+        description = "Path to directory or file to scan for PUT annotations"
+      ),
+      pattern = ellmer::type_string(
+        description = "File pattern regex (default: R/Python/SQL/Shell/Julia files)",
+        required = FALSE
+      ),
+      recursive = ellmer::type_boolean(
+        description = "Search subdirectories recursively (default: FALSE)",
+        required = FALSE
+      ),
+      include_line_numbers = ellmer::type_boolean(
+        description = "Include line numbers in output (default: FALSE)",
+        required = FALSE
+      ),
+      validate = ellmer::type_boolean(
+        description = "Validate annotations for common issues (default: TRUE)",
+        required = FALSE
+      ),
+      log_level = ellmer::type_enum(
+        description = "Log level: DEBUG, INFO, WARN, or ERROR (default: from options)",
+        values = c("DEBUG", "INFO", "WARN", "ERROR"),
+        required = FALSE
+      )
     )
   )
 }
@@ -244,74 +251,87 @@ make_tool_put <- function() {
 #' @noRd
 make_tool_put_diagram <- function() {
   ellmer::tool(
-    .fun = put_diagram,
-    .name = "put_diagram",
-    .description = paste0(
+    fun = put_diagram,
+    description = paste0(
       "Generate a Mermaid flowchart diagram from PUT workflow data. ",
       "Creates visual representations of data flows and processing steps. ",
       "Supports multiple themes, node styling, and interactive features. ",
       "Output can be printed to console, saved to file, or returned as raw code."
     ),
-    .annotations = list(
+    name = "put_diagram",
+    annotations = list(
       title = "Generate Workflow Diagram",
       readOnlyHint = TRUE
     ),
-    output = ellmer::type_enum(
-      description = "Output format: console, file, clipboard, or raw (default: console)",
-      values = c("console", "file", "clipboard", "raw"),
-      required = FALSE
-    ),
-    file = ellmer::type_string(
-      description = "Output file path when output='file' (default: workflow_diagram.md)",
-      required = FALSE
-    ),
-    title = ellmer::type_string(
-      description = "Optional title for the diagram",
-      required = FALSE
-    ),
-    direction = ellmer::type_enum(
-      description = "Diagram direction: TD, LR, BT, or RL (default: TD)",
-      values = c("TD", "LR", "BT", "RL"),
-      required = FALSE
-    ),
-    node_labels = ellmer::type_enum(
-      description = "What to show in nodes: name, label, or both (default: label)",
-      values = c("name", "label", "both"),
-      required = FALSE
-    ),
-    show_files = ellmer::type_boolean(
-      description = "Show file labels on connections (default: FALSE)",
-      required = FALSE
-    ),
-    show_artifacts = ellmer::type_boolean(
-      description = "Show data files as nodes (default: FALSE)",
-      required = FALSE
-    ),
-    show_workflow_boundaries = ellmer::type_boolean(
-      description = "Apply special styling to start/end nodes (default: TRUE)",
-      required = FALSE
-    ),
-    style_nodes = ellmer::type_boolean(
-      description = "Apply styling based on node_type (default: TRUE)",
-      required = FALSE
-    ),
-    theme = ellmer::type_enum(
-      description = "Color theme: light, dark, auto, minimal, github (default: light)",
-      values = c("light", "dark", "auto", "minimal", "github"),
-      required = FALSE
-    ),
-    show_source_info = ellmer::type_boolean(
-      description = "Display source file info in nodes (default: FALSE)",
-      required = FALSE
-    ),
-    enable_clicks = ellmer::type_boolean(
-      description = "Make nodes clickable (default: FALSE)",
-      required = FALSE
-    ),
-    click_protocol = ellmer::type_enum(
-      description = "URL protocol for clickable nodes: vscode, file, rstudio (default: vscode)",
-      values = c("vscode", "file", "rstudio"),
-      required = FALSE
+    arguments = list(
+      workflow = ellmer::type_ignore(),
+      output = ellmer::type_enum(
+        description = "Output format: console, file, clipboard, or raw (default: console)",
+        values = c("console", "file", "clipboard", "raw"),
+        required = FALSE
+      ),
+      file = ellmer::type_string(
+        description = "Output file path when output='file' (default: workflow_diagram.md)",
+        required = FALSE
+      ),
+      title = ellmer::type_string(
+        description = "Optional title for the diagram",
+        required = FALSE
+      ),
+      direction = ellmer::type_enum(
+        description = "Diagram direction: TD, LR, BT, or RL (default: TD)",
+        values = c("TD", "LR", "BT", "RL"),
+        required = FALSE
+      ),
+      node_labels = ellmer::type_enum(
+        description = "What to show in nodes: name, label, or both (default: label)",
+        values = c("name", "label", "both"),
+        required = FALSE
+      ),
+      show_files = ellmer::type_boolean(
+        description = "Show file labels on connections (default: FALSE)",
+        required = FALSE
+      ),
+      show_artifacts = ellmer::type_boolean(
+        description = "Show data files as nodes (default: FALSE)",
+        required = FALSE
+      ),
+      show_workflow_boundaries = ellmer::type_boolean(
+        description = "Apply special styling to start/end nodes (default: TRUE)",
+        required = FALSE
+      ),
+      style_nodes = ellmer::type_boolean(
+        description = "Apply styling based on node_type (default: TRUE)",
+        required = FALSE
+      ),
+      theme = ellmer::type_enum(
+        description = "Color theme: light, dark, auto, minimal, github (default: light)",
+        values = c("light", "dark", "auto", "minimal", "github"),
+        required = FALSE
+      ),
+      show_source_info = ellmer::type_boolean(
+        description = "Display source file info in nodes (default: FALSE)",
+        required = FALSE
+      ),
+      source_info_style = ellmer::type_enum(
+        description = "How to display source info: inline or subgraph (default: inline)",
+        values = c("inline", "subgraph"),
+        required = FALSE
+      ),
+      enable_clicks = ellmer::type_boolean(
+        description = "Make nodes clickable (default: FALSE)",
+        required = FALSE
+      ),
+      click_protocol = ellmer::type_enum(
+        description = "URL protocol for clickable nodes: vscode, file, rstudio (default: vscode)",
+        values = c("vscode", "file", "rstudio"),
+        required = FALSE
+      ),
+      log_level = ellmer::type_enum(
+        description = "Log level: DEBUG, INFO, WARN, or ERROR (default: from options)",
+        values = c("DEBUG", "INFO", "WARN", "ERROR"),
+        required = FALSE
+      )
     )
   )
 }
@@ -319,46 +339,53 @@ make_tool_put_diagram <- function() {
 #' @noRd
 make_tool_put_auto <- function() {
   ellmer::tool(
-    .fun = put_auto,
-    .name = "put_auto",
-    .description = paste0(
+    fun = put_auto,
+    description = paste0(
       "Auto-detect workflow elements from code analysis without requiring explicit annotations. ",
       "Analyzes source files to detect file inputs, outputs, and dependencies ",
       "based on function calls like read_csv(), write.csv(), etc. ",
       "Similar to how roxygen2 auto-generates documentation skeletons. ",
       "Returns a data frame compatible with put_diagram()."
     ),
-    .annotations = list(
+    name = "put_auto",
+    annotations = list(
       title = "Auto-Detect Workflow",
       readOnlyHint = TRUE,
       openWorldHint = TRUE
     ),
-    path = ellmer::type_string(
-      description = "Path to directory or file to analyze"
-    ),
-    pattern = ellmer::type_string(
-      description = "File pattern regex (default: R/Python/SQL/Shell/Julia files)",
-      required = FALSE
-    ),
-    recursive = ellmer::type_boolean(
-      description = "Search subdirectories recursively (default: FALSE)",
-      required = FALSE
-    ),
-    detect_inputs = ellmer::type_boolean(
-      description = "Detect file inputs (default: TRUE)",
-      required = FALSE
-    ),
-    detect_outputs = ellmer::type_boolean(
-      description = "Detect file outputs (default: TRUE)",
-      required = FALSE
-    ),
-    detect_dependencies = ellmer::type_boolean(
-      description = "Detect script dependencies/source calls (default: TRUE)",
-      required = FALSE
-    ),
-    include_line_numbers = ellmer::type_boolean(
-      description = "Include line numbers (default: FALSE)",
-      required = FALSE
+    arguments = list(
+      path = ellmer::type_string(
+        description = "Path to directory or file to analyze"
+      ),
+      pattern = ellmer::type_string(
+        description = "File pattern regex (default: R/Python/SQL/Shell/Julia files)",
+        required = FALSE
+      ),
+      recursive = ellmer::type_boolean(
+        description = "Search subdirectories recursively (default: FALSE)",
+        required = FALSE
+      ),
+      detect_inputs = ellmer::type_boolean(
+        description = "Detect file inputs (default: TRUE)",
+        required = FALSE
+      ),
+      detect_outputs = ellmer::type_boolean(
+        description = "Detect file outputs (default: TRUE)",
+        required = FALSE
+      ),
+      detect_dependencies = ellmer::type_boolean(
+        description = "Detect script dependencies/source calls (default: TRUE)",
+        required = FALSE
+      ),
+      include_line_numbers = ellmer::type_boolean(
+        description = "Include line numbers (default: FALSE)",
+        required = FALSE
+      ),
+      log_level = ellmer::type_enum(
+        description = "Log level: DEBUG, INFO, WARN, or ERROR (default: from options)",
+        values = c("DEBUG", "INFO", "WARN", "ERROR"),
+        required = FALSE
+      )
     )
   )
 }
@@ -366,43 +393,45 @@ make_tool_put_auto <- function() {
 #' @noRd
 make_tool_put_generate <- function() {
   ellmer::tool(
-    .fun = put_generate,
-    .name = "put_generate",
-    .description = paste0(
+    fun = put_generate,
+    description = paste0(
       "Generate suggested PUT annotation comments based on code analysis. ",
       "Analyzes source files and produces annotation text that can be copied ",
       "into source files. Similar to how roxygen2 generates documentation skeletons. ",
       "Supports single-line and multiline annotation styles."
     ),
-    .annotations = list(
+    name = "put_generate",
+    annotations = list(
       title = "Generate Annotation Suggestions",
       readOnlyHint = TRUE,
       openWorldHint = TRUE
     ),
-    path = ellmer::type_string(
-      description = "Path to file or directory to analyze"
-    ),
-    pattern = ellmer::type_string(
-      description = "File pattern regex (default: R/Python/SQL/Shell/Julia files)",
-      required = FALSE
-    ),
-    recursive = ellmer::type_boolean(
-      description = "Search subdirectories recursively (default: FALSE)",
-      required = FALSE
-    ),
-    output = ellmer::type_enum(
-      description = "Output: console, clipboard, or file (default: console)",
-      values = c("console", "clipboard", "file"),
-      required = FALSE
-    ),
-    insert = ellmer::type_boolean(
-      description = "Insert annotations directly into source files (default: FALSE)",
-      required = FALSE
-    ),
-    style = ellmer::type_enum(
-      description = "Annotation style: single or multiline (default: multiline)",
-      values = c("single", "multiline"),
-      required = FALSE
+    arguments = list(
+      path = ellmer::type_string(
+        description = "Path to file or directory to analyze"
+      ),
+      pattern = ellmer::type_string(
+        description = "File pattern regex (default: R/Python/SQL/Shell/Julia files)",
+        required = FALSE
+      ),
+      recursive = ellmer::type_boolean(
+        description = "Search subdirectories recursively (default: FALSE)",
+        required = FALSE
+      ),
+      output = ellmer::type_enum(
+        description = "Output: console, clipboard, or file (default: console)",
+        values = c("console", "clipboard", "file"),
+        required = FALSE
+      ),
+      insert = ellmer::type_boolean(
+        description = "Insert annotations directly into source files (default: FALSE)",
+        required = FALSE
+      ),
+      style = ellmer::type_enum(
+        description = "Annotation style: single or multiline (default: multiline)",
+        values = c("single", "multiline"),
+        required = FALSE
+      )
     )
   )
 }
@@ -410,38 +439,40 @@ make_tool_put_generate <- function() {
 #' @noRd
 make_tool_put_merge <- function() {
   ellmer::tool(
-    .fun = put_merge,
-    .name = "put_merge",
-    .description = paste0(
+    fun = put_merge,
+    description = paste0(
       "Combine manually written PUT annotations with auto-detected workflow elements. ",
       "Supports flexible strategies: manual_priority (manual overrides auto), ",
       "supplement (auto fills in missing fields), union (combine all detected I/O). ",
       "Returns a merged data frame compatible with put_diagram()."
     ),
-    .annotations = list(
+    name = "put_merge",
+    annotations = list(
       title = "Merge Manual and Auto Annotations",
       readOnlyHint = TRUE,
       openWorldHint = TRUE
     ),
-    path = ellmer::type_string(
-      description = "Path to file or directory"
-    ),
-    pattern = ellmer::type_string(
-      description = "File pattern regex (default: R/Python/SQL/Shell/Julia files)",
-      required = FALSE
-    ),
-    recursive = ellmer::type_boolean(
-      description = "Search subdirectories recursively (default: FALSE)",
-      required = FALSE
-    ),
-    merge_strategy = ellmer::type_enum(
-      description = "Merge strategy: manual_priority, supplement, or union (default: manual_priority)",
-      values = c("manual_priority", "supplement", "union"),
-      required = FALSE
-    ),
-    include_line_numbers = ellmer::type_boolean(
-      description = "Include line numbers (default: FALSE)",
-      required = FALSE
+    arguments = list(
+      path = ellmer::type_string(
+        description = "Path to file or directory"
+      ),
+      pattern = ellmer::type_string(
+        description = "File pattern regex (default: R/Python/SQL/Shell/Julia files)",
+        required = FALSE
+      ),
+      recursive = ellmer::type_boolean(
+        description = "Search subdirectories recursively (default: FALSE)",
+        required = FALSE
+      ),
+      merge_strategy = ellmer::type_enum(
+        description = "Merge strategy: manual_priority, supplement, or union (default: manual_priority)",
+        values = c("manual_priority", "supplement", "union"),
+        required = FALSE
+      ),
+      include_line_numbers = ellmer::type_boolean(
+        description = "Include line numbers (default: FALSE)",
+        required = FALSE
+      )
     )
   )
 }
@@ -449,19 +480,21 @@ make_tool_put_merge <- function() {
 #' @noRd
 make_tool_get_comment_prefix <- function() {
   ellmer::tool(
-    .fun = get_comment_prefix,
-    .name = "get_comment_prefix",
-    .description = paste0(
+    fun = get_comment_prefix,
+    description = paste0(
       "Get the single-line comment prefix for a given file extension. ",
       "Returns '#' for R/Python, '--' for SQL, '//' for JavaScript, etc. ",
       "Falls back to '#' for unknown extensions."
     ),
-    .annotations = list(
+    name = "get_comment_prefix",
+    annotations = list(
       title = "Get Comment Prefix",
       readOnlyHint = TRUE
     ),
-    ext = ellmer::type_string(
-      description = "File extension without dot (e.g., 'r', 'sql', 'js')"
+    arguments = list(
+      ext = ellmer::type_string(
+        description = "File extension without dot (e.g., 'r', 'sql', 'js')"
+      )
     )
   )
 }
@@ -469,13 +502,13 @@ make_tool_get_comment_prefix <- function() {
 #' @noRd
 make_tool_get_supported_extensions <- function() {
   ellmer::tool(
-    .fun = get_supported_extensions,
-    .name = "get_supported_extensions",
-    .description = paste0(
+    fun = get_supported_extensions,
+    description = paste0(
       "Get all file extensions supported by putior's annotation parsing system. ",
       "Returns a character vector of extensions like c('r', 'py', 'sql', 'js', ...)."
     ),
-    .annotations = list(
+    name = "get_supported_extensions",
+    annotations = list(
       title = "List Supported Extensions",
       readOnlyHint = TRUE
     )
@@ -485,19 +518,21 @@ make_tool_get_supported_extensions <- function() {
 #' @noRd
 make_tool_list_supported_languages <- function() {
   ellmer::tool(
-    .fun = list_supported_languages,
-    .name = "list_supported_languages",
-    .description = paste0(
+    fun = list_supported_languages,
+    description = paste0(
       "Get all programming languages supported by putior. ",
       "Set detection_only=TRUE to get only languages with auto-detection patterns."
     ),
-    .annotations = list(
+    name = "list_supported_languages",
+    annotations = list(
       title = "List Supported Languages",
       readOnlyHint = TRUE
     ),
-    detection_only = ellmer::type_boolean(
-      description = "Return only languages with auto-detection pattern support (default: FALSE)",
-      required = FALSE
+    arguments = list(
+      detection_only = ellmer::type_boolean(
+        description = "Return only languages with auto-detection pattern support (default: FALSE)",
+        required = FALSE
+      )
     )
   )
 }
@@ -505,24 +540,26 @@ make_tool_list_supported_languages <- function() {
 #' @noRd
 make_tool_get_detection_patterns <- function() {
   ellmer::tool(
-    .fun = get_detection_patterns,
-    .name = "get_detection_patterns",
-    .description = paste0(
+    fun = get_detection_patterns,
+    description = paste0(
       "Get auto-detection patterns for a programming language. ",
       "Returns patterns used to detect file inputs, outputs, and dependencies. ",
       "Supports 15 languages including R, Python, JavaScript, Go, Rust, etc."
     ),
-    .annotations = list(
+    name = "get_detection_patterns",
+    annotations = list(
       title = "Get Detection Patterns",
       readOnlyHint = TRUE
     ),
-    language = ellmer::type_string(
-      description = "Language name (e.g., 'r', 'python', 'javascript')"
-    ),
-    type = ellmer::type_enum(
-      description = "Pattern type: all, input, output, or dependency (default: all)",
-      values = c("all", "input", "output", "dependency"),
-      required = FALSE
+    arguments = list(
+      language = ellmer::type_string(
+        description = "Language name (e.g., 'r', 'python', 'javascript')"
+      ),
+      type = ellmer::type_enum(
+        description = "Pattern type: all, input, output, or dependency (default: all)",
+        values = c("all", "input", "output", "dependency"),
+        required = FALSE
+      )
     )
   )
 }
@@ -530,13 +567,13 @@ make_tool_get_detection_patterns <- function() {
 #' @noRd
 make_tool_get_diagram_themes <- function() {
   ellmer::tool(
-    .fun = get_diagram_themes,
-    .name = "get_diagram_themes",
-    .description = paste0(
+    fun = get_diagram_themes,
+    description = paste0(
       "Get information about available color themes for workflow diagrams. ",
       "Returns a named list describing light, dark, auto, minimal, and github themes."
     ),
-    .annotations = list(
+    name = "get_diagram_themes",
+    annotations = list(
       title = "List Diagram Themes",
       readOnlyHint = TRUE
     )
@@ -546,27 +583,29 @@ make_tool_get_diagram_themes <- function() {
 #' @noRd
 make_tool_putior_skills <- function() {
   ellmer::tool(
-    .fun = putior_skills,
-    .name = "putior_skills",
-    .description = paste0(
+    fun = putior_skills,
+    description = paste0(
       "Access putior skills documentation for AI assistants. ",
       "Provides structured information about annotation syntax, supported languages, ",
       "core functions, detection patterns, and usage examples. ",
       "Use output='raw' to get markdown content."
     ),
-    .annotations = list(
+    name = "putior_skills",
+    annotations = list(
       title = "AI Assistant Skills Reference",
       readOnlyHint = TRUE
     ),
-    topic = ellmer::type_enum(
-      description = "Topic section: quick-start, syntax, languages, functions, patterns, or examples",
-      values = c("quick-start", "syntax", "languages", "functions", "patterns", "examples"),
-      required = FALSE
-    ),
-    output = ellmer::type_enum(
-      description = "Output format: console, raw, or clipboard (default: raw for MCP)",
-      values = c("console", "raw", "clipboard"),
-      required = FALSE
+    arguments = list(
+      topic = ellmer::type_enum(
+        description = "Topic section: quick-start, syntax, languages, functions, patterns, or examples",
+        values = c("quick-start", "syntax", "languages", "functions", "patterns", "examples"),
+        required = FALSE
+      ),
+      output = ellmer::type_enum(
+        description = "Output format: console, raw, or clipboard (default: raw for MCP)",
+        values = c("console", "raw", "clipboard"),
+        required = FALSE
+      )
     )
   )
 }
@@ -574,20 +613,22 @@ make_tool_putior_skills <- function() {
 #' @noRd
 make_tool_putior_help <- function() {
   ellmer::tool(
-    .fun = putior_help,
-    .name = "putior_help",
-    .description = paste0(
+    fun = putior_help,
+    description = paste0(
       "Get quick-reference help for putior tasks and syntax. ",
       "Topics include: annotation (syntax), themes, languages, node_types, patterns, examples, skills."
     ),
-    .annotations = list(
+    name = "putior_help",
+    annotations = list(
       title = "Quick Reference Help",
       readOnlyHint = TRUE
     ),
-    topic = ellmer::type_enum(
-      description = "Help topic to display",
-      values = c("annotation", "themes", "languages", "node_types", "patterns", "examples", "skills"),
-      required = FALSE
+    arguments = list(
+      topic = ellmer::type_enum(
+        description = "Help topic to display",
+        values = c("annotation", "themes", "languages", "node_types", "patterns", "examples", "skills"),
+        required = FALSE
+      )
     )
   )
 }
@@ -595,21 +636,23 @@ make_tool_putior_help <- function() {
 #' @noRd
 make_tool_set_putior_log_level <- function() {
   ellmer::tool(
-    .fun = set_putior_log_level,
-    .name = "set_putior_log_level",
-    .description = paste0(
+    fun = set_putior_log_level,
+    description = paste0(
       "Configure logging verbosity for putior functions. ",
       "DEBUG shows fine-grained operations, INFO shows progress milestones, ",
       "WARN shows issues (default), ERROR shows only fatal issues."
     ),
-    .annotations = list(
+    name = "set_putior_log_level",
+    annotations = list(
       title = "Set Log Level",
       readOnlyHint = FALSE
     ),
-    level = ellmer::type_enum(
-      description = "Log level: DEBUG, INFO, WARN, or ERROR (default: WARN)",
-      values = c("DEBUG", "INFO", "WARN", "ERROR"),
-      required = FALSE
+    arguments = list(
+      level = ellmer::type_enum(
+        description = "Log level: DEBUG, INFO, WARN, or ERROR (default: WARN)",
+        values = c("DEBUG", "INFO", "WARN", "ERROR"),
+        required = FALSE
+      )
     )
   )
 }
@@ -617,19 +660,21 @@ make_tool_set_putior_log_level <- function() {
 #' @noRd
 make_tool_is_valid_put_annotation <- function() {
   ellmer::tool(
-    .fun = is_valid_put_annotation,
-    .name = "is_valid_put_annotation",
-    .description = paste0(
+    fun = is_valid_put_annotation,
+    description = paste0(
       "Validate PUT annotation syntax. ",
       "Returns TRUE if the annotation is valid, FALSE otherwise. ",
       "Useful for testing annotation syntax before adding to source files."
     ),
-    .annotations = list(
+    name = "is_valid_put_annotation",
+    annotations = list(
       title = "Validate Annotation Syntax",
       readOnlyHint = TRUE
     ),
-    line = ellmer::type_string(
-      description = "PUT annotation line to validate (e.g., '#put id:\"test\", label:\"Test\"')"
+    arguments = list(
+      line = ellmer::type_string(
+        description = "PUT annotation line to validate (e.g., '#put id:\"test\", label:\"Test\"')"
+      )
     )
   )
 }
@@ -637,18 +682,20 @@ make_tool_is_valid_put_annotation <- function() {
 #' @noRd
 make_tool_split_file_list <- function() {
   ellmer::tool(
-    .fun = split_file_list,
-    .name = "split_file_list",
-    .description = paste0(
+    fun = split_file_list,
+    description = paste0(
       "Parse a comma-separated file list into individual file names. ",
       "Handles whitespace and returns a character vector of file names."
     ),
-    .annotations = list(
+    name = "split_file_list",
+    annotations = list(
       title = "Split File List",
       readOnlyHint = TRUE
     ),
-    file_string = ellmer::type_string(
-      description = "Comma-separated file names (e.g., 'file1.csv, file2.csv')"
+    arguments = list(
+      file_string = ellmer::type_string(
+        description = "Comma-separated file names (e.g., 'file1.csv, file2.csv')"
+      )
     )
   )
 }
@@ -656,18 +703,20 @@ make_tool_split_file_list <- function() {
 #' @noRd
 make_tool_ext_to_language <- function() {
   ellmer::tool(
-    .fun = ext_to_language,
-    .name = "ext_to_language",
-    .description = paste0(
+    fun = ext_to_language,
+    description = paste0(
       "Convert a file extension to a standardized language name. ",
       "Used for detection pattern lookup. Returns NULL for unsupported extensions."
     ),
-    .annotations = list(
+    name = "ext_to_language",
+    annotations = list(
       title = "Extension to Language",
       readOnlyHint = TRUE
     ),
-    ext = ellmer::type_string(
-      description = "File extension without dot (e.g., 'py', 'js', 'sql')"
+    arguments = list(
+      ext = ellmer::type_string(
+        description = "File extension without dot (e.g., 'py', 'js', 'sql')"
+      )
     )
   )
 }
