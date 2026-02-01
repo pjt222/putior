@@ -1145,7 +1145,8 @@ Quick reference for all exported functions:
 For detailed documentation, see:
 - Function help: `?put`, `?put_diagram`, `?put_auto`
 - [pkgdown site](https://pjt222.github.io/putior/)
-- [Getting Started vignette](https://pjt222.github.io/putior/articles/getting-started.html)
+- [Quick Start](https://pjt222.github.io/putior/articles/quick-start.html) - First diagram in 2 minutes
+- [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.html) - Complete syntax reference
 
 ## 🔄 Self-Documentation: putior Documents Itself!
 

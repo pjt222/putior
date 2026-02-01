@@ -718,7 +718,8 @@ put_generate("./unfamiliar_project/", output = "clipboard")
 
 ## See Also
 
-- [Getting Started](getting-started.html) - Basic annotation syntax
+- [Quick Start](quick-start.html) - First diagram in 2 minutes
+- [Annotation Guide](annotation-guide.html) - Complete syntax reference
 - [API Reference](api-reference.html) - Complete function documentation
 - [Showcase](showcase.html) - Real-world examples
 

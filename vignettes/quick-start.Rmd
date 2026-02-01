@@ -1,0 +1,169 @@
+---
+title: "Quick Start"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quick Start}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+collapse = TRUE,
+comment = "#>"
+)
+```
+
+## Your First Diagram in 2 Minutes
+
+### Step 1: Install
+
+```{r eval=FALSE}
+install.packages("putior")
+```
+```{r}
+library(putior)
+```
+
+### Step 2: Add Annotations to Your Code
+
+Add `#put` comments to your R scripts:
+
+```r
+# my_analysis.R
+#put label:"Load Data", output:"raw_data"
+data <- read.csv("sales.csv")
+
+#put label:"Clean Data", input:"raw_data", output:"clean_data"
+clean <- data[complete.cases(data), ]
+
+#put label:"Generate Report", input:"clean_data", output:"report.html"
+rmarkdown::render("report.Rmd")
+```
+
+### Step 3: Generate Diagram
+
+```{r eval=FALSE}
+workflow <- put("my_analysis.R")
+put_diagram(workflow)
+```
+
+That's it! You'll see a flowchart showing: Load Data → Clean Data → Generate Report
+
+---
+
+## Try It Now (No Files Needed)
+```{r}
+# Use text input to try immediately
+demo_code <- '
+#put label:"Extract", output:"raw.csv"
+#put label:"Transform", input:"raw.csv", output:"clean.csv"
+#put label:"Load", input:"clean.csv", output:"database"
+'
+
+workflow <- put(text = demo_code)
+cat(put_diagram(workflow, output = "raw"))
+```
+
+---
+## Annotation Syntax at a Glance
+
+```
+#put label:"Step Name", input:"file.csv", output:"result.csv"
+```
+
+| Field | Purpose | Required |
+|-------|---------|----------|
+| `label` | Human-readable name | Yes |
+| `input` | Files/data consumed | No |
+| `output` | Files/data produced | No |
+| `id` | Unique identifier | No (auto-generated) |
+| `node_type` | `input`, `process`, `output` | No (defaults to `process`) |
+
+**Multiple inputs/outputs:** Use commas: `input:"a.csv, b.csv"`
+
+---
+
+## Multi-Language Support
+
+putior works with 30+ languages. Comment prefix is auto-detected:
+
+| Language | Annotation |
+|----------|------------|
+| R, Python, Shell | `#put label:"..."` |
+| SQL, Lua | `--put label:"..."` |
+| JavaScript, Go, Rust | `//put label:"..."` |
+| MATLAB | `%put label:"..."` |
+
+---
+
+## Common Patterns
+
+### Scan a Directory
+```{r eval=FALSE}
+workflow <- put("./src/")
+put_diagram(workflow)
+```
+
+### Include Subdirectories
+```{r eval=FALSE}
+workflow <- put("./project/", recursive = TRUE)
+```
+
+### Auto-Detect Workflow (No Annotations!)
+```{r eval=FALSE}
+# Automatically detect file I/O from code
+workflow <- put_auto("./src/")
+put_diagram(workflow)
+```
+
+### Choose a Theme
+```{r eval=FALSE}
+put_diagram(workflow, theme = "forest")  # or: default, dark, neutral
+```
+
+### Save to File
+```{r eval=FALSE}
+put_diagram(workflow, output = "workflow.md")
+```
+
+---
+
+## Interactive Sandbox
+
+Experiment without creating files:
+
+```{r eval=FALSE}
+run_sandbox()  # Opens Shiny app
+```
+
+---
+
+## What's Next?
+
+| Guide | When to Read |
+|-------|--------------|
+| [Annotation Guide](annotation-guide.html) | Complete syntax reference, multiline annotations, best practices |
+| [Features Tour](features-tour.html) | Auto-detection, logging, interactive diagrams, metadata display |
+| [API Reference](api-reference.html) | All functions and parameters |
+| [Showcase](showcase.html) | Real-world examples (ETL, ML pipelines, bioinformatics) |
+| [Troubleshooting](troubleshooting.html) | Common issues and solutions |
+
+---
+
+## Quick Reference
+
+```r
+# Core functions
+put(path)                    # Extract annotations
+put_diagram(workflow)        # Generate Mermaid diagram
+put_auto(path)               # Auto-detect workflow (no annotations)
+put_generate(path)           # Generate annotation suggestions
+
+# Useful options
+put("./", recursive = TRUE)  # Include subdirectories
+put_diagram(wf, theme = "forest", direction = "LR")
+put_diagram(wf, show_artifacts = FALSE)  # Hide data files
+```
+
+**Need help?** Run `?put` or `?put_diagram` for full documentation.

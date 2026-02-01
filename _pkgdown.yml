@@ -167,12 +167,14 @@ navbar:
       href: index.html
     intro:
       text: Get started
-      href: articles/getting-started.html
+      href: articles/quick-start.html
     articles:
       text: Articles
       menu:
-      - text: Getting Started with putior
-        href: articles/getting-started.html
+      - text: Quick Start
+        href: articles/quick-start.html
+      - text: Annotation Guide
+        href: articles/annotation-guide.html
       - text: Features Tour
         href: articles/features-tour.html
       - text: API Reference

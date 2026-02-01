@@ -67,8 +67,9 @@ putior is an R package that extracts structured annotations from source code fil
 
 ### Documentation Quality
 - Vignette rating: **9.2/10** - Exceptional quality
-- **4 comprehensive vignettes**:
-  - `getting-started.Rmd` - Introduction and basic usage
+- **5 comprehensive vignettes**:
+  - `quick-start.Rmd` - First diagram in 2 minutes (< 200 lines)
+  - `annotation-guide.Rmd` - Complete syntax reference, multiline annotations, best practices
   - `features-tour.Rmd` - Advanced features guide (auto-annotation, interactive diagrams, logging)
   - `api-reference.Rmd` - Complete function documentation with parameter tables
   - `showcase.Rmd` - Real-world examples (ETL, ML, bioinformatics, finance, web scraping)

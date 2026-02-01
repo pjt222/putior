@@ -1,8 +1,8 @@
 ---
-title: "Getting Started with putior"
+title: "Annotation Guide"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Getting Started with putior}
+  %\VignetteIndexEntry{Annotation Guide}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -21,48 +21,13 @@ library(putior)
 
 ## Introduction
 
-The `putior` package helps you document and visualize workflows by extracting structured annotations from your R and Python source files. This vignette shows you how to get started with PUT annotations and workflow extraction.
+This guide provides a complete reference for PUT annotation syntax. It covers all annotation formats, multi-language support, multiline annotations, and best practices.
+
+> **New to putior?** Start with the [Quick Start](quick-start.html) guide to create your first diagram in 2 minutes.
 
 **PUT** stands for **P**UT + **I**nput + **O**utput + **R**, reflecting the package's core purpose: tracking data inputs and outputs through your analysis pipeline using special annotations.
 
-## Why Use putior?
-
-- **Automatic documentation**: Your workflow documentation stays in sync with your code
-- **Multi-language support**: Works with R, Python, SQL, and other file types
-- **Data lineage tracking**: See how data flows through your processing steps
-- **Team collaboration**: Help colleagues understand complex workflows
-- **Visual workflow creation**: Extract structured data ready for flowchart generation
-
-## Quick Start
-
-The fastest way to see putior in action is to run the built-in example:
-
-```{r eval=FALSE}
-# Run the complete example
-source(system.file("examples", "reprex.R", package = "putior"))
-```
-
-This creates a sample multi-language workflow and demonstrates the workflow extraction capabilities of putior.
-
-### Live Example
-
-Here's a working example using putior's own source code (the package documents itself!):
-
-```{r eval=TRUE}
-library(putior)
-
-# Extract workflow from putior's own R source files
-workflow <- put(system.file("examples", "reprex.R", package = "putior"))
-
-# View the extracted workflow nodes
-print(workflow)
-```
-
-This demonstrates how putior extracts structured workflow data from annotated source files.
-
-## Basic Workflow
-
-### Step 1: Add PUT Annotations to Your Code
+## Annotation Basics
 
 PUT annotations are special comments that describe workflow nodes. Start simple:
 
@@ -119,7 +84,7 @@ That's all you need! putior will:
     with open("sales_report.json", "w") as f:
         json.dump(sales_summary, f)
 
-### Step 2: Extract the Workflow
+## Extracting Annotations
 
 Use the `put()` function to scan your files and extract workflow information:
 
@@ -131,36 +96,21 @@ workflow <- put("./src/")
 print(workflow)
 ```
 
-Expected output:
-```{r echo=FALSE, eval=TRUE}
-# Create example output for documentation
-example_output <- data.frame(
-  file_name = c("data_processing.R", "data_processing.R", "analysis.py"),
-  file_type = c("r", "r", "py"),
-  input = c(NA, "raw_data.csv", "clean_data.csv"),
-  label = c("Load Customer Data", "Clean and Validate", "Sales Analysis"),
-  id = c("load_data", "clean_data", "analyze_sales"),
-  node_type = c("input", "process", "process"),
-  output = c("raw_data.csv", "clean_data.csv", "sales_report.json"),
-  stringsAsFactors = FALSE
-)
-print(example_output)
-```
+The output is a data frame where each row represents a workflow node:
 
-### Step 3: Understand the Results
+| Column | Description |
+|--------|-------------|
+| `file_name` | Which script contains this node |
+| `file_type` | Programming language (r, py, sql, etc.) |
+| `id` | Unique identifier for the node |
+| `label` | Human-readable description |
+| `node_type` | Type of operation (input, process, output) |
+| `input` | Files consumed by this step |
+| `output` | Files produced by this step |
 
-The output is a data frame where each row represents a workflow node. The columns include:
+Custom properties you define are also included as additional columns.
 
-- **file_name**: Which script contains this node
-- **file_type**: Programming language (r, py, sql, etc.)
-- **id**: Unique identifier for the node
-- **label**: Human-readable description
-- **node_type**: Type of operation (input, process, output)
-- **input**: Files consumed by this step
-- **output**: Files produced by this step
-- **Custom properties**: Any additional metadata you defined
-
-## PUT Annotation Syntax
+## Complete Syntax Reference
 
 ### Basic Format
 
@@ -177,6 +127,59 @@ PUT annotations support several formats to fit different coding styles:
     #put| id:"my_node", label:"My Process"          # Pipe separator
     #put id:'my_node', label:'Single quotes'        # Single quotes
     #put id:"my_node", label:'Mixed quotes'         # Mixed quote styles
+
+### Multiline Annotations
+
+For complex annotations with many properties, use backslash (`\`) continuation:
+
+**R/Python style:**
+```r
+#put id:"complex_etl", \
+#    label:"Complex ETL Process", \
+#    node_type:"process", \
+#    input:"raw_data.csv, config.yaml", \
+#    output:"processed.parquet", \
+#    author:"Data Team", \
+#    version:"2.0"
+```
+
+**SQL style:**
+```sql
+--put id:"load_customers", \
+--    label:"Load Customer Data", \
+--    node_type:"input", \
+--    output:"customers_table"
+SELECT * FROM raw_customers;
+```
+
+**JavaScript/TypeScript style:**
+```javascript
+//put id:"api_handler", \
+//    label:"Process API Request", \
+//    input:"request.json", \
+//    output:"response.json"
+```
+
+**Rules for multiline annotations:**
+
+1. End each line (except the last) with a backslash `\`
+2. Start continuation lines with the same comment prefix
+3. Continuation lines can have leading whitespace for readability
+4. Properties can span multiple lines
+5. The backslash must be the last character on the line (no trailing spaces)
+
+**Example with many properties:**
+```r
+#put id:"train_model", \
+#    label:"Train Random Forest Model", \
+#    node_type:"process", \
+#    input:"features.csv, labels.csv", \
+#    output:"model.rds, metrics.json", \
+#    group:"machine_learning", \
+#    stage:"3", \
+#    estimated_time:"45min", \
+#    memory_intensive:"true"
+```
 
 ### Multi-Language Support
 
@@ -569,18 +572,31 @@ Problematic example:
 
     #put name:"step1", description:Process data, clean outliers, type:process
 
-## Next Steps
+## See Also
 
-Now that you understand the basics of putior:
+| Guide | Description |
+|-------|-------------|
+| [Quick Start](quick-start.html) | Create your first diagram in 2 minutes |
+| [Features Tour](features-tour.html) | Auto-detection, logging, interactive diagrams |
+| [API Reference](api-reference.html) | Complete function documentation |
+| [Showcase](showcase.html) | Real-world examples (ETL, ML, bioinformatics) |
+| [Troubleshooting](troubleshooting.html) | Common issues and solutions |
 
-1. **Try the complete example**: `source(system.file("examples", "reprex.R", package = "putior"))`
-2. **Explore variable references**: See how to track variables and objects with `source(system.file("examples", "variable-reference-example.R", package = "putior"))`
-3. **Try interactive diagrams**: `source(system.file("examples", "interactive-diagrams-example.R", package = "putior"))`
-4. **Add annotations to your existing projects**: Start with key data processing scripts
-5. **Build visualization tools**: Use the extracted workflow data to create flowcharts
-6. **Integrate into CI/CD**: Automatically update workflow documentation
+**Built-in examples:**
 
-For more detailed information, see:
-- `?put` - Complete function documentation
-- `?put_diagram` - Diagram generation with interactive features
-- `?put_auto` - Automatic workflow detection from code analysis
+```{r eval=FALSE}
+# Complete workflow example
+source(system.file("examples", "reprex.R", package = "putior"))
+
+# Variable reference example
+source(system.file("examples", "variable-reference-example.R", package = "putior"))
+
+# Interactive diagrams example
+source(system.file("examples", "interactive-diagrams-example.R", package = "putior"))
+```
+
+**Function help:**
+
+- `?put` - Extract annotations from files
+- `?put_diagram` - Generate Mermaid diagrams
+- `?put_auto` - Auto-detect workflow from code
