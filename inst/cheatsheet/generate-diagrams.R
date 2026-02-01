@@ -4,6 +4,8 @@
 #
 # Prerequisites: npm install -g @mermaid-js/mermaid-cli
 
+library(putior)
+
 output_dir <- "inst/cheatsheet/diagrams"
 if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
 
@@ -62,67 +64,61 @@ render_mermaid_diagram <- function(mermaid_code, output_file, bg_color = "white"
   TRUE
 }
 
-# Define diagrams with transparent background-friendly colors
+# =============================================================================
+# Define workflows using inline data frames, then generate diagrams with put_diagram()
+# =============================================================================
+
+# Linear workflow: Fetch -> Clean -> Report
+linear_workflow <- data.frame(
+  file_name = c("01_fetch.R", "02_clean.R", "03_report.R"),
+  id = c("fetch", "clean", "report"),
+  label = c("Fetch Sales Data", "Clean Data", "Generate Report"),
+  node_type = c("input", "process", "output"),
+  input = c(NA, "raw_data.csv", "clean_data.csv"),
+  output = c("raw_data.csv", "clean_data.csv", "report.html"),
+  stringsAsFactors = FALSE
+)
+
+# Branching workflow: Multiple inputs merging
+branching_workflow <- data.frame(
+  file_name = c("fetch_sales.R", "fetch_customers.R", "merge.R", "analyze.R", "report.R"),
+  id = c("sales", "customers", "merge", "analyze", "report"),
+  label = c("Fetch Sales", "Fetch Customers", "Merge Datasets", "Analyze", "Report"),
+  node_type = c("input", "input", "process", "process", "output"),
+  input = c(NA, NA, "sales.csv,customers.csv", "merged.csv", "analysis.csv"),
+  output = c("sales.csv", "customers.csv", "merged.csv", "analysis.csv", "report.html"),
+  stringsAsFactors = FALSE
+)
+
+# Modular workflow: Script dependencies
+modular_workflow <- data.frame(
+  file_name = c("utils.R", "analysis.R", "main.R"),
+  id = c("utils", "analysis", "main"),
+  label = c("Data Utilities", "Analysis Functions", "Main Pipeline"),
+  node_type = c("input", "process", "process"),
+  input = c(NA, "utils.R", "utils.R,analysis.R"),
+  output = c("utils.R", "analysis.R", "results.csv"),
+  stringsAsFactors = FALSE
+)
+
+# Decision workflow: Start/end boundaries with processing
+decision_workflow <- data.frame(
+  file_name = c("config.R", "full_analysis.R", "quick_summary.R", "complete.R"),
+  id = c("start", "full", "quick", "complete"),
+  label = c("Load Config", "Full Analysis", "Quick Summary", "Complete"),
+  node_type = c("start", "process", "process", "end"),
+  input = c(NA, "config.json", "config.json", "results.csv"),
+  output = c("config.json", "results.csv", "results.csv", NA),
+  stringsAsFactors = FALSE
+)
+
+# Generate Mermaid code using put_diagram()
 diagrams <- list(
-  linear = 'flowchart LR
-    fetch(["Fetch Sales Data"])
-    clean["Clean Data"]
-    report[["Generate Report"]]
-    fetch --> clean --> report
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class fetch inputStyle
-    class clean processStyle
-    class report outputStyle',
-
-  branching = 'flowchart TD
-    sales(["Fetch Sales"])
-    customers(["Fetch Customers"])
-    merge["Merge Datasets"]
-    analyze["Analyze"]
-    report[["Report"]]
-    sales --> merge
-    customers --> merge
-    merge --> analyze --> report
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class sales,customers inputStyle
-    class merge,analyze processStyle
-    class report outputStyle',
-
-  modular = 'flowchart TD
-    utils(["Data Utilities"])
-    analysis["Analysis Functions"]
-    main["Main Pipeline"]
-    utils --> analysis
-    utils --> main
-    analysis --> main
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class utils inputStyle
-    class analysis,main processStyle',
-
-  decision = 'flowchart TD
-    start(["Load Config"])
-    check{"Validate Data?"}
-    full["Full Analysis"]
-    quick["Quick Summary"]
-    complete(["Complete"])
-    start --> check
-    check -->|Yes| full
-    check -->|No| quick
-    full --> complete
-    quick --> complete
-    classDef startStyle fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
-    classDef decisionStyle fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef endStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class start startStyle
-    class check decisionStyle
-    class full,quick processStyle
-    class complete endStyle'
+  linear = put_diagram(linear_workflow, direction = "LR", theme = "github", output = "raw"),
+  branching = put_diagram(branching_workflow, direction = "TD", theme = "github", output = "raw"),
+  modular = put_diagram(modular_workflow, direction = "TD", theme = "github", output = "raw"),
+  decision = put_diagram(decision_workflow, direction = "TD", theme = "github",
+                         show_workflow_boundaries = TRUE, output = "raw")
 )
 
 # Generate all diagrams

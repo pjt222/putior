@@ -13,6 +13,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   eval = FALSE
 )
+library(putior)
 ```
 
 This showcase demonstrates putior diagrams at different scales, from simple workflows to complex multi-file pipelines.
@@ -37,21 +38,20 @@ A basic extract-transform-load workflow:
 ```
 
 **Generated Diagram:**
-```mermaid
-flowchart TD
-    extract([Extract Data])
-    transform[Transform Data]
-    load[[Load to Database]]
 
-    extract --> transform
-    transform --> load
-
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class extract inputStyle
-    class transform processStyle
-    class load outputStyle
+```{r etl-diagram, echo=FALSE, results='asis', eval=TRUE}
+etl_workflow <- data.frame(
+  file_name = c("01_extract.R", "02_transform.R", "03_load.R"),
+  id = c("extract", "transform", "load"),
+  label = c("Extract Data", "Transform Data", "Load to Database"),
+  node_type = c("input", "process", "output"),
+  input = c(NA, "raw_data.csv", "clean_data.csv"),
+  output = c("raw_data.csv", "clean_data.csv", NA),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(etl_workflow, theme = "github", output = "raw"))
+cat("\n```\n")
 ```
 
 ### Example: Report Generation
@@ -70,21 +70,20 @@ A simple report generation workflow:
 ```
 
 **Generated Diagram:**
-```mermaid
-flowchart TD
-    fetch([Fetch Metrics])
-    analyze[Analyze Trends]
-    report[[Generate Report]]
 
-    fetch --> analyze
-    analyze --> report
-
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class fetch inputStyle
-    class analyze processStyle
-    class report outputStyle
+```{r report-diagram, echo=FALSE, results='asis', eval=TRUE}
+report_workflow <- data.frame(
+  file_name = c("fetch_metrics.R", "analyze.R", "report.R"),
+  id = c("fetch", "analyze", "report"),
+  label = c("Fetch Metrics", "Analyze Trends", "Generate Report"),
+  node_type = c("input", "process", "output"),
+  input = c(NA, "metrics.json", "analysis.rds"),
+  output = c("metrics.json", "analysis.rds", "report.html"),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(report_workflow, theme = "github", output = "raw"))
+cat("\n```\n")
 ```
 
 ## Medium Workflows (10-15 nodes)
@@ -128,35 +127,30 @@ A complete ML workflow from data collection to model deployment:
 ```
 
 **Generated Diagram:**
-```mermaid
-flowchart TD
-    collect([Collect Raw Data])
-    clean[Clean Data]
-    feature[Feature Engineering]
-    split[Train/Test Split]
-    train[Train Model]
-    evaluate[Evaluate Model]
-    hyper[Hyperparameter Tuning]
-    retrain[Retrain with Best Params]
-    validate[Final Validation]
-    deploy[[Deploy Model]]
 
-    collect --> clean
-    clean --> feature
-    feature --> split
-    split --> train
-    split --> hyper
-    train --> evaluate
-    hyper --> retrain
-    retrain --> validate
-    validate --> deploy
-
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class collect inputStyle
-    class clean,feature,split,train,evaluate,hyper,retrain,validate processStyle
-    class deploy outputStyle
+```{r ml-diagram, echo=FALSE, results='asis', eval=TRUE}
+ml_workflow <- data.frame(
+  file_name = c("01_collect_data.py", "02_clean_data.R", "03_feature_eng.R",
+                "04_split_data.R", "05_train_model.py", "06_evaluate.py",
+                "07_hyperparameter.py", "08_retrain.py", "09_validate.R", "10_deploy.sh"),
+  id = c("collect", "clean", "feature", "split", "train", "evaluate",
+         "hyper", "retrain", "validate", "deploy"),
+  label = c("Collect Raw Data", "Clean Data", "Feature Engineering",
+            "Train/Test Split", "Train Model", "Evaluate Model",
+            "Hyperparameter Tuning", "Retrain with Best Params", "Final Validation", "Deploy Model"),
+  node_type = c("input", "process", "process", "process", "process", "process",
+                "process", "process", "process", "output"),
+  input = c(NA, "raw_data.csv", "clean_data.csv", "features.csv", "train.csv",
+            "model.pkl,test.csv", "train.csv", "train.csv,best_params.json",
+            "final_model.pkl,test.csv", "final_model.pkl,validation_report.html"),
+  output = c("raw_data.csv", "clean_data.csv", "features.csv", "train.csv,test.csv",
+             "model.pkl", "metrics.json", "best_params.json", "final_model.pkl",
+             "validation_report.html", NA),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(ml_workflow, theme = "github", output = "raw"))
+cat("\n```\n")
 ```
 
 ### Example: Multi-Source Data Integration
@@ -193,37 +187,29 @@ Combining data from multiple sources:
 ```
 
 **Generated Diagram:**
-```mermaid
-flowchart TD
-    sales_api([Fetch Sales API])
-    inv_db([Fetch Inventory DB])
-    cust_crm([Fetch Customer CRM])
 
-    clean_sales[Clean Sales]
-    clean_inv[Clean Inventory]
-    clean_cust[Clean Customers]
-
-    merge[Merge All Sources]
-    metrics[Calculate Metrics]
-    dashboard[[Generate Dashboard]]
-
-    sales_api --> clean_sales
-    inv_db --> clean_inv
-    cust_crm --> clean_cust
-
-    clean_sales --> merge
-    clean_inv --> merge
-    clean_cust --> merge
-
-    merge --> metrics
-    metrics --> dashboard
-
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class sales_api,inv_db,cust_crm inputStyle
-    class clean_sales,clean_inv,clean_cust,merge,metrics processStyle
-    class dashboard outputStyle
+```{r integration-diagram, echo=FALSE, results='asis', eval=TRUE}
+integration_workflow <- data.frame(
+  file_name = c("sources/fetch_sales.R", "sources/fetch_inventory.R", "sources/fetch_customers.py",
+                "transform/clean_sales.R", "transform/clean_inventory.R", "transform/clean_customers.R",
+                "integrate/merge_data.R", "analyze/business_metrics.R", "report/dashboard.R"),
+  id = c("sales_api", "inv_db", "cust_crm", "clean_sales", "clean_inv", "clean_cust",
+         "merge", "metrics", "dashboard"),
+  label = c("Fetch Sales API", "Fetch Inventory DB", "Fetch Customer CRM",
+            "Clean Sales", "Clean Inventory", "Clean Customers",
+            "Merge All Sources", "Calculate Metrics", "Generate Dashboard"),
+  node_type = c("input", "input", "input", "process", "process", "process",
+                "process", "process", "output"),
+  input = c(NA, NA, NA, "sales_raw.json", "inventory_raw.csv", "customers_raw.csv",
+            "sales_clean.csv,inventory_clean.csv,customers_clean.csv", "integrated_data.csv", "metrics.rds"),
+  output = c("sales_raw.json", "inventory_raw.csv", "customers_raw.csv",
+             "sales_clean.csv", "inventory_clean.csv", "customers_clean.csv",
+             "integrated_data.csv", "metrics.rds", "dashboard.html"),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(integration_workflow, theme = "github", output = "raw"))
+cat("\n```\n")
 ```
 
 ## Large Workflows (20+ nodes)
@@ -232,7 +218,9 @@ For enterprise-scale data pipelines and complex analysis systems.
 
 ### Example: Complete Analytics Platform
 
-A full analytics platform with multiple parallel processing streams:
+A full analytics platform with multiple parallel processing streams.
+
+*Note: This complex subgraph diagram uses advanced Mermaid features (named subgraphs) that `put_diagram()` doesn't generate natively. For enterprise workflows with complex groupings, you can combine putior-generated diagrams with hand-crafted Mermaid extensions.*
 
 ```mermaid
 flowchart TD
@@ -363,6 +351,7 @@ data = load('raw_signal.mat');
 
 %put label:"FFT Analysis", input:"signal_data.mat", output:"frequency_spectrum.mat"
 spectrum = fft(data.signal);
+```
 
 ### Example: R + Python + SQL Pipeline
 
@@ -397,26 +386,21 @@ data <- read_parquet("transformed.parquet")
 ```
 
 **Generated Diagram:**
-```mermaid
-flowchart TD
-    sql([SQL Extract])
-    python_transform[Python Transform]
-    r_stats[R Statistical Analysis]
-    r_viz[R Visualization]
-    python_report[[Python Report Gen]]
 
-    sql --> python_transform
-    python_transform --> r_stats
-    r_stats --> r_viz
-    r_stats --> python_report
-    r_viz --> python_report
-
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class sql inputStyle
-    class python_transform,r_stats,r_viz processStyle
-    class python_report outputStyle
+```{r multilang-diagram, echo=FALSE, results='asis', eval=TRUE}
+multilang_workflow <- data.frame(
+  file_name = c("extract.sql", "transform.py", "analyze.R", "visualize.R", "report.py"),
+  id = c("sql", "python_transform", "r_stats", "r_viz", "python_report"),
+  label = c("SQL Extract", "Python Transform", "R Statistical Analysis",
+            "R Visualization", "Python Report Gen"),
+  node_type = c("input", "process", "process", "process", "output"),
+  input = c(NA, "raw_query_results.csv", "transformed.parquet", "stats.rds", "stats.rds,plots.pdf"),
+  output = c("raw_query_results.csv", "transformed.parquet", "stats.rds", "plots.pdf", "final_report.html"),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(multilang_workflow, theme = "github", output = "raw"))
+cat("\n```\n")
 ```
 
 ## Domain-Specific Examples
@@ -451,31 +435,26 @@ A genomics analysis workflow processing FASTA sequences:
 ```
 
 **Generated Diagram:**
-```mermaid
-flowchart TD
-    fetch([Fetch FASTA Sequences])
-    qc[Quality Control]
-    blast[BLAST Alignment]
-    parse[Parse BLAST Results]
-    de[Differential Expression]
-    pathway[Pathway Enrichment]
-    report[[Generate Report]]
 
-    fetch --> qc
-    qc --> blast
-    blast --> parse
-    parse --> de
-    de --> pathway
-    de --> report
-    pathway --> report
-    qc --> report
-
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class fetch inputStyle
-    class qc,blast,parse,de,pathway processStyle
-    class report outputStyle
+```{r bio-diagram, echo=FALSE, results='asis', eval=TRUE}
+bio_workflow <- data.frame(
+  file_name = c("sequences/fetch_sequences.R", "sequences/quality_control.py",
+                "alignment/run_blast.sh", "alignment/parse_blast.R",
+                "analysis/differential_expression.R", "analysis/pathway_analysis.R",
+                "report/bioinformatics_report.R"),
+  id = c("fetch", "qc", "blast", "parse", "de", "pathway", "report"),
+  label = c("Fetch FASTA Sequences", "Quality Control", "BLAST Alignment",
+            "Parse BLAST Results", "Differential Expression", "Pathway Enrichment", "Generate Report"),
+  node_type = c("input", "process", "process", "process", "process", "process", "output"),
+  input = c(NA, "raw_sequences.fasta", "filtered_sequences.fasta", "blast_results.xml",
+            "alignments.csv", "de_results.rds", "de_results.rds,pathways.csv,qc_report.html"),
+  output = c("raw_sequences.fasta", "filtered_sequences.fasta,qc_report.html", "blast_results.xml",
+             "alignments.csv", "de_results.rds", "pathways.csv", "analysis_report.html"),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(bio_workflow, theme = "github", output = "raw"))
+cat("\n```\n")
 ```
 
 ### Financial Analysis Pipeline
@@ -506,33 +485,27 @@ Portfolio analysis and risk assessment workflow:
 ```
 
 **Generated Diagram:**
-```mermaid
-flowchart TD
-    market([Fetch Market Data])
-    holdings([Load Portfolio Holdings])
-    returns[Calculate Returns]
-    risk[Compute Risk Metrics]
-    attrib[Performance Attribution]
-    optimize[Portfolio Optimization]
-    dashboard[[Risk Dashboard]]
 
-    market --> returns
-    holdings --> returns
-    returns --> risk
-    returns --> attrib
-    holdings --> attrib
-    risk --> optimize
-    returns --> optimize
-    risk --> dashboard
-    attrib --> dashboard
-    optimize --> dashboard
-
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class market,holdings inputStyle
-    class returns,risk,attrib,optimize processStyle
-    class dashboard outputStyle
+```{r finance-diagram, echo=FALSE, results='asis', eval=TRUE}
+finance_workflow <- data.frame(
+  file_name = c("data/fetch_market_data.py", "data/fetch_holdings.R",
+                "analysis/calculate_returns.R", "analysis/risk_metrics.R",
+                "analysis/attribution.py", "optimization/portfolio_optimize.R",
+                "report/risk_dashboard.R"),
+  id = c("market", "holdings", "returns", "risk", "attrib", "optimize", "dashboard"),
+  label = c("Fetch Market Data", "Load Portfolio Holdings", "Calculate Returns",
+            "Compute Risk Metrics", "Performance Attribution", "Portfolio Optimization", "Risk Dashboard"),
+  node_type = c("input", "input", "process", "process", "process", "process", "output"),
+  input = c(NA, NA, "market_prices.parquet,holdings.csv", "returns.rds",
+            "returns.rds,holdings.csv", "returns.rds,var_results.rds",
+            "var_results.rds,sharpe_ratios.csv,attribution.json,optimal_weights.csv"),
+  output = c("market_prices.parquet", "holdings.csv", "returns.rds",
+             "var_results.rds,sharpe_ratios.csv", "attribution.json", "optimal_weights.csv", "risk_report.html"),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(finance_workflow, theme = "github", output = "raw"))
+cat("\n```\n")
 ```
 
 ### Web Scraping Pipeline
@@ -563,29 +536,25 @@ Data extraction from web sources:
 ```
 
 **Generated Diagram:**
-```mermaid
-flowchart TD
-    urls([Fetch URL List])
-    scrape[Scrape Web Pages]
-    parse[Parse HTML Content]
-    ner[Named Entity Recognition]
-    clean[Clean and Normalize]
-    dedup[Remove Duplicates]
-    db[[Load to Database]]
 
-    urls --> scrape
-    scrape --> parse
-    parse --> ner
-    ner --> clean
-    clean --> dedup
-    dedup --> db
-
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class urls inputStyle
-    class scrape,parse,ner,clean,dedup processStyle
-    class db outputStyle
+```{r scraping-diagram, echo=FALSE, results='asis', eval=TRUE}
+scraping_workflow <- data.frame(
+  file_name = c("scrape/fetch_urls.py", "scrape/scrape_pages.py", "extract/parse_html.py",
+                "extract/extract_entities.py", "transform/clean_data.R",
+                "transform/deduplicate.R", "load/save_to_db.py"),
+  id = c("urls", "scrape", "parse", "ner", "clean", "dedup", "db"),
+  label = c("Fetch URL List", "Scrape Web Pages", "Parse HTML Content",
+            "Named Entity Recognition", "Clean and Normalize", "Remove Duplicates", "Load to Database"),
+  node_type = c("input", "process", "process", "process", "process", "process", "output"),
+  input = c(NA, "target_urls.txt", "raw_html.json", "extracted_text.json",
+            "entities.csv", "clean_entities.csv", "unique_entities.csv"),
+  output = c("target_urls.txt", "raw_html.json", "extracted_text.json",
+             "entities.csv", "clean_entities.csv", "unique_entities.csv", NA),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(scraping_workflow, theme = "github", output = "raw"))
+cat("\n```\n")
 ```
 
 ### Multi-Language ML Pipeline
@@ -625,40 +594,32 @@ A realistic ML workflow using R for data prep, Python for training, and R for re
 ```
 
 **Generated Diagram:**
-```mermaid
-flowchart TD
-    load([Load Raw Data - R])
-    eda[Exploratory Analysis - R]
-    features[Feature Engineering - R]
-    split[Train/Test Split - R]
-    train[Train XGBoost - Python]
-    hyper[Hyperparameter Tuning - Python]
-    final[Final Model Training - Python]
-    eval[Model Evaluation - Python]
-    report[[Model Report - R]]
-    export[[Export for Production - Python]]
 
-    load --> eda
-    load --> features
-    eda --> features
-    features --> split
-    split --> train
-    split --> hyper
-    hyper --> final
-    split --> final
-    final --> eval
-    split --> eval
-    eval --> report
-    train --> report
-    eda --> report
-    final --> export
-
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class load inputStyle
-    class eda,features,split,train,hyper,final,eval processStyle
-    class report,export outputStyle
+```{r multilang-ml-diagram, echo=FALSE, results='asis', eval=TRUE}
+multilang_ml_workflow <- data.frame(
+  file_name = c("data/load_raw_data.R", "data/eda_analysis.R", "preprocessing/feature_engineering.R",
+                "preprocessing/split_data.R", "training/train_model.py", "training/hyperparameter_search.py",
+                "training/final_model.py", "evaluation/model_evaluation.py",
+                "reporting/model_report.R", "deployment/export_model.py"),
+  id = c("load", "eda", "features", "split", "train", "hyper", "final", "eval", "report", "export"),
+  label = c("Load Raw Data - R", "Exploratory Analysis - R", "Feature Engineering - R",
+            "Train/Test Split - R", "Train XGBoost - Python", "Hyperparameter Tuning - Python",
+            "Final Model Training - Python", "Model Evaluation - Python",
+            "Model Report - R", "Export for Production - Python"),
+  node_type = c("input", "process", "process", "process", "process", "process",
+                "process", "process", "output", "output"),
+  input = c(NA, "raw_data.rds", "raw_data.rds,data_summary.json", "features.parquet",
+            "train.parquet", "train.parquet", "train.parquet,best_params.json",
+            "final_model.pkl,test.parquet", "eval_metrics.json,training_metrics.json,eda_report.html",
+            "final_model.pkl"),
+  output = c("raw_data.rds", "eda_report.html,data_summary.json", "features.parquet",
+             "train.parquet,test.parquet", "model.pkl,training_metrics.json", "best_params.json",
+             "final_model.pkl", "predictions.csv,eval_metrics.json", "final_report.html", "model_artifact.tar.gz"),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(multilang_ml_workflow, theme = "github", output = "raw"))
+cat("\n```\n")
 ```
 
 This example demonstrates:

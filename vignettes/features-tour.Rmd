@@ -13,6 +13,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   eval = FALSE
 )
+library(putior)
 ```
 
 This guide tours the advanced features of putior that go beyond basic annotation extraction. Learn how to auto-detect workflows, create interactive diagrams, customize detection patterns, and more.
@@ -187,11 +188,23 @@ put_diagram(workflow, show_source_info = TRUE)
 ```
 
 **Output:**
-```mermaid
-flowchart TD
-    load["Load Data<br/><small>01_load.R:5</small>"]
-    process["Process<br/><small>02_process.R:3</small>"]
-    load --> process
+
+```{r source-info-inline, echo=FALSE, results='asis', eval=TRUE}
+# Demo workflow with source info
+source_demo_workflow <- data.frame(
+  file_name = c("01_load.R", "02_process.R"),
+  id = c("load", "process"),
+  label = c("Load Data", "Process"),
+  node_type = c("input", "process"),
+  input = c(NA, "data.csv"),
+  output = c("data.csv", "results.csv"),
+  line_number = c(5, 3),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(source_demo_workflow, theme = "github", show_source_info = TRUE,
+                source_info_style = "inline", output = "raw"))
+cat("\n```\n")
 ```
 
 **Subgraph Style:**
@@ -205,15 +218,12 @@ put_diagram(workflow,
 ```
 
 **Output:**
-```mermaid
-flowchart TD
-    subgraph 01_load.R
-        load[Load Data]
-    end
-    subgraph 02_process.R
-        process[Process]
-    end
-    load --> process
+
+```{r source-info-subgraph, echo=FALSE, results='asis', eval=TRUE}
+cat("```mermaid\n")
+cat(put_diagram(source_demo_workflow, theme = "github", show_source_info = TRUE,
+                source_info_style = "subgraph", output = "raw"))
+cat("\n```\n")
 ```
 
 ### `enable_clicks` - Clickable Nodes
