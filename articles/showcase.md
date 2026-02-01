@@ -683,7 +683,7 @@ flowchart TD
     train[Train XGBoost - Python]
     hyper[Hyperparameter Tuning - Python]
     final[Final Model Training - Python]
-    eval[Model Evaluation - Python]
+    evaluate[Model Evaluation - Python]
     report[[Model Report - R]]
     export[[Export for Production - Python]]
 
@@ -696,9 +696,9 @@ flowchart TD
     split --> hyper
     split --> final
     hyper --> final
-    final --> eval
-    split --> eval
-    eval --> report
+    final --> evaluate
+    split --> evaluate
+    evaluate --> report
     train --> report
     eda --> report
     final --> export
@@ -713,7 +713,7 @@ flowchart TD
     class train processStyle
     class hyper processStyle
     class final processStyle
-    class eval processStyle
+    class evaluate processStyle
     classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
     class report outputStyle
     class export outputStyle

@@ -840,7 +840,7 @@ and R for reporting:</p>
     train[Train XGBoost - Python]
     hyper[Hyperparameter Tuning - Python]
     final[Final Model Training - Python]
-    eval[Model Evaluation - Python]
+    evaluate[Model Evaluation - Python]
     report[[Model Report - R]]
     export[[Export for Production - Python]]
 
@@ -853,9 +853,9 @@ and R for reporting:</p>
     split --&gt; hyper
     split --&gt; final
     hyper --&gt; final
-    final --&gt; eval
-    split --&gt; eval
-    eval --&gt; report
+    final --&gt; evaluate
+    split --&gt; evaluate
+    evaluate --&gt; report
     train --&gt; report
     eda --&gt; report
     final --&gt; export
@@ -870,7 +870,7 @@ and R for reporting:</p>
     class train processStyle
     class hyper processStyle
     class final processStyle
-    class eval processStyle
+    class evaluate processStyle
     classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
     class report outputStyle
     class export outputStyle</code></pre>
