@@ -48,12 +48,29 @@ workflow <- put("my_analysis.R")
 put_diagram(workflow)
 ```
 
-That's it! You'll see a flowchart showing: Load Data → Clean Data → Generate Report
+That's it! You'll see a flowchart like this:
+
+```{r first-diagram, echo=FALSE, results='asis', eval=TRUE}
+library(putior)
+demo_workflow <- data.frame(
+  file_name = "my_analysis.R",
+  id = c("load", "clean", "report"),
+  label = c("Load Data", "Clean Data", "Generate Report"),
+  node_type = c("input", "process", "output"),
+  input = c(NA, "raw_data", "clean_data"),
+  output = c("raw_data", "clean_data", "report.html"),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(demo_workflow, theme = "github", output = "raw"))
+cat("\n```\n")
+```
 
 ---
 
 ## Try It Now (No Files Needed)
-```{r}
+
+```{r try-it-now, results='asis', eval=TRUE}
 # Use text input to try immediately
 demo_code <- '
 #put label:"Extract", output:"raw.csv"
@@ -62,7 +79,9 @@ demo_code <- '
 '
 
 workflow <- put(text = demo_code)
+cat("```mermaid\n")
 cat(put_diagram(workflow, output = "raw"))
+cat("\n```\n")
 ```
 
 ---

@@ -60,6 +60,26 @@ print(workflow)
 put_diagram(workflow)
 ```
 
+**Example Auto-Detection Result:**
+
+```{r auto-detect-example, echo=FALSE, results='asis', eval=TRUE}
+library(putior)
+auto_workflow <- data.frame(
+  file_name = c("load_data.R", "process.R", "report.R"),
+  id = c("load_data_R_1", "process_R_1", "report_R_1"),
+  label = c("load_data.R", "process.R", "report.R"),
+  node_type = c("process", "process", "process"),
+  input = c(NA, "raw_data.csv", "clean_data.csv"),
+  output = c("raw_data.csv", "clean_data.csv", "report.html"),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(auto_workflow, theme = "github", output = "raw"))
+cat("\n```\n")
+```
+
+*Note: Auto-detected labels default to file names. Use `put_generate()` to create annotation templates with better labels.*
+
 **What Gets Detected:**
 
 For R code:
@@ -145,6 +165,43 @@ workflow <- put_merge("./src/", merge_strategy = "union")
 | `manual_priority` | You want full control, auto only adds missing files |
 | `supplement` | Your annotations have labels but missing I/O details |
 | `union` | You want the most complete picture possible |
+
+**Before/After Merge Example:**
+
+*Manual annotations only (sparse):*
+
+```{r merge-before, echo=FALSE, results='asis', eval=TRUE}
+library(putior)
+manual_only <- data.frame(
+  file_name = c("etl.R", "etl.R"),
+  id = c("extract", "load"),
+  label = c("Extract Data", "Load to DB"),
+  node_type = c("input", "output"),
+  input = c(NA, NA),
+  output = c(NA, NA),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(manual_only, theme = "github", show_artifacts = FALSE, output = "raw"))
+cat("\n```\n")
+```
+
+*After merge with `supplement` strategy (auto-detected I/O added):*
+
+```{r merge-after, echo=FALSE, results='asis', eval=TRUE}
+merged_workflow <- data.frame(
+  file_name = c("etl.R", "etl.R", "etl.R"),
+  id = c("extract", "transform", "load"),
+  label = c("Extract Data", "etl.R", "Load to DB"),
+  node_type = c("input", "process", "output"),
+  input = c(NA, "raw.csv", "clean.csv"),
+  output = c("raw.csv", "clean.csv", "database"),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(merged_workflow, theme = "github", output = "raw"))
+cat("\n```\n")
+```
 
 ### Auto-Annotation Workflow
 

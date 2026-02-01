@@ -66,23 +66,41 @@ That's all you need! putior will:
 
     # analysis.py
     #put id:"analyze_sales", label:"Sales Analysis", node_type:"process", input:"clean_data.csv", output:"sales_report.json"
-    
+
     import pandas as pd
     import json
-    
+
     # Load cleaned data
     data = pd.read_csv("clean_data.csv")
-    
+
     # Perform analysis
     sales_summary = {
         "total_sales": data["amount"].sum(),
         "avg_order": data["amount"].mean(),
         "customer_count": data["customer_id"].nunique()
     }
-    
+
     # Save results
     with open("sales_report.json", "w") as f:
         json.dump(sales_summary, f)
+
+**Resulting diagram from both files:**
+
+```{r multi-file-diagram, echo=FALSE, results='asis', eval=TRUE}
+library(putior)
+multi_file_workflow <- data.frame(
+  file_name = c("data_processing.R", "data_processing.R", "analysis.py"),
+  id = c("load_data", "clean_data", "analyze_sales"),
+  label = c("Load Customer Data", "Clean and Validate", "Sales Analysis"),
+  node_type = c("input", "process", "process"),
+  input = c(NA, "raw_data.csv", "clean_data.csv"),
+  output = c("raw_data.csv", "clean_data.csv", "sales_report.json"),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(multi_file_workflow, theme = "github", output = "raw"))
+cat("\n```\n")
+```
 
 ## Extracting Annotations
 
@@ -230,6 +248,24 @@ For consistency across projects, consider using these standard node types:
 - **`process`**: Data transformation, analysis, computation
 - **`output`**: Report generation, data export, visualization
 - **`decision`**: Conditional logic, branching workflows
+
+**Visual representation of node types:**
+
+```{r node-types-diagram, echo=FALSE, results='asis', eval=TRUE}
+library(putior)
+node_types_workflow <- data.frame(
+  file_name = rep("example.R", 4),
+  id = c("load", "transform", "export", "check"),
+  label = c("Load Data (input)", "Transform (process)", "Export (output)", "Validate? (decision)"),
+  node_type = c("input", "process", "output", "decision"),
+  input = c(NA, "raw", "clean", "clean"),
+  output = c("raw", "clean", "report", "valid"),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(node_types_workflow, theme = "github", show_artifacts = FALSE, output = "raw"))
+cat("\n```\n")
+```
 
 ### Custom Properties
 
