@@ -601,7 +601,7 @@ multilang_ml_workflow <- data.frame(
                 "preprocessing/split_data.R", "training/train_model.py", "training/hyperparameter_search.py",
                 "training/final_model.py", "evaluation/model_evaluation.py",
                 "reporting/model_report.R", "deployment/export_model.py"),
-  id = c("load", "eda", "features", "split", "train", "hyper", "final", "eval", "report", "export"),
+  id = c("load", "eda", "features", "split", "train", "hyper", "final", "evaluate", "report", "export"),
   label = c("Load Raw Data - R", "Exploratory Analysis - R", "Feature Engineering - R",
             "Train/Test Split - R", "Train XGBoost - Python", "Hyperparameter Tuning - Python",
             "Final Model Training - Python", "Model Evaluation - Python",
