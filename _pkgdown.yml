@@ -197,6 +197,38 @@ reference:
   - put
   - put_diagram
 
+- title: "Auto-Annotation"
+  desc: "Automatic workflow detection and annotation generation"
+  contents:
+  - put_auto
+  - put_generate
+  - put_merge
+
+- title: "Language Support"
+  desc: "Multi-language comment syntax and detection patterns"
+  contents:
+  - get_comment_prefix
+  - get_supported_extensions
+  - list_supported_languages
+  - get_detection_patterns
+  - ext_to_language
+
+- title: "MCP/ACP Integration"
+  desc: "AI assistant integration via Model Context Protocol and Agent Communication Protocol"
+  contents:
+  - putior_mcp_server
+  - putior_mcp_tools
+  - putior_acp_server
+  - putior_acp_manifest
+  - putior_skills
+  - putior_help
+
+- title: "Interactive Tools"
+  desc: "Interactive exploration and debugging"
+  contents:
+  - run_sandbox
+  - set_putior_log_level
+
 - title: "Helper Functions"
   desc: "Supporting functions for processing annotations"
   contents:
