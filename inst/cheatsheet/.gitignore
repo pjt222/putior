@@ -1,0 +1,4 @@
+# NPM/Node.js files for PDF generation
+node_modules/
+package.json
+package-lock.json

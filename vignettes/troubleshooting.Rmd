@@ -1,0 +1,757 @@
+---
+title: "Troubleshooting Guide"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Troubleshooting Guide}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+This guide helps you diagnose and resolve common issues when working with putior. Each section covers a specific category of problems with practical solutions.
+
+## Quick Diagnostics
+
+Before diving into specific issues, run these quick checks:
+
+```{r}
+library(putior)
+
+# 1. Check if annotations are found
+workflow <- put("./src/", validate = TRUE, include_line_numbers = TRUE)
+nrow(workflow)  # Should be > 0 if annotations exist
+
+# 2. Test a single annotation
+is_valid_put_annotation('#put id:"test", label:"Test Node"')  # Should be TRUE
+
+# 3. Check supported extensions
+get_supported_extensions()
+
+# 4. Enable detailed logging
+set_putior_log_level("DEBUG")
+workflow <- put("./src/")  # Now shows detailed output
+```
+
+---
+
+## Annotation Syntax Errors
+
+### Missing or Mismatched Quotes
+
+**Problem**: Annotation is not recognized or properties are missing.
+
+```r
+# WRONG - No quotes around values
+#put id:my_node, label:My Process
+
+# WRONG - Mismatched quotes
+#put id:"my_node', label:"My Process"
+
+# WRONG - Missing closing quote
+#put id:"my_node, label:"My Process"
+```
+
+**Solution**: Always use matching quotes around all values.
+
+```r
+# CORRECT - Double quotes
+#put id:"my_node", label:"My Process"
+
+# CORRECT - Single quotes
+#put id:'my_node', label:'My Process'
+
+# CORRECT - Mixed (but consistent per value)
+#put id:"my_node", label:'My Process'
+```
+
+**Diagnostic**:
+
+```{r}
+# Test your annotation syntax
+is_valid_put_annotation('#put id:"my_node", label:"My Process"')  # TRUE
+is_valid_put_annotation('#put id:my_node, label:My Process')      # FALSE
+```
+
+### Invalid Node Types
+
+**Problem**: Validation warning about unusual node_type.
+
+```r
+# Triggers warning - non-standard type
+#put id:"step1", label:"Process", node_type:"transform"
+```
+
+**Solution**: Use standard node types for consistency.
+
+```r
+# Standard node types
+#put id:"step1", label:"Load Data", node_type:"input"
+#put id:"step2", label:"Transform", node_type:"process"
+#put id:"step3", label:"Save Results", node_type:"output"
+#put id:"step4", label:"Check Quality", node_type:"decision"
+#put id:"step5", label:"Start Pipeline", node_type:"start"
+#put id:"step6", label:"End Pipeline", node_type:"end"
+```
+
+**Note**: Custom node types work but generate warnings. Suppress with `validate = FALSE`:
+
+```{r}
+workflow <- put("./src/", validate = FALSE)
+```
+
+### Commas Inside Values
+
+**Problem**: Values containing commas are truncated.
+
+```r
+# WRONG - Comma breaks the label
+#put id:"step1", label:Load, clean, transform data
+```
+
+**Solution**: Enclose values with commas in quotes.
+
+```r
+# CORRECT - Quotes protect the comma
+#put id:"step1", label:"Load, clean, transform data"
+```
+
+### Empty or Missing IDs
+
+**Problem**: Warning about empty ID.
+
+```r
+# WRONG - Empty ID string
+#put id:"", label:"My Process"
+
+# OK - Missing ID (auto-generated UUID)
+#put label:"My Process"
+```
+
+**Solution**: Either omit the ID entirely (auto-generated) or provide a valid one.
+
+```{r}
+# With auto-generated ID
+workflow <- put("./src/")
+print(workflow$id)  # Shows UUIDs like "a1b2c3d4-..."
+
+# With explicit IDs
+#put id:"step1", label:"First Step"
+#put id:"step2", label:"Second Step"
+```
+
+### Duplicate IDs
+
+**Problem**: Warning about duplicate node IDs.
+
+```r
+# In file1.R
+#put id:"load_data", label:"Load from CSV"
+
+# In file2.R
+#put id:"load_data", label:"Load from JSON"  # DUPLICATE!
+```
+
+**Solution**: Use unique IDs across all files in your workflow.
+
+```r
+# In file1.R
+#put id:"load_csv", label:"Load from CSV"
+
+# In file2.R
+#put id:"load_json", label:"Load from JSON"
+```
+
+### Multiline Annotation Issues
+
+**Problem**: Multiline annotations not being parsed correctly.
+
+```r
+# WRONG - Missing backslash
+#put id:"step1", label:"Process",
+#    input:"data.csv", output:"results.csv"
+
+# WRONG - Backslash not at end of line
+#put id:"step1", label:"Process", \
+#    input:"data.csv"
+
+# WRONG - Missing comment prefix on continuation
+#put id:"step1", label:"Process", \
+    input:"data.csv"
+```
+
+**Solution**: Use proper multiline syntax.
+
+```r
+# CORRECT - Backslash at end, comment prefix on each line
+#put id:"step1", label:"Process Data", \
+#    input:"data.csv,config.json", \
+#    output:"results.csv"
+```
+
+**For SQL files**:
+
+```sql
+--put id:"etl_job", label:"ETL Process", \
+--    input:"source_table", \
+--    output:"target_table"
+```
+
+**For JavaScript files**:
+
+```javascript
+//put id:"handler", label:"API Handler", \
+//    input:"request.json", \
+//    output:"response.json"
+```
+
+---
+
+## File Pattern Matching Issues
+
+### Files Not Found
+
+**Problem**: `put()` returns empty result or "no files found" warning.
+
+```{r}
+workflow <- put("./src/")
+#> Warning: No files matching pattern '\.(R|r|py|sql|sh|jl)$' found in: ./src/
+```
+
+**Diagnostic Steps**:
+
+```{r}
+# 1. Check if directory exists
+dir.exists("./src/")
+
+# 2. List files in directory
+list.files("./src/", recursive = TRUE)
+
+# 3. Check what patterns match
+list.files("./src/", pattern = "\\.(R|r|py)$")
+```
+
+**Solutions**:
+
+```{r}
+# Use correct path (absolute or relative)
+workflow <- put("/full/path/to/src/")
+
+# Scan recursively for subdirectories
+workflow <- put("./src/", recursive = TRUE)
+
+# Check if single file path works
+workflow <- put("./src/script.R")
+```
+
+### Wrong File Extensions
+
+**Problem**: Your files use extensions not in the default pattern.
+
+```{r}
+# Default pattern only matches: R, r, py, sql, sh, jl
+workflow <- put("./src/")  # Won't find .js, .ts, .go files
+```
+
+**Solution**: Specify a custom pattern for your file types.
+
+```{r}
+# JavaScript/TypeScript files
+workflow <- put("./src/", pattern = "\\.(js|ts|jsx|tsx)$")
+
+# Go files
+workflow <- put("./src/", pattern = "\\.go$")
+
+# Rust files
+workflow <- put("./src/", pattern = "\\.rs$")
+
+# Multiple languages
+workflow <- put("./src/", pattern = "\\.(R|py|js|ts|go|rs)$")
+
+# All supported extensions
+all_exts <- paste(get_supported_extensions(), collapse = "|")
+pattern <- paste0("\\.(", all_exts, ")$")
+workflow <- put("./src/", pattern = pattern)
+```
+
+### Case Sensitivity
+
+**Problem**: Files not found due to case mismatch.
+
+```{r}
+# Pattern is case-sensitive by default
+list.files("./src/", pattern = "\\.R$")   # Finds script.R
+list.files("./src/", pattern = "\\.r$")   # Finds script.r
+```
+
+**Solution**: Include both cases in pattern.
+
+```{r}
+# Match both .R and .r
+workflow <- put("./src/", pattern = "\\.(R|r)$")
+
+# Or use the default pattern which includes both
+workflow <- put("./src/")  # Default: "\\.(R|r|py|sql|sh|jl)$"
+```
+
+---
+
+## Diagram Rendering Problems
+
+### Mermaid Syntax Errors
+
+**Problem**: Diagram doesn't render or shows syntax error.
+
+**Diagnostic**:
+
+```{r}
+# Get raw Mermaid code to inspect
+workflow <- put("./src/")
+mermaid_code <- put_diagram(workflow, output = "raw")
+cat(mermaid_code)
+```
+
+**Common Causes**:
+
+1. **Special characters in labels**: Mermaid has reserved characters.
+
+```{r}
+# Problem: Quotes in labels
+#put id:"step1", label:"Load "raw" data"
+
+# Solution: Use single quotes or escape
+#put id:"step1", label:"Load 'raw' data"
+#put id:"step1", label:"Load raw data"
+```
+
+2. **Reserved words in IDs**: Some words are reserved in Mermaid.
+
+```{r}
+# Problem: Reserved word as ID
+#put id:"end", label:"Finish"
+#put id:"class", label:"Classify"
+
+# Solution: Use different IDs
+#put id:"end_step", label:"Finish"
+#put id:"classify", label:"Classify"
+```
+
+### Theme Issues
+
+**Problem**: Diagram colors don't appear or look wrong.
+
+```{r}
+# Check available themes
+get_diagram_themes()
+#> [1] "light" "dark" "auto" "minimal" "github"
+```
+
+**Solutions**:
+
+```{r}
+# Try a different theme
+put_diagram(workflow, theme = "github")
+put_diagram(workflow, theme = "minimal")
+
+# Disable node styling for plain diagrams
+put_diagram(workflow, style_nodes = FALSE)
+
+# Check if theme is compatible with your viewer
+# "github" works best on GitHub README
+# "dark" for dark mode applications
+# "minimal" for printing/PDFs
+```
+
+### Missing Connections
+
+**Problem**: Nodes appear but arrows don't connect them.
+
+**Cause**: Input/output values don't match between nodes.
+
+```{r}
+# Problem: Typo in file name
+#put id:"step1", output:"data.csv"
+#put id:"step2", input:"Data.csv"  # Case mismatch!
+
+# Solution: Match exactly
+#put id:"step1", output:"data.csv"
+#put id:"step2", input:"data.csv"
+```
+
+**Diagnostic**:
+
+```{r}
+# Check what inputs and outputs are defined
+workflow <- put("./src/")
+print(workflow[, c("id", "input", "output")])
+```
+
+### Artifacts Not Showing
+
+**Problem**: Data files (artifacts) don't appear in diagram.
+
+```{r}
+# Enable artifacts display
+put_diagram(workflow, show_artifacts = TRUE)
+
+# Artifacts are intermediate files that connect nodes
+# They're hidden by default for cleaner diagrams
+```
+
+---
+
+## Multi-Language Support Issues
+
+### Wrong Comment Prefix Detected
+
+**Problem**: Annotations not found in SQL, JavaScript, or other files.
+
+**Cause**: Using wrong comment syntax for the language.
+
+```sql
+-- WRONG for SQL - using hash instead of dash
+#put id:"query", label:"Run Query"
+
+-- CORRECT for SQL
+--put id:"query", label:"Run Query"
+```
+
+```javascript
+// WRONG for JavaScript - using hash
+#put id:"handler", label:"Handle Request"
+
+// CORRECT for JavaScript
+//put id:"handler", label:"Handle Request"
+```
+
+**Check the correct prefix**:
+
+```{r}
+# Get comment prefix for any extension
+get_comment_prefix("sql")   # "--"
+get_comment_prefix("js")    # "//"
+get_comment_prefix("m")     # "%"
+get_comment_prefix("py")    # "#"
+get_comment_prefix("go")    # "//"
+get_comment_prefix("rs")    # "//"
+```
+
+### Reference Table
+
+| Extension | Comment Prefix | Example |
+|-----------|---------------|---------|
+| `.R`, `.r` | `#` | `#put id:"step", label:"Process"` |
+| `.py` | `#` | `#put id:"step", label:"Process"` |
+| `.sql` | `--` | `--put id:"query", label:"Query"` |
+| `.js`, `.ts` | `//` | `//put id:"func", label:"Function"` |
+| `.go` | `//` | `//put id:"main", label:"Main"` |
+| `.rs` | `//` | `//put id:"fn", label:"Handler"` |
+| `.m` (MATLAB) | `%` | `%put id:"calc", label:"Compute"` |
+| `.tex` | `%` | `%put id:"sec", label:"Section"` |
+| `.sh` | `#` | `#put id:"cmd", label:"Command"` |
+| `.lua` | `--` | `--put id:"fn", label:"Function"` |
+
+### Unsupported Extension
+
+**Problem**: File type not automatically recognized.
+
+```{r}
+# Check if extension is supported
+ext <- "xyz"
+get_comment_prefix(ext)  # Returns "#" as fallback
+
+# List all supported extensions
+get_supported_extensions()
+```
+
+**Solution**: For unsupported extensions, putior falls back to `#` prefix. You can still use annotations with hash comments, or request support for new languages.
+
+---
+
+## Performance Tips for Large Codebases
+
+### Slow Scanning
+
+**Problem**: `put()` takes too long on large projects.
+
+**Solutions**:
+
+```{r}
+# 1. Limit to specific directories
+workflow <- put("./src/core/")  # Instead of ./
+
+# 2. Use specific file patterns
+workflow <- put("./src/", pattern = "\\.R$")  # Only R files
+
+# 3. Avoid recursive scanning unless needed
+workflow <- put("./src/", recursive = FALSE)  # Default
+
+# 4. Disable validation for faster scanning
+workflow <- put("./src/", validate = FALSE)
+```
+
+### Memory Issues with Large Workflows
+
+**Problem**: Many nodes cause memory or rendering issues.
+
+**Solutions**:
+
+```{r}
+# 1. Split into smaller subgraphs
+workflow_etl <- put("./src/etl/")
+workflow_ml <- put("./src/ml/")
+
+# Generate separate diagrams
+put_diagram(workflow_etl, file = "etl_workflow.md")
+put_diagram(workflow_ml, file = "ml_workflow.md")
+
+# 2. Hide artifacts for cleaner diagrams
+put_diagram(workflow, show_artifacts = FALSE)
+
+# 3. Use simpler theme
+put_diagram(workflow, theme = "minimal", style_nodes = FALSE)
+```
+
+### Reducing Annotation Overhead
+
+**Best Practices**:
+
+```{r}
+# Annotate key steps only, not every function
+# Good: Major pipeline stages
+#put id:"ingest", label:"Data Ingestion", node_type:"input"
+#put id:"transform", label:"Data Transformation", node_type:"process"
+#put id:"export", label:"Export Results", node_type:"output"
+
+# Avoid: Every small helper function
+# (Don't annotate utility functions unless they're significant)
+```
+
+---
+
+## Debugging with Logging
+
+### Enable Detailed Logging
+
+```{r}
+# Install logger package (optional but recommended)
+install.packages("logger")
+
+# Set log level
+set_putior_log_level("DEBUG")  # Maximum detail
+set_putior_log_level("INFO")   # Progress updates
+set_putior_log_level("WARN")   # Issues only (default)
+set_putior_log_level("ERROR")  # Fatal errors only
+```
+
+### Per-Call Logging
+
+```{r}
+# Override log level for a single call
+workflow <- put("./src/", log_level = "DEBUG")
+put_diagram(workflow, log_level = "INFO")
+```
+
+### What Each Level Shows
+
+| Level | Information Shown |
+|-------|-------------------|
+| `DEBUG` | File-by-file processing, pattern matching, parsing steps |
+| `INFO` | Scan started, files found, nodes extracted, diagram generated |
+| `WARN` | Validation issues, missing dependencies |
+| `ERROR` | Fatal errors that stop execution |
+
+### Debugging Example
+
+```{r}
+# Problem: Annotations not being found
+
+# 1. Enable debug logging
+set_putior_log_level("DEBUG")
+
+# 2. Run the scan
+workflow <- put("./problem_file.R", include_line_numbers = TRUE)
+
+# 3. Check the logs for:
+#    - "No PUT annotations found in..." (wrong syntax?)
+#    - "Found X PUT annotation(s)..." (they exist!)
+#    - "Processing file:..." (file is being scanned)
+
+# 4. Reset to normal
+set_putior_log_level("WARN")
+```
+
+### Logger Not Installed
+
+If you don't have the `logger` package installed, putior works silently without logging. Install it for debugging:
+
+```{r}
+install.packages("logger")
+
+# Verify it's working
+library(logger)
+set_putior_log_level("INFO")
+workflow <- put("./src/")
+#> INFO [2024-01-15 10:30:00] Starting PUT annotation scan
+#> INFO [2024-01-15 10:30:00] Found 3 file(s) to scan
+#> INFO [2024-01-15 10:30:01] Scan complete: found 5 workflow node(s)
+```
+
+---
+
+## Frequently Asked Questions
+
+### Q: Why are my annotations not found?
+
+**A**: Check these common causes:
+
+1. **Wrong comment prefix** for file type (see [Multi-Language Support](#multi-language-support-issues))
+2. **Missing quotes** around property values
+3. **File not matching pattern** (check `list.files()`)
+4. **Typo in "put"** keyword (must be lowercase: `#put` not `#PUT`)
+
+```{r}
+# Validate syntax
+is_valid_put_annotation('#put id:"test", label:"Test"')  # TRUE
+is_valid_put_annotation('#PUT id:"test", label:"Test"')  # FALSE (uppercase)
+```
+
+### Q: How do I connect nodes between files?
+
+**A**: Use matching input/output file names:
+
+```r
+# In 01_load.R
+#put id:"load", label:"Load Data", output:"raw_data.csv"
+
+# In 02_process.R
+#put id:"process", label:"Process", input:"raw_data.csv", output:"clean_data.csv"
+```
+
+### Q: What if I don't specify an output?
+
+**A**: putior automatically uses the file name as the output.
+
+```r
+# In process_data.R
+#put id:"process", label:"Process Data", input:"raw.csv"
+# Output defaults to "process_data.R"
+
+# In analyze.R
+#put id:"analyze", label:"Analyze", input:"process_data.R"
+# This creates a connection from process_data.R to analyze.R
+```
+
+### Q: Can I use putior in CI/CD?
+
+**A**: Yes, putior works in headless environments:
+
+```{r}
+# Generate diagram file for documentation
+workflow <- put("./src/", recursive = TRUE)
+put_diagram(workflow,
+            output = "file",
+            file = "docs/workflow.md",
+            theme = "github")
+```
+
+### Q: How do I track in-memory variables?
+
+**A**: Use the `.internal` extension:
+
+```r
+# Variables created during script execution
+#put id:"create", output:"dataset.internal, dataset.RData"
+dataset <- data.frame(x = 1:100)
+save(dataset, file = "dataset.RData")
+
+# Next script uses the saved file, not .internal
+#put id:"analyze", input:"dataset.RData", output:"results.internal"
+load("dataset.RData")
+results <- summary(dataset)
+```
+
+**Important**: `.internal` files can only be outputs, never inputs between scripts.
+
+### Q: Why does the diagram look different on GitHub vs locally?
+
+**A**: Different Mermaid renderers interpret themes differently.
+
+```{r}
+# For GitHub README
+put_diagram(workflow, theme = "github")
+
+# For local HTML
+put_diagram(workflow, theme = "light")
+
+# For universal compatibility
+put_diagram(workflow, theme = "minimal", style_nodes = FALSE)
+```
+
+### Q: Can I use custom properties?
+
+**A**: Yes, putior preserves any properties you define:
+
+```r
+#put id:"train", label:"Train Model", \
+#    node_type:"process", \
+#    runtime:"2h", \
+#    gpu:"required", \
+#    priority:"high"
+```
+
+```{r}
+workflow <- put("./src/")
+print(workflow$runtime)   # "2h"
+print(workflow$gpu)       # "required"
+print(workflow$priority)  # "high"
+```
+
+### Q: How do I suppress validation warnings?
+
+**A**: Disable validation:
+
+```{r}
+# Suppress all validation warnings
+workflow <- put("./src/", validate = FALSE)
+
+# Or suppress specific warnings with suppressWarnings()
+workflow <- suppressWarnings(put("./src/"))
+```
+
+---
+
+## Getting Help
+
+If you're still stuck:
+
+1. **Check the vignettes**:
+   - [Getting Started](getting-started.html) - Basic usage
+   - [Features Tour](features-tour.html) - Advanced features
+   - [API Reference](api-reference.html) - Complete function docs
+
+2. **Use the sandbox**:
+   ```{r}
+   run_sandbox()  # Interactive experimentation
+   ```
+
+3. **Enable debug logging** and check output carefully
+
+4. **Report issues** on GitHub with:
+   - R version (`R.version.string`)
+   - putior version (`packageVersion("putior")`)
+   - Minimal reproducible example
+   - Debug log output
+
+```{r}
+# Gather diagnostic info
+sessionInfo()
+packageVersion("putior")
+get_supported_extensions()
+```

@@ -44,28 +44,57 @@ source(system.file("examples", "reprex.R", package = "putior"))
 
 This creates a sample multi-language workflow and demonstrates the workflow extraction capabilities of putior.
 
+### Live Example
+
+Here's a working example using putior's own source code (the package documents itself!):
+
+```{r eval=TRUE}
+library(putior)
+
+# Extract workflow from putior's own R source files
+workflow <- put(system.file("examples", "reprex.R", package = "putior"))
+
+# View the extracted workflow nodes
+print(workflow)
+```
+
+This demonstrates how putior extracts structured workflow data from annotated source files.
+
 ## Basic Workflow
 
 ### Step 1: Add PUT Annotations to Your Code
 
-PUT annotations are special comments that describe workflow nodes. Here's how to add them to your source files:
+PUT annotations are special comments that describe workflow nodes. Start simple:
 
-**R script example:**
+**Minimal annotation (just a label):**
+
+    #put label:"Load Data"
+
+That's all you need! putior will:
+- Auto-generate a unique ID
+- Default `node_type` to `"process"`
+- Default `output` to the filename
+
+**Add more detail as needed:**
+
+    #put label:"Load Data", node_type:"input", output:"data.csv"
+
+**Full R script example:**
 
     # data_processing.R
-    #put id:"load_data", label:"Load Customer Data", node_type:"input", output:"raw_data.csv"
-    
+    #put label:"Load Customer Data", node_type:"input", output:"raw_data.csv"
+
     # Your actual code
     data <- read.csv("customer_data.csv")
     write.csv(data, "raw_data.csv")
-    
-    #put id:"clean_data", label:"Clean and Validate", node_type:"process", input:"raw_data.csv", output:"clean_data.csv"
-    
+
+    #put label:"Clean and Validate", input:"raw_data.csv", output:"clean_data.csv"
+
     # Data cleaning code
     cleaned_data <- data %>%
       filter(!is.na(customer_id)) %>%
       mutate(purchase_date = as.Date(purchase_date))
-    
+
     write.csv(cleaned_data, "clean_data.csv")
 
 **Python script example:**
@@ -148,6 +177,35 @@ PUT annotations support several formats to fit different coding styles:
     #put| id:"my_node", label:"My Process"          # Pipe separator
     #put id:'my_node', label:'Single quotes'        # Single quotes
     #put id:"my_node", label:'Mixed quotes'         # Mixed quote styles
+
+### Multi-Language Support
+
+putior automatically uses the correct comment prefix based on file extension:
+
+| Comment Style | Languages | Extensions |
+| :--- | :--- | :--- |
+| `#put` | R, Python, Shell, Julia, Ruby, YAML | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.yaml` |
+| `--put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |
+| `//put` | JavaScript, TypeScript, C, Java, Go, Rust | `.js`, `.ts`, `.c`, `.java`, `.go`, `.rs` |
+| `%put` | MATLAB, LaTeX | `.m`, `.tex` |
+
+**SQL Example:**
+
+    -- query.sql
+    --put id:"load_data", label:"Load Customer Data", output:"customers"
+    SELECT * FROM customers WHERE active = 1;
+
+**JavaScript Example:**
+
+    // process.js
+    //put id:"transform", label:"Transform JSON", input:"data.json", output:"output.json"
+    const transformed = data.map(item => process(item));
+
+**MATLAB Example:**
+
+    % analysis.m
+    %put id:"compute", label:"Statistical Analysis", input:"data.mat", output:"results.mat"
+    results = compute_statistics(data);
 
 ### Core Properties
 
@@ -286,6 +344,59 @@ source("process_data.R") # Reading process_data.R into main.R
 ```
 
 This correctly shows the flow: sourced scripts are **inputs** to the main script.
+
+## Variable References with `.internal` Extension
+
+putior supports tracking in-memory variables and objects using the `.internal` extension. This is useful for documenting computational steps within scripts while maintaining clear data flow between scripts.
+
+### Key Concepts
+
+**`.internal` variables:**
+- Represent in-memory objects during script execution
+- Can only be **outputs**, never inputs between scripts
+- Help document what variables are created within each script
+- Example: `my_data.internal` represents a variable named `my_data`
+
+**Persistent files:**
+- Enable actual data flow between scripts
+- Can be both inputs and outputs
+- Required for connected workflows
+- Example: `my_data.RData`, `results.csv`
+
+### Correct Usage Pattern
+
+```{r eval=FALSE}
+# Script 1: Create variable and save it
+#put id:"create_data", output:"dataset.internal, dataset.RData"
+dataset <- data.frame(x = 1:100, y = rnorm(100))
+save(dataset, file = "dataset.RData")
+
+# Script 2: Load data and create new variables  
+#put id:"analyze_data", input:"dataset.RData", output:"analysis.internal, summary.txt"
+load("dataset.RData")  # Load the persistent file (NOT dataset.internal)
+analysis <- summary(dataset)  # Create new in-memory variable
+writeLines(capture.output(analysis), "summary.txt")
+```
+
+### What NOT to Do
+
+```{r eval=FALSE}
+# INCORRECT: Using .internal as input between scripts
+#put input:"dataset.internal"  # This is wrong!
+
+# CORRECT: Use persistent files as inputs
+#put input:"dataset.RData"     # This is correct!
+```
+
+### Complete Example
+
+Try the comprehensive variable reference example:
+
+```{r eval=FALSE}
+source(system.file("examples", "variable-reference-example.R", package = "putior"))
+```
+
+This creates a connected 4-script workflow demonstrating proper `.internal` usage and file-based data flow.
 
 ## Real-World Example
 
@@ -463,12 +574,13 @@ Problematic example:
 Now that you understand the basics of putior:
 
 1. **Try the complete example**: `source(system.file("examples", "reprex.R", package = "putior"))`
-2. **Add annotations to your existing projects**: Start with key data processing scripts
-3. **Build visualization tools**: Use the extracted workflow data to create flowcharts
-4. **Integrate into CI/CD**: Automatically update workflow documentation
-5. **Explore advanced features**: Check out the advanced usage vignette
+2. **Explore variable references**: See how to track variables and objects with `source(system.file("examples", "variable-reference-example.R", package = "putior"))`
+3. **Try interactive diagrams**: `source(system.file("examples", "interactive-diagrams-example.R", package = "putior"))`
+4. **Add annotations to your existing projects**: Start with key data processing scripts
+5. **Build visualization tools**: Use the extracted workflow data to create flowcharts
+6. **Integrate into CI/CD**: Automatically update workflow documentation
 
 For more detailed information, see:
 - `?put` - Complete function documentation
-- Advanced usage vignette - Complex workflows and integration
-- Best practices vignette - Team collaboration and style guides
+- `?put_diagram` - Diagram generation with interactive features
+- `?put_auto` - Automatic workflow detection from code analysis

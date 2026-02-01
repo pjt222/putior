@@ -159,7 +159,7 @@ home:
 
 navbar:
   structure:
-    left: [intro, reference, articles, news]
+    left: [intro, reference, articles, skills, cheatsheet, news]
     right: [search, github]
   components:
     home:
@@ -173,6 +173,22 @@ navbar:
       menu:
       - text: Getting Started with putior
         href: articles/getting-started.html
+      - text: Features Tour
+        href: articles/features-tour.html
+      - text: API Reference
+        href: articles/api-reference.html
+      - text: "Showcase: Real-World Examples"
+        href: articles/showcase.html
+      - text: Troubleshooting Guide
+        href: articles/troubleshooting.html
+    skills:
+      text: AI Skills
+      icon: fa-robot
+      href: articles/skills.html
+    cheatsheet:
+      text: Cheatsheet
+      icon: fa-file-pdf
+      href: https://github.com/pjt222/putior/raw/main/inst/cheatsheet/putior-cheatsheet.pdf
 
 reference:
 - title: "Core Functions"

@@ -107,6 +107,10 @@ workflow_diagram.md
 inst/examples/*.svg
 inst/examples/*.png
 
+# Quarto rendered output (source .qmd files are kept)
+inst/examples/*.html
+inst/examples/*_files/
+
 # Keep package logos and favicons
 !man/figures/*.png
 !man/figures/*.svg
@@ -122,3 +126,8 @@ inst/examples/*.png
 docs
 /doc/
 /Meta/
+
+# Local test and workflow files
+R/putior_test.R
+my_workflow.md
+test/

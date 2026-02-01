@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>putior Cheatsheet</title>
+  <style>
+    @page {
+      size: 24in 16in;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 8pt;
+      line-height: 1.2;
+      color: #1f2937;
+      width: 24in;
+      height: 16in;
+      padding: 0.2in;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    code, pre {
+      font-family: "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: 7pt;
+      background: #f8fafc;
+      border-radius: 2px;
+    }
+
+    pre {
+      padding: 3px 5px;
+      overflow: hidden;
+      white-space: pre;
+      margin: 2px 0;
+    }
+
+    h1 {
+      font-size: 16pt;
+      text-align: center;
+      margin-bottom: 1px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #6b7280;
+      margin-bottom: 6px;
+      font-size: 9pt;
+    }
+
+    .section-title {
+      font-size: 9pt;
+      font-weight: 700;
+      margin: 5px 0 2px 0;
+      padding-bottom: 1px;
+      border-bottom: 1px solid currentColor;
+    }
+
+    .blue { color: #2563eb; }
+    .purple { color: #7c3aed; }
+    .green { color: #16a34a; }
+    .orange { color: #d97706; }
+
+    .subsection-title {
+      font-size: 8pt;
+      font-weight: 600;
+      margin: 4px 0 1px 0;
+    }
+
+    /* Main grid layout */
+    .main-content {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+
+    .column {
+      min-width: 0;
+    }
+
+    /* Logo section */
+    .logo-section {
+      text-align: center;
+    }
+
+    .logo-section img {
+      width: 60px;
+      height: 60px;
+    }
+
+    .logo-section .pkg-name {
+      font-size: 14pt;
+      font-weight: 700;
+    }
+
+    .logo-section .pkg-subtitle {
+      font-style: italic;
+      color: #6b7280;
+      font-size: 7pt;
+    }
+
+    .logo-section .pkg-desc {
+      margin-top: 4px;
+      font-size: 7pt;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 7pt;
+      margin: 2px 0;
+    }
+
+    th, td {
+      border: 1px solid #d1d5db;
+      padding: 1px 3px;
+      text-align: left;
+    }
+
+    th {
+      background: #f3f4f6;
+      font-weight: 600;
+    }
+
+    /* Examples section */
+    .examples-section {
+      margin-top: 6px;
+      border-top: 1px solid #9ca3af;
+      padding-top: 4px;
+      flex: 1;
+    }
+
+    .examples-title {
+      text-align: center;
+      font-size: 11pt;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .examples-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .example {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .example pre {
+      font-size: 6.5pt;
+      line-height: 1.15;
+    }
+
+    .example img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 3px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 7pt;
+      color: #6b7280;
+      margin-top: 4px;
+      padding-top: 3px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .footer a {
+      color: #2563eb;
+    }
+
+    .note {
+      font-style: italic;
+      font-size: 7pt;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <h1>putior Cheatsheet</h1>
+  <div class="subtitle">Workflow Visualization from Code Annotations</div>
+
+  <div class="main-content">
+    <!-- Column 1: Logo + Quick Start + Annotation Syntax -->
+    <div class="column">
+      <div class="logo-section">
+        <img src="../../man/figures/logo.png" alt="putior logo">
+        <div class="pkg-name">putior</div>
+        <div class="pkg-subtitle">PUT + Input + Output + R</div>
+        <div class="pkg-desc">Extract beautiful workflow diagrams from your code annotations. Works with R, Python, SQL, Shell, and Julia.</div>
+      </div>
+
+      <div class="section-title blue">Quick Start</div>
+<pre># 1. Add annotation
+#put label:"Load Data",
+     output:"clean.csv"
+
+# 2. Generate diagram
+library(putior)
+put_diagram(put("./"))</pre>
+
+      <div class="section-title blue">Annotation Syntax</div>
+      <div class="subsection-title">Basic Format</div>
+<pre>#put key:"value", key:"value"</pre>
+
+      <div class="subsection-title">Minimal (label only)</div>
+<pre>#put label:"My Step"</pre>
+      <div class="note">ID auto-generated, type = "process"</div>
+
+      <div class="subsection-title">Full Annotation</div>
+<pre>#put id:"step1", \
+     label:"Load Data", \
+     node_type:"input", \
+     input:"config.json", \
+     output:"data.csv"</pre>
+
+      <div class="subsection-title">Alternative Formats</div>
+<pre>#put label:"Step"   # Standard
+# put label:"Step"  # Space
+#put| label:"Step"  # Pipe
+#put: label:"Step"  # Colon</pre>
+    </div>
+
+    <!-- Column 2: Node Types + Fields + Artifacts -->
+    <div class="column">
+      <div class="section-title purple">Node Types & Shapes</div>
+      <table>
+        <tr><th>Type</th><th>Shape</th><th>Use For</th></tr>
+        <tr><td>input</td><td><code>([ ])</code></td><td>Data sources</td></tr>
+        <tr><td>process</td><td><code>[ ]</code></td><td>Transforms</td></tr>
+        <tr><td>output</td><td><code>[[ ]]</code></td><td>Reports</td></tr>
+        <tr><td>decision</td><td><code>{ }</code></td><td>Branching</td></tr>
+        <tr><td>start</td><td><code>([orange])</code></td><td>Entry</td></tr>
+        <tr><td>end</td><td><code>([green])</code></td><td>Exit</td></tr>
+      </table>
+
+      <div class="subsection-title">Annotation Fields</div>
+      <table>
+        <tr><th>Field</th><th>Req?</th><th>Default</th></tr>
+        <tr><td>id</td><td>No</td><td>Auto UUID</td></tr>
+        <tr><td>label</td><td>Rec.</td><td>None</td></tr>
+        <tr><td>node_type</td><td>No</td><td>"process"</td></tr>
+        <tr><td>input</td><td>No</td><td>None</td></tr>
+        <tr><td>output</td><td>No</td><td>File name</td></tr>
+      </table>
+
+      <div class="subsection-title">File Artifacts</div>
+<pre># Multiple files
+output:"data.csv, log.txt"
+
+# Variable tracking
+output:"result.internal"</pre>
+      <div class="note">.internal = in-memory only</div>
+
+      <div class="subsection-title">Connecting Scripts</div>
+<pre># Script A outputs file
+#put label:"Fetch",
+     output:"data.csv"
+
+# Script B reads that file
+#put label:"Process",
+     input:"data.csv"</pre>
+    </div>
+
+    <!-- Column 3: Key Functions -->
+    <div class="column">
+      <div class="section-title green">Key Functions</div>
+      <div class="subsection-title">Core Workflow</div>
+<pre># Extract annotations
+workflow &lt;- put("./src/")
+workflow &lt;- put("script.R")
+workflow &lt;- put("./",
+                recursive = TRUE)
+
+# Generate diagram
+put_diagram(workflow)
+put_diagram(workflow,
+            theme = "github")</pre>
+
+      <div class="subsection-title">Auto-Annotation</div>
+<pre># Auto-detect from code
+put_auto("./src/")
+
+# Generate annotation text
+put_generate("./src/")
+put_generate("./src/",
+  output = "clipboard")
+
+# Merge manual + auto
+put_merge("./src/",
+  merge_strategy = "supplement")</pre>
+
+      <div class="subsection-title">Output Options</div>
+<pre># Console (default)
+put_diagram(wf)
+
+# Copy to clipboard
+put_diagram(wf,
+  output = "clipboard")
+
+# Save to file
+put_diagram(wf,
+  output = "file",
+  file = "diagram.md")</pre>
+    </div>
+
+    <!-- Column 4: Interactive + Diagram Options -->
+    <div class="column">
+      <div class="subsection-title">Interactive Features</div>
+<pre># Show source file info
+put_diagram(wf,
+  show_source_info = TRUE)
+
+# Clickable nodes (VS Code)
+put_diagram(wf,
+  enable_clicks = TRUE,
+  click_protocol = "vscode")</pre>
+
+      <div class="section-title orange">Diagram Options</div>
+      <div class="subsection-title">Themes</div>
+      <div><code>light</code> | <code>dark</code> | <code>auto</code> | <code>github</code> | <code>minimal</code></div>
+<pre>put_diagram(wf, theme="github")</pre>
+
+      <div class="subsection-title">Directions</div>
+      <div><code>TD</code> (top-down) | <code>LR</code> (left-right)</div>
+      <div><code>BT</code> (bottom-top) | <code>RL</code> (right-left)</div>
+<pre>put_diagram(wf, direction="LR")</pre>
+
+      <div class="subsection-title">Visualization Modes</div>
+<pre># Simple (script connections)
+put_diagram(wf)
+
+# With data artifacts
+put_diagram(wf,
+  show_artifacts = TRUE)
+
+# With file labels on edges
+put_diagram(wf,
+  show_files = TRUE)
+
+# Workflow boundaries
+put_diagram(wf,
+  show_workflow_boundaries=TRUE)</pre>
+    </div>
+
+    <!-- Column 5: Debugging + Install -->
+    <div class="column">
+      <div class="subsection-title">Debugging</div>
+<pre># Enable logging
+set_putior_log_level("DEBUG")
+
+# Per-call logging
+workflow &lt;- put("./",
+  log_level = "INFO")
+
+# Validate syntax
+is_valid_put_annotation(
+  '#put label:"Test"')</pre>
+
+      <div class="subsection-title">Detection Patterns</div>
+<pre># View auto-detect patterns
+get_detection_patterns("r")
+get_detection_patterns("python",
+  type = "input")</pre>
+
+      <div class="section-title blue">Install</div>
+<pre>install.packages("putior")
+# or
+pak::pak("pjt222/putior")</pre>
+
+      <div class="subsection-title">Supported Languages</div>
+      <div>R, Python, SQL, Shell, Julia</div>
+    </div>
+  </div>
+
+  <div class="examples-section">
+    <div class="examples-title">Example Workflows</div>
+    <div class="examples-grid">
+      <div class="example">
+        <div class="subsection-title">Simple Linear Pipeline</div>
+<pre># 01_fetch.R
+#put label:"Fetch Sales Data",
+     node_type:"input",
+     output:"sales.csv"
+
+# 02_clean.py
+#put label:"Clean Data",
+     input:"sales.csv",
+     output:"clean.csv"
+
+# 03_report.R
+#put label:"Generate Report",
+     node_type:"output",
+     input:"clean.csv"</pre>
+        <img src="diagrams/linear.png" alt="Linear pipeline">
+      </div>
+
+      <div class="example">
+        <div class="subsection-title">Branching & Merging</div>
+<pre># 01_fetch_sales.R
+#put label:"Fetch Sales",
+     node_type:"input", output:"sales.csv"
+
+# 02_fetch_customers.R
+#put label:"Fetch Customers",
+     node_type:"input", output:"customers.csv"
+
+# 03_merge.R
+#put label:"Merge Datasets",
+     input:"sales.csv, customers.csv",
+     output:"merged.csv"
+
+# 04_analyze.py
+#put label:"Analyze",
+     input:"merged.csv", output:"stats.json"
+
+# 05_report.R
+#put label:"Report",
+     node_type:"output", input:"stats.json"</pre>
+        <img src="diagrams/branching.png" alt="Branching pipeline">
+      </div>
+
+      <div class="example">
+        <div class="subsection-title">Modular source() Pattern</div>
+<pre># utils.R - Utility functions
+#put label:"Data Utilities",
+     node_type:"input"
+
+# analysis.R - Uses utils
+#put label:"Analysis Functions",
+     input:"utils.R"
+
+# main.R - Orchestrates both
+#put label:"Main Pipeline",
+     input:"utils.R, analysis.R",
+     output:"results.csv"</pre>
+        <img src="diagrams/modular.png" alt="Modular pattern">
+      </div>
+
+      <div class="example">
+        <div class="subsection-title">Decision/Branching Logic</div>
+<pre># start.R
+#put label:"Load Config",
+     node_type:"start", output:"config.json"
+
+# check.R
+#put label:"Validate Data?",
+     node_type:"decision", input:"config.json"
+
+# path_a.R
+#put label:"Full Analysis",
+     input:"config.json", output:"full.csv"
+
+# path_b.R
+#put label:"Quick Summary",
+     input:"config.json", output:"summary.csv"
+
+# end.R
+#put label:"Complete",
+     node_type:"end",
+     input:"full.csv, summary.csv"</pre>
+        <img src="diagrams/decision.png" alt="Decision logic">
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    putior v1.0.0 | <a href="https://pjt222.github.io/putior/">https://pjt222.github.io/putior/</a> | MIT License | Philipp Thoss
+  </div>
+</body>
+</html>

@@ -157,11 +157,11 @@ test_that("put_diagram() handles file output", {
 
 test_that("put_diagram() validates input", {
   # Empty workflow
-  expect_error(put_diagram(data.frame()), "non-empty data frame")
+  expect_error(put_diagram(data.frame()), "empty.*0 rows")
 
   # Missing required columns
   bad_workflow <- data.frame(x = 1, y = 2)
-  expect_error(put_diagram(bad_workflow), "must contain 'id' and 'file_name' columns")
+  expect_error(put_diagram(bad_workflow), "missing required column")
 
   # All IDs missing
   workflow_no_ids <- data.frame(
@@ -519,4 +519,266 @@ test_that("workflow boundaries work with different themes", {
       expect_true(grepl("endStyle", diagram_code))
     })
   }
+})
+
+# ============================================================================
+# Metadata Display (show_source_info) Tests - GitHub Issue #3
+# ============================================================================
+
+test_that("show_source_info adds file names inline", {
+  workflow <- create_test_workflow()
+
+  # Without source info
+  diagram_no_info <- put_diagram(workflow, show_source_info = FALSE, output = "none")
+  expect_false(grepl("<br/>", diagram_no_info))
+  expect_false(grepl("<small>", diagram_no_info))
+
+  # With source info inline
+  diagram_with_info <- put_diagram(workflow, show_source_info = TRUE, output = "none")
+  expect_true(grepl("<br/>", diagram_with_info))
+  expect_true(grepl("<small>", diagram_with_info))
+  expect_true(grepl("01_load\\.R", diagram_with_info))
+})
+
+test_that("source_info_style='subgraph' groups nodes by file", {
+  workflow <- create_test_workflow()
+
+  diagram_code <- put_diagram(
+    workflow,
+    show_source_info = TRUE,
+    source_info_style = "subgraph",
+    output = "none"
+  )
+
+  # Should contain subgraph declarations
+  expect_true(grepl("subgraph", diagram_code))
+  expect_true(grepl("end", diagram_code))
+
+  # Should have file names as subgraph labels
+  expect_true(grepl("01_load\\.R", diagram_code))
+  expect_true(grepl("02_process\\.py", diagram_code))
+})
+
+test_that("show_source_info handles missing file_name", {
+  workflow <- data.frame(
+    file_name = c("test.R", NA, ""),
+    id = c("node1", "node2", "node3"),
+    label = c("Node 1", "Node 2", "Node 3"),
+    node_type = c("process", "process", "process"),
+    stringsAsFactors = FALSE
+  )
+
+  # Should not error with NA or empty file names
+  expect_no_error({
+    diagram_code <- put_diagram(workflow, show_source_info = TRUE, output = "none")
+  })
+
+  diagram_code <- put_diagram(workflow, show_source_info = TRUE, output = "none")
+  # Only test.R should show source info
+  expect_true(grepl("test\\.R", diagram_code))
+})
+
+test_that("show_source_info with invalid source_info_style warns and uses default", {
+  workflow <- create_test_workflow()
+
+  expect_warning(
+    put_diagram(workflow, show_source_info = TRUE, source_info_style = "invalid", output = "none"),
+    "Invalid source_info_style"
+  )
+})
+
+test_that("show_source_info excludes artifact nodes from source info", {
+  workflow <- create_test_workflow_with_terminal()
+
+  diagram_code <- put_diagram(
+    workflow,
+    show_artifacts = TRUE,
+    show_source_info = TRUE,
+    output = "none"
+  )
+
+  # Artifact nodes should NOT have source info appended
+  # Script nodes should have source info
+  expect_true(grepl("load\\.R", diagram_code))
+  # The artifact label should be clean (final_results.csv without additional source info)
+  expect_true(grepl("\\[\\(final_results\\.csv\\)\\]", diagram_code))
+})
+
+# ============================================================================
+# Clickable Hyperlinks (enable_clicks) Tests - GitHub Issue #4
+# ============================================================================
+
+test_that("enable_clicks adds click directives", {
+  workflow <- create_test_workflow()
+
+  # Without clicks
+  diagram_no_clicks <- put_diagram(workflow, enable_clicks = FALSE, output = "none")
+  expect_false(grepl("click ", diagram_no_clicks))
+
+  # With clicks
+  diagram_with_clicks <- put_diagram(workflow, enable_clicks = TRUE, output = "none")
+  expect_true(grepl("click ", diagram_with_clicks))
+  expect_true(grepl("%% Click Actions", diagram_with_clicks))
+})
+
+test_that("click_protocol='vscode' generates correct URLs", {
+  workflow <- create_test_workflow()
+
+  diagram_code <- put_diagram(
+    workflow,
+    enable_clicks = TRUE,
+    click_protocol = "vscode",
+    output = "none"
+  )
+
+  # Should have vscode:// protocol
+  expect_true(grepl("vscode://file/", diagram_code))
+  expect_true(grepl('click load_data "vscode://file/', diagram_code))
+})
+
+test_that("click_protocol='file' generates correct URLs", {
+  workflow <- create_test_workflow()
+
+  diagram_code <- put_diagram(
+    workflow,
+    enable_clicks = TRUE,
+    click_protocol = "file",
+    output = "none"
+  )
+
+  # Should have file:/// protocol
+  expect_true(grepl("file:///", diagram_code))
+})
+
+test_that("click_protocol='rstudio' generates correct URLs", {
+  workflow <- create_test_workflow()
+
+  diagram_code <- put_diagram(
+    workflow,
+    enable_clicks = TRUE,
+    click_protocol = "rstudio",
+    output = "none"
+  )
+
+  # Should have rstudio:// protocol
+  expect_true(grepl("rstudio://open-file\\?path=", diagram_code))
+})
+
+test_that("enable_clicks with invalid protocol warns and uses default", {
+  workflow <- create_test_workflow()
+
+  expect_warning(
+    put_diagram(workflow, enable_clicks = TRUE, click_protocol = "invalid", output = "none"),
+    "Invalid click_protocol"
+  )
+})
+
+test_that("normalize_path_for_url handles various inputs", {
+  # Empty and NA inputs
+  expect_equal(normalize_path_for_url(""), "")
+  expect_equal(normalize_path_for_url(NA), "")
+  expect_equal(normalize_path_for_url(NULL), "")
+
+  # Normal paths (just check it returns a string and converts slashes)
+  result <- normalize_path_for_url("test/path/file.R")
+  expect_true(is.character(result))
+  expect_false(grepl("\\\\", result))  # No backslashes
+})
+
+test_that("generate_click_url creates proper URLs for each protocol", {
+  # VS Code without line number
+  url_vscode <- generate_click_url("test.R", protocol = "vscode")
+  expect_true(grepl("vscode://file/", url_vscode))
+
+  # VS Code with line number
+  url_vscode_line <- generate_click_url("test.R", line_number = 42, protocol = "vscode")
+  expect_true(grepl(":42$", url_vscode_line))
+
+  # File protocol
+  url_file <- generate_click_url("test.R", protocol = "file")
+  expect_true(grepl("file:///", url_file))
+
+  # RStudio protocol
+  url_rstudio <- generate_click_url("test.R", protocol = "rstudio")
+  expect_true(grepl("rstudio://open-file\\?path=", url_rstudio))
+
+  # RStudio with line number
+  url_rstudio_line <- generate_click_url("test.R", line_number = 10, protocol = "rstudio")
+  expect_true(grepl("&line=10", url_rstudio_line))
+})
+
+test_that("click directives include tooltips", {
+  workflow <- create_test_workflow()
+
+  diagram_code <- put_diagram(workflow, enable_clicks = TRUE, output = "none")
+
+  # Should have tooltip format: click nodeId "url" "tooltip"
+  expect_true(grepl('click load_data "[^"]*" "Open 01_load\\.R"', diagram_code))
+})
+
+test_that("click directives respect line_number when available", {
+  workflow <- create_test_workflow()
+  workflow$line_number <- c(10, 25, 40)
+
+  diagram_code <- put_diagram(workflow, enable_clicks = TRUE, output = "none")
+
+  # Should include line numbers in URLs (for vscode)
+  expect_true(grepl(":10", diagram_code))
+  expect_true(grepl(":25", diagram_code))
+  expect_true(grepl(":40", diagram_code))
+
+  # Tooltips should mention line numbers
+  expect_true(grepl("at line 10", diagram_code))
+})
+
+test_that("click directives skip artifact nodes", {
+  workflow <- create_test_workflow_with_terminal()
+
+  diagram_code <- put_diagram(
+    workflow,
+    show_artifacts = TRUE,
+    enable_clicks = TRUE,
+    output = "none"
+  )
+
+  # Script nodes should have click directives
+  expect_true(grepl("click load ", diagram_code))
+  expect_true(grepl("click process ", diagram_code))
+
+  # Artifact nodes should NOT have click directives
+  expect_false(grepl("click artifact_", diagram_code))
+})
+
+test_that("enable_clicks works with all themes", {
+  workflow <- create_test_workflow()
+  themes <- c("light", "dark", "github", "minimal", "auto")
+
+  for (theme in themes) {
+    expect_no_error({
+      diagram_code <- put_diagram(
+        workflow,
+        enable_clicks = TRUE,
+        theme = theme,
+        output = "none"
+      )
+      expect_true(grepl("click ", diagram_code))
+    })
+  }
+})
+
+test_that("show_source_info and enable_clicks work together", {
+  workflow <- create_test_workflow()
+
+  diagram_code <- put_diagram(
+    workflow,
+    show_source_info = TRUE,
+    enable_clicks = TRUE,
+    output = "none"
+  )
+
+  # Should have both source info and click directives
+  expect_true(grepl("<br/>", diagram_code))
+  expect_true(grepl("<small>", diagram_code))
+  expect_true(grepl("click ", diagram_code))
+  expect_true(grepl("vscode://file/", diagram_code))
 })

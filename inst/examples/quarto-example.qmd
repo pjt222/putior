@@ -1,0 +1,78 @@
+---
+title: "putior Workflow Diagram"
+format:
+  html:
+    code-fold: true
+    code-summary: "Show code"
+---
+
+## Workflow Visualization
+
+This example demonstrates how to embed putior-generated Mermaid diagrams in Quarto documents using native `{mermaid}` chunk support.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show code"
+library(putior)
+
+# Create sample workflow data
+workflow <- data.frame(
+  id = c("load", "process", "save"),
+  label = c("Load Data", "Process", "Save Results"),
+  file_name = c("load.R", "process.R", "save.R"),
+  node_type = c("input", "process", "output"),
+  input = c(NA, "raw.csv", "clean.csv"),
+  output = c("raw.csv", "clean.csv", "results.csv"),
+  stringsAsFactors = FALSE
+)
+
+# Generate mermaid code
+mermaid_code <- put_diagram(workflow, output = "raw")
+```
+
+```{r}
+#| output: asis
+#| echo: false
+
+# Create a native mermaid chunk dynamically
+mermaid_chunk <- paste0(
+  "```{mermaid}\n",
+  mermaid_code,
+  "\n```"
+)
+
+cat(knitr::knit_child(text = mermaid_chunk, quiet = TRUE))
+```
+
+## How It Works
+
+The key technique used is `knitr::knit_child()` to dynamically generate a native Mermaid chunk:
+
+1. **`put_diagram(output = "raw")`** - Returns mermaid code without markdown fences
+2. **`knitr::knit_child()`** - Processes the dynamically created mermaid chunk as if it were written directly in the document
+3. **Native `{mermaid}` chunk** - Quarto natively supports Mermaid diagrams without external CDN scripts
+
+This approach is more idiomatic than using CDN-loaded Mermaid.js with `<pre class="mermaid">` tags.
+
+## Using with Real Files
+
+To visualize an actual project workflow:
+
+```{r}
+#| eval: false
+# Extract workflow from annotated R files
+workflow <- put("./R/")
+
+# Generate mermaid code
+mermaid_code <- put_diagram(workflow, output = "raw")
+```
+
+```{r}
+#| eval: false
+#| output: asis
+#| echo: false
+
+# Output as native mermaid chunk
+mermaid_chunk <- paste0("```{mermaid}\n", mermaid_code, "\n```")
+cat(knitr::knit_child(text = mermaid_chunk, quiet = TRUE))
+```

@@ -1,20 +1,24 @@
 #put id:"put_entry", label:"Entry Point - Scan Files", node_type:"start", output:"workflow_data.rds"
-#' Scan R and Python Files for PUT Annotations
+#' Scan Source Files for PUT Annotations
 #'
 #' Scans source files in a directory for PUT annotations that define workflow
-#' nodes, inputs, outputs, and metadata. Supports both R and Python files with
-#' flexible annotation syntax including single-line and multiline formats.
+#' nodes, inputs, outputs, and metadata. Supports multiple programming languages
+#' with their native comment syntax, including single-line and multiline formats.
 #'
 #' @param path Character string specifying the path to the folder containing files,
 #'   or path to a single file
 #' @param pattern Character string specifying the file pattern to match.
-#'   Default: "\\.(R|r|py|sql|sh|jl)$" (R, Python, SQL, shell, Julia files)
+#'   Default: "\\.(R|r|py|sql|sh|jl)$" (R, Python, SQL, shell, Julia files).
+#'   For other languages, specify an appropriate pattern (e.g., "\\.js$" for JavaScript).
 #' @param recursive Logical. Should subdirectories be searched recursively?
 #'   Default: FALSE
 #' @param include_line_numbers Logical. Should line numbers be included in output?
 #'   Default: FALSE
 #' @param validate Logical. Should annotations be validated for common issues?
 #'   Default: TRUE
+#' @param log_level Character string specifying log verbosity for this call.
+#'   Overrides the global option \code{putior.log_level} when specified.
+#'   Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.
 #'
 #' @return A data frame containing file names and all properties found in annotations.
 #'   Always includes columns: file_name, file_type, and any properties found in
@@ -22,32 +26,49 @@
 #'   If include_line_numbers is TRUE, also includes line_number.
 #'   Note: If output is not specified in an annotation, it defaults to the file name.
 #'
+#' @section Supported Languages:
+#' PUT annotations work with any language by using the appropriate comment prefix:
+#' \itemize{
+#'   \item **Hash (#)**: R, Python, Shell, Julia, Ruby, Perl, YAML
+#'   \item **Dash (--)**: SQL, Lua, Haskell
+#'   \item **Slash (//)**: JavaScript, TypeScript, C/C++, Java, Go, Rust, Swift, Kotlin, C#
+#'   \item **Percent (%)**: MATLAB, LaTeX
+#' }
+#'
 #' @section PUT Annotation Syntax:
-#' PUT annotations can be written in single-line or multiline format:
-#' 
-#' **Single-line format:** All parameters on one line
-#' ```
-#' #put id:"node1", label:"Process Data", input:"data.csv", output:"result.csv"
-#' ```
-#' 
-#' **Multiline format:** Use backslash (\) for line continuation
-#' ```
-#' #put id:"node1", label:"Process Data", \
-#' #    input:"data.csv", \
+#' PUT annotations can be written in single-line or multiline format.
+#' The comment prefix is determined automatically by file extension.
+#'
+#' **Single-line format (various languages):**
+#' \preformatted{
+#' #put id:"node1", label:"Process"       # R/Python
+#' --put id:"node1", label:"Query"        -- SQL
+#' //put id:"node1", label:"Handler"      // JavaScript
+#' %put id:"node1", label:"Compute"       % MATLAB
+#' }
+#'
+#' **Multiline format:** Use backslash (\\) for line continuation
+#' \preformatted{
+#' #put id:"node1", label:"Process Data", \\
+#' #    input:"data.csv", \\
 #' #    output:"result.csv"
-#' ```
-#' 
+#' }
+#'
 #' **Benefits of multiline format:**
-#' - Compliance with code style guidelines (styler, lintr)
-#' - Improved readability for complex workflows
-#' - Easier maintenance of long file lists
-#' - Better code organization and documentation
-#' 
+#' \itemize{
+#'   \item Compliance with code style guidelines (styler, lintr)
+#'   \item Improved readability for complex workflows
+#'   \item Easier maintenance of long file lists
+#'   \item Better code organization and documentation
+#' }
+#'
 #' **Syntax rules:**
-#' - End lines with backslash (\) to continue
-#' - Each continuation line must start with # comment marker
-#' - Properties are automatically joined with proper comma separation
-#' - Works with all PUT formats: #put, # put, #put|, #put:
+#' \itemize{
+#'   \item End lines with backslash (\\) to continue
+#'   \item Each continuation line must start with the appropriate comment marker
+#'   \item Properties are automatically joined with proper comma separation
+#'   \item Works with all PUT formats: prefix+put, prefix + put, prefix+put|, prefix+put:
+#' }
 #'
 #' @export
 #'
@@ -65,40 +86,61 @@
 #' # Include line numbers for debugging
 #' workflow <- put("./src/", include_line_numbers = TRUE)
 #'
-#' # Single-line PUT annotations (basic syntax):
-#' # #put id:"load_data", label:"Load Dataset", node_type:"input", output:"data.csv"
-#' # #put id:"process", label:"Clean Data", node_type:"process", input:"data.csv", output:"clean.csv"
+#' # Scan JavaScript/TypeScript files
+#' workflow <- put("./frontend/", pattern = "\\.(js|ts|jsx|tsx)$")
+#'
+#' # Scan SQL files
+#' workflow <- put("./sql/", pattern = "\\.sql$")
+#'
+#' # Single-line PUT annotations (various languages):
+#' # R/Python: #put id:"load_data", label:"Load Dataset"
+#' # SQL:      --put id:"query", label:"Execute Query"
+#' # JS/TS:    //put id:"handler", label:"API Handler"
+#' # MATLAB:   %put id:"compute", label:"Compute Results"
 #' #
-#' # Multiline PUT annotations (for better code style compliance):
-#' # Use backslash (\) at end of line to continue on next line
-#' # #put id:"complex_process", label:"Complex Data Processing", \
-#' # #    input:"file1.csv,file2.csv,file3.csv,file4.csv", \
+#' # Multiline PUT annotations work the same across languages:
+#' # #put id:"complex_process", label:"Complex Processing", \
+#' # #    input:"file1.csv,file2.csv", \
 #' # #    output:"results.csv"
 #' #
-#' # Multiline example with many files:
-#' # #put id:"data_merger", \
-#' # #    label:"Merge Multiple Data Sources", \
-#' # #    node_type:"process", \
-#' # #    input:"sales.csv,customers.csv,products.csv,inventory.csv", \
-#' # #    output:"merged_dataset.csv"
-#' #
-#' # All PUT formats support multiline syntax:
-#' # # put id:"style1", label:"Standard" \     # Space after #
-#' # #put| id:"style2", label:"Pipe" \        # Pipe separator
-#' # #put: id:"style3", label:"Colon" \       # Colon separator
+#' # --put id:"etl_job", label:"ETL Process", \
+#' # --    input:"source_table", \
+#' # --    output:"target_table"
 #' }
 put <- function(path,
                 pattern = "\\.(R|r|py|sql|sh|jl)$",
                 recursive = FALSE,
                 include_line_numbers = FALSE,
-                validate = TRUE) {
+                validate = TRUE,
+                log_level = NULL) {
+  # Set log level for this call if specified
+  restore_log_level <- with_log_level(log_level)
+  on.exit(restore_log_level(), add = TRUE)
+
+  putior_log("INFO", "Starting PUT annotation scan")
+  putior_log("DEBUG", "Scan parameters: path='{path}', pattern='{pattern}', recursive={recursive}")
+
   # Input validation
   if (!is.character(path) || length(path) != 1) {
-    stop("'path' must be a single character string")
+    stop(
+      "'path' must be a single character string.\n",
+      "Received: ", class(path)[1],
+      if (length(path) > 1) paste0(" with ", length(path), " elements") else "",
+      ".\n",
+      "Example: put(\"./src/\") or put(\"script.R\")",
+      call. = FALSE
+    )
   }
 
   if (!file.exists(path)) {
-    stop("Path does not exist: ", path)
+    stop(
+      "Path does not exist: '", path, "'\n",
+      "Please check:\n",
+      "- The path is spelled correctly\n",
+      "- The directory or file exists\n",
+      "- You have read permissions for this location",
+      call. = FALSE
+    )
   }
 
   # Handle both files and directories
@@ -119,15 +161,27 @@ put <- function(path,
   }
 
   if (length(files) == 0) {
-    warning("No files matching pattern '", pattern, "' found in: ", path)
+    putior_log("WARN", "No files matching pattern '{pattern}' found in: {path}")
+    warning(
+      "No files matching pattern '", pattern, "' found in: ", path, "\n",
+      "Check that:\n",
+      "- The directory contains source files with the expected extensions\n",
+      "- The pattern matches your file types (default matches .R, .py, .sql, .sh, .jl)\n",
+      "- For other languages, specify a pattern like: pattern = \"\\\\.js$\"",
+      call. = FALSE
+    )
     return(empty_result_df(include_line_numbers))
   }
+
+  putior_log("INFO", "Found {length(files)} file(s) to scan")
+  putior_log("DEBUG", "Files: {paste(basename(files), collapse=', ')}")
 
   # Process files
   results <- list()
   processing_errors <- character()
 
   for (file in files) {
+    putior_log("DEBUG", "Processing file: {basename(file)}")
     file_result <- process_single_file(file, include_line_numbers, validate)
 
     if (is.character(file_result)) {
@@ -147,23 +201,33 @@ put <- function(path,
   # Convert results to data frame
   if (length(results) > 0) {
     df <- convert_results_to_df(results, include_line_numbers)
-    
+
     # Check for duplicate IDs if validation is enabled
     if (validate && "id" %in% names(df)) {
       duplicate_ids <- df$id[duplicated(df$id) & !is.na(df$id)]
       if (length(duplicate_ids) > 0) {
-        warning("Duplicate node IDs found: ", paste(unique(duplicate_ids), collapse = ", "), 
-                "\nEach node must have a unique ID within the workflow.")
+        putior_log("WARN", "Duplicate node IDs found: {paste(unique(duplicate_ids), collapse=', ')}")
+        warning(
+          "Duplicate node IDs found: ", paste(unique(duplicate_ids), collapse = ", "), "\n",
+          "Each node must have a unique ID within the workflow.\n",
+          "Solutions:\n",
+          "- Use unique 'id' values in your PUT annotations\n",
+          "- Omit 'id' to enable auto-generation (requires uuid package)\n",
+          "Use include_line_numbers = TRUE to locate duplicates.",
+          call. = FALSE
+        )
       }
     }
-    
+
+    putior_log("INFO", "Scan complete: found {nrow(df)} workflow node(s) in {length(files)} file(s)")
     return(df)
   } else {
+    putior_log("INFO", "Scan complete: no PUT annotations found in {length(files)} file(s)")
     empty_result_df(include_line_numbers)
   }
 }
 
-#put id:"process_file", label:"Process Single File", node_type:"process", input:"putior.R", output:"annotations.rds"
+#put id:"process_file", label:"Process Single File", node_type:"process", input:"source_files", output:"annotations.rds"
 #' Process a single file for PUT annotations
 #' @param file Path to file
 #' @param include_line_numbers Whether to include line numbers
@@ -175,54 +239,71 @@ process_single_file <- function(file, include_line_numbers, validate) {
     {
       # Read file with proper encoding handling
       lines <- readLines(file, warn = FALSE, encoding = "UTF-8")
+      putior_log("DEBUG", "Read {length(lines)} lines from {basename(file)}")
+
+      # Get comment prefix based on file extension
+      file_ext <- tolower(tools::file_ext(file))
+      comment_prefix <- get_comment_prefix(file_ext)
+
+      # Escape special regex characters in the prefix (e.g., // -> \/\/)
+      escaped_prefix <- gsub("([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1", comment_prefix)
+
+      # Build regex pattern dynamically: <prefix>put or <prefix> put or <prefix>put| or <prefix>put:
+      put_pattern <- sprintf("^\\s*%s\\s*put(\\||\\s+|:)", escaped_prefix)
 
       # Find PUT annotation lines
-      put_line_indices <- grep("^\\s*#\\s*put(\\||\\s+|:)", lines)
+      put_line_indices <- grep(put_pattern, lines)
 
       if (length(put_line_indices) == 0) {
+        putior_log("DEBUG", "No PUT annotations found in {basename(file)}")
         return(list())
       }
 
-      file_ext <- tolower(tools::file_ext(file))
+      putior_log("DEBUG", "Found {length(put_line_indices)} PUT annotation(s) in {basename(file)} (prefix: '{comment_prefix}')")
+
       file_results <- list()
+
+      # Build comment line pattern for continuation lines (matches the comment prefix)
+      comment_line_pattern <- sprintf("^\\s*%s", escaped_prefix)
 
       for (i in seq_along(put_line_indices)) {
         line_idx <- put_line_indices[i]
         line_content <- lines[line_idx]
-        
+
         # Check if this is a multiline annotation (ends with backslash)
         full_content <- line_content
         current_idx <- line_idx
-        
+
         # Collect continuation lines if this is a multiline annotation
         if (grepl("\\\\\\s*$", full_content)) {
+          putior_log("DEBUG", "Multiline annotation detected at line {line_idx} in {basename(file)}")
           has_continuation <- TRUE
-          
+
           while (has_continuation && current_idx < length(lines)) {
             # Remove trailing backslash and whitespace from current content
             full_content <- sub("\\\\\\s*$", " ", full_content)
             current_idx <- current_idx + 1
-            
+
             # Break if we've reached the end of the file
             if (current_idx > length(lines)) {
               break
             }
-            
+
             # Break if we've reached another PUT annotation line
-            if (grepl("^\\s*#\\s*put(\\||\\s+|:)", lines[current_idx])) {
+            if (grepl(put_pattern, lines[current_idx])) {
               break
             }
-            
+
             # Process continuation line (including empty comment lines)
             continuation_line <- lines[current_idx]
-            
-            # Break if line is not a comment
-            if (!grepl("^\\s*#", continuation_line)) {
+
+            # Break if line is not a comment (using the appropriate comment prefix)
+            if (!grepl(comment_line_pattern, continuation_line)) {
               break
             }
-            
-            # Remove comment marker and leading whitespace
-            continuation <- sub("^\\s*#\\s*", "", continuation_line)
+
+            # Remove comment marker and leading whitespace (dynamically based on prefix)
+            continuation <- sub(sprintf("^\\s*%s\\s*", escaped_prefix), "", continuation_line)
             
             # Append continuation with proper spacing
             # If continuation is not empty and doesn't start with a comma, add comma
@@ -275,7 +356,10 @@ process_single_file <- function(file, include_line_numbers, validate) {
         } else if (validate) {
           warning(
             "Invalid PUT annotation syntax in ", basename(file), " line ", line_idx, ":\n",
-            full_content
+            "  ", full_content, "\n",
+            "Expected format: #put id:\"node_id\", label:\"Description\"\n",
+            "See putior_help(\"annotation\") for syntax details.",
+            call. = FALSE
           )
         }
       }
@@ -288,7 +372,7 @@ process_single_file <- function(file, include_line_numbers, validate) {
   )
 }
 
-#put id:"validate", label:"Validate Annotations", node_type:"process", input:"annotations.rds", output:"putior.R"
+#put id:"validate", label:"Validate Annotations", node_type:"process", input:"annotations.rds", output:"validated_annotations.rds"
 #' Validate PUT annotation for common issues
 #' @param properties List of annotation properties
 #' @param line_content Original line content
@@ -334,6 +418,7 @@ validate_annotation <- function(properties, line_content) {
 #'
 #' Parses a single line containing a PUT annotation and extracts key-value pairs.
 #' Supports flexible syntax with optional spaces and pipe separators.
+#' Handles multiple comment prefix styles: # (hash), -- (dash), // (slash), % (percent).
 #'
 #' @param line Character string containing a PUT annotation
 #' @return Named list containing all extracted properties, or NULL if invalid
@@ -348,8 +433,12 @@ parse_put_annotation <- function(line) {
   # Convert to character if not already
   line <- as.character(line)
 
-  # Remove the PUT prefix (more flexible regex)
-  cleaned <- sub("^\\s*#\\s*put(\\||\\s+|:)\\s*", "", line, ignore.case = FALSE)
+  # Remove the PUT prefix - handle all comment styles:
+  # - Hash: #put, # put, #put|, #put:
+  # - Dash: --put, -- put, --put|, --put:
+  # - Slash: //put, // put, //put|, //put:
+  # - Percent: %put, % put, %put|, %put:
+  cleaned <- sub("^\\s*(#|--|//|%)\\s*put(\\||\\s+|:)\\s*", "", line, ignore.case = FALSE)
 
   # Handle edge case of empty annotation
   if (is.null(cleaned) || length(cleaned) == 0 || nchar(trimws(cleaned)) == 0) {
@@ -505,4 +594,56 @@ empty_result_df <- function(include_line_numbers = FALSE) {
 is_valid_put_annotation <- function(line) {
   result <- parse_put_annotation(line)
   !is.null(result) && length(result) > 0
+}
+
+#' Launch putior Interactive Sandbox
+#'
+#' Opens an interactive Shiny application for experimenting with PUT annotations
+#' and workflow diagrams. Users can paste or type annotated code, adjust diagram
+#' settings, and see real-time diagram generation without installing the package
+#' locally.
+#'
+#' @details
+#' The sandbox app allows you to:
+#' \itemize{
+#'   \item Enter annotated code with PUT comments
+#'   \item Simulate multiple files using file markers
+#'   \item Customize diagram appearance (theme, direction, etc.)
+#'   \item View extracted workflow data
+#'   \item Copy or download generated Mermaid code
+#' }
+#'
+#' @return Launches the Shiny app in the default browser. Returns invisibly.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Launch the interactive sandbox
+#' run_sandbox()
+#' }
+#'
+#' @seealso \code{\link{put}}, \code{\link{put_diagram}}
+run_sandbox <- function() {
+  if (!requireNamespace("shiny", quietly = TRUE)) {
+    stop(
+      "The 'shiny' package is required for the interactive sandbox.\n",
+      "Install it with: install.packages(\"shiny\")\n",
+      "For optional syntax highlighting, also install: install.packages(\"shinyAce\")",
+      call. = FALSE
+    )
+  }
+
+  app_dir <- system.file("shiny", "putior-sandbox", package = "putior")
+
+  if (app_dir == "") {
+    stop(
+      "Could not find the sandbox app.\n",
+      "This may indicate a corrupted package installation.\n",
+      "Try reinstalling putior with: install.packages(\"putior\")",
+      call. = FALSE
+    )
+  }
+
+  shiny::runApp(app_dir, launch.browser = TRUE)
 }

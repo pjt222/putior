@@ -15,7 +15,12 @@ put_diagram(
   show_artifacts = FALSE,
   show_workflow_boundaries = TRUE,
   style_nodes = TRUE,
-  theme = "light"
+  theme = "light",
+  show_source_info = FALSE,
+  source_info_style = "inline",
+  enable_clicks = FALSE,
+  click_protocol = "vscode",
+  log_level = NULL
 )
 }
 \arguments{
@@ -53,6 +58,31 @@ workflow boundary styling (icons, colors). When FALSE, they render as regular no
 
 \item{theme}{Character string specifying color theme. Options:
 "light" (default), "dark", "auto" (GitHub adaptive), "minimal", "github"}
+
+\item{show_source_info}{Logical indicating whether to display source file
+information in diagram nodes. When TRUE, each node shows its originating
+file name. Default is FALSE for backward compatibility.}
+
+\item{source_info_style}{Character string specifying how to display source info:
+\itemize{
+\item "inline" - Append file name to node labels (default)
+\item "subgraph" - Group nodes by source file into Mermaid subgraphs
+}}
+
+\item{enable_clicks}{Logical indicating whether to add click directives to nodes.
+When TRUE, nodes become clickable links that open the source file in an editor.
+Default is FALSE for backward compatibility.}
+
+\item{click_protocol}{Character string specifying the URL protocol for clickable nodes:
+\itemize{
+\item "vscode" - VS Code editor (vscode://file/path:line) (default)
+\item "file" - Standard file:// protocol
+\item "rstudio" - RStudio IDE (rstudio://open-file?path=)
+}}
+
+\item{log_level}{Character string specifying log verbosity for this call.
+Overrides the global option \code{putior.log_level} when specified.
+Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.}
 }
 \value{
 Character string containing the mermaid diagram code
@@ -88,5 +118,17 @@ put_diagram(workflow, show_artifacts = TRUE, output = "file", file = "workflow.m
 # For use in knitr/pkgdown - returns raw mermaid code
 # Use within a code chunk with results='asis'
 cat("```mermaid\n", put_diagram(workflow, output = "raw"), "\n```\n")
+
+# Show source file info inline in nodes
+put_diagram(workflow, show_source_info = TRUE)
+
+# Group nodes by source file using subgraphs
+put_diagram(workflow, show_source_info = TRUE, source_info_style = "subgraph")
+
+# Enable clickable nodes (opens in VS Code)
+put_diagram(workflow, enable_clicks = TRUE)
+
+# Enable clickable nodes with RStudio protocol
+put_diagram(workflow, enable_clicks = TRUE, click_protocol = "rstudio")
 }
 }

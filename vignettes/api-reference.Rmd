@@ -1,0 +1,759 @@
+---
+title: "API Reference"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{API Reference}
+
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+This vignette provides comprehensive documentation for all exported functions in the putior package.
+
+## Function Overview
+
+| Function | Category | Purpose |
+|----------|----------|---------|
+| `put()` | Core | Extract annotations from source files |
+| `put_diagram()` | Core | Generate Mermaid flowchart diagrams |
+| `put_auto()` | Auto-Annotation | Auto-detect workflow from code patterns |
+| `put_generate()` | Auto-Annotation | Generate annotation comments for files |
+| `put_merge()` | Auto-Annotation | Combine manual and auto annotations |
+| `get_detection_patterns()` | Configuration | View/customize detection patterns |
+| `list_supported_languages()` | Configuration | List supported programming languages |
+| `get_comment_prefix()` | Configuration | Get comment prefix for file extension |
+| `get_supported_extensions()` | Configuration | List all supported file extensions |
+| `get_diagram_themes()` | Configuration | List available diagram themes |
+| `set_putior_log_level()` | Configuration | Configure logging verbosity |
+| `is_valid_put_annotation()` | Utilities | Validate annotation syntax |
+| `split_file_list()` | Utilities | Parse comma-separated file lists |
+| `run_sandbox()` | Interactive | Launch Shiny sandbox app |
+
+---
+
+## Core Functions
+
+### `put()` - Extract Annotations from Files
+
+The primary function for extracting PUT annotations from source code files.
+
+**Usage:**
+```r
+put(
+  path = ".",
+  pattern = "\\.(R|r|py|sql|sh|jl)$",
+  recursive = FALSE,
+  include_line_numbers = FALSE,
+  validate = TRUE,
+  log_level = NULL
+)
+```
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `path` | character | `"."` | File or directory path to scan |
+| `pattern` | character | `"\\.(R|r|py|sql|sh|jl)$"` | Regex pattern for file matching |
+| `recursive` | logical | `FALSE` | Search subdirectories |
+| `include_line_numbers` | logical | `FALSE` | Include line numbers in output |
+| `validate` | logical | `TRUE` | Show validation warnings |
+| `log_level` | character | `NULL` | Override log level ("DEBUG", "INFO", "WARN") |
+
+**Returns:**
+
+A data frame with columns:
+
+| Column | Description |
+|--------|-------------|
+| `file_name` | Source file containing the annotation |
+| `file_type` | Programming language (r, py, sql, etc.) |
+| `id` | Unique node identifier (auto-generated if omitted) |
+| `label` | Human-readable description |
+| `node_type` | Type: input, process, output, decision, start, end |
+| `input` | Comma-separated input files |
+| `output` | Comma-separated output files |
+| `line_number` | Line number (if `include_line_numbers = TRUE`) |
+
+**Examples:**
+
+```{r}
+library(putior)
+
+# Scan a directory
+workflow <- put("./src/")
+
+# Scan recursively with line numbers
+workflow <- put("./project/", recursive = TRUE, include_line_numbers = TRUE)
+
+# Scan only R files
+workflow <- put("./analysis/", pattern = "\\.R$")
+
+# Single file
+workflow <- put("./main.R")
+
+# With debug logging
+workflow <- put("./src/", log_level = "DEBUG")
+```
+
+---
+
+### `put_diagram()` - Generate Mermaid Diagrams
+
+Converts workflow data into Mermaid flowchart syntax.
+
+**Usage:**
+```r
+put_diagram(
+  workflow,
+  output = "console",
+  file = NULL,
+  direction = "TD",
+  theme = "github",
+  show_artifacts = FALSE,
+  show_files = FALSE,
+  style_nodes = TRUE,
+  show_workflow_boundaries = TRUE,
+  node_labels = "label",
+  title = NULL,
+  show_source_info = FALSE,
+  source_info_style = "inline",
+  enable_clicks = FALSE,
+  click_protocol = "vscode",
+  log_level = NULL
+)
+```
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `workflow` | data.frame | (required) | Workflow data from `put()` |
+| `output` | character | `"console"` | Output mode: "console", "file", "clipboard", "raw" |
+| `file` | character | `NULL` | Output file path (when output = "file") |
+| `direction` | character | `"TD"` | Flow direction: "TD", "LR", "BT", "RL" |
+| `theme` | character | `"github"` | Theme: "github", "light", "dark", "auto", "minimal" |
+| `show_artifacts` | logical | `FALSE` | Show data file nodes |
+| `show_files` | logical | `FALSE` | Show file names on connections |
+| `style_nodes` | logical | `TRUE` | Apply color styling to nodes |
+| `show_workflow_boundaries` | logical | `TRUE` | Special styling for start/end nodes |
+| `node_labels` | character | `"label"` | Label style: "name", "label", "both" |
+| `title` | character | `NULL` | Optional diagram title |
+| `show_source_info` | logical | `FALSE` | Display source file info in nodes |
+| `source_info_style` | character | `"inline"` | Source info style: "inline", "subgraph" |
+| `enable_clicks` | logical | `FALSE` | Make nodes clickable |
+| `click_protocol` | character | `"vscode"` | Click protocol: "vscode", "rstudio", "file" |
+| `log_level` | character | `NULL` | Override log level |
+
+**Returns:**
+
+- `"console"`: Prints to console, returns invisible `NULL`
+- `"file"`: Writes to file, returns file path
+- `"clipboard"`: Copies to clipboard, returns invisible `NULL`
+- `"raw"`: Returns Mermaid code as character string
+
+**Examples:**
+
+```{r}
+library(putior)
+
+workflow <- put("./src/")
+
+# Basic diagram to console
+put_diagram(workflow)
+
+# With theme and direction
+put_diagram(workflow, theme = "dark", direction = "LR")
+
+# Show data artifacts
+put_diagram(workflow, show_artifacts = TRUE, show_files = TRUE)
+
+# Interactive features
+put_diagram(workflow,
+            show_source_info = TRUE,
+            enable_clicks = TRUE,
+            click_protocol = "rstudio")
+
+# Save to file
+put_diagram(workflow, output = "file", file = "workflow.md", title = "My Pipeline")
+
+# Get raw code for embedding
+mermaid_code <- put_diagram(workflow, output = "raw")
+```
+
+**Theme Comparison:**
+
+| Theme | Best For | Description |
+|-------|----------|-------------|
+| `github` | GitHub README | Optimized for GitHub rendering |
+| `light` | Light backgrounds | Bright, colorful nodes |
+| `dark` | Dark backgrounds | Muted colors on dark |
+| `auto` | Adaptive | Works in both light/dark modes |
+| `minimal` | Reports | Professional grayscale |
+
+---
+
+## Auto-Annotation Functions
+
+### `put_auto()` - Auto-detect Workflow from Code
+
+Analyzes source code to automatically detect inputs, outputs, and dependencies without requiring manual annotations.
+
+**Usage:**
+```r
+put_auto(
+  path = ".",
+  pattern = "\\.(R|r|py|sql|sh|jl)$",
+  recursive = FALSE,
+  detect_inputs = TRUE,
+  detect_outputs = TRUE,
+  detect_dependencies = TRUE,
+  log_level = NULL
+)
+```
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `path` | character | `"."` | File or directory to analyze |
+| `pattern` | character | `"\\.(R|r|py|sql|sh|jl)$"` | File pattern |
+| `recursive` | logical | `FALSE` | Search subdirectories |
+| `detect_inputs` | logical | `TRUE` | Detect file read operations |
+| `detect_outputs` | logical | `TRUE` | Detect file write operations |
+| `detect_dependencies` | logical | `TRUE` | Detect script dependencies |
+| `log_level` | character | `NULL` | Override log level |
+
+**Returns:**
+
+A data frame with the same structure as `put()`, containing auto-detected workflow nodes.
+
+**Examples:**
+
+```{r}
+# Auto-detect workflow from code patterns
+workflow <- put_auto("./src/")
+put_diagram(workflow)
+
+# Only detect inputs and outputs (no dependencies)
+workflow <- put_auto("./src/", detect_dependencies = FALSE)
+
+# With debugging
+workflow <- put_auto("./src/", log_level = "DEBUG")
+```
+
+---
+
+### `put_generate()` - Generate Annotation Comments
+
+Analyzes code and generates PUT annotation comments that can be added to source files. Similar to how roxygen2 generates documentation skeletons.
+
+**Usage:**
+```r
+put_generate(
+  path = ".",
+  pattern = "\\.(R|r|py|sql|sh|jl)$",
+  recursive = FALSE,
+  output = "console",
+  style = "single",
+  log_level = NULL
+)
+```
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `path` | character | `"."` | File or directory to analyze |
+| `pattern` | character | `"\\.(R|r|py|sql|sh|jl)$"` | File pattern |
+| `recursive` | logical | `FALSE` | Search subdirectories |
+| `output` | character | `"console"` | Output: "console" or "clipboard" |
+| `style` | character | `"single"` | Annotation style: "single" or "multiline" |
+| `log_level` | character | `NULL` | Override log level |
+
+**Returns:**
+
+Invisibly returns the generated annotation text.
+
+**Examples:**
+
+```{r}
+# Print suggested annotations to console
+put_generate("./src/")
+
+# Copy to clipboard for pasting into files
+put_generate("./src/", output = "clipboard")
+
+# Generate multiline annotations
+put_generate("./src/", style = "multiline")
+```
+
+---
+
+### `put_merge()` - Combine Manual and Auto Annotations
+
+Combines manually written annotations with auto-detected ones using configurable merge strategies.
+
+**Usage:**
+```r
+put_merge(
+  path = ".",
+  pattern = "\\.(R|r|py|sql|sh|jl)$",
+  recursive = FALSE,
+  merge_strategy = "manual_priority",
+  log_level = NULL
+)
+```
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `path` | character | `"."` | File or directory to process |
+| `pattern` | character | `"\\.(R|r|py|sql|sh|jl)$"` | File pattern |
+| `recursive` | logical | `FALSE` | Search subdirectories |
+| `merge_strategy` | character | `"manual_priority"` | Merge strategy (see below) |
+| `log_level` | character | `NULL` | Override log level |
+
+**Merge Strategies:**
+
+| Strategy | Description |
+|----------|-------------|
+| `"manual_priority"` | Manual annotations override auto-detected |
+| `"supplement"` | Auto fills in missing input/output fields |
+| `"union"` | Combine all detected I/O from both sources |
+
+**Returns:**
+
+A data frame containing merged workflow data.
+
+**Examples:**
+
+```{r}
+# Manual annotations take priority
+workflow <- put_merge("./src/", merge_strategy = "manual_priority")
+
+# Auto-detected I/O supplements manual annotations
+workflow <- put_merge("./src/", merge_strategy = "supplement")
+
+# Combine everything
+workflow <- put_merge("./src/", merge_strategy = "union")
+
+put_diagram(workflow)
+```
+
+---
+
+## Configuration Functions
+
+### `get_detection_patterns()` - View Detection Patterns
+
+Returns the detection patterns used for auto-detecting inputs, outputs, and dependencies.
+
+**Usage:**
+```r
+get_detection_patterns(language = "r", type = NULL)
+```
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `language` | character | `"r"` | Language: "r", "python", "sql", "shell", "julia" |
+| `type` | character | `NULL` | Filter by type: "input", "output", "dependency" |
+
+**Returns:**
+
+A list of patterns. Each pattern contains:
+
+- `regex`: Regular expression to match the function call
+- `func`: Function name
+- `arg_position`: Position of the file path argument
+- `arg_name`: Named argument for file path
+- `description`: Human-readable description
+
+**Examples:**
+
+```{r}
+# Get all R patterns
+patterns <- get_detection_patterns("r")
+
+# Get only input patterns for Python
+input_patterns <- get_detection_patterns("python", type = "input")
+
+# View R output patterns
+output_patterns <- get_detection_patterns("r", type = "output")
+length(output_patterns)  # Number of output patterns
+```
+
+---
+
+### `list_supported_languages()` - List Supported Languages
+
+Returns the programming languages supported by putior.
+
+**Usage:**
+```r
+list_supported_languages(detection_only = FALSE)
+```
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `detection_only` | logical | `FALSE` | If TRUE, only languages with auto-detection patterns |
+
+**Returns:**
+
+Character vector of supported language names.
+
+**Examples:**
+
+```{r}
+# All languages with annotation support (25+)
+list_supported_languages()
+#> [1] "r"          "python"     "shell"      "julia"      "ruby"
+#> [6] "perl"       "yaml"       "toml"       "sql"        "lua"
+#> ...
+
+# Only languages with auto-detection patterns
+list_supported_languages(detection_only = TRUE)
+#> [1] "r"      "python" "sql"    "shell"  "julia"
+```
+
+---
+
+### `get_comment_prefix()` - Get Comment Prefix for Extension
+
+Returns the appropriate comment prefix for a given file extension.
+
+**Usage:**
+```r
+get_comment_prefix(ext)
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `ext` | character | File extension (without dot) |
+
+**Returns:**
+
+Character string: the comment prefix for that language.
+
+**Comment Prefix Groups:**
+
+| Prefix | Languages |
+|--------|-----------|
+| `#` | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML |
+| `--` | SQL, Lua, Haskell |
+| `//` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala |
+| `%` | MATLAB, LaTeX |
+
+**Examples:**
+
+```{r}
+get_comment_prefix("r")
+#> [1] "#"
+
+get_comment_prefix("sql")
+#> [1] "--"
+
+get_comment_prefix("js")
+#> [1] "//"
+
+get_comment_prefix("m")
+#> [1] "%"
+
+# Unknown extensions default to "#"
+get_comment_prefix("xyz")
+#> [1] "#"
+```
+
+---
+
+### `get_supported_extensions()` - List All Supported Extensions
+
+Returns all file extensions that putior can process.
+
+**Usage:**
+```r
+get_supported_extensions()
+```
+
+**Returns:**
+
+Character vector of supported file extensions (without dots).
+
+**Examples:**
+
+```{r}
+get_supported_extensions()
+#> [1] "r"     "py"    "sh"    "bash"  "jl"    "rb"    "pl"    "yaml"
+#> [9] "yml"   "toml"  "sql"   "lua"   "hs"    "js"    "ts"    "jsx"
+#> ...
+```
+
+---
+
+### `get_diagram_themes()` - List Available Themes
+
+Returns the names of available diagram themes.
+
+**Usage:**
+```r
+get_diagram_themes()
+```
+
+**Returns:**
+
+Character vector of theme names.
+
+**Examples:**
+
+```{r}
+get_diagram_themes()
+#> [1] "light"   "dark"    "auto"    "minimal" "github"
+
+# Use with put_diagram
+put_diagram(workflow, theme = get_diagram_themes()[1])
+```
+
+---
+
+### `set_putior_log_level()` - Configure Logging
+
+Sets the logging verbosity for putior functions. Requires the optional `logger` package.
+
+**Usage:**
+```r
+set_putior_log_level(level = "WARN")
+```
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `level` | character | `"WARN"` | Log level: "DEBUG", "INFO", "WARN", "ERROR" |
+
+**Log Levels:**
+
+| Level | Description |
+|-------|-------------|
+| `DEBUG` | Most verbose - file-by-file details, pattern matching |
+| `INFO` | Progress updates - scan started, nodes found |
+| `WARN` | Default - only warnings and issues |
+| `ERROR` | Errors only |
+
+**Examples:**
+
+```{r}
+# Enable debug logging for troubleshooting
+set_putior_log_level("DEBUG")
+workflow <- put("./src/")
+
+# Return to normal
+set_putior_log_level("WARN")
+
+# Or use per-call override
+workflow <- put("./src/", log_level = "INFO")
+```
+
+---
+
+## Utility Functions
+
+### `is_valid_put_annotation()` - Validate Annotation Syntax
+
+Tests whether a string is a valid PUT annotation.
+
+**Usage:**
+```r
+is_valid_put_annotation(line)
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `line` | character | String to test |
+
+**Returns:**
+
+Logical: `TRUE` if valid PUT annotation, `FALSE` otherwise.
+
+**Examples:**
+
+```{r}
+# Valid annotations - hash style (R, Python)
+is_valid_put_annotation('#put label:"My Step"')
+#> [1] TRUE
+
+is_valid_put_annotation('#put id:"step1", label:"Process Data", node_type:"process"')
+#> [1] TRUE
+
+# Valid annotations - dash style (SQL)
+is_valid_put_annotation('--put label:"Load Data"')
+#> [1] TRUE
+
+is_valid_put_annotation('-- put id:"query", label:"SQL Query"')
+#> [1] TRUE
+
+# Valid annotations - slash style (JavaScript)
+is_valid_put_annotation('//put label:"Process JSON"')
+#> [1] TRUE
+
+# Valid annotations - percent style (MATLAB)
+is_valid_put_annotation('%put label:"Compute Statistics"')
+#> [1] TRUE
+
+# Invalid annotations
+is_valid_put_annotation("#put invalid syntax")
+#> [1] FALSE
+
+is_valid_put_annotation("# Regular comment")
+#> [1] FALSE
+```
+
+---
+
+### `split_file_list()` - Parse File Lists
+
+Splits a comma-separated file list string into a character vector.
+
+**Usage:**
+```r
+split_file_list(file_string)
+```
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `file_string` | character | Comma-separated file names |
+
+**Returns:**
+
+Character vector of trimmed file names.
+
+**Examples:**
+
+```{r}
+split_file_list("data.csv, results.json, report.html")
+#> [1] "data.csv"     "results.json" "report.html"
+
+split_file_list("single_file.csv")
+#> [1] "single_file.csv"
+
+split_file_list("")
+#> character(0)
+```
+
+---
+
+### `run_sandbox()` - Launch Interactive Sandbox
+
+Launches an interactive Shiny app for experimenting with PUT annotations.
+
+**Usage:**
+```r
+run_sandbox()
+```
+
+**Requirements:**
+
+- `shiny` package (required)
+- `shinyAce` package (optional, for syntax highlighting)
+
+**Features:**
+
+- Paste or type annotated code
+- Simulate multiple files using `# ===== File: name.R =====` markers
+- Customize diagram settings (theme, direction, artifacts, etc.)
+- View extracted workflow data
+- Export generated Mermaid code
+- Copy to clipboard
+
+**Examples:**
+
+```{r}
+# Launch the sandbox
+run_sandbox()
+```
+
+---
+
+## Workflow Examples
+
+### Basic Workflow
+
+```{r}
+library(putior)
+
+# Extract and visualize
+workflow <- put("./src/")
+put_diagram(workflow)
+```
+
+### Auto-Detection Pipeline
+
+```{r}
+# Analyze code automatically
+auto_workflow <- put_auto("./src/")
+
+# Generate annotation suggestions
+put_generate("./src/", output = "clipboard")
+
+# Combine manual + auto
+merged <- put_merge("./src/", merge_strategy = "supplement")
+put_diagram(merged)
+```
+
+### Interactive Documentation
+
+```{r}
+workflow <- put("./src/", include_line_numbers = TRUE)
+
+put_diagram(workflow,
+  theme = "github",
+  show_source_info = TRUE,
+  source_info_style = "subgraph",
+  enable_clicks = TRUE,
+  click_protocol = "vscode",
+  output = "file",
+  file = "workflow.md"
+)
+```
+
+### Debugging
+
+```{r}
+# Enable verbose logging
+set_putior_log_level("DEBUG")
+
+# Extract with debugging
+workflow <- put("./src/", include_line_numbers = TRUE)
+
+# Test individual annotations
+is_valid_put_annotation('#put label:"Test"')
+
+# Return to normal
+set_putior_log_level("WARN")
+```
+
+---
+
+## See Also
+
+- [Getting Started](getting-started.html) - Introduction and basic usage
+- [Features Tour](features-tour.html) - Overview of advanced features
+- [Showcase](showcase.html) - Real-world examples

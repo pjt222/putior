@@ -28,6 +28,26 @@
 #' @param style_nodes Logical indicating whether to apply styling based on node_type
 #' @param theme Character string specifying color theme. Options:
 #'   "light" (default), "dark", "auto" (GitHub adaptive), "minimal", "github"
+#' @param show_source_info Logical indicating whether to display source file
+#'   information in diagram nodes. When TRUE, each node shows its originating
+#'   file name. Default is FALSE for backward compatibility.
+#' @param source_info_style Character string specifying how to display source info:
+#'   \itemize{
+#'     \item "inline" - Append file name to node labels (default)
+#'     \item "subgraph" - Group nodes by source file into Mermaid subgraphs
+#'   }
+#' @param enable_clicks Logical indicating whether to add click directives to nodes.
+#'   When TRUE, nodes become clickable links that open the source file in an editor.
+#'   Default is FALSE for backward compatibility.
+#' @param click_protocol Character string specifying the URL protocol for clickable nodes:
+#'   \itemize{
+#'     \item "vscode" - VS Code editor (vscode://file/path:line) (default)
+#'     \item "file" - Standard file:// protocol
+#'     \item "rstudio" - RStudio IDE (rstudio://open-file?path=)
+#'   }
+#' @param log_level Character string specifying log verbosity for this call.
+#'   Overrides the global option \code{putior.log_level} when specified.
+#'   Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.
 #'
 #' @return Character string containing the mermaid diagram code
 #' @export
@@ -59,6 +79,18 @@
 #' # For use in knitr/pkgdown - returns raw mermaid code
 #' # Use within a code chunk with results='asis'
 #' cat("```mermaid\n", put_diagram(workflow, output = "raw"), "\n```\n")
+#'
+#' # Show source file info inline in nodes
+#' put_diagram(workflow, show_source_info = TRUE)
+#'
+#' # Group nodes by source file using subgraphs
+#' put_diagram(workflow, show_source_info = TRUE, source_info_style = "subgraph")
+#'
+#' # Enable clickable nodes (opens in VS Code)
+#' put_diagram(workflow, enable_clicks = TRUE)
+#'
+#' # Enable clickable nodes with RStudio protocol
+#' put_diagram(workflow, enable_clicks = TRUE, click_protocol = "rstudio")
 #' }
 put_diagram <- function(workflow,
                         output = "console",
@@ -70,32 +102,115 @@ put_diagram <- function(workflow,
                         show_artifacts = FALSE,
                         show_workflow_boundaries = TRUE,
                         style_nodes = TRUE,
-                        theme = "light") {
+                        theme = "light",
+                        show_source_info = FALSE,
+                        source_info_style = "inline",
+                        enable_clicks = FALSE,
+                        click_protocol = "vscode",
+                        log_level = NULL) {
+  # Set log level for this call if specified
+  restore_log_level <- with_log_level(log_level)
+  on.exit(restore_log_level(), add = TRUE)
+
+  putior_log("INFO", "Starting diagram generation")
+  putior_log("DEBUG", "Diagram parameters: direction='{direction}', theme='{theme}', show_artifacts={show_artifacts}")
+
+
   # Input validation
-  if (!is.data.frame(workflow) || nrow(workflow) == 0) {
-    stop("workflow must be a non-empty data frame returned by put()")
+  if (!is.data.frame(workflow)) {
+    stop(
+      "workflow must be a data frame returned by put() or put_auto().\n",
+      "Received: ", class(workflow)[1], "\n",
+      "Example usage:\n",
+      "  workflow <- put(\"./src/\")\n",
+      "  put_diagram(workflow)",
+      call. = FALSE
+    )
+  }
+
+  if (nrow(workflow) == 0) {
+    stop(
+      "workflow is empty (0 rows).\n",
+      "No PUT annotations were found. Please check that:\n",
+      "- Your source files contain PUT annotations\n",
+      "- The file pattern matches your source files\n",
+      "- The correct comment prefix is used for your language\n",
+      "See putior_help(\"annotation\") for annotation syntax.",
+      call. = FALSE
+    )
   }
 
   required_cols <- c("id", "file_name")
-  if (!all(required_cols %in% names(workflow))) {
-    stop("workflow must contain 'id' and 'file_name' columns")
+  missing_cols <- required_cols[!required_cols %in% names(workflow)]
+  if (length(missing_cols) > 0) {
+    stop(
+      "workflow is missing required column(s): ", paste(missing_cols, collapse = ", "), "\n",
+      "Expected columns: ", paste(required_cols, collapse = ", "), "\n",
+      "This typically means the data frame was not created by put() or put_auto().\n",
+      "Example:\n",
+      "  workflow <- put(\"./src/\")\n",
+      "  put_diagram(workflow)",
+      call. = FALSE
+    )
   }
 
   # Validate theme
   valid_themes <- c("light", "dark", "auto", "minimal", "github")
   if (!theme %in% valid_themes) {
     warning(
-      "Invalid theme '", theme, "'. Using 'light'. Valid themes: ",
-      paste(valid_themes, collapse = ", ")
+      "Invalid theme '", theme, "'. Using 'light'.\n",
+      "Valid themes: ", paste(valid_themes, collapse = ", "), "\n",
+      "See putior_help(\"themes\") or get_diagram_themes() for descriptions.",
+      call. = FALSE
     )
     theme <- "light"
+  }
+
+  # Validate source_info_style
+  valid_styles <- c("inline", "subgraph")
+  if (!source_info_style %in% valid_styles) {
+    warning(
+      "Invalid source_info_style '", source_info_style, "'. Using 'inline'.\n",
+      "Valid styles: ", paste(valid_styles, collapse = ", "), "\n",
+      "- inline: Append file name to node labels\n",
+      "- subgraph: Group nodes by source file",
+      call. = FALSE
+    )
+    source_info_style <- "inline"
+  }
+
+  # Validate click_protocol
+  valid_protocols <- c("vscode", "file", "rstudio")
+  if (enable_clicks && !click_protocol %in% valid_protocols) {
+    warning(
+      "Invalid click_protocol '", click_protocol, "'. Using 'vscode'.\n",
+      "Valid protocols: ", paste(valid_protocols, collapse = ", "), "\n",
+      "- vscode: VS Code editor (vscode://file/path:line)\n",
+      "- file: Standard file:// protocol\n",
+      "- rstudio: RStudio IDE (rstudio://open-file?path=)",
+      call. = FALSE
+    )
+    click_protocol <- "vscode"
   }
 
   # Clean the workflow data
   workflow <- workflow[!is.na(workflow$id) & workflow$id != "", ]
   if (nrow(workflow) == 0) {
-    stop("No valid workflow nodes found (all IDs are missing or empty)")
+    stop(
+      "No valid workflow nodes found (all IDs are missing or empty).\n",
+      "This can happen if:\n",
+      "- PUT annotations don't include 'id' properties and uuid package is not installed\n",
+      "- The annotation syntax is incorrect\n",
+      "Solution: Either add explicit IDs to your annotations:\n",
+      "  #put id:\"my_node\", label:\"Description\"\n",
+      "Or install the uuid package for auto-generation:\n",
+      "  install.packages(\"uuid\")\n",
+      "See putior_help(\"annotation\") for syntax details.",
+      call. = FALSE
+    )
   }
+
+  putior_log("DEBUG", "Processing {nrow(workflow)} workflow node(s)")
 
   # Start building the mermaid diagram
   mermaid_lines <- character()
@@ -110,11 +225,13 @@ put_diagram <- function(workflow,
 
   # Handle artifacts if requested
   if (show_artifacts) {
+    putior_log("DEBUG", "Creating artifact nodes for data files")
     # Create artifact nodes for data files
     artifact_nodes <- create_artifact_nodes(workflow)
-    
+
     # Combine workflow with artifact nodes
     if (nrow(artifact_nodes) > 0) {
+      putior_log("DEBUG", "Created {nrow(artifact_nodes)} artifact node(s)")
       # Add is_artifact column to original workflow if it doesn't exist
       if (!"is_artifact" %in% names(workflow)) {
         workflow$is_artifact <- FALSE
@@ -145,26 +262,52 @@ put_diagram <- function(workflow,
     combined_workflow <- workflow
   }
 
-  # Generate node definitions
-  node_definitions <- generate_node_definitions(combined_workflow, node_labels, show_workflow_boundaries)
+  # Generate node definitions (use subgraphs if requested)
+  putior_log("DEBUG", "Generating node definitions")
+  if (show_source_info && source_info_style == "subgraph") {
+    node_definitions <- generate_file_subgraphs(
+      combined_workflow, node_labels, show_workflow_boundaries
+    )
+  } else {
+    # Use inline source info if show_source_info is TRUE
+    node_definitions <- generate_node_definitions(
+      combined_workflow, node_labels, show_workflow_boundaries,
+      show_source_info = show_source_info && source_info_style == "inline"
+    )
+  }
   mermaid_lines <- c(mermaid_lines, node_definitions)
+  putior_log("DEBUG", "Created {length(node_definitions)} node definition line(s)")
 
   # Generate connections
+  putior_log("DEBUG", "Generating connections between nodes")
   connections <- generate_connections(combined_workflow, show_files, show_artifacts)
   if (length(connections) > 0) {
     mermaid_lines <- c(mermaid_lines, "", "    %% Connections", connections)
+    putior_log("DEBUG", "Created {length(connections)} connection(s)")
   }
 
   # Add styling based on theme
   if (style_nodes && "node_type" %in% names(combined_workflow)) {
+    putior_log("DEBUG", "Applying '{theme}' theme styling")
     styling <- generate_node_styling(combined_workflow, theme, show_workflow_boundaries)
     if (length(styling) > 0) {
       mermaid_lines <- c(mermaid_lines, "", "    %% Styling", styling)
     }
   }
 
+  # Add click directives if enabled
+  if (enable_clicks) {
+    click_lines <- generate_click_directives(combined_workflow, click_protocol)
+    if (length(click_lines) > 0) {
+      mermaid_lines <- c(mermaid_lines, "", "    %% Click Actions", click_lines)
+    }
+  }
+
   # Combine into final diagram
   mermaid_code <- paste(mermaid_lines, collapse = "\n")
+
+  putior_log("INFO", "Diagram generation complete: {nrow(combined_workflow)} node(s), {length(connections)} connection(s)")
+  putior_log("DEBUG", "Output format: '{output}'")
 
   # Handle output
   handle_output(mermaid_code, output, file, title)
@@ -172,7 +315,7 @@ put_diagram <- function(workflow,
   return(invisible(mermaid_code))
 }
 
-#put id:"styling", label:"Apply Theme Styling", node_type:"process", input:"put_diagram.R", output:"put_diagram.R"
+#put id:"styling", label:"Apply Theme Styling", node_type:"process", input:"nodes.rds", output:"styled_nodes.rds"
 #' Generate node styling based on node types and theme
 #' @param workflow Workflow data frame
 #' @param theme Color theme ("light", "dark", "auto", "minimal", "github")
@@ -310,9 +453,12 @@ get_diagram_themes <- function() {
 #' @param workflow Workflow data frame
 #' @param node_labels What to show in node labels
 #' @param show_workflow_boundaries Whether to apply special styling to start/end nodes
+#' @param show_source_info Whether to append source file info to node labels
 #' @return Character vector of node definitions
 #' @keywords internal
-generate_node_definitions <- function(workflow, node_labels = "label", show_workflow_boundaries = TRUE) {
+generate_node_definitions <- function(workflow, node_labels = "label",
+                                      show_workflow_boundaries = TRUE,
+                                      show_source_info = FALSE) {
   node_defs <- character()
 
   for (i in 1:nrow(workflow)) {
@@ -334,6 +480,18 @@ generate_node_definitions <- function(workflow, node_labels = "label", show_work
       # Default to label
       if (!is.na(node$label) && node$label != "") node$label else node$id
     )
+
+    # Append source file info if requested (skip for artifacts)
+    is_artifact_node <- "is_artifact" %in% names(node) &&
+                        !is.null(node$is_artifact) &&
+                        !is.na(node$is_artifact) &&
+                        node$is_artifact
+    if (show_source_info &&
+        !is.na(node$file_name) && node$file_name != "" &&
+        !is_artifact_node) {
+      # Use HTML-style line break for Mermaid
+      label_text <- paste0(label_text, "<br/><small>(", node$file_name, ")</small>")
+    }
 
     # Create node definition using character vector format
     node_def <- paste0("    ", node_id, node_shape[1], label_text, node_shape[2])
@@ -407,6 +565,252 @@ sanitize_node_id <- function(node_id) {
   }
 
   return(sanitized)
+}
+
+#' Normalize file path for URL generation
+#'
+#' Converts file paths to URL-friendly format, handling cross-platform differences.
+#'
+#' @param file_path Character string of the file path
+#' @return Normalized path string suitable for URLs
+#' @keywords internal
+normalize_path_for_url <- function(file_path) {
+  if (is.na(file_path) || is.null(file_path) || file_path == "") {
+    return("")
+  }
+
+  # Convert to character if needed
+  file_path <- as.character(file_path)
+
+  # Try to get absolute path, but handle gracefully if file doesn't exist
+  tryCatch({
+    normalized <- normalizePath(file_path, winslash = "/", mustWork = FALSE)
+  }, error = function(e) {
+    normalized <- file_path
+  })
+
+  # Ensure forward slashes for URLs
+  normalized <- gsub("\\\\", "/", normalized)
+
+  return(normalized)
+}
+
+#' Generate click URL based on protocol
+#'
+#' Creates a clickable URL for opening files in various IDEs/editors.
+#'
+#' @param file_path Character string of the file path
+#' @param line_number Optional line number to jump to
+#' @param protocol Character string specifying the protocol:
+#'   \itemize{
+#'     \item "vscode" - VS Code editor (vscode://file/path:line)
+#'     \item "file" - Standard file:// protocol
+#'     \item "rstudio" - RStudio IDE (rstudio://open-file?path=)
+#'   }
+#' @return URL string for the specified protocol
+#' @keywords internal
+generate_click_url <- function(file_path, line_number = NULL, protocol = "vscode") {
+  normalized_path <- normalize_path_for_url(file_path)
+
+  if (normalized_path == "") {
+    return("")
+  }
+
+  url <- switch(protocol,
+    "vscode" = {
+      base_url <- paste0("vscode://file/", normalized_path)
+      if (!is.null(line_number) && !is.na(line_number)) {
+        paste0(base_url, ":", line_number)
+      } else {
+        base_url
+      }
+    },
+    "file" = {
+      # File protocol with URL encoding
+      encoded_path <- utils::URLencode(normalized_path, reserved = FALSE)
+      paste0("file:///", encoded_path)
+    },
+    "rstudio" = {
+      # RStudio URL scheme
+      encoded_path <- utils::URLencode(normalized_path, reserved = TRUE)
+      base_url <- paste0("rstudio://open-file?path=", encoded_path)
+      if (!is.null(line_number) && !is.na(line_number)) {
+        paste0(base_url, "&line=", line_number)
+      } else {
+        base_url
+      }
+    },
+    # Default to vscode
+    {
+      base_url <- paste0("vscode://file/", normalized_path)
+      if (!is.null(line_number) && !is.na(line_number)) {
+        paste0(base_url, ":", line_number)
+      } else {
+        base_url
+      }
+    }
+  )
+
+  return(url)
+}
+
+#' Generate Mermaid click directives
+#'
+#' Creates click action directives for Mermaid diagrams, enabling nodes
+#' to be clickable links that open files in the specified editor.
+#'
+#' @param workflow Data frame containing workflow nodes with file_name and
+#'   optionally line_number columns
+#' @param protocol Character string specifying the click protocol
+#'   ("vscode", "file", "rstudio")
+#' @return Character vector of Mermaid click directive lines
+#' @keywords internal
+generate_click_directives <- function(workflow, protocol = "vscode") {
+  click_lines <- character()
+
+  for (i in 1:nrow(workflow)) {
+    node <- workflow[i, ]
+    node_id <- sanitize_node_id(node$id)
+
+    # Skip artifact nodes - they represent data files, not source files
+    if (!is.null(node$is_artifact) && !is.na(node$is_artifact) && node$is_artifact) {
+      next
+    }
+
+    # Get file path
+    if (is.null(node$file_name) || is.na(node$file_name) || node$file_name == "") {
+      next
+    }
+
+    # Get line number if available
+    line_number <- NULL
+    if ("line_number" %in% names(node) && !is.na(node$line_number)) {
+      line_number <- node$line_number
+    }
+
+    # Generate URL
+    url <- generate_click_url(node$file_name, line_number, protocol)
+
+    if (url != "") {
+      # Create tooltip
+      tooltip <- paste0("Open ", node$file_name)
+      if (!is.null(line_number)) {
+        tooltip <- paste0(tooltip, " at line ", line_number)
+      }
+
+      # Mermaid click directive format: click nodeId "url" "tooltip"
+      click_line <- paste0('    click ', node_id, ' "', url, '" "', tooltip, '"')
+      click_lines <- c(click_lines, click_line)
+    }
+  }
+
+  return(click_lines)
+}
+
+#' Generate file-based subgraphs
+#'
+#' Groups workflow nodes by their source file into Mermaid subgraphs,
+#' providing a visual organization by file origin.
+#'
+#' @param workflow Data frame containing workflow nodes
+#' @param node_labels What to show in node labels ("name", "label", "both")
+#' @param show_workflow_boundaries Whether to apply special styling to start/end nodes
+#' @return Character vector of Mermaid subgraph definitions
+#' @keywords internal
+generate_file_subgraphs <- function(workflow, node_labels = "label",
+                                    show_workflow_boundaries = TRUE) {
+  subgraph_lines <- character()
+
+  # Helper function to check if a row is an artifact
+  is_artifact_row <- function(wf) {
+    if (!"is_artifact" %in% names(wf)) {
+      return(rep(FALSE, nrow(wf)))
+    }
+    result <- !is.null(wf$is_artifact) & !is.na(wf$is_artifact) & wf$is_artifact
+    # Handle any remaining NAs
+    result[is.na(result)] <- FALSE
+    return(result)
+  }
+
+  # Get artifact indicator for all rows
+  artifact_indicator <- is_artifact_row(workflow)
+
+  # Get unique file names (excluding artifacts)
+  file_names <- unique(workflow$file_name[!artifact_indicator])
+  file_names <- file_names[!is.na(file_names) & file_names != ""]
+
+  # Process artifact nodes first (they go outside subgraphs)
+  artifact_nodes <- workflow[artifact_indicator, ]
+  if (nrow(artifact_nodes) > 0) {
+    for (i in 1:nrow(artifact_nodes)) {
+      node <- artifact_nodes[i, ]
+      node_id <- sanitize_node_id(node$id)
+      node_shape <- get_node_shape(node$node_type, show_workflow_boundaries)
+
+      label_text <- switch(node_labels,
+        "name" = node$id,
+        "label" = if (!is.na(node$label) && node$label != "") node$label else node$id,
+        "both" = if (!is.na(node$label) && node$label != "") {
+          paste0(node$id, ": ", node$label)
+        } else {
+          node$id
+        },
+        if (!is.na(node$label) && node$label != "") node$label else node$id
+      )
+
+      node_def <- paste0("    ", node_id, node_shape[1], label_text, node_shape[2])
+      subgraph_lines <- c(subgraph_lines, node_def)
+    }
+    subgraph_lines <- c(subgraph_lines, "")
+  }
+
+  # Create subgraph for each file
+  for (file_name in file_names) {
+    # Get nodes from this file
+    file_nodes <- workflow[
+      !is.na(workflow$file_name) &
+      workflow$file_name == file_name &
+      !artifact_indicator,
+    ]
+
+    if (nrow(file_nodes) == 0) next
+
+    # Create subgraph ID from file name
+    subgraph_id <- gsub("[^a-zA-Z0-9_]", "_",
+                        tools::file_path_sans_ext(basename(file_name)))
+
+    # Start subgraph
+    subgraph_lines <- c(subgraph_lines,
+                       paste0("    subgraph ", subgraph_id, " [", file_name, "]"))
+
+    # Add nodes within subgraph
+    for (i in 1:nrow(file_nodes)) {
+      node <- file_nodes[i, ]
+      node_id <- sanitize_node_id(node$id)
+      node_shape <- get_node_shape(node$node_type, show_workflow_boundaries)
+
+      # Determine label text
+      label_text <- switch(node_labels,
+        "name" = node$id,
+        "label" = if (!is.na(node$label) && node$label != "") node$label else node$id,
+        "both" = if (!is.na(node$label) && node$label != "") {
+          paste0(node$id, ": ", node$label)
+        } else {
+          node$id
+        },
+        if (!is.na(node$label) && node$label != "") node$label else node$id
+      )
+
+      node_def <- paste0("        ", node_id, node_shape[1], label_text, node_shape[2])
+      subgraph_lines <- c(subgraph_lines, node_def)
+    }
+
+    # End subgraph
+    subgraph_lines <- c(subgraph_lines, "    end")
+    subgraph_lines <- c(subgraph_lines, "")
+  }
+
+  return(subgraph_lines)
 }
 
 #' Create artifact nodes for data files
@@ -664,7 +1068,12 @@ handle_output <- function(mermaid_code, output = "console", file = NULL, title =
         clipr::write_clip(paste0("```mermaid\n", mermaid_code, "\n```"))
         message("Diagram copied to clipboard")
       } else {
-        warning("clipr package not available. Install with: install.packages('clipr')")
+        warning(
+          "clipr package not available for clipboard access.\n",
+          "The diagram has been printed to console instead.\n",
+          "To enable clipboard support, install with: install.packages(\"clipr\")",
+          call. = FALSE
+        )
         cat("```mermaid\n")
         cat(mermaid_code)
         cat("\n```\n")

@@ -5,10 +5,38 @@
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/putior)](https://cran.r-project.org/package=putior)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![Cheatsheet](https://img.shields.io/badge/cheatsheet-PDF-blue.svg)](https://github.com/pjt222/putior/blob/main/inst/cheatsheet/putior-cheatsheet.pdf)
 
 > **Extract beautiful workflow diagrams from your code annotations**
 
+![putior demo](man/figures/demo.gif)
+
 **putior** (PUT + Input + Output + R) is an R package that extracts structured annotations from source code files and creates beautiful Mermaid flowchart diagrams. Perfect for documenting data pipelines, workflows, and understanding complex codebases.
+
+<details>
+<summary><strong>📑 Table of Contents</strong></summary>
+
+- [Key Features](#-key-features)
+- [TL;DR](#-tldr)
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [Common Data Science Pattern](#-common-data-science-pattern)
+- [Visualization Examples](#-visualization-examples)
+- [Using the Diagrams](#-using-the-diagrams)
+- [Visualization Modes](#-visualization-modes)
+- [Theme System](#-theme-system)
+- [Customization Options](#-customization-options)
+- [Annotation Reference](#-annotation-reference)
+- [Advanced Usage](#️-advanced-usage)
+- [Advanced Features](#-advanced-features)
+- [API Reference](#-api-reference)
+- [Self-Documentation](#-self-documentation-putior-documents-itself)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [How putior Compares](#-how-putior-compares-to-other-r-packages)
+- [Acknowledgments](#-acknowledgments)
+
+</details>
 
 ## 🌟 Key Features
 
@@ -16,9 +44,38 @@
 - **Beautiful diagrams** - Generate professional Mermaid flowcharts
 - **File flow tracking** - Automatically connects scripts based on input/output files  
 - **Multiple themes** - 5 built-in themes including GitHub-optimized
-- **Cross-language support** - Works with R, Python, SQL, shell scripts, and Julia
+- **Cross-language support** - Works with 30+ file types including R, Python, SQL, JavaScript, TypeScript, Go, Rust, and more
 - **Flexible output** - Console, file, or clipboard export
 - **Customizable styling** - Control colors, direction, and node shapes
+
+> **New to putior?** Check out the [**Cheatsheet (PDF)**](https://github.com/pjt222/putior/blob/main/inst/cheatsheet/putior-cheatsheet.pdf) for a quick visual reference!
+
+## ⚡ TL;DR
+
+```r
+# 1. Add annotation to your script
+#put label:"Load Data", output:"clean.csv"
+
+# 2. Generate diagram
+library(putior)
+put_diagram(put("./"))
+```
+
+<details>
+<summary>See result</summary>
+
+```mermaid
+flowchart TD
+    node1[Load Data]
+    artifact_clean_csv[(clean.csv)]
+    node1 --> artifact_clean_csv
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class node1 processStyle
+    classDef artifactStyle fill:#f3f4f6,stroke:#6b7280,stroke-width:1px,color:#374151
+    class artifact_clean_csv artifactStyle
+```
+
+</details>
 
 ## 📦 Installation
 
@@ -42,7 +99,27 @@ pak::pkg_install("pjt222/putior")  # GitHub version
 
 ### Step 1: Annotate Your Code
 
-Add structured annotations to your R or Python scripts using `#put` comments:
+Add `#put` comments to describe each step in your workflow. Start simple:
+
+> [!TIP]
+> **One line is enough!** The simplest annotation is `#put label:"My Step"` - ID, type, and output are auto-generated.
+
+**Minimal annotation (just a label):**
+```r
+#put label:"Load Data"
+```
+
+That's it! putior will:
+- Auto-generate a unique ID for the node
+- Default `node_type` to `"process"`
+- Default `output` to the current filename (for connecting scripts)
+
+**Add more detail as needed:**
+```r
+#put label:"Fetch Sales Data", node_type:"input", output:"sales_data.csv"
+```
+
+**Complete example with two files:**
 
 **`01_fetch_data.R`**
 ```r
@@ -56,7 +133,7 @@ write_csv(sales_data, "sales_data.csv")
 
 **`02_clean_data.py`**
 ```python
-#put label:"Clean and Process", node_type:"process", input:"sales_data.csv", output:"clean_sales.csv"
+#put label:"Clean and Process", input:"sales_data.csv", output:"clean_sales.csv"
 
 import pandas as pd
 df = pd.read_csv("sales_data.csv")
@@ -645,6 +722,31 @@ put_diagram(workflow, output = "clipboard")
 
 ## 📝 Annotation Reference
 
+### Defaults and Auto-Detection
+
+putior is designed to work with minimal configuration. Here's what happens automatically:
+
+| Field | If Omitted | Behavior |
+|-------|------------|----------|
+| `id` | Auto-generated UUID | Unique identifier like `"a1b2c3d4-e5f6..."` |
+| `label` | None | Recommended for readability |
+| `node_type` | `"process"` | Most common type for data transformation |
+| `output` | Current filename | Enables script-to-script connections |
+
+**Minimal valid annotation:**
+```r
+#put label:"My Step"
+# That's all you need to get started!
+```
+
+**Progressively add detail:**
+```r
+#put label:"My Step"                                          # Minimal
+#put label:"My Step", node_type:"input"                       # + type
+#put label:"My Step", node_type:"input", output:"data.csv"    # + output
+#put id:"step1", label:"My Step", node_type:"input", output:"data.csv"  # Full
+```
+
 ### Basic Syntax
 
 All PUT annotations follow this format:
@@ -733,6 +835,33 @@ put_diagram(workflow, show_workflow_boundaries = FALSE)
 #put id:"predict", label:"Generate Predictions", node_type:"output", input:"model.pkl, test_data.csv", output:"predictions.csv"
 ```
 
+**SQL Scripts:**
+```sql
+--put id:"load_customers", label:"Load Customer Data", node_type:"input", output:"customers"
+SELECT * FROM raw_customers WHERE active = 1;
+
+--put id:"aggregate_sales", label:"Aggregate Sales", input:"customers", output:"sales_summary"
+SELECT customer_id, SUM(amount) FROM orders GROUP BY customer_id;
+```
+
+**JavaScript/TypeScript:**
+```javascript
+//put id:"fetch_api", label:"Fetch API Data", node_type:"input", output:"api_data.json"
+const data = await fetch('/api/data').then(r => r.json());
+
+//put id:"process_data", label:"Process JSON", input:"api_data.json", output:"processed.json"
+const processed = transformData(data);
+```
+
+**MATLAB:**
+```matlab
+%put id:"load_matrix", label:"Load Data Matrix", node_type:"input", output:"matrix_data"
+data = load('experiment.mat');
+
+%put id:"analyze", label:"Statistical Analysis", input:"matrix_data", output:"results.mat"
+results = analyze(data);
+```
+
 **Multiple Annotations Per File:**
 ```r
 # analysis.R
@@ -781,12 +910,16 @@ flowchart TD
 
 ### Supported File Types
 
-putior automatically detects and processes these file types:
-- **R**: `.R`, `.r`
-- **Python**: `.py`
-- **SQL**: `.sql`
-- **Shell**: `.sh`
-- **Julia**: `.jl`
+putior automatically detects and processes 30+ file types, with language-specific comment syntax:
+
+| Comment Style | Languages | Extensions |
+|---------------|-----------|------------|
+| `#put` | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`, `.yml`, `.toml` |
+| `--put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |
+| `//put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala | `.js`, `.ts`, `.jsx`, `.tsx`, `.c`, `.cpp`, `.java`, `.go`, `.rs`, `.swift`, `.kt`, `.cs`, `.php`, `.scala` |
+| `%put` | MATLAB, LaTeX | `.m`, `.tex` |
+
+**Unknown extensions default to `#` prefix.**
 
 ## 🛠️ Advanced Usage
 
@@ -869,6 +1002,150 @@ This creates a diagram showing:
 - `utils.R` → `main.R` (sourced into)
 - `analysis.R` → `main.R` (sourced into)
 - `utils.R` → `analysis.R` (dependency)
+
+### Variable References with `.internal` Extension
+
+Track in-memory variables and objects alongside persistent files:
+
+```r
+# Script 1: Create and save data
+#put output:'my_data.internal, my_data.RData'
+my_data <- process_data()
+save(my_data, file = 'my_data.RData')
+
+# Script 2: Load data and create new variables
+#put input:'my_data.RData', output:'results.internal, summary.csv'
+load('my_data.RData')  # Load the persistent file
+results <- analyze(my_data)  # Create new in-memory variable
+write.csv(results, 'summary.csv')
+```
+
+**Key Concepts:**
+- **`.internal` variables**: Exist only during script execution (outputs only)
+- **Persistent files**: Enable data flow between scripts (inputs/outputs)
+- **Connected workflows**: Use file-based dependencies, not variable references
+
+Try the complete example:
+```r
+source(system.file("examples", "variable-reference-example.R", package = "putior"))
+```
+
+## 🚀 Advanced Features
+
+putior includes powerful features for automation, interactivity, and debugging that go beyond basic annotations.
+
+### Auto-Annotation System
+
+Automatically detect workflow elements from code analysis without writing annotations:
+
+```r
+# Auto-detect inputs/outputs from code patterns
+workflow <- put_auto("./src/")
+put_diagram(workflow)
+
+# Generate annotation comments for your files (like roxygen2 skeleton)
+put_generate("./src/")                    # Print to console
+put_generate("./src/", output = "clipboard")  # Copy to clipboard
+
+# Combine manual annotations with auto-detected
+workflow <- put_merge("./src/", merge_strategy = "supplement")
+```
+
+**Use cases:** Instantly visualize unfamiliar codebases, generate annotation templates, supplement manual annotations with auto-detected I/O.
+
+### Interactive Diagrams
+
+Make your diagrams more useful with source file info and clickable nodes:
+
+```r
+# Show which file each node comes from
+put_diagram(workflow, show_source_info = TRUE)
+
+# Group nodes by source file
+put_diagram(workflow, show_source_info = TRUE, source_info_style = "subgraph")
+
+# Enable clickable nodes (opens source in VS Code)
+put_diagram(workflow, enable_clicks = TRUE)
+
+# Use different editors
+put_diagram(workflow, enable_clicks = TRUE, click_protocol = "rstudio")
+put_diagram(workflow, enable_clicks = TRUE, click_protocol = "file")
+```
+
+### Debugging with Logging
+
+Enable structured logging to debug annotation parsing and diagram generation:
+
+```r
+# Set log level for detailed output
+set_putior_log_level("DEBUG")  # Most verbose
+set_putior_log_level("INFO")   # Progress updates
+set_putior_log_level("WARN")   # Default - warnings only
+
+# Or per-call override
+workflow <- put("./src/", log_level = "DEBUG")
+put_diagram(workflow, log_level = "INFO")
+```
+
+Requires optional `logger` package: `install.packages("logger")`
+
+### Detection Pattern Customization
+
+View the patterns putior uses to auto-detect inputs and outputs:
+
+```r
+# Get all R detection patterns
+patterns <- get_detection_patterns("r")
+
+# Get only input patterns for Python
+input_patterns <- get_detection_patterns("python", type = "input")
+
+# Supported languages with auto-detection (15 languages, 860+ patterns):
+# r, python, sql, shell, julia, javascript, typescript, go, rust,
+# java, c, cpp, matlab, ruby, lua
+list_supported_languages(detection_only = TRUE)
+```
+
+### Interactive Sandbox
+
+Try putior without writing any files using the built-in Shiny app:
+
+```r
+# Launch interactive sandbox (requires shiny package)
+run_sandbox()
+```
+
+The sandbox lets you:
+- Paste or type annotated code
+- Simulate multiple files
+- Customize diagram settings in real-time
+- Export generated Mermaid code
+
+## 📚 API Reference
+
+Quick reference for all exported functions:
+
+| Function | Purpose | Example |
+|----------|---------|---------|
+| `put()` | Extract annotations from files | `workflow <- put("./src/")` |
+| `put_diagram()` | Generate Mermaid diagram | `put_diagram(workflow)` |
+| `put_auto()` | Auto-detect workflow from code | `put_auto("./src/")` |
+| `put_generate()` | Generate annotation comments | `put_generate("./src/")` |
+| `put_merge()` | Combine manual + auto annotations | `put_merge("./src/")` |
+| `run_sandbox()` | Launch interactive Shiny app | `run_sandbox()` |
+| `get_detection_patterns()` | View/customize detection patterns | `get_detection_patterns("r")` |
+| `list_supported_languages()` | List supported languages | `list_supported_languages()` |
+| `get_comment_prefix()` | Get comment prefix for extension | `get_comment_prefix("sql")` → `"--"` |
+| `get_supported_extensions()` | List all supported extensions | `get_supported_extensions()` |
+| `set_putior_log_level()` | Configure logging verbosity | `set_putior_log_level("DEBUG")` |
+| `is_valid_put_annotation()` | Validate annotation syntax | `is_valid_put_annotation("#put ...")` |
+| `get_diagram_themes()` | List available themes | `get_diagram_themes()` |
+| `split_file_list()` | Parse comma-separated files | `split_file_list("a.csv, b.csv")` |
+
+For detailed documentation, see:
+- Function help: `?put`, `?put_diagram`, `?put_auto`
+- [pkgdown site](https://pjt222.github.io/putior/)
+- [Getting Started vignette](https://pjt222.github.io/putior/articles/getting-started.html)
 
 ## 🔄 Self-Documentation: putior Documents Itself!
 
@@ -972,6 +1249,44 @@ putior fills a unique niche in the R ecosystem by combining annotation-based wor
 - **📦 Lightweight**: Minimal dependencies (only requires `tools` package)
 - **🔍 Two Views**: Simple script connections + complete data artifact flow
 
+### Documentation vs Execution: putior and Pipeline Tools
+
+A common question: *"How does putior relate to targets/drake/Airflow?"*
+
+**Key insight**: putior *documents* workflows, while targets/drake/Airflow *execute* them. They're complementary!
+
+| Tool | Purpose | Relationship to putior |
+|------|---------|------------------------|
+| **putior** | Document & visualize workflows | - |
+| [targets](https://cran.r-project.org/package=targets) | Execute R pipelines | putior can document targets pipelines |
+| [drake](https://cran.r-project.org/package=drake) | Execute R pipelines (predecessor to targets) | putior can document drake plans |
+| [Airflow](https://airflow.apache.org/) | Orchestrate complex DAGs | putior can document Airflow DAGs |
+| [Nextflow](https://www.nextflow.io/) | Execute bioinformatics pipelines | putior can document Nextflow workflows |
+
+**Example: Using putior WITH targets**
+
+```r
+# _targets.R
+#put label:"Load Raw Data", node_type:"input", output:"raw_data"
+tar_target(raw_data, read_csv("data/sales.csv"))
+
+#put label:"Clean Data", input:"raw_data", output:"clean_data"
+tar_target(clean_data, clean_sales(raw_data))
+
+#put label:"Generate Report", node_type:"output", input:"clean_data"
+tar_target(report, render_report(clean_data))
+```
+
+```r
+# Document your targets pipeline
+library(putior)
+put_diagram(put("_targets.R"), title = "Sales Analysis Pipeline")
+```
+
+This gives you:
+- **targets**: Handles caching, parallel execution, dependency tracking
+- **putior**: Creates visual documentation for README, wikis, onboarding
+
 ## 🙏 Acknowledgments
 
 - Built with [Mermaid](https://mermaid-js.github.io/) for beautiful diagram generation
@@ -1003,4 +1318,4 @@ Each of these packages excels in their domain, and putior complements them by fo
 
 ---
 
-**Made with ❤️ for polyglot data science workflows across R, Python, Julia, SQL, Shell, and beyond**
+**Made with ❤️ for polyglot data science workflows across R, Python, Julia, SQL, JavaScript, Go, Rust, and 30+ languages**

@@ -253,11 +253,13 @@ test_that("put() handles different file extensions", {
 
   # Create files with different extensions
   # Note: The default pattern is "\\.(R|r|py|sql|sh|jl)$"
-  # but we need to check which extensions are actually supported
+  # Each file type needs its appropriate comment prefix
   extensions <- c("R", "py", "sql", "sh", "jl") # Removed lowercase "r" to avoid duplicates
 
   for (ext in extensions) {
-    content <- paste0("#put id:\"test_", ext, "\", label:\"Test ", ext, "\"")
+    # Use the appropriate comment prefix for each file type
+    prefix <- get_comment_prefix(ext)
+    content <- paste0(prefix, "put id:\"test_", ext, "\", label:\"Test ", ext, "\"")
     create_test_file(content, paste0("test.", ext), test_dir)
   }
 

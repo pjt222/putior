@@ -1,17 +1,19 @@
 Package: putior
-Title: "Register In- and Outputs for Workflow Visualization"
-Version: 0.1.0.9000
+Title: Generate Workflow Diagrams from Code Annotations
+Version: 0.2.0.9000
 Authors@R: 
     person("Philipp", "Thoss", , "ph.thoss@gmx.de", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4672-2792"))
 Author: Philipp Thoss [aut, cre] (0000-0002-4672-2792)
 Maintainer: Philipp Thoss <ph.thoss@gmx.de>
-Description: Provides tools for extracting and processing structured annotations from 'R' 
-    and 'Python' source files to facilitate workflow visualization. The package scans 
-    source files for special 'PUT' annotations that define nodes, connections, and 
-    metadata within a data processing workflow. These annotations can then be used 
-    to generate visual representations of data flows and processing steps across 
-    polyglot software environments. Builds on concepts from literate programming 
+Description: Provides tools for extracting and processing structured annotations from
+    source files in 30+ programming languages to facilitate workflow visualization.
+    The package scans source files for special 'PUT' annotations that define nodes,
+    connections, and metadata within a data processing workflow. Supports R, Python,
+    SQL, JavaScript, TypeScript, Go, Rust, Java, and more with automatic comment
+    syntax detection. These annotations can then be used to generate visual
+    representations of data flows and processing steps across polyglot software
+    environments. Builds on concepts from literate programming 
     Knuth (1984) <doi:10.1093/comjnl/27.2.97> and utilizes directed acyclic graph (DAG) 
     theory for workflow representation Foraita, Spallek, and Zeeb (2014) 
     <doi:10.1007/978-0-387-09834-0_65>. Diagram generation powered by 'Mermaid' 
@@ -24,13 +26,19 @@ Depends:
     R (>= 3.5.0)
 Imports:
     tools
-Suggests: 
+Suggests:
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
     clipr,
     uuid,
-    pkgdown
+    pkgdown,
+    logger,
+    shiny,
+    shinyAce,
+    mcptools,
+    ellmer,
+    plumber2
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

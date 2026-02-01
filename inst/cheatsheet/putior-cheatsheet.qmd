@@ -1,0 +1,385 @@
+---
+title: "putior Cheatsheet"
+subtitle: "Workflow Visualization from Code Annotations"
+format:
+  pdf:
+    documentclass: article
+    papersize: custom
+    geometry:
+      - paperwidth=26in
+      - paperheight=20in
+      - margin=0.35in
+    fontsize: 9pt
+    keep-tex: true
+    colorlinks: true
+    linkcolor: blue
+    urlcolor: blue
+    fig-pos: 'H'
+    header-includes: |
+      \usepackage{multicol}
+      \usepackage{fancyhdr}
+      \usepackage{xcolor}
+      \usepackage{graphicx}
+      \usepackage{nopageno}
+      \definecolor{putiorblue}{HTML}{2563eb}
+      \definecolor{putiorpurple}{HTML}{7c3aed}
+      \definecolor{putiorgreen}{HTML}{16a34a}
+      \definecolor{putiororange}{HTML}{d97706}
+      \definecolor{lightgray}{HTML}{f3f4f6}
+      \pagestyle{empty}
+      \raggedbottom
+      \raggedcolumns
+      \setlength{\columnsep}{0.3in}
+      \setlength{\parskip}{0pt}
+      \setlength{\parindent}{0pt}
+      % Prevent ALL page breaks
+      \widowpenalty=10000
+      \clubpenalty=10000
+      \brokenpenalty=10000
+      \interlinepenalty=10000
+      \predisplaypenalty=10000
+      \postdisplaypenalty=10000
+      % Compact sections
+      \usepackage{titlesec}
+      \titlespacing*{\section}{0pt}{0.5ex}{0.3ex}
+      \titlespacing*{\subsection}{0pt}{0.4ex}{0.2ex}
+      \titleformat*{\section}{\large\bfseries}
+      \titleformat*{\subsection}{\normalsize\bfseries}
+---
+
+\begin{multicols}{4}
+
+\begin{center}
+\includegraphics[width=1.2in]{../../man/figures/logo.png}
+
+\textbf{\Large putior}
+
+\textit{PUT + Input + Output + R}
+\end{center}
+
+\vspace{0.1cm}
+
+Extract beautiful workflow diagrams from your code annotations. Works with R, Python, SQL, Shell, and Julia.
+
+\section*{\textcolor{putiorblue}{Quick Start}}
+
+\begin{verbatim}
+# 1. Add annotation
+#put label:"Load Data",
+     output:"clean.csv"
+
+# 2. Generate diagram
+library(putior)
+put_diagram(put("./"))
+\end{verbatim}
+
+\section*{\textcolor{putiorblue}{Annotation Syntax}}
+
+\subsection*{Basic Format}
+\begin{verbatim}
+#put key:"value", key:"value"
+\end{verbatim}
+
+\subsection*{Minimal (label only)}
+\begin{verbatim}
+#put label:"My Step"
+\end{verbatim}
+\textit{ID auto-generated, type = "process"}
+
+\subsection*{Full Annotation}
+\begin{verbatim}
+#put id:"step1", \
+     label:"Load Data", \
+     node_type:"input", \
+     input:"config.json", \
+     output:"data.csv"
+\end{verbatim}
+
+\subsection*{Alternative Formats}
+\begin{verbatim}
+#put label:"Step"   # Standard
+# put label:"Step"  # Space
+#put| label:"Step"  # Pipe
+#put: label:"Step"  # Colon
+\end{verbatim}
+
+\section*{\textcolor{putiorpurple}{Node Types \& Shapes}}
+
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Type} & \textbf{Shape} & \textbf{Use For} \\
+\hline
+input & \texttt{([ ])} & Data sources \\
+process & \texttt{[ ]} & Transforms \\
+output & \texttt{[[ ]]} & Reports \\
+decision & \texttt{\{ \}} & Branching \\
+start & \texttt{([orange])} & Entry \\
+end & \texttt{([green])} & Exit \\
+\hline
+\end{tabular}
+
+\subsection*{Annotation Fields}
+
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Field} & \textbf{Req?} & \textbf{Default} \\
+\hline
+id & No & Auto UUID \\
+label & Rec. & None \\
+node\_type & No & "process" \\
+input & No & None \\
+output & No & File name \\
+\hline
+\end{tabular}
+
+\subsection*{File Artifacts}
+\begin{verbatim}
+# Multiple files
+output:"data.csv, log.txt"
+
+# Variable tracking
+output:"result.internal"
+\end{verbatim}
+\textit{.internal = in-memory only}
+
+\subsection*{Connecting Scripts}
+\begin{verbatim}
+# Script A outputs file
+#put label:"Fetch",
+     output:"data.csv"
+
+# Script B reads that file
+#put label:"Process",
+     input:"data.csv"
+\end{verbatim}
+
+\section*{\textcolor{putiorgreen}{Key Functions}}
+
+\subsection*{Core Workflow}
+\begin{verbatim}
+# Extract annotations
+workflow <- put("./src/")
+workflow <- put("script.R")
+workflow <- put("./",
+                recursive = TRUE)
+
+# Generate diagram
+put_diagram(workflow)
+put_diagram(workflow,
+            theme = "github")
+\end{verbatim}
+
+\subsection*{Auto-Annotation}
+\begin{verbatim}
+# Auto-detect from code
+put_auto("./src/")
+
+# Generate annotation text
+put_generate("./src/")
+put_generate("./src/",
+  output = "clipboard")
+
+# Merge manual + auto
+put_merge("./src/",
+  merge_strategy = "supplement")
+\end{verbatim}
+
+\subsection*{Output Options}
+\begin{verbatim}
+# Console (default)
+put_diagram(wf)
+
+# Copy to clipboard
+put_diagram(wf,
+  output = "clipboard")
+
+# Save to file
+put_diagram(wf,
+  output = "file",
+  file = "diagram.md")
+\end{verbatim}
+
+\subsection*{Interactive Features}
+\begin{verbatim}
+# Show source file info
+put_diagram(wf,
+  show_source_info = TRUE)
+
+# Clickable nodes (VS Code)
+put_diagram(wf,
+  enable_clicks = TRUE,
+  click_protocol = "vscode")
+\end{verbatim}
+
+\section*{\textcolor{putiororange}{Diagram Options}}
+
+\subsection*{Themes}
+\texttt{light} | \texttt{dark} | \texttt{auto} | \texttt{github} | \texttt{minimal}
+
+\begin{verbatim}
+put_diagram(wf, theme="github")
+\end{verbatim}
+
+\subsection*{Directions}
+\texttt{TD} (top-down) | \texttt{LR} (left-right)
+
+\texttt{BT} (bottom-top) | \texttt{RL} (right-left)
+
+\begin{verbatim}
+put_diagram(wf, direction="LR")
+\end{verbatim}
+
+\subsection*{Visualization Modes}
+\begin{verbatim}
+# Simple (script connections)
+put_diagram(wf)
+
+# With data artifacts
+put_diagram(wf,
+  show_artifacts = TRUE)
+
+# With file labels on edges
+put_diagram(wf,
+  show_files = TRUE)
+
+# Workflow boundaries
+put_diagram(wf,
+  show_workflow_boundaries=TRUE)
+\end{verbatim}
+
+\end{multicols}
+
+\vspace{0.15cm}
+\hrule
+\vspace{0.15cm}
+
+\begin{center}
+\textbf{\Large Example Workflows}
+\end{center}
+
+\vspace{0.1cm}
+
+\begin{multicols}{4}
+
+\subsection*{Simple Linear Pipeline}
+
+\begin{verbatim}
+# 01_fetch.R
+#put label:"Fetch Sales Data",
+     node_type:"input",
+     output:"sales.csv"
+
+# 02_clean.py
+#put label:"Clean Data",
+     input:"sales.csv",
+     output:"clean.csv"
+
+# 03_report.R
+#put label:"Generate Report",
+     node_type:"output",
+     input:"clean.csv"
+\end{verbatim}
+
+\begin{center}
+\includegraphics[width=3.5in]{diagrams/linear.png}
+\end{center}
+
+\columnbreak
+
+\subsection*{Branching \& Merging}
+
+\begin{verbatim}
+# 01_fetch_sales.R
+#put label:"Fetch Sales",
+     node_type:"input",
+     output:"sales.csv"
+
+# 02_fetch_customers.R
+#put label:"Fetch Customers",
+     node_type:"input",
+     output:"customers.csv"
+
+# 03_merge.R
+#put label:"Merge Datasets",
+     input:"sales.csv, customers.csv",
+     output:"merged.csv"
+
+# 04_analyze.py
+#put label:"Analyze",
+     input:"merged.csv",
+     output:"stats.json"
+
+# 05_report.R
+#put label:"Report",
+     node_type:"output",
+     input:"stats.json"
+\end{verbatim}
+
+\begin{center}
+\includegraphics[width=2.8in]{diagrams/branching.png}
+\end{center}
+
+\columnbreak
+
+\subsection*{Modular source() Pattern}
+
+\begin{verbatim}
+# utils.R - Utility functions
+#put label:"Data Utilities",
+     node_type:"input"
+
+# analysis.R - Uses utils
+#put label:"Analysis Functions",
+     input:"utils.R"
+
+# main.R - Orchestrates both
+#put label:"Main Pipeline",
+     input:"utils.R, analysis.R",
+     output:"results.csv"
+\end{verbatim}
+
+\begin{center}
+\includegraphics[width=2.5in]{diagrams/modular.png}
+\end{center}
+
+\columnbreak
+
+\subsection*{Decision/Branching Logic}
+
+\begin{verbatim}
+# start.R
+#put label:"Load Config",
+     node_type:"start",
+     output:"config.json"
+
+# check.R
+#put label:"Validate Data?",
+     node_type:"decision",
+     input:"config.json"
+
+# path_a.R
+#put label:"Full Analysis",
+     input:"config.json",
+     output:"full.csv"
+
+# path_b.R
+#put label:"Quick Summary",
+     input:"config.json",
+     output:"summary.csv"
+
+# end.R
+#put label:"Complete",
+     node_type:"end",
+     input:"full.csv, summary.csv"
+\end{verbatim}
+
+\begin{center}
+\includegraphics[width=2.5in]{diagrams/decision.png}
+\end{center}
+
+\end{multicols}
+
+\vspace{0.1cm}
+\begin{center}
+\footnotesize putior v1.0.0 | \url{https://pjt222.github.io/putior/} | MIT License | Philipp Thoss
+\end{center}
