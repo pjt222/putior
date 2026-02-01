@@ -630,6 +630,160 @@ This example demonstrates:
 
 ---
 
+## Improving Existing Annotations
+
+Real-world codebases often have messy, incomplete annotations. Here's how to clean them up.
+
+### Before: A Messy Starting Point
+
+This ETL script has common problems:
+
+```r
+# etl_pipeline.R - typical messy annotations
+
+#put id:"step1", output:"data"
+# ^ Problem: Vague ID and output name
+
+raw <- read.csv("sales_2024.csv")
+
+#put id:"2", input:"data"
+# ^ Problem: Inconsistent ID style (numeric), output missing
+
+clean <- raw[complete.cases(raw), ]
+clean$date <- as.Date(clean$date)
+
+# (No annotation here - important step is undocumented!)
+aggregated <- aggregate(amount ~ region, clean, sum)
+
+#put label:"final step"
+# ^ Problem: Missing ID, vague label, no input/output
+
+write.csv(aggregated, "regional_sales.csv")
+```
+
+**Resulting diagram (disconnected, unclear):**
+
+```{r before-diagram, echo=FALSE, results='asis', eval=TRUE}
+library(putior)
+before_workflow <- data.frame(
+  file_name = rep("etl_pipeline.R", 3),
+  id = c("step1", "2", "final_step_1"),
+  label = c("step1", "2", "final step"),
+  node_type = c("process", "process", "process"),
+  input = c(NA, "data", NA),
+  output = c("data", NA, NA),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(before_workflow, theme = "github", output = "raw"))
+cat("\n```\n")
+```
+
+### Step-by-Step Improvement
+
+**Step 1: Audit current state**
+```{r eval=FALSE}
+workflow <- put("etl_pipeline.R", validate = TRUE)
+print(workflow)  # See what's detected
+# Validation warnings will highlight issues
+```
+
+**Step 2: Use auto-detection to find gaps**
+```{r eval=FALSE}
+auto <- put_auto("etl_pipeline.R")
+print(auto)  # Shows file I/O that wasn't annotated
+```
+
+**Step 3: Generate annotation templates**
+```{r eval=FALSE}
+put_generate("etl_pipeline.R")
+# Outputs suggested annotations based on code patterns
+```
+
+**Step 4: Apply fixes with naming conventions**
+
+| Convention | Example | Benefit |
+|------------|---------|---------|
+| Descriptive IDs | `extract_sales` not `step1` | Self-documenting |
+| Verb + noun labels | "Load Sales Data" | Clear action |
+| Full file names | `sales_2024.csv` not `data` | Traceable |
+| Consistent style | `snake_case` IDs | Maintainable |
+
+### After: Clean Annotations
+
+```r
+# etl_pipeline.R - improved annotations
+
+#put id:"extract_sales", label:"Load Sales Data", \
+#    node_type:"input", output:"sales_2024.csv"
+raw <- read.csv("sales_2024.csv")
+
+#put id:"clean_data", label:"Clean & Validate", \
+#    input:"sales_2024.csv", output:"clean_sales.internal"
+clean <- raw[complete.cases(raw), ]
+clean$date <- as.Date(clean$date)
+
+#put id:"aggregate_regions", label:"Aggregate by Region", \
+#    input:"clean_sales.internal", output:"aggregated.internal"
+aggregated <- aggregate(amount ~ region, clean, sum)
+
+#put id:"export_results", label:"Export Regional Report", \
+#    node_type:"output", input:"aggregated.internal", output:"regional_sales.csv"
+write.csv(aggregated, "regional_sales.csv")
+```
+
+**Resulting diagram (connected, clear flow):**
+
+```{r after-diagram, echo=FALSE, results='asis', eval=TRUE}
+after_workflow <- data.frame(
+  file_name = rep("etl_pipeline.R", 4),
+  id = c("extract_sales", "clean_data", "aggregate_regions", "export_results"),
+  label = c("Load Sales Data", "Clean & Validate", "Aggregate by Region", "Export Regional Report"),
+  node_type = c("input", "process", "process", "output"),
+  input = c(NA, "sales_2024.csv", "clean_sales.internal", "aggregated.internal"),
+  output = c("sales_2024.csv", "clean_sales.internal", "aggregated.internal", "regional_sales.csv"),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(after_workflow, theme = "github", output = "raw"))
+cat("\n```\n")
+```
+
+### Key Improvements Made
+
+| Before | After | Why |
+|--------|-------|-----|
+| `id:"step1"` | `id:"extract_sales"` | Descriptive, searchable |
+| `output:"data"` | `output:"sales_2024.csv"` | Actual file name |
+| Missing annotation | Added for aggregation step | Complete workflow |
+| `label:"final step"` | `label:"Export Regional Report"` | Specific action |
+| No node_type | Explicit input/process/output | Proper diagram shapes |
+
+### Workflow for Legacy Code
+
+For existing codebases without any annotations:
+
+```{r eval=FALSE}
+# 1. Start with auto-detection
+auto_workflow <- put_auto("./legacy_code/", recursive = TRUE)
+put_diagram(auto_workflow)  # Get initial picture
+
+# 2. Generate annotation suggestions
+put_generate("./legacy_code/", output = "clipboard")
+# Paste into files and customize
+
+# 3. Add manual annotations for key files
+# Focus on main entry points first
+
+# 4. Merge for complete picture
+final <- put_merge("./legacy_code/",
+                   merge_strategy = "supplement",
+                   recursive = TRUE)
+put_diagram(final, show_source_info = TRUE)
+```
+
+---
+
 ## Tips for Large Workflows
 
 When working with complex workflows:
