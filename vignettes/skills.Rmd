@@ -1,0 +1,30 @@
+---
+title: "AI Skills Reference"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{AI Skills Reference}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo=FALSE, results='asis'}
+skills_path <- system.file("SKILLS.md", package = "putior")
+if (skills_path == "") {
+
+  # Fallback for when building vignette before installation
+  skills_path <- file.path("..", "inst", "SKILLS.md")
+}
+if (file.exists(skills_path)) {
+  lines <- readLines(skills_path, warn = FALSE)
+  # Skip YAML frontmatter (lines between --- markers)
+  if (length(lines) > 0 && lines[1] == "---") {
+    yaml_end <- which(lines[-1] == "---")[1] + 1
+    if (!is.na(yaml_end)) {
+      lines <- lines[(yaml_end + 1):length(lines)]
+    }
+  }
+  cat(lines, sep = "\n")
+} else {
+  cat("Skills file not found. See `putior_skills()` for the full reference.")
+}
+```
