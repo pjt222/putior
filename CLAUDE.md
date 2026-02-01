@@ -116,6 +116,91 @@ putior is an R package that extracts structured annotations from source code fil
 16. **LLM Detection Patterns (Issue #10)** - 54 patterns for modern AI/ML libraries (ellmer, langchain, transformers, etc.)
 17. **Multi-Language Comment Syntax** - Support for 30+ languages with automatic comment prefix detection (`#`, `--`, `//`, `%`)
 18. **Full Language Detection Patterns** - Added auto-detection patterns for 10 new languages (JS, TS, Go, Rust, Java, C, C++, MATLAB, Ruby, Lua), bringing total to 15 languages with 862 patterns
+19. **MCP Server Integration** - Expose putior functions as MCP tools for AI assistants (Claude Code, Claude Desktop)
+
+## MCP Server Integration
+
+### Overview
+putior exposes its functionality as MCP (Model Context Protocol) tools, enabling AI assistants like Claude Code and Claude Desktop to directly call workflow annotation and diagram generation functions.
+
+### Quick Setup
+
+**Claude Code (WSL/Linux/macOS):**
+```bash
+claude mcp add putior -- Rscript -e "putior::putior_mcp_server()"
+```
+
+**Claude Desktop (Windows):**
+Add to `%APPDATA%\Claude\claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "putior": {
+      "command": "Rscript",
+      "args": ["-e", "putior::putior_mcp_server()"]
+    }
+  }
+}
+```
+
+### Available MCP Tools (16 tools)
+
+**Core Workflow:**
+| Tool | Description |
+|------|-------------|
+| `put` | Scan files for PUT annotations |
+| `put_diagram` | Generate Mermaid diagrams |
+| `put_auto` | Auto-detect workflow from code |
+| `put_generate` | Generate annotation suggestions |
+| `put_merge` | Merge manual + auto annotations |
+
+**Reference/Discovery:**
+| Tool | Description |
+|------|-------------|
+| `get_comment_prefix` | Get comment prefix for extension |
+| `get_supported_extensions` | List supported extensions |
+| `list_supported_languages` | List supported languages |
+| `get_detection_patterns` | Get auto-detection patterns |
+| `get_diagram_themes` | List available themes |
+| `putior_skills` | AI assistant documentation |
+| `putior_help` | Quick reference help |
+| `set_putior_log_level` | Configure logging |
+
+**Utilities:**
+| Tool | Description |
+|------|-------------|
+| `is_valid_put_annotation` | Validate annotation syntax |
+| `split_file_list` | Parse file lists |
+| `ext_to_language` | Extension to language name |
+
+### Usage Examples
+
+**From Claude Code:**
+```
+Use the put tool to scan ./R/ for PUT annotations
+Then use put_diagram to create a visualization
+```
+
+**Programmatic access:**
+```r
+# Start MCP server (runs until terminated)
+putior::putior_mcp_server()
+
+# Get tool definitions for custom integration
+tools <- putior::putior_mcp_tools()
+
+# Get specific tools only
+tools <- putior_mcp_tools(include = c("put", "put_diagram"))
+```
+
+### Dependencies
+- **mcptools**: MCP server framework - `remotes::install_github("posit-dev/mcptools")`
+- **ellmer**: Tool definition - `install.packages("ellmer")`
+- Both are in Suggests (optional) - MCP functions fail gracefully with helpful messages if not installed
+
+### Key Files
+- `R/mcp.R` - MCP server and tool definitions
+- `tests/testthat/test-mcp.R` - MCP tests
 
 ## Multi-Language Comment Syntax Support
 

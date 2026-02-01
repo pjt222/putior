@@ -12,6 +12,18 @@ documentation: https://pjt222.github.io/putior/
 
 Skills for AI coding assistants to help users document and visualize code workflows.
 
+## Direct Access (Non-R Environments)
+
+Access these skills without running R:
+
+| Method | URL |
+|--------|-----|
+| Web Page | https://pjt222.github.io/putior/articles/skills.html |
+| Raw Markdown | https://raw.githubusercontent.com/pjt222/putior/main/inst/SKILLS.md |
+| GitHub View | https://github.com/pjt222/putior/blob/main/inst/SKILLS.md |
+
+For R users: `putior_skills(output = "raw")` returns this content as a string.
+
 ## Quick Start
 
 ```r

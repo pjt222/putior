@@ -159,7 +159,7 @@ home:
 
 navbar:
   structure:
-    left: [intro, reference, articles, cheatsheet, news]
+    left: [intro, reference, articles, skills, cheatsheet, news]
     right: [search, github]
   components:
     home:
@@ -181,6 +181,10 @@ navbar:
         href: articles/showcase.html
       - text: Troubleshooting Guide
         href: articles/troubleshooting.html
+    skills:
+      text: AI Skills
+      icon: fa-robot
+      href: articles/skills.html
     cheatsheet:
       text: Cheatsheet
       icon: fa-file-pdf
