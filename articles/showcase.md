@@ -685,7 +685,7 @@ flowchart TD
     final[Final Model Training - Python]
     evaluate[Model Evaluation - Python]
     report[[Model Report - R]]
-    export[[Export for Production - Python]]
+    deploy_export[[Export for Production - Python]]
 
     %% Connections
     load --> eda
@@ -701,7 +701,7 @@ flowchart TD
     evaluate --> report
     train --> report
     eda --> report
-    final --> export
+    final --> deploy_export
 
     %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
@@ -716,7 +716,7 @@ flowchart TD
     class evaluate processStyle
     classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
     class report outputStyle
-    class export outputStyle
+    class deploy_export outputStyle
 ```
 
 This example demonstrates: - **R for data handling**: Loading, EDA,

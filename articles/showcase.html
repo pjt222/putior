@@ -842,7 +842,7 @@ and R for reporting:</p>
     final[Final Model Training - Python]
     evaluate[Model Evaluation - Python]
     report[[Model Report - R]]
-    export[[Export for Production - Python]]
+    deploy_export[[Export for Production - Python]]
 
     %% Connections
     load --&gt; eda
@@ -858,7 +858,7 @@ and R for reporting:</p>
     evaluate --&gt; report
     train --&gt; report
     eda --&gt; report
-    final --&gt; export
+    final --&gt; deploy_export
 
     %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
@@ -873,7 +873,7 @@ and R for reporting:</p>
     class evaluate processStyle
     classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
     class report outputStyle
-    class export outputStyle</code></pre>
+    class deploy_export outputStyle</code></pre>
 <p>This example demonstrates: - <strong>R for data handling</strong>:
 Loading, EDA, feature engineering, splitting - <strong>Python for
 ML</strong>: XGBoost training, hyperparameter search, evaluation -
