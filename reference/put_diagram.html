@@ -111,7 +111,7 @@ the flow of data through your analysis pipeline."><meta property="og:image" cont
 
     <a class="navbar-brand me-2" href="../index.html">putior</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -124,7 +124,13 @@ the flow of data through your analysis pipeline."><meta property="og:image" cont
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started with putior</a></li>
+    <li><a class="dropdown-item" href="../articles/features-tour.html">Features Tour</a></li>
+    <li><a class="dropdown-item" href="../articles/api-reference.html">API Reference</a></li>
+    <li><a class="dropdown-item" href="../articles/showcase.html">Showcase: Real-World Examples</a></li>
+    <li><a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting Guide</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="../articles/skills.html"><span class="fa fa-robot"></span> AI Skills</a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/pjt222/putior/raw/main/inst/cheatsheet/putior-cheatsheet.pdf"><span class="fa fa-file-pdf"></span> Cheatsheet</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -159,7 +165,12 @@ the flow of data through your analysis pipeline.</p>
 <span>  show_artifacts <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  show_workflow_boundaries <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  style_nodes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  theme <span class="op">=</span> <span class="st">"light"</span></span>
+<span>  theme <span class="op">=</span> <span class="st">"light"</span>,</span>
+<span>  show_source_info <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  source_info_style <span class="op">=</span> <span class="st">"inline"</span>,</span>
+<span>  enable_clicks <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  click_protocol <span class="op">=</span> <span class="st">"vscode"</span>,</span>
+<span>  log_level <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -168,7 +179,7 @@ the flow of data through your analysis pipeline.</p>
 
 
 <dl><dt id="arg-workflow">workflow<a class="anchor" aria-label="anchor" href="#arg-workflow"></a></dt>
-<dd><p>Data frame returned by <code><a href="put.html">put</a>()</code> containing workflow nodes</p></dd>
+<dd><p>Data frame returned by <code><a href="put.html">put()</a></code> containing workflow nodes</p></dd>
 
 
 <dt id="arg-output">output<a class="anchor" aria-label="anchor" href="#arg-output"></a></dt>
@@ -221,6 +232,37 @@ workflow boundary styling (icons, colors). When FALSE, they render as regular no
 <dd><p>Character string specifying color theme. Options:
 "light" (default), "dark", "auto" (GitHub adaptive), "minimal", "github"</p></dd>
 
+
+<dt id="arg-show-source-info">show_source_info<a class="anchor" aria-label="anchor" href="#arg-show-source-info"></a></dt>
+<dd><p>Logical indicating whether to display source file
+information in diagram nodes. When TRUE, each node shows its originating
+file name. Default is FALSE for backward compatibility.</p></dd>
+
+
+<dt id="arg-source-info-style">source_info_style<a class="anchor" aria-label="anchor" href="#arg-source-info-style"></a></dt>
+<dd><p>Character string specifying how to display source info:</p><ul><li><p>"inline" - Append file name to node labels (default)</p></li>
+<li><p>"subgraph" - Group nodes by source file into Mermaid subgraphs</p></li>
+</ul></dd>
+
+
+<dt id="arg-enable-clicks">enable_clicks<a class="anchor" aria-label="anchor" href="#arg-enable-clicks"></a></dt>
+<dd><p>Logical indicating whether to add click directives to nodes.
+When TRUE, nodes become clickable links that open the source file in an editor.
+Default is FALSE for backward compatibility.</p></dd>
+
+
+<dt id="arg-click-protocol">click_protocol<a class="anchor" aria-label="anchor" href="#arg-click-protocol"></a></dt>
+<dd><p>Character string specifying the URL protocol for clickable nodes:</p><ul><li><p>"vscode" - VS Code editor (vscode://file/path:line) (default)</p></li>
+<li><p>"file" - Standard file:// protocol</p></li>
+<li><p>"rstudio" - RStudio IDE (rstudio://open-file?path=)</p></li>
+</ul></dd>
+
+
+<dt id="arg-log-level">log_level<a class="anchor" aria-label="anchor" href="#arg-log-level"></a></dt>
+<dd><p>Character string specifying log verbosity for this call.
+Overrides the global option <code>putior.log_level</code> when specified.
+Options: "DEBUG", "INFO", "WARN", "ERROR". See <code><a href="set_putior_log_level.html">set_putior_log_level</a></code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -255,6 +297,18 @@ workflow boundary styling (icons, colors). When FALSE, they render as regular no
 <span class="r-in"><span><span class="co"># For use in knitr/pkgdown - returns raw mermaid code</span></span></span>
 <span class="r-in"><span><span class="co"># Use within a code chunk with results='asis'</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"```mermaid\n"</span>, <span class="fu">put_diagram</span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span>, <span class="st">"\n```\n"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Show source file info inline in nodes</span></span></span>
+<span class="r-in"><span><span class="fu">put_diagram</span><span class="op">(</span><span class="va">workflow</span>, show_source_info <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Group nodes by source file using subgraphs</span></span></span>
+<span class="r-in"><span><span class="fu">put_diagram</span><span class="op">(</span><span class="va">workflow</span>, show_source_info <span class="op">=</span> <span class="cn">TRUE</span>, source_info_style <span class="op">=</span> <span class="st">"subgraph"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Enable clickable nodes (opens in VS Code)</span></span></span>
+<span class="r-in"><span><span class="fu">put_diagram</span><span class="op">(</span><span class="va">workflow</span>, enable_clicks <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Enable clickable nodes with RStudio protocol</span></span></span>
+<span class="r-in"><span><span class="fu">put_diagram</span><span class="op">(</span><span class="va">workflow</span>, enable_clicks <span class="op">=</span> <span class="cn">TRUE</span>, click_protocol <span class="op">=</span> <span class="st">"rstudio"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
@@ -267,7 +321,7 @@ workflow boundary styling (icons, colors). When FALSE, they render as regular no
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

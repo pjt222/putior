@@ -109,7 +109,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">putior</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -122,7 +122,13 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started with putior</a></li>
+    <li><a class="dropdown-item" href="../articles/features-tour.html">Features Tour</a></li>
+    <li><a class="dropdown-item" href="../articles/api-reference.html">API Reference</a></li>
+    <li><a class="dropdown-item" href="../articles/showcase.html">Showcase: Real-World Examples</a></li>
+    <li><a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting Guide</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="../articles/skills.html"><span class="fa fa-robot"></span> AI Skills</a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/pjt222/putior/raw/main/inst/cheatsheet/putior-cheatsheet.pdf"><span class="fa fa-file-pdf"></span> Cheatsheet</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -142,8 +148,7 @@
 
       <div class="section-desc"><p>Main functions for extracting annotations and creating diagrams</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -153,20 +158,168 @@
           <code><a href="put.html">put()</a></code>
 
         </dt>
-        <dd>Scan R and Python Files for PUT Annotations</dd>
-      </dl><dl><dt>
+        <dd>Scan Source Files for PUT Annotations</dd>
+
+        <dt>
 
           <code><a href="put_diagram.html">put_diagram()</a></code>
 
         </dt>
         <dd>Create Mermaid Diagram from PUT Workflow</dd>
       </dl></div><div class="section level2">
+      <h2 id="auto-annotation">Auto-Annotation<a class="anchor" aria-label="anchor" href="#auto-annotation"></a></h2>
+
+      <div class="section-desc"><p>Automatic workflow detection and annotation generation</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="put_auto.html">put_auto()</a></code>
+
+        </dt>
+        <dd>Auto-Annotation Functions for putior</dd>
+
+        <dt>
+
+          <code><a href="put_generate.html">put_generate()</a></code>
+
+        </dt>
+        <dd>Generate PUT Annotation Comments</dd>
+
+        <dt>
+
+          <code><a href="put_merge.html">put_merge()</a></code>
+
+        </dt>
+        <dd>Merge Manual and Auto-Detected Annotations</dd>
+      </dl></div><div class="section level2">
+      <h2 id="language-support">Language Support<a class="anchor" aria-label="anchor" href="#language-support"></a></h2>
+
+      <div class="section-desc"><p>Multi-language comment syntax and detection patterns</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="get_comment_prefix.html">get_comment_prefix()</a></code>
+
+        </dt>
+        <dd>Get Comment Prefix for File Extension</dd>
+
+        <dt>
+
+          <code><a href="get_supported_extensions.html">get_supported_extensions()</a></code>
+
+        </dt>
+        <dd>Get All Supported File Extensions</dd>
+
+        <dt>
+
+          <code><a href="list_supported_languages.html">list_supported_languages()</a></code>
+
+        </dt>
+        <dd>List All Supported Languages</dd>
+
+        <dt>
+
+          <code><a href="get_detection_patterns.html">get_detection_patterns()</a></code>
+
+        </dt>
+        <dd>Get Detection Patterns for a Language</dd>
+
+        <dt>
+
+          <code><a href="ext_to_language.html">ext_to_language()</a></code>
+
+        </dt>
+        <dd>Get Language Name from File Extension</dd>
+      </dl></div><div class="section level2">
+      <h2 id="mcp-acp-integration">MCP/ACP Integration<a class="anchor" aria-label="anchor" href="#mcp-acp-integration"></a></h2>
+
+      <div class="section-desc"><p>AI assistant integration via Model Context Protocol and Agent Communication Protocol</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="putior_mcp_server.html">putior_mcp_server()</a></code>
+
+        </dt>
+        <dd>Start putior MCP Server</dd>
+
+        <dt>
+
+          <code><a href="putior_mcp_tools.html">putior_mcp_tools()</a></code>
+
+        </dt>
+        <dd>Get putior MCP Tool Definitions</dd>
+
+        <dt>
+
+          <code><a href="putior_acp_server.html">putior_acp_server()</a></code>
+
+        </dt>
+        <dd>Start putior ACP Server</dd>
+
+        <dt>
+
+          <code><a href="putior_acp_manifest.html">putior_acp_manifest()</a></code>
+
+        </dt>
+        <dd>Get putior ACP Agent Manifest</dd>
+
+        <dt>
+
+          <code><a href="putior_skills.html">putior_skills()</a></code>
+
+        </dt>
+        <dd>Access putior Skills for AI Assistants</dd>
+
+        <dt>
+
+          <code><a href="putior_help.html">putior_help()</a></code>
+
+        </dt>
+        <dd>Quick Reference Help for putior</dd>
+      </dl></div><div class="section level2">
+      <h2 id="interactive-tools">Interactive Tools<a class="anchor" aria-label="anchor" href="#interactive-tools"></a></h2>
+
+      <div class="section-desc"><p>Interactive exploration and debugging</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="run_sandbox.html">run_sandbox()</a></code>
+
+        </dt>
+        <dd>Launch putior Interactive Sandbox</dd>
+
+        <dt>
+
+          <code><a href="set_putior_log_level.html">set_putior_log_level()</a></code>
+
+        </dt>
+        <dd>Set putior Log Level</dd>
+      </dl></div><div class="section level2">
       <h2 id="helper-functions">Helper Functions<a class="anchor" aria-label="anchor" href="#helper-functions"></a></h2>
 
       <div class="section-desc"><p>Supporting functions for processing annotations</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -177,25 +330,29 @@
 
         </dt>
         <dd>Extract PUT Annotation Properties</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="validate_annotation.html">validate_annotation()</a></code>
 
         </dt>
         <dd>Validate PUT annotation for common issues</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="is_valid_put_annotation.html">is_valid_put_annotation()</a></code>
 
         </dt>
         <dd>Validate PUT annotation syntax</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="process_single_file.html">process_single_file()</a></code>
 
         </dt>
         <dd>Process a single file for PUT annotations</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="split_file_list.html">split_file_list()</a></code>
 
@@ -206,8 +363,7 @@
 
       <div class="section-desc"><p>Functions for creating Mermaid diagrams</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -218,43 +374,50 @@
 
         </dt>
         <dd>Generate node definitions for mermaid diagram</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="generate_connections.html">generate_connections()</a></code>
 
         </dt>
         <dd>Generate connections between nodes</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="generate_node_styling.html">generate_node_styling()</a></code>
 
         </dt>
         <dd>Generate node styling based on node types and theme</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="create_artifact_nodes.html">create_artifact_nodes()</a></code>
 
         </dt>
         <dd>Create artifact nodes for data files</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="get_diagram_themes.html">get_diagram_themes()</a></code>
 
         </dt>
         <dd>Get available themes for put_diagram</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="get_theme_colors.html">get_theme_colors()</a></code>
 
         </dt>
         <dd>Get color schemes for different themes (FIXED VERSION)</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="get_node_shape.html">get_node_shape()</a></code>
 
         </dt>
         <dd>Get node shape characters based on node type</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="sanitize_node_id.html">sanitize_node_id()</a></code>
 
@@ -265,8 +428,7 @@
 
       <div class="section-desc"><p>Functions for handling results</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -277,19 +439,22 @@
 
         </dt>
         <dd>Convert results list to data frame</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="empty_result_df.html">empty_result_df()</a></code>
 
         </dt>
         <dd>Create empty result data frame</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="handle_output.html">handle_output()</a></code>
 
         </dt>
         <dd>Handle diagram output to different destinations</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="parse_comma_separated_pairs.html">parse_comma_separated_pairs()</a></code>
 
@@ -305,7 +470,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

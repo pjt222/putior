@@ -109,7 +109,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">putior</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -122,7 +122,13 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started with putior</a></li>
+    <li><a class="dropdown-item" href="../articles/features-tour.html">Features Tour</a></li>
+    <li><a class="dropdown-item" href="../articles/api-reference.html">API Reference</a></li>
+    <li><a class="dropdown-item" href="../articles/showcase.html">Showcase: Real-World Examples</a></li>
+    <li><a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting Guide</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="../articles/skills.html"><span class="fa fa-robot"></span> AI Skills</a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/pjt222/putior/raw/main/inst/cheatsheet/putior-cheatsheet.pdf"><span class="fa fa-file-pdf"></span> Cheatsheet</a></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -139,7 +145,90 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.0.9000" id="putior-0109000-development-version">putior 0.1.0.9000 (development version)<a class="anchor" aria-label="anchor" href="#putior-0109000-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.0.9000" id="putior-0209000-development-version">putior 0.2.0.9000 (development version)<a class="anchor" aria-label="anchor" href="#putior-0209000-development-version"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-2-0-9000">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-2-0-9000"></a></h3>
+<div class="section level4">
+<h4 id="auto-annotation-feature-github-issue-0-2-0-9000">Auto-Annotation Feature (GitHub Issue <a href="https://github.com/pjt222/putior/issues/5" class="external-link">#5</a>)<a class="anchor" aria-label="anchor" href="#auto-annotation-feature-github-issue-0-2-0-9000"></a></h4>
+<ul><li>Added <code><a href="../reference/put_auto.html">put_auto()</a></code> function for automatic workflow detection from code analysis
+<ul><li>Analyzes source code to detect file inputs, outputs, and dependencies</li>
+<li>Returns data frame compatible with <code><a href="../reference/put_diagram.html">put_diagram()</a></code> for instant visualization</li>
+<li>Works without requiring explicit PUT annotations in code</li>
+<li>Supports R, Python, SQL, Shell, and Julia files</li>
+</ul></li>
+<li>Added <code><a href="../reference/put_generate.html">put_generate()</a></code> function for generating PUT annotation comments
+<ul><li>Creates suggested <code>#put</code> annotation text based on code analysis (roxygen2-style)</li>
+<li>Supports both single-line and multiline annotation styles</li>
+<li>Can output to console, clipboard, or file</li>
+<li>Optional direct insertion into source files</li>
+</ul></li>
+<li>Added <code><a href="../reference/put_merge.html">put_merge()</a></code> function for combining manual and auto-detected annotations
+<ul><li>Three merge strategies: “manual_priority”, “supplement”, “union”</li>
+<li>Allows hybrid workflows with manual control over key files</li>
+</ul></li>
+<li>Added <code><a href="../reference/get_detection_patterns.html">get_detection_patterns()</a></code> for viewing/customizing detection patterns</li>
+<li>Added <code><a href="../reference/list_supported_languages.html">list_supported_languages()</a></code> to show supported programming languages</li>
+</ul></div>
+<div class="section level4">
+<h4 id="detection-patterns-0-2-0-9000">Detection Patterns<a class="anchor" aria-label="anchor" href="#detection-patterns-0-2-0-9000"></a></h4>
+<ul><li>Comprehensive pattern library for file I/O detection:
+<ul><li>
+<strong>R</strong>: Base R, readr, data.table, readxl, jsonlite, arrow, haven, yaml, graphics</li>
+<li>
+<strong>Python</strong>: pandas, numpy, json, pickle, yaml, matplotlib, PIL, cv2, polars</li>
+<li>
+<strong>SQL</strong>: FROM/JOIN tables, LOAD DATA, COPY commands</li>
+<li>
+<strong>Shell</strong>: cat, redirections, source, tee</li>
+<li>
+<strong>Julia</strong>: CSV.jl, DataFrames, JSON.jl, JLD2, Arrow.jl, Plots.jl</li>
+</ul></li>
+</ul></div>
+<div class="section level4">
+<h4 id="examples-0-2-0-9000">Examples<a class="anchor" aria-label="anchor" href="#examples-0-2-0-9000"></a></h4>
+<ul><li>Added <code>inst/examples/auto-annotation-example.R</code> demonstrating all auto-annotation features</li>
+</ul></div>
+<div class="section level4">
+<h4 id="metadata-display-github-issue-0-2-0-9000">Metadata Display (GitHub Issue <a href="https://github.com/pjt222/putior/issues/3" class="external-link">#3</a>)<a class="anchor" aria-label="anchor" href="#metadata-display-github-issue-0-2-0-9000"></a></h4>
+<ul><li>Added <code>show_source_info</code> parameter to <code><a href="../reference/put_diagram.html">put_diagram()</a></code> for displaying source file information in diagram nodes</li>
+<li>Added <code>source_info_style</code> parameter with two display options:
+<ul><li>
+<code>"inline"</code> (default): Appends file name as small text below node labels</li>
+<li>
+<code>"subgraph"</code>: Groups nodes by source file into Mermaid subgraphs</li>
+</ul></li>
+</ul></div>
+<div class="section level4">
+<h4 id="clickable-hyperlinks-github-issue-0-2-0-9000">Clickable Hyperlinks (GitHub Issue <a href="https://github.com/pjt222/putior/issues/4" class="external-link">#4</a>)<a class="anchor" aria-label="anchor" href="#clickable-hyperlinks-github-issue-0-2-0-9000"></a></h4>
+<ul><li>Added <code>enable_clicks</code> parameter to <code><a href="../reference/put_diagram.html">put_diagram()</a></code> for making nodes clickable</li>
+<li>Added <code>click_protocol</code> parameter with three protocol options:
+<ul><li>
+<code>"vscode"</code> (default): Opens files in VS Code (vscode://file/path:line)</li>
+<li>
+<code>"file"</code>: Standard <a href="file://" class="uri">file://</a> protocol for system default handler</li>
+<li>
+<code>"rstudio"</code>: Opens files in RStudio (rstudio://open-file?path=)</li>
+</ul></li>
+<li>Click directives include line numbers when available from annotations</li>
+<li>Tooltips are generated automatically for each clickable node</li>
+</ul></div>
+<div class="section level4">
+<h4 id="new-helper-functions-0-2-0-9000">New Helper Functions<a class="anchor" aria-label="anchor" href="#new-helper-functions-0-2-0-9000"></a></h4>
+<ul><li>Added <code><a href="../reference/normalize_path_for_url.html">normalize_path_for_url()</a></code> for cross-platform path handling</li>
+<li>Added <code><a href="../reference/generate_click_url.html">generate_click_url()</a></code> for creating protocol-specific URLs</li>
+<li>Added <code><a href="../reference/generate_click_directives.html">generate_click_directives()</a></code> for Mermaid click action generation</li>
+<li>Added <code><a href="../reference/generate_file_subgraphs.html">generate_file_subgraphs()</a></code> for file-based node grouping</li>
+</ul></div>
+<div class="section level4">
+<h4 id="examples-0-2-0-9000-1">Examples<a class="anchor" aria-label="anchor" href="#examples-0-2-0-9000-1"></a></h4>
+<ul><li>Added <code>inst/examples/interactive-diagrams-example.R</code> demonstrating both features</li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="backward-compatibility-0-2-0-9000">Backward Compatibility<a class="anchor" aria-label="anchor" href="#backward-compatibility-0-2-0-9000"></a></h3>
+<ul><li>All new parameters default to FALSE/previous behavior</li>
+<li>Existing code continues to work unchanged</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="putior-010">putior 0.1.0<a class="anchor" aria-label="anchor" href="#putior-010"></a></h2><p class="text-muted">CRAN release: 2025-06-19</p>
@@ -166,7 +255,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

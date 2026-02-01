@@ -109,7 +109,7 @@
 
     <a class="navbar-brand me-2" href="index.html">putior</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -122,7 +122,13 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/getting-started.html">Getting Started with putior</a></li>
+    <li><a class="dropdown-item" href="articles/features-tour.html">Features Tour</a></li>
+    <li><a class="dropdown-item" href="articles/api-reference.html">API Reference</a></li>
+    <li><a class="dropdown-item" href="articles/showcase.html">Showcase: Real-World Examples</a></li>
+    <li><a class="dropdown-item" href="articles/troubleshooting.html">Troubleshooting Guide</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="articles/skills.html"><span class="fa fa-robot"></span> AI Skills</a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/pjt222/putior/raw/main/inst/cheatsheet/putior-cheatsheet.pdf"><span class="fa fa-file-pdf"></span> Cheatsheet</a></li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json"></form></li>
@@ -143,7 +149,7 @@
 <p>This file provides guidance to AI assistants when working with code in this repository.</p>
 <div class="section level2">
 <h2 id="repository-overview">Repository Overview<a class="anchor" aria-label="anchor" href="#repository-overview"></a></h2>
-<p>putior is an R package that extracts structured annotations from source code files and generates Mermaid flowchart diagrams for visualizing workflows and data pipelines. It supports R, Python, SQL, Shell, and Julia files.</p>
+<p>putior is an R package that extracts structured annotations from source code files and generates Mermaid flowchart diagrams for visualizing workflows and data pipelines. It supports 30+ programming languages including R, Python, SQL, JavaScript, TypeScript, Go, Rust, and more, with automatic comment syntax detection.</p>
 <p><strong>Status</strong>: Production-ready, passing all checks, excellent documentation</p>
 </div>
 <div class="section level2">
@@ -154,7 +160,7 @@
 <code>.Renviron</code>: Contains Pandoc path for vignette building: <code>RSTUDIO_PANDOC="C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools"</code>
 </li>
 <li>
-<code>.Rprofile</code>: Contains renv activation and conditional acquaint MCP session loading</li>
+<code>.Rprofile</code>: Contains renv activation and conditional mcptools MCP session loading</li>
 <li>
 <strong>NEVER delete these files</strong> - they are essential for development workflow</li>
 </ul></div>
@@ -218,19 +224,29 @@
 <li>
 <strong>R-hub</strong>: ✅ 4/5 platforms PASS (linux, macos, windows, ubuntu-release; nosuggests expected fail)</li>
 <li>All vignettes build successfully with Pandoc</li>
-<li>All tests pass (338 tests including multiline annotation support)</li>
+<li>All tests pass (1,140+ tests including multiline annotation, auto-detection, logging, LLM patterns, and multi-language support)</li>
 <li>Comprehensive multiline PUT annotation support implemented</li>
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-quality">Documentation Quality<a class="anchor" aria-label="anchor" href="#documentation-quality"></a></h3>
 <ul><li>Vignette rating: <strong>9.2/10</strong> - Exceptional quality</li>
-<li>Comprehensive getting-started guide with real-world examples</li>
+<li>
+<strong>4 comprehensive vignettes</strong>:
+<ul><li>
+<code>getting-started.Rmd</code> - Introduction and basic usage</li>
+<li>
+<code>features-tour.Rmd</code> - Advanced features guide (auto-annotation, interactive diagrams, logging)</li>
+<li>
+<code>api-reference.Rmd</code> - Complete function documentation with parameter tables</li>
+<li>
+<code>showcase.Rmd</code> - Real-world examples (ETL, ML, bioinformatics, finance, web scraping)</li>
+</ul></li>
 <li>Complete self-documentation workflow</li>
 <li>README with auto-generated examples capability</li>
 </ul></div>
 <div class="section level3">
 <h3 id="cicd-considerations">CI/CD Considerations<a class="anchor" aria-label="anchor" href="#cicd-considerations"></a></h3>
-<ul><li>GitHub Actions may fail if development dependencies (like <code>acquaint</code>) aren’t available</li>
+<ul><li>GitHub Actions may fail if development dependencies (like <code>mcptools</code>) aren’t available</li>
 <li>Solution: Use conditional loading with <code><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace()</a></code> in <code>.Rprofile</code>
 </li>
 <li>Spell check passes cleanly with comprehensive WORDLIST</li>
@@ -248,14 +264,14 @@
 <div class="section level3">
 <h3 id="development-only-tools-not-in-renvlock">Development-Only Tools (NOT in renv.lock)<a class="anchor" aria-label="anchor" href="#development-only-tools-not-in-renvlock"></a></h3>
 <ul><li>
-<strong>acquaint</strong>: MCP server for AI-assisted development</li>
+<strong>mcptools</strong>: MCP server for AI-assisted development</li>
 <li>
-<strong>btw</strong>: Dependency of acquaint</li>
-<li>Install separately when needed: <code>remotes::install_github("posit-dev/acquaint")</code>
+<strong>btw</strong>: Dependency of mcptools</li>
+<li>Install separately when needed: <code>remotes::install_github("posit-dev/mcptools")</code>
 </li>
 <li>Loaded conditionally in .Rprofile if available</li>
 <li>Excluded from renv.lock to avoid GitHub credential warnings for users</li>
-<li>Configure renv to ignore: <code>renv::settings$ignored.packages(c("acquaint", "btw"))</code>
+<li>Configure renv to ignore: <code>renv::settings$ignored.packages(c("mcptools", "btw"))</code>
 </li>
 </ul></div>
 </div>
@@ -264,7 +280,7 @@
 <ol style="list-style-type: decimal"><li>
 <strong>Multiline annotation support</strong> - Implemented backslash continuation syntax</li>
 <li>
-<strong>Hex sticker organization</strong> - Clean separation of handcrafted vs generated assets<br></li>
+<strong>Hex sticker organization</strong> - Clean separation of handcrafted vs generated assets</li>
 <li>
 <strong>Development environment restoration</strong> - Proper <code>.Renviron</code>/<code>.Rprofile</code> setup</li>
 <li>
@@ -277,7 +293,682 @@
 <strong>Spelling compliance</strong> - Complete WORDLIST for technical terms and proper names</li>
 <li>
 <strong>Clean renv.lock</strong> - Removed development-only GitHub dependencies to eliminate credential warnings</li>
+<li>
+<strong>Variable reference feature</strong> - Comprehensive example demonstrating <code>.internal</code> extension usage</li>
+<li>
+<strong>Metadata Display (Issue #3)</strong> - Show source file info in diagram nodes with <code>show_source_info</code> parameter</li>
+<li>
+<strong>Clickable Hyperlinks (Issue #4)</strong> - Make nodes clickable with <code>enable_clicks</code> and <code>click_protocol</code> parameters</li>
+<li>
+<strong>Auto-Annotation Feature (Issue #5)</strong> - Automatic workflow detection from code analysis (roxygen2-style)</li>
+<li>
+<strong>Structured Logging</strong> - Optional logger package integration for debugging annotation parsing and diagram generation</li>
+<li>
+<strong>Documentation Suite (Issues #5-9)</strong> - Features Tour, API Reference, and expanded Showcase vignettes</li>
+<li>
+<strong>Shiny Sandbox Enhancements (Issue #7)</strong> - Copy-to-clipboard button and optional shinyAce syntax highlighting</li>
+<li>
+<strong>LLM Detection Patterns (Issue #10)</strong> - 54 patterns for modern AI/ML libraries (ellmer, langchain, transformers, etc.)</li>
+<li>
+<strong>Multi-Language Comment Syntax</strong> - Support for 30+ languages with automatic comment prefix detection (<code>#</code>, <code>--</code>, <code>//</code>, <code>%</code>)</li>
+<li>
+<strong>Full Language Detection Patterns</strong> - Added auto-detection patterns for 10 new languages (JS, TS, Go, Rust, Java, C, C++, MATLAB, Ruby, Lua), bringing total to 15 languages with 862 patterns</li>
+<li>
+<strong>MCP Server Integration</strong> - Expose putior functions as MCP tools for AI assistants (Claude Code, Claude Desktop)</li>
+<li>
+<strong>ACP Server Integration</strong> - Expose putior as an ACP agent for inter-agent communication via REST API</li>
 </ol></div>
+<div class="section level2">
+<h2 id="mcp-server-integration">MCP Server Integration<a class="anchor" aria-label="anchor" href="#mcp-server-integration"></a></h2>
+<div class="section level3">
+<h3 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a></h3>
+<p>putior exposes its functionality as MCP (Model Context Protocol) tools, enabling AI assistants like Claude Code and Claude Desktop to directly call workflow annotation and diagram generation functions.</p>
+</div>
+<div class="section level3">
+<h3 id="quick-setup">Quick Setup<a class="anchor" aria-label="anchor" href="#quick-setup"></a></h3>
+<p><strong>Claude Code (WSL/Linux/macOS):</strong></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">claude</span> mcp add putior <span class="at">--</span> Rscript <span class="at">-e</span> <span class="st">"putior::putior_mcp_server()"</span></span></code></pre></div>
+<p><strong>Claude Desktop (Windows):</strong> Add to <code>%APPDATA%\Claude\claude_desktop_config.json</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="dt">"mcpServers"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="dt">"putior"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>      <span class="dt">"command"</span><span class="fu">:</span> <span class="st">"Rscript"</span><span class="fu">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>      <span class="dt">"args"</span><span class="fu">:</span> <span class="ot">[</span><span class="st">"-e"</span><span class="ot">,</span> <span class="st">"putior::putior_mcp_server()"</span><span class="ot">]</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="available-mcp-tools-16-tools">Available MCP Tools (16 tools)<a class="anchor" aria-label="anchor" href="#available-mcp-tools-16-tools"></a></h3>
+<p><strong>Core Workflow:</strong> | Tool | Description | |——|————-| | <code>put</code> | Scan files for PUT annotations | | <code>put_diagram</code> | Generate Mermaid diagrams | | <code>put_auto</code> | Auto-detect workflow from code | | <code>put_generate</code> | Generate annotation suggestions | | <code>put_merge</code> | Merge manual + auto annotations |</p>
+<p><strong>Reference/Discovery:</strong> | Tool | Description | |——|————-| | <code>get_comment_prefix</code> | Get comment prefix for extension | | <code>get_supported_extensions</code> | List supported extensions | | <code>list_supported_languages</code> | List supported languages | | <code>get_detection_patterns</code> | Get auto-detection patterns | | <code>get_diagram_themes</code> | List available themes | | <code>putior_skills</code> | AI assistant documentation | | <code>putior_help</code> | Quick reference help | | <code>set_putior_log_level</code> | Configure logging |</p>
+<p><strong>Utilities:</strong> | Tool | Description | |——|————-| | <code>is_valid_put_annotation</code> | Validate annotation syntax | | <code>split_file_list</code> | Parse file lists | | <code>ext_to_language</code> | Extension to language name |</p>
+</div>
+<div class="section level3">
+<h3 id="usage-examples">Usage Examples<a class="anchor" aria-label="anchor" href="#usage-examples"></a></h3>
+<p><strong>From Claude Code:</strong></p>
+<pre><code>Use the put tool to scan ./R/ for PUT annotations
+Then use put_diagram to create a visualization</code></pre>
+<p><strong>Programmatic access:</strong></p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Start MCP server (runs until terminated)</span></span>
+<span><span class="fu">putior</span><span class="fu">::</span><span class="fu"><a href="reference/putior_mcp_server.html">putior_mcp_server</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get tool definitions for custom integration</span></span>
+<span><span class="va">tools</span> <span class="op">&lt;-</span> <span class="fu">putior</span><span class="fu">::</span><span class="fu"><a href="reference/putior_mcp_tools.html">putior_mcp_tools</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get specific tools only</span></span>
+<span><span class="va">tools</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/putior_mcp_tools.html">putior_mcp_tools</a></span><span class="op">(</span>include <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"put"</span>, <span class="st">"put_diagram"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="dependencies">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies"></a></h3>
+<ul><li>
+<strong>mcptools</strong>: MCP server framework - <code>remotes::install_github("posit-dev/mcptools")</code>
+</li>
+<li>
+<strong>ellmer</strong>: Tool definition - <code>install.packages("ellmer")</code>
+</li>
+<li>Both are in Suggests (optional) - MCP functions fail gracefully with helpful messages if not installed</li>
+</ul></div>
+<div class="section level3">
+<h3 id="key-files">Key Files<a class="anchor" aria-label="anchor" href="#key-files"></a></h3>
+<ul><li>
+<code>R/mcp.R</code> - MCP server and tool definitions</li>
+<li>
+<code>tests/testthat/test-mcp.R</code> - MCP tests</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="acp-server-integration">ACP Server Integration<a class="anchor" aria-label="anchor" href="#acp-server-integration"></a></h2>
+<div class="section level3">
+<h3 id="overview-1">Overview<a class="anchor" aria-label="anchor" href="#overview-1"></a></h3>
+<p>putior also exposes its functionality as an ACP (Agent Communication Protocol) agent, enabling other AI agents to discover and call putior capabilities via REST API. This complements the MCP integration by enabling inter-agent communication.</p>
+<p><strong>MCP vs ACP:</strong> - <strong>MCP</strong>: Model-to-tool communication (Claude ↔︎ putior functions) - <strong>ACP</strong>: Agent-to-agent communication (other AI agents ↔︎ putior agent)</p>
+</div>
+<div class="section level3">
+<h3 id="quick-setup-1">Quick Setup<a class="anchor" aria-label="anchor" href="#quick-setup-1"></a></h3>
+<p><strong>Start ACP Server:</strong></p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Start ACP server on default port (8080)</span></span>
+<span><span class="fu">putior</span><span class="fu">::</span><span class="fu"><a href="reference/putior_acp_server.html">putior_acp_server</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Custom host/port</span></span>
+<span><span class="fu">putior</span><span class="fu">::</span><span class="fu"><a href="reference/putior_acp_server.html">putior_acp_server</a></span><span class="op">(</span>host <span class="op">=</span> <span class="st">"0.0.0.0"</span>, port <span class="op">=</span> <span class="fl">9000</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="acp-endpoints">ACP Endpoints<a class="anchor" aria-label="anchor" href="#acp-endpoints"></a></h3>
+<table class="table"><thead><tr class="header"><th>Endpoint</th>
+<th>Method</th>
+<th>Description</th>
+</tr></thead><tbody><tr class="odd"><td><code>/agents</code></td>
+<td>GET</td>
+<td>Discover this agent (returns manifest)</td>
+</tr><tr class="even"><td><code>/runs</code></td>
+<td>POST</td>
+<td>Execute a putior operation</td>
+</tr><tr class="odd"><td><code>/runs/:run_id</code></td>
+<td>GET</td>
+<td>Get status/results of a previous run</td>
+</tr></tbody></table></div>
+<div class="section level3">
+<h3 id="testing-with-curl">Testing with curl<a class="anchor" aria-label="anchor" href="#testing-with-curl"></a></h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Discover agents</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="ex">curl</span> http://localhost:8080/agents</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co"># Execute a scan operation</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:8080/runs <span class="dt">\</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">"Content-Type: application/json"</span> <span class="dt">\</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">'{"input": [{"role": "user", "parts": [{"content": "scan ./R/"}]}]}'</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co"># Execute diagram generation</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:8080/runs <span class="dt">\</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">"Content-Type: application/json"</span> <span class="dt">\</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">'{"input": [{"role": "user", "parts": [{"content": "generate diagram for ./R/"}]}]}'</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co"># Get help</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-X</span> POST http://localhost:8080/runs <span class="dt">\</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>  <span class="at">-H</span> <span class="st">"Content-Type: application/json"</span> <span class="dt">\</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>  <span class="at">-d</span> <span class="st">'{"input": [{"role": "user", "parts": [{"content": "help with annotations"}]}]}'</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="supported-operations">Supported Operations<a class="anchor" aria-label="anchor" href="#supported-operations"></a></h3>
+<p>The ACP agent understands natural language requests:</p>
+<table class="table"><colgroup><col width="37%"><col width="62%"></colgroup><thead><tr class="header"><th>Operation</th>
+<th>Example Messages</th>
+</tr></thead><tbody><tr class="odd"><td>scan</td>
+<td>“scan ./R/ for PUT annotations”, “extract annotations”</td>
+</tr><tr class="even"><td>diagram</td>
+<td>“generate a diagram”, “visualize workflow”, “create flowchart”</td>
+</tr><tr class="odd"><td>auto</td>
+<td>“auto-detect workflow”, “use put_auto”</td>
+</tr><tr class="even"><td>generate</td>
+<td>“generate annotation suggestions”, “suggest annotations”</td>
+</tr><tr class="odd"><td>merge</td>
+<td>“merge annotations”, “combine manual and auto”</td>
+</tr><tr class="even"><td>help</td>
+<td>“help with syntax”, “how to use putior”</td>
+</tr><tr class="odd"><td>skills</td>
+<td>“what are your capabilities”, “what can you do”</td>
+</tr></tbody></table></div>
+<div class="section level3">
+<h3 id="agent-manifest">Agent Manifest<a class="anchor" aria-label="anchor" href="#agent-manifest"></a></h3>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get the agent manifest programmatically</span></span>
+<span><span class="va">manifest</span> <span class="op">&lt;-</span> <span class="fu">putior</span><span class="fu">::</span><span class="fu"><a href="reference/putior_acp_manifest.html">putior_acp_manifest</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">manifest</span><span class="op">$</span><span class="va">name</span><span class="op">)</span>  <span class="co"># "putior"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">manifest</span><span class="op">$</span><span class="va">metadata</span><span class="op">$</span><span class="va">capabilities</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">manifest</span><span class="op">$</span><span class="va">metadata</span><span class="op">$</span><span class="va">operations</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="dependencies-1">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies-1"></a></h3>
+<ul><li>
+<strong>plumber2</strong>: REST API framework - <code>install.packages("plumber2")</code>
+</li>
+<li>In Suggests (optional) - ACP server fails gracefully with helpful message if not installed</li>
+</ul></div>
+<div class="section level3">
+<h3 id="key-files-1">Key Files<a class="anchor" aria-label="anchor" href="#key-files-1"></a></h3>
+<ul><li>
+<code>R/acp.R</code> - ACP server and endpoint handlers</li>
+<li>
+<code>tests/testthat/test-acp.R</code> - ACP tests</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="multi-language-comment-syntax-support">Multi-Language Comment Syntax Support<a class="anchor" aria-label="anchor" href="#multi-language-comment-syntax-support"></a></h2>
+<div class="section level3">
+<h3 id="overview-2">Overview<a class="anchor" aria-label="anchor" href="#overview-2"></a></h3>
+<p>putior now automatically detects the correct comment prefix based on file extension:</p>
+<table class="table"><colgroup><col width="39%"><col width="28%"><col width="31%"></colgroup><thead><tr class="header"><th>Comment Style</th>
+<th>Languages</th>
+<th>Extensions</th>
+</tr></thead><tbody><tr class="odd"><td><code>#put</code></td>
+<td>R, Python, Shell, Julia, Ruby, Perl, YAML, TOML</td>
+<td>
+<code>.R</code>, <code>.py</code>, <code>.sh</code>, <code>.jl</code>, <code>.rb</code>, <code>.pl</code>, <code>.yaml</code>
+</td>
+</tr><tr class="even"><td><code>--put</code></td>
+<td>SQL, Lua, Haskell</td>
+<td>
+<code>.sql</code>, <code>.lua</code>, <code>.hs</code>
+</td>
+</tr><tr class="odd"><td><code>//put</code></td>
+<td>JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala</td>
+<td>
+<code>.js</code>, <code>.ts</code>, <code>.c</code>, <code>.cpp</code>, <code>.java</code>, <code>.go</code>, <code>.rs</code>
+</td>
+</tr><tr class="even"><td><code>%put</code></td>
+<td>MATLAB, LaTeX</td>
+<td>
+<code>.m</code>, <code>.tex</code>
+</td>
+</tr></tbody></table></div>
+<div class="section level3">
+<h3 id="key-functions">Key Functions<a class="anchor" aria-label="anchor" href="#key-functions"></a></h3>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get comment prefix for an extension</span></span>
+<span><span class="fu"><a href="reference/get_comment_prefix.html">get_comment_prefix</a></span><span class="op">(</span><span class="st">"sql"</span><span class="op">)</span>  <span class="co"># Returns "--"</span></span>
+<span><span class="fu"><a href="reference/get_comment_prefix.html">get_comment_prefix</a></span><span class="op">(</span><span class="st">"js"</span><span class="op">)</span>   <span class="co"># Returns "//"</span></span>
+<span><span class="fu"><a href="reference/get_comment_prefix.html">get_comment_prefix</a></span><span class="op">(</span><span class="st">"m"</span><span class="op">)</span>    <span class="co"># Returns "%"</span></span>
+<span></span>
+<span><span class="co"># List all supported extensions</span></span>
+<span><span class="fu"><a href="reference/get_supported_extensions.html">get_supported_extensions</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># List all supported languages</span></span>
+<span><span class="fu"><a href="reference/list_supported_languages.html">list_supported_languages</a></span><span class="op">(</span><span class="op">)</span>              <span class="co"># All languages</span></span>
+<span><span class="fu"><a href="reference/list_supported_languages.html">list_supported_languages</a></span><span class="op">(</span>detection_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>  <span class="co"># Only with auto-detection patterns</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="example-annotations">Example Annotations<a class="anchor" aria-label="anchor" href="#example-annotations"></a></h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co">-- query.sql</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">--put id:"load_data", label:"Load Customer Data", output:"customers"</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> customers;</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co">// process.js</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">//put id:"transform", label:"Transform JSON", input:"data.json", output:"output.json"</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="kw">const</span> transformed <span class="op">=</span> data<span class="op">.</span><span class="fu">map</span>(<span class="bu">process</span>)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co">% analysis.m</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co">%put id:"compute", label:"Statistical Analysis", input:"data.mat", output:"results.mat"</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="va">results</span> <span class="op">=</span> <span class="va">compute_statistics</span>(<span class="va">data</span>)<span class="op">;</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="key-files-2">Key Files<a class="anchor" aria-label="anchor" href="#key-files-2"></a></h3>
+<ul><li>
+<code>R/language_registry.R</code> - Language groups and comment prefix detection</li>
+<li>
+<code>R/detection_patterns.R</code> - Auto-detection patterns for 15 languages</li>
+<li>
+<code>tests/testthat/test-language-registry.R</code> - Tests for multi-language support (147 tests)</li>
+<li>
+<code>tests/testthat/test-new-language-patterns.R</code> - Tests for new language detection patterns</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="auto-detection-pattern-coverage">Auto-Detection Pattern Coverage<a class="anchor" aria-label="anchor" href="#auto-detection-pattern-coverage"></a></h2>
+<div class="section level3">
+<h3 id="overview-3">Overview<a class="anchor" aria-label="anchor" href="#overview-3"></a></h3>
+<p>putior supports auto-detection of file inputs, outputs, and dependencies for 15 programming languages with <strong>862 patterns total</strong>.</p>
+</div>
+<div class="section level3">
+<h3 id="languages-with-auto-detection-15-languages">Languages with Auto-Detection (15 languages)<a class="anchor" aria-label="anchor" href="#languages-with-auto-detection-15-languages"></a></h3>
+<table class="table"><thead><tr class="header"><th>Language</th>
+<th>Total</th>
+<th>Key Libraries/Frameworks</th>
+</tr></thead><tbody><tr class="odd"><td>R</td>
+<td>124</td>
+<td>readr, data.table, DBI, arrow, ellmer, sparklyr</td>
+</tr><tr class="even"><td>Python</td>
+<td>159</td>
+<td>pandas, numpy, sqlalchemy, transformers, langchain</td>
+</tr><tr class="odd"><td>JavaScript</td>
+<td>71</td>
+<td>Node.js fs, Express.js, mongoose, Prisma, axios</td>
+</tr><tr class="even"><td>TypeScript</td>
+<td>88</td>
+<td>All JS + NestJS, TypeORM, decorators</td>
+</tr><tr class="odd"><td>Java</td>
+<td>73</td>
+<td>NIO, JDBC, Jackson, Spring Boot, Hibernate</td>
+</tr><tr class="even"><td>Ruby</td>
+<td>64</td>
+<td>File, CSV, YAML, Rails, ActiveRecord, Sequel</td>
+</tr><tr class="odd"><td>Rust</td>
+<td>60</td>
+<td>std::fs, serde, sqlx, diesel, reqwest</td>
+</tr><tr class="even"><td>Go</td>
+<td>44</td>
+<td>os, bufio, database/sql, gorm, net/http</td>
+</tr><tr class="odd"><td>C++</td>
+<td>44</td>
+<td>All C + fstream, boost, std::filesystem</td>
+</tr><tr class="even"><td>MATLAB</td>
+<td>44</td>
+<td>readtable, imread, h5read, VideoReader</td>
+</tr><tr class="odd"><td>Julia</td>
+<td>27</td>
+<td>CSV.jl, DataFrames, JLD2, Arrow.jl</td>
+</tr><tr class="even"><td>C</td>
+<td>24</td>
+<td>stdio.h, POSIX, mmap</td>
+</tr><tr class="odd"><td>Lua</td>
+<td>20</td>
+<td>io library, loadfile, dofile</td>
+</tr><tr class="even"><td>Shell</td>
+<td>12</td>
+<td>cat, redirects, source</td>
+</tr><tr class="odd"><td>SQL</td>
+<td>8</td>
+<td>FROM, JOIN, COPY</td>
+</tr></tbody></table></div>
+<div class="section level3">
+<h3 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h3>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get patterns for any supported language</span></span>
+<span><span class="va">patterns</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_detection_patterns.html">get_detection_patterns</a></span><span class="op">(</span><span class="st">"javascript"</span><span class="op">)</span>  <span class="co"># or "go", "rust", "java", etc.</span></span>
+<span></span>
+<span><span class="co"># List languages with detection support</span></span>
+<span><span class="fu"><a href="reference/list_supported_languages.html">list_supported_languages</a></span><span class="op">(</span>detection_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "r" "python" "sql" "shell" "julia" "javascript" "typescript"</span></span>
+<span><span class="co">#&gt; [8] "go" "rust" "java" "c" "cpp" "matlab" "ruby" "lua"</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="key-implementation-insights">Key Implementation Insights<a class="anchor" aria-label="anchor" href="#key-implementation-insights"></a></h3>
+<p><strong>1. Pattern Inheritance Architecture</strong> - TypeScript patterns extend JavaScript patterns (call <code><a href="reference/get_javascript_patterns.html">get_javascript_patterns()</a></code> as base) - C++ patterns extend C patterns (same approach) - This reduces duplication and ensures consistency - New language-specific patterns are appended to the base list</p>
+<p><strong>2. Framework-Specific Patterns are High-Value</strong> - Generic file I/O patterns (e.g., <code>fopen</code>) catch basic usage - Framework patterns (Spring Boot, Rails, Express) catch real-world code - ORM patterns (Hibernate, ActiveRecord, Prisma, GORM) are particularly valuable for data workflows - Web framework request/response patterns help track API data flow</p>
+<p><strong>3. Pattern Structure Consistency</strong> Each pattern has the same structure across all languages:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  regex <span class="op">=</span> <span class="st">"pattern_to_match"</span>,      <span class="co"># Regex for code detection</span></span>
+<span>  func <span class="op">=</span> <span class="st">"function_name"</span>,          <span class="co"># Human-readable function name</span></span>
+<span>  arg_position <span class="op">=</span> <span class="fl">1</span>,                <span class="co"># Position of file argument (or NA)</span></span>
+<span>  arg_name <span class="op">=</span> <span class="st">"file"</span>,               <span class="co"># Named argument (or NULL)</span></span>
+<span>  description <span class="op">=</span> <span class="st">"Brief description"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><strong>4. Three Pattern Categories per Language</strong> - <strong>input</strong>: File/data reading operations - <strong>output</strong>: File/data writing operations - <strong>dependency</strong>: Module/import statements (for tracking script relationships)</p>
+<p><strong>5. Regex Design Principles</strong> - Use <code>\\s*\\(</code> to match function calls with optional whitespace - Use <code>['\"]</code> to match either quote style - For method chains, use <code>\\.method\\s*\\(</code> pattern - Escape special regex characters: <code>\\.</code>, <code>\\$</code>, <code>\\[</code></p>
+<p><strong>6. Testing Strategy</strong> - Test that patterns exist for expected functions - Test that regex compiles without error - Test that patterns match realistic code snippets - Test pattern counts to catch accidental deletions</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="auto-annotation-feature-github-issue-5">Auto-Annotation Feature (GitHub Issue #5)<a class="anchor" aria-label="anchor" href="#auto-annotation-feature-github-issue-5"></a></h2>
+<div class="section level3">
+<h3 id="overview-4">Overview<a class="anchor" aria-label="anchor" href="#overview-4"></a></h3>
+<p>Automatic detection of workflow elements from code analysis, similar to how roxygen2 auto-generates documentation skeletons. Two primary modes:</p>
+<ol style="list-style-type: decimal"><li>
+<strong>Direct detection</strong>: <code><a href="reference/put_auto.html">put_auto()</a></code> analyzes code and produces workflow data without requiring annotations</li>
+<li>
+<strong>Comment generation</strong>: <code><a href="reference/put_generate.html">put_generate()</a></code> creates <code>#put</code> annotation text for persistent documentation</li>
+</ol></div>
+<div class="section level3">
+<h3 id="core-functions">Core Functions<a class="anchor" aria-label="anchor" href="#core-functions"></a></h3>
+<div class="section level4">
+<h4 id="put_auto---auto-detect-workflow-from-code">
+<code>put_auto()</code> - Auto-detect workflow from code<a class="anchor" aria-label="anchor" href="#put_auto---auto-detect-workflow-from-code"></a></h4>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Analyze code to detect inputs/outputs automatically</span></span>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Control what to detect</span></span>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./src/"</span>,</span>
+<span>                     detect_inputs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                     detect_outputs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                     detect_dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="put_generate---generate-annotation-comments-roxygen2-style">
+<code>put_generate()</code> - Generate annotation comments (roxygen2-style)<a class="anchor" aria-label="anchor" href="#put_generate---generate-annotation-comments-roxygen2-style"></a></h4>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Print suggested annotations to console</span></span>
+<span><span class="fu"><a href="reference/put_generate.html">put_generate</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Copy to clipboard for pasting</span></span>
+<span><span class="fu"><a href="reference/put_generate.html">put_generate</a></span><span class="op">(</span><span class="st">"./src/"</span>, output <span class="op">=</span> <span class="st">"clipboard"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Single-line or multiline style</span></span>
+<span><span class="fu"><a href="reference/put_generate.html">put_generate</a></span><span class="op">(</span><span class="st">"./src/"</span>, style <span class="op">=</span> <span class="st">"multiline"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/put_generate.html">put_generate</a></span><span class="op">(</span><span class="st">"./src/"</span>, style <span class="op">=</span> <span class="st">"single"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="put_merge---combine-manual--auto-annotations">
+<code>put_merge()</code> - Combine manual + auto annotations<a class="anchor" aria-label="anchor" href="#put_merge---combine-manual--auto-annotations"></a></h4>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Manual annotations override auto-detected</span></span>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put_merge.html">put_merge</a></span><span class="op">(</span><span class="st">"./src/"</span>, merge_strategy <span class="op">=</span> <span class="st">"manual_priority"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Auto fills in missing input/output fields</span></span>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put_merge.html">put_merge</a></span><span class="op">(</span><span class="st">"./src/"</span>, merge_strategy <span class="op">=</span> <span class="st">"supplement"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Combine all detected I/O from both sources</span></span>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put_merge.html">put_merge</a></span><span class="op">(</span><span class="st">"./src/"</span>, merge_strategy <span class="op">=</span> <span class="st">"union"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="get_detection_patterns---viewcustomize-patterns">
+<code>get_detection_patterns()</code> - View/customize patterns<a class="anchor" aria-label="anchor" href="#get_detection_patterns---viewcustomize-patterns"></a></h4>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get all R patterns</span></span>
+<span><span class="va">patterns</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_detection_patterns.html">get_detection_patterns</a></span><span class="op">(</span><span class="st">"r"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get only input patterns for Python</span></span>
+<span><span class="va">input_patterns</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_detection_patterns.html">get_detection_patterns</a></span><span class="op">(</span><span class="st">"python"</span>, type <span class="op">=</span> <span class="st">"input"</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="supported-detection-patterns">Supported Detection Patterns<a class="anchor" aria-label="anchor" href="#supported-detection-patterns"></a></h3>
+<p><strong>R Language:</strong> - Inputs: <code>read.csv</code>, <code>read_csv</code>, <code>readRDS</code>, <code>load</code>, <code>fread</code>, <code>read_excel</code>, <code>fromJSON</code>, <code>read_parquet</code>, etc. - Outputs: <code>write.csv</code>, <code>saveRDS</code>, <code>ggsave</code>, <code>pdf</code>, <code>png</code>, <code>write_parquet</code>, etc. - Dependencies: <code><a href="https://rdrr.io/r/base/source.html" class="external-link">source()</a></code>, <code><a href="https://rdrr.io/r/base/sys.source.html" class="external-link">sys.source()</a></code></p>
+<p><strong>Python:</strong> - Inputs: <code>pd.read_csv</code>, <code>pd.read_excel</code>, <code>json.load</code>, <code>pickle.load</code>, <code>np.load</code>, etc. - Outputs: <code>.to_csv</code>, <code>.to_excel</code>, <code>json.dump</code>, <code>plt.savefig</code>, etc.</p>
+<p><strong>Also supported:</strong> SQL, Shell, Julia</p>
+</div>
+<div class="section level3">
+<h3 id="workflow-integration">Workflow Integration<a class="anchor" aria-label="anchor" href="#workflow-integration"></a></h3>
+<pre><code>Source Files ──┬──&gt; put()      ──&gt; Manual Annotations ─┬─&gt; put_merge() ──&gt; put_diagram()
+               │                                       │
+               └──&gt; put_auto() ──&gt; Auto Annotations  ──┘</code></pre>
+</div>
+<div class="section level3">
+<h3 id="use-cases">Use Cases<a class="anchor" aria-label="anchor" href="#use-cases"></a></h3>
+<ol style="list-style-type: decimal"><li>
+<strong>Quick Visualization</strong>: <code><a href="reference/put_auto.html">put_auto()</a></code> for instant workflow diagrams without any annotations</li>
+<li>
+<strong>Skeleton Generation</strong>: <code><a href="reference/put_generate.html">put_generate()</a></code> to create annotation templates for new files</li>
+<li>
+<strong>Hybrid Workflow</strong>: <code><a href="reference/put_merge.html">put_merge()</a></code> for manual control over key files with auto-fill for rest</li>
+<li>
+<strong>Project Onboarding</strong>: Instantly understand data flow in unfamiliar codebases</li>
+</ol></div>
+<div class="section level3">
+<h3 id="reference">Reference<a class="anchor" aria-label="anchor" href="#reference"></a></h3>
+<ul><li>
+<strong>Example</strong>: <code>inst/examples/auto-annotation-example.R</code>
+</li>
+<li>
+<strong>Tests</strong>: <code>tests/testthat/test-put_auto.R</code>, <code>tests/testthat/test-put_generate.R</code>
+</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="logging-system">Logging System<a class="anchor" aria-label="anchor" href="#logging-system"></a></h2>
+<div class="section level3">
+<h3 id="overview-5">Overview<a class="anchor" aria-label="anchor" href="#overview-5"></a></h3>
+<p>putior includes optional structured logging via the <code>logger</code> package for debugging annotation parsing, workflow detection, and diagram generation.</p>
+</div>
+<div class="section level3">
+<h3 id="key-characteristics">Key Characteristics<a class="anchor" aria-label="anchor" href="#key-characteristics"></a></h3>
+<ul><li>
+<strong>Optional dependency</strong>: <code>logger</code> in Suggests, not Imports</li>
+<li>
+<strong>Silent degradation</strong>: Package works without logger installed</li>
+<li>
+<strong>No user-facing errors</strong> if logger is missing</li>
+</ul></div>
+<div class="section level3">
+<h3 id="log-levels">Log Levels<a class="anchor" aria-label="anchor" href="#log-levels"></a></h3>
+<table class="table"><colgroup><col width="43%"><col width="56%"></colgroup><thead><tr class="header"><th>Level</th>
+<th>Purpose</th>
+</tr></thead><tbody><tr class="odd"><td>DEBUG</td>
+<td>Fine-grained operations (file-by-file, pattern matching)</td>
+</tr><tr class="even"><td>INFO</td>
+<td>Progress milestones (scan started, nodes found, diagram complete)</td>
+</tr><tr class="odd"><td>WARN</td>
+<td>Issues that don’t stop execution (validation issues) - <strong>default</strong>
+</td>
+</tr><tr class="even"><td>ERROR</td>
+<td>Fatal issues (via existing <code><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop()</a></code> calls)</td>
+</tr></tbody></table></div>
+<div class="section level3">
+<h3 id="configuration">Configuration<a class="anchor" aria-label="anchor" href="#configuration"></a></h3>
+<p><strong>Global option:</strong></p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Set for entire session</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>putior.log_level <span class="op">=</span> <span class="st">"DEBUG"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Or use the helper function</span></span>
+<span><span class="fu"><a href="reference/set_putior_log_level.html">set_putior_log_level</a></span><span class="op">(</span><span class="st">"DEBUG"</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Per-call override:</strong></p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Override for a single call</span></span>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./R/"</span>, log_level <span class="op">=</span> <span class="st">"DEBUG"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, log_level <span class="op">=</span> <span class="st">"INFO"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="key-files-3">Key Files<a class="anchor" aria-label="anchor" href="#key-files-3"></a></h3>
+<ul><li>
+<code>R/logging.R</code> - Logging infrastructure</li>
+<li>
+<code>R/zzz.R</code> - Package initialization</li>
+<li>
+<code>tests/testthat/test-logging.R</code> - Logging tests</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="llm-detection-patterns-github-issue-10">LLM Detection Patterns (GitHub Issue #10)<a class="anchor" aria-label="anchor" href="#llm-detection-patterns-github-issue-10"></a></h2>
+<div class="section level3">
+<h3 id="overview-6">Overview<a class="anchor" aria-label="anchor" href="#overview-6"></a></h3>
+<p>putior auto-detects modern AI/ML library usage for workflow visualization. This enables automatic documentation of LLM-powered data pipelines.</p>
+</div>
+<div class="section level3">
+<h3 id="supported-libraries">Supported Libraries<a class="anchor" aria-label="anchor" href="#supported-libraries"></a></h3>
+<p><strong>R Patterns (15 patterns):</strong> | Library | Functions | |———|———–| | ellmer | <code>chat()</code>, <code>chat_openai()</code>, <code>chat_claude()</code>, <code>chat_ollama()</code>, <code>chat_gemini()</code>, <code>chat_groq()</code>, <code>chat_azure()</code> | | tidyllm | <code>llm_message()</code>, <code>send_prompt()</code> | | httr2 | API requests to OpenAI, Anthropic, Groq |</p>
+<p><strong>Python Input Patterns (27 patterns):</strong> | Library | Functions | |———|———–| | ollama | <code>ollama.chat()</code>, <code>ollama.generate()</code>, <code>ollama.embeddings()</code> | | openai | <code>OpenAI()</code>, <code>client.chat.completions.create()</code>, <code>client.embeddings.create()</code> | | anthropic | <code>Anthropic()</code>, <code>client.messages.create()</code> | | langchain | <code>ChatOpenAI()</code>, <code>ChatAnthropic()</code>, <code>ChatOllama()</code>, <code>LLMChain()</code>, <code>ChatGoogleGenerativeAI()</code> | | transformers | <code>pipeline()</code>, <code>AutoModelForCausalLM.from_pretrained()</code>, <code>AutoTokenizer.from_pretrained()</code> | | litellm | <code>litellm.completion()</code>, <code>litellm.embedding()</code> | | vllm | <code>LLM()</code>, <code>vllm.LLM()</code> | | google | <code>genai.GenerativeModel()</code>, <code>model.generate_content()</code> | | groq | <code>Groq()</code> |</p>
+<p><strong>Python Output Patterns (12 patterns):</strong> | Category | Functions | |———-|———–| | Transformers | <code>model.save_pretrained()</code>, <code>tokenizer.save_pretrained()</code>, <code>trainer.save_model()</code> | | PyTorch | <code>torch.save()</code>, <code>torch.onnx.export()</code> | | Keras | <code>model.save()</code>, <code>model.save_weights()</code> | | MLflow | <code>mlflow.log_model()</code>, <code>mlflow.sklearn.log_model()</code>, <code>mlflow.pytorch.log_model()</code> |</p>
+</div>
+<div class="section level3">
+<h3 id="key-insights-from-implementation">Key Insights from Implementation<a class="anchor" aria-label="anchor" href="#key-insights-from-implementation"></a></h3>
+<ol style="list-style-type: decimal"><li>
+<strong>Pattern specificity matters</strong>: LLM client patterns (e.g., <code>OpenAI()</code>) are generic enough to catch initialization but specific enough to avoid false positives</li>
+<li>
+<strong>Output patterns for models</strong>: Model saving is as important as inference for tracking ML workflows</li>
+<li>
+<strong>Multi-provider support</strong>: Modern codebases often use multiple LLM providers - ellmer in R abstracts this nicely</li>
+<li>
+<strong>Transformers ecosystem</strong>: The Hugging Face transformers library has consistent patterns (<code>from_pretrained</code>, <code>save_pretrained</code>) that are easy to detect</li>
+</ol></div>
+<div class="section level3">
+<h3 id="reference-1">Reference<a class="anchor" aria-label="anchor" href="#reference-1"></a></h3>
+<ul><li>
+<strong>Tests</strong>: <code>tests/testthat/test-llm-patterns.R</code> (467 tests)</li>
+<li>
+<strong>Patterns</strong>: <code>R/detection_patterns.R</code> (search for “LLM/AI”)</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="variable-reference-implementation-github-issue-2">Variable Reference Implementation (GitHub Issue #2)<a class="anchor" aria-label="anchor" href="#variable-reference-implementation-github-issue-2"></a></h2>
+<div class="section level3">
+<h3 id="key-concepts-for-internal-extension">Key Concepts for <code>.internal</code> Extension<a class="anchor" aria-label="anchor" href="#key-concepts-for-internal-extension"></a></h3>
+<ul><li>
+<strong>Purpose</strong>: Track in-memory variables and objects during script execution</li>
+<li>
+<strong>Usage</strong>: <code>.internal</code> variables are <strong>outputs only</strong>, never inputs between scripts</li>
+<li>
+<strong>Data Flow</strong>: Use persistent files (RData, CSV, etc.) for inter-script communication</li>
+<li>
+<strong>Example</strong>: <code>output:'my_variable.internal, my_data.RData'</code>
+</li>
+</ul></div>
+<div class="section level3">
+<h3 id="critical-rules">Critical Rules<a class="anchor" aria-label="anchor" href="#critical-rules"></a></h3>
+<ol style="list-style-type: decimal"><li>
+<strong><code>.internal</code> variables exist only during script execution</strong> → Cannot be inputs to other scripts</li>
+<li>
+<strong>Persistent files enable inter-script data flow</strong> → Use saved files as inputs/outputs between scripts<br></li>
+<li>
+<strong>Connected workflows require file-based dependencies</strong> → Each script’s file outputs become inputs to subsequent scripts</li>
+<li>
+<strong>Document computational steps</strong> → Use <code>.internal</code> to show what variables are created within each script</li>
+</ol></div>
+<div class="section level3">
+<h3 id="example-implementation">Example Implementation<a class="anchor" aria-label="anchor" href="#example-implementation"></a></h3>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Script 1: Creates variable and saves it</span></span>
+<span><span class="co">#put output:'data.internal, data.RData'</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">process_something</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></span><span class="op">(</span><span class="va">data</span>, file <span class="op">=</span> <span class="st">'data.RData'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Script 2: Uses saved file, creates new variable  </span></span>
+<span><span class="co">#put input:'data.RData', output:'results.internal, results.csv'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">'data.RData'</span><span class="op">)</span>  <span class="co"># NOT 'data.internal'</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">analyze</span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">results</span>, <span class="st">'results.csv'</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="reference-2">Reference<a class="anchor" aria-label="anchor" href="#reference-2"></a></h3>
+<ul><li>
+<strong>Example</strong>: <code>inst/examples/variable-reference-example.R</code>
+</li>
+<li>
+<strong>GitHub Issues</strong>: #2 (original discussion), #3 (metadata), #4 (hyperlinks)</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="interactive-diagram-features-github-issues-3--4">Interactive Diagram Features (GitHub Issues #3 &amp; #4)<a class="anchor" aria-label="anchor" href="#interactive-diagram-features-github-issues-3--4"></a></h2>
+<div class="section level3">
+<h3 id="metadata-display-show_source_info">Metadata Display (show_source_info)<a class="anchor" aria-label="anchor" href="#metadata-display-show_source_info"></a></h3>
+<p>Displays source file information in diagram nodes to help users identify where each workflow step is defined.</p>
+<p><strong>Parameters:</strong> - <code>show_source_info = TRUE/FALSE</code> (default: FALSE) - Enable/disable source info display - <code>source_info_style = "inline"/"subgraph"</code> (default: “inline”) - How to display the info</p>
+<p><strong>Usage:</strong></p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Inline style - shows file name below node label</span></span>
+<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_source_info <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Subgraph style - groups nodes by source file</span></span>
+<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_source_info <span class="op">=</span> <span class="cn">TRUE</span>, source_info_style <span class="op">=</span> <span class="st">"subgraph"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="clickable-hyperlinks-enable_clicks">Clickable Hyperlinks (enable_clicks)<a class="anchor" aria-label="anchor" href="#clickable-hyperlinks-enable_clicks"></a></h3>
+<p>Makes diagram nodes clickable to open source files directly in your preferred editor.</p>
+<p><strong>Parameters:</strong> - <code>enable_clicks = TRUE/FALSE</code> (default: FALSE) - Enable/disable clickable nodes - <code>click_protocol = "vscode"/"file"/"rstudio"</code> (default: “vscode”) - URL protocol</p>
+<p><strong>Supported Protocols:</strong> - <code>"vscode"</code> - VS Code (vscode://file/path:line) - <code>"file"</code> - Standard <a href="file://" class="uri">file://</a> protocol - <code>"rstudio"</code> - RStudio (rstudio://open-file?path=)</p>
+<p><strong>Usage:</strong></p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Enable VS Code clicks</span></span>
+<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, enable_clicks <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use RStudio protocol</span></span>
+<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, enable_clicks <span class="op">=</span> <span class="cn">TRUE</span>, click_protocol <span class="op">=</span> <span class="st">"rstudio"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Combine with source info</span></span>
+<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_source_info <span class="op">=</span> <span class="cn">TRUE</span>, enable_clicks <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Notes:</strong> - Line numbers are included when available from annotations - Artifact nodes (data files) are excluded from click directives - Both features are backward compatible (off by default)</p>
+</div>
+<div class="section level3">
+<h3 id="reference-3">Reference<a class="anchor" aria-label="anchor" href="#reference-3"></a></h3>
+<ul><li>
+<strong>Example</strong>: <code>inst/examples/interactive-diagrams-example.R</code>
+</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="interactive-sandbox-shiny-app">Interactive Sandbox (Shiny App)<a class="anchor" aria-label="anchor" href="#interactive-sandbox-shiny-app"></a></h2>
+<div class="section level3">
+<h3 id="overview-7">Overview<a class="anchor" aria-label="anchor" href="#overview-7"></a></h3>
+<p>putior includes an interactive Shiny app for experimenting with PUT annotations without writing files.</p>
+</div>
+<div class="section level3">
+<h3 id="launch">Launch<a class="anchor" aria-label="anchor" href="#launch"></a></h3>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/run_sandbox.html">run_sandbox</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># Requires shiny package</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a></h3>
+<ul><li>Paste or type annotated code</li>
+<li>
+<strong>Syntax highlighting</strong> via shinyAce (optional, degrades gracefully)</li>
+<li>Simulate multiple files using <code># ===== File: name.R =====</code> markers</li>
+<li>Customize diagram settings (theme, direction, artifacts, etc.)</li>
+<li>View extracted workflow data</li>
+<li>Export generated Mermaid code</li>
+<li>
+<strong>Copy to clipboard button</strong> for quick Mermaid code export</li>
+</ul></div>
+<div class="section level3">
+<h3 id="location">Location<a class="anchor" aria-label="anchor" href="#location"></a></h3>
+<ul><li>
+<strong>App</strong>: <code>inst/shiny/putior-sandbox/app.R</code>
+</li>
+<li>
+<strong>Dependencies</strong>: shiny (required), shinyAce (optional, in Suggests)</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="quarto-integration">Quarto Integration<a class="anchor" aria-label="anchor" href="#quarto-integration"></a></h2>
+<div class="section level3">
+<h3 id="overview-8">Overview<a class="anchor" aria-label="anchor" href="#overview-8"></a></h3>
+<p>putior diagrams can be embedded in Quarto (<code>.qmd</code>) documents for reproducible reports and dashboards using native Mermaid chunk support.</p>
+</div>
+<div class="section level3">
+<h3 id="quarto-availability">Quarto Availability<a class="anchor" aria-label="anchor" href="#quarto-availability"></a></h3>
+<p>Quarto is bundled with RStudio. To render <code>.qmd</code> files: - <strong>RStudio</strong>: Use the “Render” button or <code>quarto::quarto_render()</code> - <strong>Command line (Windows/WSL)</strong>: Use Quarto CLI from RStudio’s bundled installation: <code>bash   # From WSL   "/mnt/c/Program Files/RStudio/resources/app/bin/quarto/bin/quarto.exe" render file.qmd</code></p>
+</div>
+<div class="section level3">
+<h3 id="key-technique-knitrknit_child">Key Technique: <code>knitr::knit_child()</code>
+<a class="anchor" aria-label="anchor" href="#key-technique-knitrknit_child"></a></h3>
+<p><strong>Challenge</strong>: Quarto’s native <code>{mermaid}</code> chunks are static and cannot directly use dynamically generated R content.</p>
+<p><strong>Solution</strong>: Use <code><a href="https://rdrr.io/pkg/knitr/man/knit_child.html" class="external-link">knitr::knit_child()</a></code> to dynamically generate a native <code>{mermaid}</code> chunk from R code:</p>
+<ol style="list-style-type: decimal"><li>
+<strong>Visible chunk</strong> (with code folding): Generates mermaid code and stores in variable</li>
+<li>
+<strong>Hidden chunk</strong> (<code>output: asis</code>, <code>echo: false</code>): Uses <code>knit_child()</code> to process a dynamically created mermaid chunk</li>
+</ol><p>This approach: - Uses Quarto’s native Mermaid support (no CDN required) - Maintains code folding for the R code - Produces proper Mermaid diagrams with Quarto’s built-in styling</p>
+</div>
+<div class="section level3">
+<h3 id="usage-pattern">Usage Pattern<a class="anchor" aria-label="anchor" href="#usage-pattern"></a></h3>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Chunk 1: Generate code (visible, foldable)</span></span>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./R/"</span><span class="op">)</span></span>
+<span><span class="va">mermaid_code</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Chunk 2: Output as native mermaid chunk (hidden)</span></span>
+<span><span class="co">#| output: asis</span></span>
+<span><span class="co">#| echo: false</span></span>
+<span><span class="va">mermaid_chunk</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"```{mermaid}\n"</span>, <span class="va">mermaid_code</span>, <span class="st">"\n```"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/knit_child.html" class="external-link">knit_child</a></span><span class="op">(</span>text <span class="op">=</span> <span class="va">mermaid_chunk</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="reference-4">Reference<a class="anchor" aria-label="anchor" href="#reference-4"></a></h3>
+<ul><li>
+<strong>Example</strong>: <code>inst/examples/quarto-example.qmd</code>
+</li>
+</ul></div>
+</div>
 <div class="section level2">
 <h2 id="github-pages-deployment">GitHub Pages Deployment<a class="anchor" aria-label="anchor" href="#github-pages-deployment"></a></h2>
 <div class="section level3">
@@ -294,8 +985,8 @@
 <h3 id="key-settings">Key Settings<a class="anchor" aria-label="anchor" href="#key-settings"></a></h3>
 <ul><li>
 <p><code>_pkgdown.yml</code>: Development mode must be disabled/commented out:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># development:</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co">#   mode: auto</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="co"># development:</span></span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a><span class="co">#   mode: auto</span></span></code></pre></div>
 </li>
 <li><p>GitHub Pages Settings: Deploy from <code>gh-pages</code> branch (NOT GitHub Actions)</p></li>
 <li><p>Site URL: <a href="https://pjt222.github.io/putior/" class="uri">https://pjt222.github.io/putior/</a></p></li>
@@ -340,7 +1031,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

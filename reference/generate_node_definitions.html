@@ -109,7 +109,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">putior</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -122,7 +122,13 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started with putior</a></li>
+    <li><a class="dropdown-item" href="../articles/features-tour.html">Features Tour</a></li>
+    <li><a class="dropdown-item" href="../articles/api-reference.html">API Reference</a></li>
+    <li><a class="dropdown-item" href="../articles/showcase.html">Showcase: Real-World Examples</a></li>
+    <li><a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting Guide</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="../articles/skills.html"><span class="fa fa-robot"></span> AI Skills</a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/pjt222/putior/raw/main/inst/cheatsheet/putior-cheatsheet.pdf"><span class="fa fa-file-pdf"></span> Cheatsheet</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -148,7 +154,8 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generate_node_definitions</span><span class="op">(</span></span>
 <span>  <span class="va">workflow</span>,</span>
 <span>  node_labels <span class="op">=</span> <span class="st">"label"</span>,</span>
-<span>  show_workflow_boundaries <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  show_workflow_boundaries <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  show_source_info <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -167,6 +174,10 @@
 <dt id="arg-show-workflow-boundaries">show_workflow_boundaries<a class="anchor" aria-label="anchor" href="#arg-show-workflow-boundaries"></a></dt>
 <dd><p>Whether to apply special styling to start/end nodes</p></dd>
 
+
+<dt id="arg-show-source-info">show_source_info<a class="anchor" aria-label="anchor" href="#arg-show-source-info"></a></dt>
+<dd><p>Whether to append source file info to node labels</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -182,7 +193,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>
