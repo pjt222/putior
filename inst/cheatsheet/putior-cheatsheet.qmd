@@ -8,8 +8,8 @@ format:
     geometry:
       - paperwidth=26in
       - paperheight=20in
-      - margin=0.35in
-    fontsize: 9pt
+      - margin=0.4in
+    fontsize: 10pt
     keep-tex: true
     colorlinks: true
     linkcolor: blue
@@ -21,15 +21,23 @@ format:
       \usepackage{xcolor}
       \usepackage{graphicx}
       \usepackage{nopageno}
+      \usepackage{colortbl}
+      \usepackage{framed}
+      % Brand colors
       \definecolor{putiorblue}{HTML}{2563eb}
       \definecolor{putiorpurple}{HTML}{7c3aed}
       \definecolor{putiorgreen}{HTML}{16a34a}
       \definecolor{putiororange}{HTML}{d97706}
+      % Design colors
       \definecolor{lightgray}{HTML}{f3f4f6}
+      \definecolor{codebg}{HTML}{f8f9fa}
+      \definecolor{tablebg}{HTML}{e8eef4}
+      \definecolor{tablealt}{HTML}{f5f7fa}
+      \definecolor{divider}{HTML}{d1d5db}
       \pagestyle{empty}
       \raggedbottom
       \raggedcolumns
-      \setlength{\columnsep}{0.3in}
+      \setlength{\columnsep}{0.35in}
       \setlength{\parskip}{0pt}
       \setlength{\parindent}{0pt}
       % Prevent ALL page breaks
@@ -39,32 +47,40 @@ format:
       \interlinepenalty=10000
       \predisplaypenalty=10000
       \postdisplaypenalty=10000
-      % Compact sections
+      % Section formatting with better hierarchy
       \usepackage{titlesec}
-      \titlespacing*{\section}{0pt}{0.5ex}{0.3ex}
-      \titlespacing*{\subsection}{0pt}{0.4ex}{0.2ex}
-      \titleformat*{\section}{\large\bfseries}
+      \titlespacing*{\section}{0pt}{0.6ex}{0.4ex}
+      \titlespacing*{\subsection}{0pt}{0.5ex}{0.25ex}
+      \titleformat*{\section}{\Large\bfseries}
       \titleformat*{\subsection}{\normalsize\bfseries}
+      % Simple shaded box for code
+      \definecolor{shadecolor}{HTML}{f8f9fa}
 ---
 
+```{=latex}
 \begin{multicols}{4}
 
 \begin{center}
 \includegraphics[width=1.2in]{../../man/figures/logo.png}
 
-\textbf{\Large putior}
+\textbf{\LARGE putior}
 
 \textit{PUT + Input + Output + R}
 \end{center}
 
-\vspace{0.1cm}
+\vspace{0.15cm}
 
-Extract beautiful workflow diagrams from your code annotations. Works with R, Python, SQL, Shell, and Julia.
+Extract beautiful workflow diagrams from your code annotations. Works with R, Python, SQL, Shell, Julia, JavaScript, Go, Rust, and 20+ more languages.
+
+\vspace{0.1cm}
+\textcolor{divider}{\hrulefill}
+\vspace{0.1cm}
 
 \section*{\textcolor{putiorblue}{Quick Start}}
 
+\begin{shaded}
 \begin{verbatim}
-# 1. Add annotation
+# 1. Add annotation to your code
 # put label:"Load Data",
       output:"clean.csv"
 
@@ -72,21 +88,31 @@ Extract beautiful workflow diagrams from your code annotations. Works with R, Py
 library(putior)
 put_diagram(put("./"))
 \end{verbatim}
+\end{shaded}
 
 \section*{\textcolor{putiorblue}{Annotation Syntax}}
 
 \subsection*{Basic Format}
+
+\begin{shaded}
 \begin{verbatim}
 # put key:"value", key:"value"
 \end{verbatim}
+\end{shaded}
 
 \subsection*{Minimal (label only)}
+
+\begin{shaded}
 \begin{verbatim}
 # put label:"My Step"
 \end{verbatim}
+\end{shaded}
+
 \textit{ID auto-generated, type = "process"}
 
 \subsection*{Full Annotation}
+
+\begin{shaded}
 \begin{verbatim}
 # put id:"step1", \
       label:"Load Data", \
@@ -94,19 +120,29 @@ put_diagram(put("./"))
       input:"config.json", \
       output:"data.csv"
 \end{verbatim}
+\end{shaded}
 
 \subsection*{Alternative Formats}
+
+\begin{shaded}
 \begin{verbatim}
-# put label:"Step"  # Standard (matches logo)
-#put label:"Step"   # Also valid (no space)
-#put| label:"Step"  # Pipe separator
-#put: label:"Step"  # Colon separator
+# put label:"Step"  # With space
+#put label:"Step"   # No space
+#put| label:"Step"  # Pipe
+#put: label:"Step"  # Colon
 \end{verbatim}
+\end{shaded}
+
+\vspace{0.1cm}
+\textcolor{divider}{\hrulefill}
+\vspace{0.1cm}
 
 \section*{\textcolor{putiorpurple}{Node Types \& Shapes}}
 
+\rowcolors{2}{tablealt}{white}
 \begin{tabular}{|l|l|l|}
 \hline
+\rowcolor{tablebg}
 \textbf{Type} & \textbf{Shape} & \textbf{Use For} \\
 \hline
 input & \texttt{([ ])} & Data sources \\
@@ -118,10 +154,14 @@ end & \texttt{([green])} & Exit \\
 \hline
 \end{tabular}
 
+\vspace{0.15cm}
+
 \subsection*{Annotation Fields}
 
+\rowcolors{2}{tablealt}{white}
 \begin{tabular}{|l|l|l|}
 \hline
+\rowcolor{tablebg}
 \textbf{Field} & \textbf{Req?} & \textbf{Default} \\
 \hline
 id & No & Auto UUID \\
@@ -132,7 +172,11 @@ output & No & File name \\
 \hline
 \end{tabular}
 
+\vspace{0.15cm}
+
 \subsection*{File Artifacts}
+
+\begin{shaded}
 \begin{verbatim}
 # Multiple files
 output:"data.csv, log.txt"
@@ -140,9 +184,13 @@ output:"data.csv, log.txt"
 # Variable tracking
 output:"result.internal"
 \end{verbatim}
+\end{shaded}
+
 \textit{.internal = in-memory only}
 
 \subsection*{Connecting Scripts}
+
+\begin{shaded}
 \begin{verbatim}
 # Script A outputs file
 # put label:"Fetch",
@@ -152,10 +200,17 @@ output:"result.internal"
 # put label:"Process",
       input:"data.csv"
 \end{verbatim}
+\end{shaded}
+
+\vspace{0.1cm}
+\textcolor{divider}{\hrulefill}
+\vspace{0.1cm}
 
 \section*{\textcolor{putiorgreen}{Key Functions}}
 
 \subsection*{Core Workflow}
+
+\begin{shaded}
 \begin{verbatim}
 # Extract annotations
 workflow <- put("./src/")
@@ -168,8 +223,11 @@ put_diagram(workflow)
 put_diagram(workflow,
             theme = "github")
 \end{verbatim}
+\end{shaded}
 
 \subsection*{Auto-Annotation}
+
+\begin{shaded}
 \begin{verbatim}
 # Auto-detect from code
 put_auto("./src/")
@@ -183,8 +241,11 @@ put_generate("./src/",
 put_merge("./src/",
   merge_strategy = "supplement")
 \end{verbatim}
+\end{shaded}
 
 \subsection*{Output Options}
+
+\begin{shaded}
 \begin{verbatim}
 # Console (default)
 put_diagram(wf)
@@ -198,8 +259,11 @@ put_diagram(wf,
   output = "file",
   file = "diagram.md")
 \end{verbatim}
+\end{shaded}
 
 \subsection*{Interactive Features}
+
+\begin{shaded}
 \begin{verbatim}
 # Show source file info
 put_diagram(wf,
@@ -210,26 +274,43 @@ put_diagram(wf,
   enable_clicks = TRUE,
   click_protocol = "vscode")
 \end{verbatim}
+\end{shaded}
+
+\vspace{0.1cm}
+\textcolor{divider}{\hrulefill}
+\vspace{0.1cm}
 
 \section*{\textcolor{putiororange}{Diagram Options}}
 
-\subsection*{Themes}
-\texttt{light} | \texttt{dark} | \texttt{auto} | \texttt{github} | \texttt{minimal}
+\subsection*{Themes (9 available)}
 
+\textbf{Standard:} \texttt{light} | \texttt{dark} | \texttt{auto} | \texttt{github} | \texttt{minimal}
+
+\vspace{0.08cm}
+\textbf{Colorblind-safe:} \texttt{viridis} | \texttt{magma} | \texttt{plasma} | \texttt{cividis}
+
+\begin{shaded}
 \begin{verbatim}
 put_diagram(wf, theme="github")
+put_diagram(wf, theme="viridis")
 \end{verbatim}
+\end{shaded}
 
 \subsection*{Directions}
+
 \texttt{TD} (top-down) | \texttt{LR} (left-right)
 
 \texttt{BT} (bottom-top) | \texttt{RL} (right-left)
 
+\begin{shaded}
 \begin{verbatim}
 put_diagram(wf, direction="LR")
 \end{verbatim}
+\end{shaded}
 
 \subsection*{Visualization Modes}
+
+\begin{shaded}
 \begin{verbatim}
 # Simple (script connections)
 put_diagram(wf)
@@ -241,28 +322,31 @@ put_diagram(wf,
 # With file labels on edges
 put_diagram(wf,
   show_files = TRUE)
-
-# Workflow boundaries
-put_diagram(wf,
-  show_workflow_boundaries=TRUE)
 \end{verbatim}
+\end{shaded}
+
+\vspace{0.08cm}
+\textit{Also:} \texttt{show\_workflow\_boundaries}
 
 \end{multicols}
 
-\vspace{0.15cm}
-\hrule
+\vspace{0.2cm}
+\noindent\textcolor{divider}{\rule{\textwidth}{1pt}}
 \vspace{0.15cm}
 
 \begin{center}
-\textbf{\Large Example Workflows}
+\textbf{\Large \textcolor{putiorblue}{Example Workflows}}
 \end{center}
 
-\vspace{0.1cm}
+\vspace{0.15cm}
 
 \begin{multicols}{4}
 
-\subsection*{Simple Linear Pipeline}
+\subsection*{\textcolor{putiorpurple}{Simple Linear Pipeline}}
 
+\noindent
+\begin{minipage}[t]{0.5\columnwidth}
+\begin{shaded}
 \begin{verbatim}
 # 01_fetch.R
 # put label:"Fetch Sales Data",
@@ -279,15 +363,21 @@ put_diagram(wf,
       node_type:"output",
       input:"clean.csv"
 \end{verbatim}
-
-\begin{center}
-\includegraphics[width=3.5in]{diagrams/linear.png}
-\end{center}
+\end{shaded}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\columnwidth}
+\vspace{0.5cm}
+\includegraphics[width=\textwidth]{diagrams/linear.png}
+\end{minipage}
 
 \columnbreak
 
-\subsection*{Branching \& Merging}
+\subsection*{\textcolor{putiorpurple}{Branching \& Merging}}
 
+\noindent
+\begin{minipage}[t]{0.5\columnwidth}
+\begin{shaded}
 \begin{verbatim}
 # 01_fetch_sales.R
 # put label:"Fetch Sales",
@@ -314,15 +404,21 @@ put_diagram(wf,
       node_type:"output",
       input:"stats.json"
 \end{verbatim}
-
-\begin{center}
-\includegraphics[width=2.8in]{diagrams/branching.png}
-\end{center}
+\end{shaded}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\columnwidth}
+\vspace{0.5cm}
+\includegraphics[width=\textwidth]{diagrams/branching.png}
+\end{minipage}
 
 \columnbreak
 
-\subsection*{Modular source() Pattern}
+\subsection*{\textcolor{putiorpurple}{Modular source() Pattern}}
 
+\noindent
+\begin{minipage}[t]{0.5\columnwidth}
+\begin{shaded}
 \begin{verbatim}
 # utils.R - Utility functions
 # put label:"Data Utilities",
@@ -337,15 +433,21 @@ put_diagram(wf,
       input:"utils.R, analysis.R",
       output:"results.csv"
 \end{verbatim}
-
-\begin{center}
-\includegraphics[width=2.5in]{diagrams/modular.png}
-\end{center}
+\end{shaded}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\columnwidth}
+\vspace{0.5cm}
+\includegraphics[width=\textwidth]{diagrams/modular.png}
+\end{minipage}
 
 \columnbreak
 
-\subsection*{Decision/Branching Logic}
+\subsection*{\textcolor{putiorpurple}{Decision/Branching Logic}}
 
+\noindent
+\begin{minipage}[t]{0.5\columnwidth}
+\begin{shaded}
 \begin{verbatim}
 # start.R
 # put label:"Load Config",
@@ -372,14 +474,18 @@ put_diagram(wf,
       node_type:"end",
       input:"full.csv, summary.csv"
 \end{verbatim}
-
-\begin{center}
-\includegraphics[width=2.5in]{diagrams/decision.png}
-\end{center}
+\end{shaded}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\columnwidth}
+\vspace{0.5cm}
+\includegraphics[width=\textwidth]{diagrams/decision.png}
+\end{minipage}
 
 \end{multicols}
 
-\vspace{0.1cm}
+\vspace{0.15cm}
 \begin{center}
-\footnotesize putior v1.0.0 | \url{https://pjt222.github.io/putior/} | MIT License | Philipp Thoss
+\footnotesize putior v0.2.0+ | \url{https://pjt222.github.io/putior/} | MIT License | Philipp Thoss
 \end{center}
+```
