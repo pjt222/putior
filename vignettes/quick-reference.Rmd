@@ -91,6 +91,22 @@ put("./", log_level = "DEBUG")
 | `output` | Stadium | Reports, exports |
 | `decision` | Diamond | Conditional logic |
 
+```{r node-shapes, echo=FALSE, results='asis', eval=TRUE}
+library(putior)
+shapes_workflow <- data.frame(
+  file_name = rep("example.R", 4),
+  id = c("load", "transform", "export", "check"),
+  label = c("input", "process", "output", "decision"),
+  node_type = c("input", "process", "output", "decision"),
+  input = c(NA, "a", "b", "b"),
+  output = c("a", "b", "c", "d"),
+  stringsAsFactors = FALSE
+)
+cat("```mermaid\n")
+cat(put_diagram(shapes_workflow, theme = "github", show_artifacts = FALSE, output = "raw"))
+cat("\n```\n")
+```
+
 ## See Also
 
 [Quick Start](quick-start.html) | [Annotation Guide](annotation-guide.html) | [API Reference](api-reference.html)
