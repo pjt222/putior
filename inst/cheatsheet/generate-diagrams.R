@@ -103,14 +103,14 @@ modular_workflow <- data.frame(
   stringsAsFactors = FALSE
 )
 
-# Decision workflow: Start/end boundaries with processing
+# Decision workflow: Start/end boundaries with decision node
 decision_workflow <- data.frame(
-  file_name = c("config.R", "full_analysis.R", "quick_summary.R", "complete.R"),
-  id = c("start", "full", "quick", "complete"),
-  label = c("Load Config", "Full Analysis", "Quick Summary", "Complete"),
-  node_type = c("start", "process", "process", "end"),
-  input = c(NA, "config.json", "config.json", "results.csv"),
-  output = c("config.json", "results.csv", "results.csv", NA),
+  file_name = c("start.R", "check.R", "path_a.R", "path_b.R", "end.R"),
+  id = c("start", "check", "full", "quick", "complete"),
+  label = c("Load Config", "Validate Data?", "Full Analysis", "Quick Summary", "Complete"),
+  node_type = c("start", "decision", "process", "process", "end"),
+  input = c(NA, "config.json", "config.json", "config.json", "full.csv,summary.csv"),
+  output = c("config.json", NA, "full.csv", "summary.csv", NA),
   stringsAsFactors = FALSE
 )
 
