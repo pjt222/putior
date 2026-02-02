@@ -148,7 +148,7 @@ put_diagram(workflow)
 
 ### Choose a Theme
 ```{r eval=FALSE}
-put_diagram(workflow, theme = "forest")  # or: default, dark, neutral
+put_diagram(workflow, theme = "github")  # or: light, dark, minimal, viridis
 ```
 
 ### Save to File
@@ -192,7 +192,7 @@ put_generate(path)           # Generate annotation suggestions
 
 # Useful options
 put("./", recursive = TRUE)  # Include subdirectories
-put_diagram(wf, theme = "forest", direction = "LR")
+put_diagram(wf, theme = "github", direction = "LR")
 put_diagram(wf, show_artifacts = FALSE)  # Hide data files
 ```
 
