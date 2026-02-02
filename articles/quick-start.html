@@ -198,16 +198,16 @@
 <div class="section level4">
 <h4 id="step-2-add-annotations-to-your-code">Step 2: Add Annotations to Your Code<a class="anchor" aria-label="anchor" href="#step-2-add-annotations-to-your-code"></a>
 </h4>
-<p>Add <code>#put</code> comments to your R scripts:</p>
+<p>Add <code># put</code> comments to your R scripts:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># my_analysis.R</span></span>
-<span><span class="co">#put label:"Load Data", output:"raw_data"</span></span>
+<span><span class="co"># put label:"Load Data", output:"raw_data"</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"sales.csv"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#put label:"Clean Data", input:"raw_data", output:"clean_data"</span></span>
+<span><span class="co"># put label:"Clean Data", input:"raw_data", output:"clean_data"</span></span>
 <span><span class="va">clean</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html" class="external-link">complete.cases</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>, <span class="op">]</span></span>
 <span></span>
-<span><span class="co">#put label:"Generate Report", input:"clean_data", output:"report.html"</span></span>
+<span><span class="co"># put label:"Generate Report", input:"clean_data", output:"report.html"</span></span>
 <span><span class="fu">rmarkdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgs.rstudio.com/rmarkdown/reference/render.html" class="external-link">render</a></span><span class="op">(</span><span class="st">"report.Rmd"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -243,31 +243,31 @@
 <code class="sourceCode R"><span><span class="co"># Create a temporary file with annotations</span></span>
 <span><span class="va">temp_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".R"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="st">'#put label:"Extract", output:"raw.csv"'</span>,</span>
+<span>  <span class="st">'# put label:"Extract", output:"raw.csv"'</span>,</span>
 <span>  <span class="st">'data &lt;- read.csv("source.csv")'</span>,</span>
 <span>  <span class="st">''</span>,</span>
-<span>  <span class="st">'#put label:"Transform", input:"raw.csv", output:"clean.csv"'</span>,</span>
+<span>  <span class="st">'# put label:"Transform", input:"raw.csv", output:"clean.csv"'</span>,</span>
 <span>  <span class="st">'clean &lt;- transform(data)'</span>,</span>
 <span>  <span class="st">''</span>,</span>
-<span>  <span class="st">'#put label:"Load", input:"clean.csv", output:"database"'</span>,</span>
+<span>  <span class="st">'# put label:"Load", input:"clean.csv", output:"database"'</span>,</span>
 <span>  <span class="st">'write_to_db(clean)'</span></span>
 <span><span class="op">)</span>, <span class="va">temp_file</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Scan and visualize</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="va">temp_file</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in doTryCatch(return(expr), name, parentenv, handler): Validation issues in file25642258bb7c.R line 7:</span></span>
+<span><span class="co">#&gt; Warning in doTryCatch(return(expr), name, parentenv, handler): Validation issues in file259a1e0e0491.R line 7:</span></span>
 <span><span class="co">#&gt; File reference missing extension: database</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"```mermaid\n"</span><span class="op">)</span></span></code></pre></div>
 <pre class="mermaid"><code>
 ``` r
 cat(put_diagram(workflow, output = "raw"))</code></pre>
-<p>flowchart TD node_5a9a61c5_da65_4112_a4a1_c7e16591089d[Extract]
-node_08b01a35_7bb9_41ab_8ebf_9a137daeda03[Transform]
-f224f16c_7e37_4bf3_ab23_8e285c5ee702[Load]</p>
+<p>flowchart TD node_59221438_ca02_4b2e_9c3b_e4f434f5aca6[Extract]
+node_415a102d_c177_4dfa_b1a6_551e3ed3f647[Transform]
+c4e654c9_df76_40d4_a42c_4de3b056cfe4[Load]</p>
 <pre><code>%% Connections
-node_5a9a61c5_da65_4112_a4a1_c7e16591089d --&gt; node_08b01a35_7bb9_41ab_8ebf_9a137daeda03
-node_08b01a35_7bb9_41ab_8ebf_9a137daeda03 --&gt; f224f16c_7e37_4bf3_ab23_8e285c5ee702</code></pre>
+node_59221438_ca02_4b2e_9c3b_e4f434f5aca6 --&gt; node_415a102d_c177_4dfa_b1a6_551e3ed3f647
+node_415a102d_c177_4dfa_b1a6_551e3ed3f647 --&gt; c4e654c9_df76_40d4_a42c_4de3b056cfe4</code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n```\n"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -279,7 +279,10 @@ node_08b01a35_7bb9_41ab_8ebf_9a137daeda03 --&gt; f224f16c_7e37_4bf3_ab23_8e285c5
 ---
 ## Annotation Syntax at a Glance
 </code></pre>
-<p>#put label:“Step Name”, input:“file.csv”, output:“result.csv”</p>
+</div>
+<div class="section level2">
+<h2 id="put-labelstep-name-inputfile-csv-outputresult-csv">put label:“Step Name”, input:“file.csv”, output:“result.csv”<a class="anchor" aria-label="anchor" href="#put-labelstep-name-inputfile-csv-outputresult-csv"></a>
+</h2>
 <pre><code>
 | Field | Purpose | Required |
 |-------|---------|----------|
@@ -299,10 +302,10 @@ putior works with 30+ languages. Comment prefix is auto-detected:
 
 | Language | Annotation |
 |----------|------------|
-| R, Python, Shell | `#put label:"..."` |
-| SQL, Lua | `--put label:"..."` |
-| JavaScript, Go, Rust | `//put label:"..."` |
-| MATLAB | `%put label:"..."` |
+| R, Python, Shell | `# put label:"..."` |
+| SQL, Lua | `-- put label:"..."` |
+| JavaScript, Go, Rust | `// put label:"..."` |
+| MATLAB | `% put label:"..."` |
 
 ---
 

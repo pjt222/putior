@@ -177,6 +177,8 @@ without explicit permission
     for AI assistants (Claude Code, Claude Desktop)
 20. **ACP Server Integration** - Expose putior as an ACP agent for
     inter-agent communication via REST API
+21. **Colorblind-Safe Themes** - Added 4 viridis family themes (viridis,
+    magma, plasma, cividis) for accessibility
 
 ## MCP Server Integration
 
@@ -362,10 +364,10 @@ file extension:
 
 | Comment Style | Languages                                                                     | Extensions                                        |
 |---------------|-------------------------------------------------------------------------------|---------------------------------------------------|
-| `#put`        | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML                               | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`  |
-| `--put`       | SQL, Lua, Haskell                                                             | `.sql`, `.lua`, `.hs`                             |
-| `//put`       | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs` |
-| `%put`        | MATLAB, LaTeX                                                                 | `.m`, `.tex`                                      |
+| `# put`       | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML                               | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`  |
+| `-- put`      | SQL, Lua, Haskell                                                             | `.sql`, `.lua`, `.hs`                             |
+| `// put`      | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs` |
+| `% put`       | MATLAB, LaTeX                                                                 | `.m`, `.tex`                                      |
 
 ### Key Functions
 
@@ -387,19 +389,19 @@ list_supported_languages(detection_only = TRUE)  # Only with auto-detection patt
 
 ``` sql
 -- query.sql
---put id:"load_data", label:"Load Customer Data", output:"customers"
+-- put id:"load_data", label:"Load Customer Data", output:"customers"
 SELECT * FROM customers;
 ```
 
 ``` javascript
 // process.js
-//put id:"transform", label:"Transform JSON", input:"data.json", output:"output.json"
+// put id:"transform", label:"Transform JSON", input:"data.json", output:"output.json"
 const transformed = data.map(process);
 ```
 
 ``` matlab
 % analysis.m
-%put id:"compute", label:"Statistical Analysis", input:"data.mat", output:"results.mat"
+% put id:"compute", label:"Statistical Analysis", input:"data.mat", output:"results.mat"
 results = compute_statistics(data);
 ```
 
@@ -508,7 +510,7 @@ how roxygen2 auto-generates documentation skeletons. Two primary modes:
     annotations
 2.  **Comment generation**:
     [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md)
-    creates `#put` annotation text for persistent documentation
+    creates `# put` annotation text for persistent documentation
 
 ### Core Functions
 
@@ -733,12 +735,12 @@ anthropic \| `Anthropic()`, `client.messages.create()` \| \| langchain
 
 ``` r
 # Script 1: Creates variable and saves it
-#put output:'data.internal, data.RData'
+# put output:'data.internal, data.RData'
 data <- process_something()
 save(data, file = 'data.RData')
 
-# Script 2: Uses saved file, creates new variable  
-#put input:'data.RData', output:'results.internal, results.csv'
+# Script 2: Uses saved file, creates new variable
+# put input:'data.RData', output:'results.internal, results.csv'
 load('data.RData')  # NOT 'data.internal'
 results <- analyze(data)
 write.csv(results, 'results.csv')
@@ -806,6 +808,52 @@ features are backward compatible (off by default)
 ### Reference
 
 - **Example**: `inst/examples/interactive-diagrams-example.R`
+
+## Diagram Themes
+
+### Available Themes (9 total)
+
+**Standard Themes:** \| Theme \| Description \| \|——-\|————-\| \|
+`light` \| Default light theme with bright colors \| \| `dark` \| Dark
+theme for dark mode environments \| \| `auto` \| GitHub-adaptive with
+solid colors \| \| `minimal` \| Grayscale professional, print-friendly
+\| \| `github` \| Optimized for GitHub README files \|
+
+**Colorblind-Safe Themes (Viridis Family):** \| Theme \| Palette \| Best
+For \| \|——-\|———\|———-\| \| `viridis` \| Purple→Blue→Green→Yellow \|
+General accessibility \| \| `magma` \| Purple→Red→Yellow \| Print, high
+contrast \| \| `plasma` \| Purple→Pink→Orange→Yellow \| Presentations \|
+\| `cividis` \| Blue→Gray→Yellow \| Deuteranopia/protanopia \|
+
+### Usage
+
+``` r
+# Standard themes
+put_diagram(workflow, theme = "github")
+
+# Colorblind-safe themes
+put_diagram(workflow, theme = "viridis")
+put_diagram(workflow, theme = "cividis")  # Maximum accessibility
+
+# List all available themes
+get_diagram_themes()
+```
+
+### Key Characteristics
+
+- Viridis themes are perceptually uniform (equal steps appear equally
+  different)
+- All viridis themes tested for deuteranopia, protanopia, and tritanopia
+- Cividis avoids red-green entirely, making it optimal for red-green
+  colorblindness
+- Artifact nodes use neutral gray across all themes for consistency
+
+### Reference
+
+- **Example**: `inst/examples/theme-examples.R`
+- **Key File**: `R/put_diagram.R` (functions:
+  [`get_theme_colors()`](https://pjt222.github.io/putior/reference/get_theme_colors.md),
+  [`get_diagram_themes()`](https://pjt222.github.io/putior/reference/get_diagram_themes.md))
 
 ## Interactive Sandbox (Shiny App)
 

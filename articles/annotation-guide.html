@@ -207,21 +207,21 @@ through your analysis pipeline using special annotations.</p>
 <p>PUT annotations are special comments that describe workflow nodes.
 Start simple:</p>
 <p><strong>Minimal annotation (just a label):</strong></p>
-<pre><code><span><span class="co">#put label:"Load Data"</span></span></code></pre>
+<pre><code><span><span class="co"># put label:"Load Data"</span></span></code></pre>
 <p>That’s all you need! putior will: - Auto-generate a unique ID -
 Default <code>node_type</code> to <code>"process"</code> - Default
 <code>output</code> to the filename</p>
 <p><strong>Add more detail as needed:</strong></p>
-<pre><code><span><span class="co">#put label:"Load Data", node_type:"input", output:"data.csv"</span></span></code></pre>
+<pre><code><span><span class="co"># put label:"Load Data", node_type:"input", output:"data.csv"</span></span></code></pre>
 <p><strong>Full R script example:</strong></p>
 <pre><code><span><span class="co"># data_processing.R</span></span>
-<span><span class="co">#put label:"Load Customer Data", node_type:"input", output:"raw_data.csv"</span></span>
+<span><span class="co"># put label:"Load Customer Data", node_type:"input", output:"raw_data.csv"</span></span>
 <span></span>
 <span><span class="co"># Your actual code</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"customer_data.csv"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">data</span>, <span class="st">"raw_data.csv"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#put label:"Clean and Validate", input:"raw_data.csv", output:"clean_data.csv"</span></span>
+<span><span class="co"># put label:"Clean and Validate", input:"raw_data.csv", output:"clean_data.csv"</span></span>
 <span></span>
 <span><span class="co"># Data cleaning code</span></span>
 <span><span class="va">cleaned_data</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op">%&gt;%</span></span>
@@ -231,7 +231,7 @@ Default <code>node_type</code> to <code>"process"</code> - Default
 <span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">cleaned_data</span>, <span class="st">"clean_data.csv"</span><span class="op">)</span></span></code></pre>
 <p><strong>Python script example:</strong></p>
 <pre><code># analysis.py
-#put id:"analyze_sales", label:"Sales Analysis", node_type:"process", input:"clean_data.csv", output:"sales_report.json"
+# put id:"analyze_sales", label:"Sales Analysis", node_type:"process", input:"clean_data.csv", output:"sales_report.json"
 
 import pandas as pd
 import json
@@ -325,18 +325,18 @@ columns.</p>
 <h3 id="basic-format">Basic Format<a class="anchor" aria-label="anchor" href="#basic-format"></a>
 </h3>
 <p>The general syntax for PUT annotations is:</p>
-<pre><code><span><span class="co">#put property1:"value1", property2:"value2", property3:"value3"</span></span></code></pre>
+<pre><code><span><span class="co"># put property1:"value1", property2:"value2", property3:"value3"</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="flexible-syntax-options">Flexible Syntax Options<a class="anchor" aria-label="anchor" href="#flexible-syntax-options"></a>
 </h3>
 <p>PUT annotations support several formats to fit different coding
 styles:</p>
-<pre><code><span><span class="co">#put id:"my_node", label:"My Process"           # Standard format</span></span>
-<span><span class="co"># put id:"my_node", label:"My Process"          # Space after #</span></span>
-<span><span class="co">#put| id:"my_node", label:"My Process"          # Pipe separator</span></span>
-<span><span class="co">#put id:'my_node', label:'Single quotes'        # Single quotes</span></span>
-<span><span class="co">#put id:"my_node", label:'Mixed quotes'         # Mixed quote styles</span></span></code></pre>
+<pre><code><span><span class="co"># put id:"my_node", label:"My Process"          # Standard format (matches logo)</span></span>
+<span><span class="co">#put id:"my_node", label:"My Process"           # Also valid (no space)</span></span>
+<span><span class="co"># put| id:"my_node", label:"My Process"         # Pipe separator</span></span>
+<span><span class="co"># put id:'my_node', label:'Single quotes'       # Single quotes</span></span>
+<span><span class="co"># put id:"my_node", label:'Mixed quotes'        # Mixed quote styles</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="multiline-annotations">Multiline Annotations<a class="anchor" aria-label="anchor" href="#multiline-annotations"></a>
@@ -345,13 +345,13 @@ styles:</p>
 (<code>\</code>) continuation:</p>
 <p><strong>R/Python style:</strong></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#put id:"complex_etl", \</span></span>
-<span><span class="co">#    label:"Complex ETL Process", \</span></span>
-<span><span class="co">#    node_type:"process", \</span></span>
-<span><span class="co">#    input:"raw_data.csv, config.yaml", \</span></span>
-<span><span class="co">#    output:"processed.parquet", \</span></span>
-<span><span class="co">#    author:"Data Team", \</span></span>
-<span><span class="co">#    version:"2.0"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># put id:"complex_etl", \</span></span>
+<span><span class="co">#     label:"Complex ETL Process", \</span></span>
+<span><span class="co">#     node_type:"process", \</span></span>
+<span><span class="co">#     input:"raw_data.csv, config.yaml", \</span></span>
+<span><span class="co">#     output:"processed.parquet", \</span></span>
+<span><span class="co">#     author:"Data Team", \</span></span>
+<span><span class="co">#     version:"2.0"</span></span></code></pre></div>
 <p><strong>SQL style:</strong></p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co">--put id:"load_customers", \</span></span>
 <span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co">--    label:"Load Customer Data", \</span></span>
@@ -375,15 +375,15 @@ spaces)</li>
 </ol>
 <p><strong>Example with many properties:</strong></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#put id:"train_model", \</span></span>
-<span><span class="co">#    label:"Train Random Forest Model", \</span></span>
-<span><span class="co">#    node_type:"process", \</span></span>
-<span><span class="co">#    input:"features.csv, labels.csv", \</span></span>
-<span><span class="co">#    output:"model.rds, metrics.json", \</span></span>
-<span><span class="co">#    group:"machine_learning", \</span></span>
-<span><span class="co">#    stage:"3", \</span></span>
-<span><span class="co">#    estimated_time:"45min", \</span></span>
-<span><span class="co">#    memory_intensive:"true"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># put id:"train_model", \</span></span>
+<span><span class="co">#     label:"Train Random Forest Model", \</span></span>
+<span><span class="co">#     node_type:"process", \</span></span>
+<span><span class="co">#     input:"features.csv, labels.csv", \</span></span>
+<span><span class="co">#     output:"model.rds, metrics.json", \</span></span>
+<span><span class="co">#     group:"machine_learning", \</span></span>
+<span><span class="co">#     stage:"3", \</span></span>
+<span><span class="co">#     estimated_time:"45min", \</span></span>
+<span><span class="co">#     memory_intensive:"true"</span></span></code></pre></div>
 <blockquote>
 <p><strong>When Multiline Annotations Don’t Work:</strong></p>
 <ul>
@@ -421,7 +421,7 @@ extension:</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left"><code>#put</code></td>
+<td align="left"><code># put</code></td>
 <td align="left">R, Python, Shell, Julia, Ruby, YAML</td>
 <td align="left">
 <code>.R</code>, <code>.py</code>, <code>.sh</code>,
@@ -429,7 +429,7 @@ extension:</p>
 </td>
 </tr>
 <tr class="even">
-<td align="left"><code>--put</code></td>
+<td align="left"><code>-- put</code></td>
 <td align="left">SQL, Lua, Haskell</td>
 <td align="left">
 <code>.sql</code>, <code>.lua</code>,
@@ -437,7 +437,7 @@ extension:</p>
 </td>
 </tr>
 <tr class="odd">
-<td align="left"><code>//put</code></td>
+<td align="left"><code>// put</code></td>
 <td align="left">JavaScript, TypeScript, C, Java, Go, Rust</td>
 <td align="left">
 <code>.js</code>, <code>.ts</code>, <code>.c</code>,
@@ -445,7 +445,7 @@ extension:</p>
 </td>
 </tr>
 <tr class="even">
-<td align="left"><code>%put</code></td>
+<td align="left"><code>% put</code></td>
 <td align="left">MATLAB, LaTeX</td>
 <td align="left">
 <code>.m</code>, <code>.tex</code>
@@ -558,7 +558,7 @@ workflows</li>
 <h3 id="custom-properties">Custom Properties<a class="anchor" aria-label="anchor" href="#custom-properties"></a>
 </h3>
 <p>Add any properties you need for visualization or metadata:</p>
-<pre><code><span><span class="co">#put id:"train_model", label:"Train ML Model", node_type:"process", color:"green", group:"machine_learning", duration:"45min", priority:"high"</span></span></code></pre>
+<pre><code><span><span class="co"># put id:"train_model", label:"Train ML Model", node_type:"process", color:"green", group:"machine_learning", duration:"45min", priority:"high"</span></span></code></pre>
 <p>These custom properties can be used by visualization tools or
 workflow management systems.</p>
 </div>
@@ -622,8 +622,8 @@ workflow management systems.</p>
 generate a unique UUID:</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Annotations without explicit IDs get auto-generated UUIDs</span></span>
-<span><span class="co">#put label:"Load Data", node_type:"input", output:"data.csv"</span></span>
-<span><span class="co">#put label:"Process Data", node_type:"process", input:"data.csv", output:"clean.csv"</span></span>
+<span><span class="co"># put label:"Load Data", node_type:"input", output:"data.csv"</span></span>
+<span><span class="co"># put label:"Process Data", node_type:"process", input:"data.csv", output:"clean.csv"</span></span>
 <span></span>
 <span><span class="co"># Extract workflow - IDs will be auto-generated</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./"</span><span class="op">)</span></span>
@@ -638,11 +638,11 @@ generate a unique UUID:</p>
 the file name as the output:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># In process_data.R:</span></span>
-<span><span class="co">#put label:"Process Step", node_type:"process", input:"raw.csv"</span></span>
+<span><span class="co"># put label:"Process Step", node_type:"process", input:"raw.csv"</span></span>
 <span><span class="co"># No output specified - will default to "process_data.R"</span></span>
 <span></span>
 <span><span class="co"># In analyze_data.R:</span></span>
-<span><span class="co">#put label:"Analyze", node_type:"process", input:"process_data.R", output:"results.csv"</span></span>
+<span><span class="co"># put label:"Analyze", node_type:"process", input:"process_data.R", output:"results.csv"</span></span>
 <span><span class="co"># This creates a connection from process_data.R to analyze_data.R</span></span></code></pre></div>
 <p>This feature ensures that scripts can be connected in workflows even
 when explicit output files aren’t specified.</p>
@@ -654,16 +654,16 @@ when explicit output files aren’t specified.</p>
 pattern:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># In main.R (sources other scripts):</span></span>
-<span><span class="co">#put label:"Main Analysis", input:"load_data.R,process_data.R", output:"report.pdf"</span></span>
+<span><span class="co"># put label:"Main Analysis", input:"load_data.R,process_data.R", output:"report.pdf"</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"load_data.R"</span><span class="op">)</span>    <span class="co"># Reading load_data.R into main.R</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"process_data.R"</span><span class="op">)</span> <span class="co"># Reading process_data.R into main.R</span></span>
 <span></span>
 <span><span class="co"># In load_data.R (sourced by main.R):</span></span>
-<span><span class="co">#put label:"Data Loader", node_type:"input"</span></span>
+<span><span class="co"># put label:"Data Loader", node_type:"input"</span></span>
 <span><span class="co"># output defaults to "load_data.R"</span></span>
 <span></span>
 <span><span class="co"># In process_data.R (sourced by main.R, depends on load_data.R):</span></span>
-<span><span class="co">#put label:"Data Processor", input:"load_data.R"</span></span>
+<span><span class="co"># put label:"Data Processor", input:"load_data.R"</span></span>
 <span><span class="co"># output defaults to "process_data.R"</span></span></code></pre></div>
 <p>This correctly shows the flow: sourced scripts are
 <strong>inputs</strong> to the main script.</p>
@@ -695,12 +695,12 @@ workflows - Example: <code>my_data.RData</code>,
 </h3>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Script 1: Create variable and save it</span></span>
-<span><span class="co">#put id:"create_data", output:"dataset.internal, dataset.RData"</span></span>
+<span><span class="co"># put id:"create_data", output:"dataset.internal, dataset.RData"</span></span>
 <span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></span><span class="op">(</span><span class="va">dataset</span>, file <span class="op">=</span> <span class="st">"dataset.RData"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Script 2: Load data and create new variables  </span></span>
-<span><span class="co">#put id:"analyze_data", input:"dataset.RData", output:"analysis.internal, summary.txt"</span></span>
+<span><span class="co"># Script 2: Load data and create new variables</span></span>
+<span><span class="co"># put id:"analyze_data", input:"dataset.RData", output:"analysis.internal, summary.txt"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">"dataset.RData"</span><span class="op">)</span>  <span class="co"># Load the persistent file (NOT dataset.internal)</span></span>
 <span><span class="va">analysis</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">dataset</span><span class="op">)</span>  <span class="co"># Create new in-memory variable</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span><span class="va">analysis</span><span class="op">)</span>, <span class="st">"summary.txt"</span><span class="op">)</span></span></code></pre></div>
@@ -710,10 +710,10 @@ workflows - Example: <code>my_data.RData</code>,
 </h3>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># INCORRECT: Using .internal as input between scripts</span></span>
-<span><span class="co">#put input:"dataset.internal"  # This is wrong!</span></span>
+<span><span class="co"># put input:"dataset.internal"  # This is wrong!</span></span>
 <span></span>
 <span><span class="co"># CORRECT: Use persistent files as inputs</span></span>
-<span><span class="co">#put input:"dataset.RData"     # This is correct!</span></span></code></pre></div>
+<span><span class="co"># put input:"dataset.RData"     # This is correct!</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="complete-example">Complete Example<a class="anchor" aria-label="anchor" href="#complete-example"></a>
@@ -733,7 +733,7 @@ workflows - Example: <code>my_data.RData</code>,
 <h3 id="data-collection-python">1. Data Collection (Python)<a class="anchor" aria-label="anchor" href="#data-collection-python"></a>
 </h3>
 <pre><code># 01_collect_data.py
-#put id:"fetch_api_data", label:"Fetch Data from API", node_type:"input", output:"raw_api_data.json"
+# put id:"fetch_api_data", label:"Fetch Data from API", node_type:"input", output:"raw_api_data.json"
 
 import requests
 import json
@@ -747,8 +747,8 @@ with open("raw_api_data.json", "w") as f:
 <div class="section level3">
 <h3 id="data-processing-r">2. Data Processing (R)<a class="anchor" aria-label="anchor" href="#data-processing-r"></a>
 </h3>
-<pre><code><span><span class="co"># 02_process_data.R  </span></span>
-<span><span class="co">#put id:"clean_api_data", label:"Clean and Structure Data", node_type:"process", input:"raw_api_data.json", output:"processed_sales.csv"</span></span>
+<pre><code><span><span class="co"># 02_process_data.R</span></span>
+<span><span class="co"># put id:"clean_api_data", label:"Clean and Structure Data", node_type:"process", input:"raw_api_data.json", output:"processed_sales.csv"</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jeroen.r-universe.dev/jsonlite" class="external-link">jsonlite</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -772,18 +772,18 @@ with open("raw_api_data.json", "w") as f:
 <h3 id="analysis-and-reporting-r">3. Analysis and Reporting (R)<a class="anchor" aria-label="anchor" href="#analysis-and-reporting-r"></a>
 </h3>
 <pre><code><span><span class="co"># 03_analyze_report.R</span></span>
-<span><span class="co">#put id:"sales_analysis", label:"Perform Sales Analysis", node_type:"process", input:"processed_sales.csv", output:"analysis_results.rds"</span></span>
-<span><span class="co">#put id:"generate_report", label:"Generate HTML Report", node_type:"output", input:"analysis_results.rds", output:"sales_report.html"</span></span>
+<span><span class="co"># put id:"sales_analysis", label:"Perform Sales Analysis", node_type:"process", input:"processed_sales.csv", output:"analysis_results.rds"</span></span>
+<span><span class="co"># put id:"generate_report", label:"Generate HTML Report", node_type:"output", input:"analysis_results.rds", output:"sales_report.html"</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Load processed data  </span></span>
+<span><span class="co"># Load processed data</span></span>
 <span><span class="va">sales_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"processed_sales.csv"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Perform analysis</span></span>
 <span><span class="va">analysis_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  total_sales <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">sales_data</span><span class="op">$</span><span class="va">sale_amount</span><span class="op">)</span>,</span>
-<span>  monthly_trends <span class="op">=</span> <span class="va">sales_data</span> <span class="op">%&gt;%</span> </span>
+<span>  monthly_trends <span class="op">=</span> <span class="va">sales_data</span> <span class="op">%&gt;%</span></span>
 <span>    <span class="fu">group_by</span><span class="op">(</span>month <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">sale_date</span>, <span class="st">"%Y-%m"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>    <span class="fu">summarise</span><span class="op">(</span>monthly_total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">sale_amount</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  top_products <span class="op">=</span> <span class="va">sales_data</span> <span class="op">%&gt;%</span></span>
@@ -797,7 +797,7 @@ with open("raw_api_data.json", "w") as f:
 <span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">analysis_results</span>, <span class="st">"analysis_results.rds"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Generate report</span></span>
-<span><span class="fu">rmarkdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgs.rstudio.com/rmarkdown/reference/render.html" class="external-link">render</a></span><span class="op">(</span><span class="st">"report_template.Rmd"</span>, </span>
+<span><span class="fu">rmarkdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgs.rstudio.com/rmarkdown/reference/render.html" class="external-link">render</a></span><span class="op">(</span><span class="st">"report_template.Rmd"</span>,</span>
 <span>                  output_file <span class="op">=</span> <span class="st">"sales_report.html"</span><span class="op">)</span></span></code></pre>
 </div>
 <div class="section level3">
@@ -819,40 +819,40 @@ Report</p>
 </h3>
 <p>Choose clear, descriptive names that explain what each step does:</p>
 <pre><code><span><span class="co"># Good</span></span>
-<span><span class="co">#put name:"load_customer_transactions", label:"Load Customer Transaction Data"</span></span>
-<span><span class="co">#put name:"calculate_monthly_revenue", label:"Calculate Monthly Revenue Totals"</span></span>
+<span><span class="co"># put name:"load_customer_transactions", label:"Load Customer Transaction Data"</span></span>
+<span><span class="co"># put name:"calculate_monthly_revenue", label:"Calculate Monthly Revenue Totals"</span></span>
 <span></span>
 <span><span class="co"># Less descriptive</span></span>
-<span><span class="co">#put name:"step1", label:"Load data"</span></span>
-<span><span class="co">#put name:"process", label:"Do calculations"</span></span></code></pre>
+<span><span class="co"># put name:"step1", label:"Load data"</span></span>
+<span><span class="co"># put name:"process", label:"Do calculations"</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="document-data-dependencies">2. Document Data Dependencies<a class="anchor" aria-label="anchor" href="#document-data-dependencies"></a>
 </h3>
 <p>Always specify inputs and outputs for data processing steps:</p>
-<pre><code><span><span class="co">#put name:"merge_datasets", label:"Merge Customer and Transaction Data", input:"customers.csv,transactions.csv", output:"merged_data.csv"</span></span></code></pre>
+<pre><code><span><span class="co"># put name:"merge_datasets", label:"Merge Customer and Transaction Data", input:"customers.csv,transactions.csv", output:"merged_data.csv"</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="use-consistent-node-types">3. Use Consistent Node Types<a class="anchor" aria-label="anchor" href="#use-consistent-node-types"></a>
 </h3>
 <p>Stick to a standard set of node types across your team:</p>
-<pre><code><span><span class="co">#put name:"load_raw_data", label:"Load Raw Sales Data", node_type:"input"</span></span>
-<span><span class="co">#put name:"clean_data", label:"Clean and Validate", node_type:"process"  </span></span>
-<span><span class="co">#put name:"export_results", label:"Export Final Results", node_type:"output"</span></span></code></pre>
+<pre><code><span><span class="co"># put name:"load_raw_data", label:"Load Raw Sales Data", node_type:"input"</span></span>
+<span><span class="co"># put name:"clean_data", label:"Clean and Validate", node_type:"process"</span></span>
+<span><span class="co"># put name:"export_results", label:"Export Final Results", node_type:"output"</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="add-helpful-metadata">4. Add Helpful Metadata<a class="anchor" aria-label="anchor" href="#add-helpful-metadata"></a>
 </h3>
 <p>Include metadata that helps with workflow understanding:</p>
-<pre><code><span><span class="co">#put name:"train_model", label:"Train Random Forest Model", node_type:"process", estimated_time:"30min", requires:"tidymodels", memory_intensive:"true"</span></span></code></pre>
+<pre><code><span><span class="co"># put name:"train_model", label:"Train Random Forest Model", node_type:"process", estimated_time:"30min", requires:"tidymodels", memory_intensive:"true"</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="group-related-operations">5. Group Related Operations<a class="anchor" aria-label="anchor" href="#group-related-operations"></a>
 </h3>
 <p>Use grouping properties to organize complex workflows:</p>
-<pre><code><span><span class="co">#put name:"feature_engineering", label:"Engineer Features", group:"preprocessing", stage:"1"</span></span>
-<span><span class="co">#put name:"model_training", label:"Train Model", group:"modeling", stage:"2"</span></span>
-<span><span class="co">#put name:"model_evaluation", label:"Evaluate Model", group:"modeling", stage:"3"</span></span></code></pre>
+<pre><code><span><span class="co"># put name:"feature_engineering", label:"Engineer Features", group:"preprocessing", stage:"1"</span></span>
+<span><span class="co"># put name:"model_training", label:"Train Model", group:"modeling", stage:"2"</span></span>
+<span><span class="co"># put name:"model_evaluation", label:"Evaluate Model", group:"modeling", stage:"3"</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -876,7 +876,7 @@ Logging</a></strong> - Enable detailed output</li>
 <p><strong>Quick diagnostic:</strong></p>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Test if your annotation is valid</span></span>
-<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'#put id:"test", label:"Test Node"'</span><span class="op">)</span>  <span class="co"># Should be TRUE</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'# put id:"test", label:"Test Node"'</span><span class="op">)</span>  <span class="co"># Should be TRUE</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="see-also">See Also<a class="anchor" aria-label="anchor" href="#see-also"></a>

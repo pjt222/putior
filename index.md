@@ -50,7 +50,8 @@ workflows, and understanding complex codebases.
 - **Beautiful diagrams** - Generate professional Mermaid flowcharts
 - **File flow tracking** - Automatically connects scripts based on
   input/output files  
-- **Multiple themes** - 5 built-in themes including GitHub-optimized
+- **Multiple themes** - 9 built-in themes including GitHub-optimized and
+  colorblind-safe (viridis family)
 - **Cross-language support** - Works with 30+ file types including R,
   Python, SQL, JavaScript, TypeScript, Go, Rust, and more
 - **Flexible output** - Console, file, or clipboard export
@@ -64,7 +65,7 @@ workflows, and understanding complex codebases.
 
 ``` r
 # 1. Add annotation to your script
-#put label:"Load Data", output:"clean.csv"
+# put label:"Load Data", output:"clean.csv"
 
 # 2. Generate diagram
 library(putior)
@@ -106,16 +107,16 @@ pak::pkg_install("pjt222/putior")  # GitHub version
 
 ### Step 1: Annotate Your Code
 
-Add `#put` comments to describe each step in your workflow. Start
+Add `# put` comments to describe each step in your workflow. Start
 simple:
 
 > \[!TIP\] **One line is enough!** The simplest annotation is
-> `#put label:"My Step"` - ID, type, and output are auto-generated.
+> `# put label:"My Step"` - ID, type, and output are auto-generated.
 
 **Minimal annotation (just a label):**
 
 ``` r
-#put label:"Load Data"
+# put label:"Load Data"
 ```
 
 That’s it! putior will: - Auto-generate a unique ID for the node -
@@ -125,7 +126,7 @@ filename (for connecting scripts)
 **Add more detail as needed:**
 
 ``` r
-#put label:"Fetch Sales Data", node_type:"input", output:"sales_data.csv"
+# put label:"Fetch Sales Data", node_type:"input", output:"sales_data.csv"
 ```
 
 **Complete example with two files:**
@@ -133,7 +134,7 @@ filename (for connecting scripts)
 **`01_fetch_data.R`**
 
 ``` r
-#put label:"Fetch Sales Data", node_type:"input", output:"sales_data.csv"
+# put label:"Fetch Sales Data", node_type:"input", output:"sales_data.csv"
 
 # Your actual code
 library(readr)
@@ -144,7 +145,7 @@ write_csv(sales_data, "sales_data.csv")
 **`02_clean_data.py`**
 
 ``` python
-#put label:"Clean and Process", input:"sales_data.csv", output:"clean_sales.csv"
+# put label:"Clean and Process", input:"sales_data.csv", output:"clean_sales.csv"
 
 import pandas as pd
 df = pd.read_csv("sales_data.csv")
@@ -191,7 +192,7 @@ scripts and orchestrate them in a main workflow:
 **`utils.R` - Utility functions**
 
 ``` r
-#put label:"Data Utilities", node_type:"input"
+# put label:"Data Utilities", node_type:"input"
 
 load_and_clean <- function(file) {
   data <- read.csv(file)
@@ -207,7 +208,7 @@ validate_data <- function(data) {
 **`analysis.R` - Analysis functions**
 
 ``` r
-#put label:"Statistical Analysis", input:"utils.R"
+# put label:"Statistical Analysis", input:"utils.R"
 
 perform_analysis <- function(data) {
   # Uses utility functions from utils.R
@@ -219,7 +220,7 @@ perform_analysis <- function(data) {
 **`main.R` - Workflow orchestrator**
 
 ``` r
-#put label:"Main Analysis Pipeline", input:"utils.R,analysis.R", output:"results.csv"
+# put label:"Main Analysis Pipeline", input:"utils.R,analysis.R", output:"results.csv"
 
 source("utils.R")     # Load utility functions
 source("analysis.R")  # Load analysis functions
@@ -502,7 +503,7 @@ put_diagram(workflow, show_artifacts = TRUE, show_files = TRUE)
 
 ## 🎨 Theme System
 
-putior provides 5 carefully designed themes optimized for different
+putior provides 9 carefully designed themes optimized for different
 environments:
 
 ``` r
@@ -512,6 +513,8 @@ get_diagram_themes()
 
 ### Theme Overview
 
+#### Standard Themes
+
 | Theme     | Best For                        | Description                                    |
 |-----------|---------------------------------|------------------------------------------------|
 | `light`   | Documentation sites, tutorials  | Default light theme with bright colors         |
@@ -519,6 +522,18 @@ get_diagram_themes()
 | `auto`    | GitHub README files             | GitHub-adaptive theme that works in both modes |
 | `minimal` | Business reports, presentations | Grayscale professional theme                   |
 | `github`  | **GitHub README (recommended)** | Optimized for maximum GitHub compatibility     |
+
+#### Colorblind-Safe Themes (Viridis Family)
+
+| Theme     | Best For              | Palette                               |
+|-----------|-----------------------|---------------------------------------|
+| `viridis` | General accessibility | Purple → Blue → Green → Yellow        |
+| `magma`   | Print, high contrast  | Purple → Red → Yellow                 |
+| `plasma`  | Presentations         | Purple → Pink → Orange → Yellow       |
+| `cividis` | Maximum accessibility | Blue → Gray → Yellow (red-green safe) |
+
+All viridis themes are perceptually uniform and tested for deuteranopia,
+protanopia, and tritanopia.
 
 ### Theme Examples
 
@@ -656,6 +671,8 @@ flowchart TD
 | `auto`    | GitHub README files             | Adapts automatically  |
 | `github`  | **GitHub README (recommended)** | Maximum compatibility |
 | `minimal` | Business reports, presentations | Print-friendly        |
+| `viridis` | **Accessibility (recommended)** | Colorblind-safe       |
+| `cividis` | Red-green colorblindness        | Maximum accessibility |
 
 ### Pro Tips
 
@@ -666,6 +683,8 @@ flowchart TD
 - **For Reports**: Use `theme = "minimal"` for professional,
   print-friendly diagrams
 - **For Demos**: Light theme usually shows colors best in presentations
+- **For Accessibility**: Use `theme = "viridis"` or `theme = "cividis"`
+  for colorblind-safe diagrams
 
 ### Theme Usage Examples
 
@@ -673,7 +692,7 @@ flowchart TD
 # For GitHub README (recommended)
 put_diagram(workflow, theme = "github")
 
-# For GitHub README (adaptive)  
+# For GitHub README (adaptive)
 put_diagram(workflow, theme = "auto")
 
 # For dark documentation sites
@@ -682,12 +701,17 @@ put_diagram(workflow, theme = "dark", direction = "LR")
 # For professional reports
 put_diagram(workflow, theme = "minimal", output = "file", file = "report.md")
 
+# For colorblind-safe diagrams
+put_diagram(workflow, theme = "viridis")     # General accessibility
+put_diagram(workflow, theme = "cividis")     # Red-green colorblindness
+
 # Save all themes for comparison
-themes <- c("light", "dark", "auto", "github", "minimal")
+themes <- c("light", "dark", "auto", "github", "minimal",
+            "viridis", "magma", "plasma", "cividis")
 for(theme in themes) {
-  put_diagram(workflow, 
+  put_diagram(workflow,
              theme = theme,
-             output = "file", 
+             output = "file",
              file = paste0("workflow_", theme, ".md"),
              title = paste("Workflow -", stringr::str_to_title(theme), "Theme"))
 }
@@ -776,17 +800,17 @@ happens automatically:
 **Minimal valid annotation:**
 
 ``` r
-#put label:"My Step"
+# put label:"My Step"
 # That's all you need to get started!
 ```
 
 **Progressively add detail:**
 
 ``` r
-#put label:"My Step"                                          # Minimal
-#put label:"My Step", node_type:"input"                       # + type
-#put label:"My Step", node_type:"input", output:"data.csv"    # + output
-#put id:"step1", label:"My Step", node_type:"input", output:"data.csv"  # Full
+# put label:"My Step"                                          # Minimal
+# put label:"My Step", node_type:"input"                       # + type
+# put label:"My Step", node_type:"input", output:"data.csv"    # + output
+# put id:"step1", label:"My Step", node_type:"input", output:"data.csv"  # Full
 ```
 
 ### Basic Syntax
@@ -794,16 +818,16 @@ happens automatically:
 All PUT annotations follow this format:
 
 ``` r
-#put property1:"value1", property2:"value2", property3:"value3"
+# put property1:"value1", property2:"value2", property3:"value3"
 ```
 
-### Alternative Formats (All Valid)
+### Flexible Syntax Options (All Valid)
 
 ``` r
-#put id:"node_id", label:"Description"              # Standard
-# put id:"node_id", label:"Description"             # Space after #
-#put| id:"node_id", label:"Description"             # Pipe separator
-#put: id:"node_id", label:"Description"             # Colon separator
+# put id:"node_id", label:"Description"             # Standard format (matches logo)
+#put id:"node_id", label:"Description"              # Also valid (no space)
+# put| id:"node_id", label:"Description"            # Pipe separator
+# put: id:"node_id", label:"Description"            # Colon separator
 ```
 
 ### Annotations
@@ -870,21 +894,21 @@ stadium shapes without special colors
 **R Scripts:**
 
 ``` r
-#put id:"load_sales_data", label:"Load Sales Data from API", node_type:"input", output:"raw_sales.csv, metadata.json"
+# put id:"load_sales_data", label:"Load Sales Data from API", node_type:"input", output:"raw_sales.csv, metadata.json"
 
-#put id:"validate_data", label:"Validate and Clean Data", node_type:"process", input:"raw_sales.csv", output:"clean_sales.csv"
+# put id:"validate_data", label:"Validate and Clean Data", node_type:"process", input:"raw_sales.csv", output:"clean_sales.csv"
 
-#put id:"generate_report", label:"Generate Executive Summary", node_type:"output", input:"clean_sales.csv, metadata.json", output:"executive_summary.pdf"
+# put id:"generate_report", label:"Generate Executive Summary", node_type:"output", input:"clean_sales.csv, metadata.json", output:"executive_summary.pdf"
 ```
 
 **Python Scripts:**
 
 ``` python
-#put id:"collect_data", label:"Collect Raw Data", node_type:"input", output:"raw_data.csv"
+# put id:"collect_data", label:"Collect Raw Data", node_type:"input", output:"raw_data.csv"
 
-#put id:"train_model", label:"Train ML Model", node_type:"process", input:"features.csv", output:"model.pkl"
+# put id:"train_model", label:"Train ML Model", node_type:"process", input:"features.csv", output:"model.pkl"
 
-#put id:"predict", label:"Generate Predictions", node_type:"output", input:"model.pkl, test_data.csv", output:"predictions.csv"
+# put id:"predict", label:"Generate Predictions", node_type:"output", input:"model.pkl, test_data.csv", output:"predictions.csv"
 ```
 
 **SQL Scripts:**
@@ -921,8 +945,8 @@ results = analyze(data);
 
 ``` r
 # analysis.R
-#put id:"create_summary", label:"Calculate Summary Stats", node_type:"process", input:"processed_data.csv", output:"summary_stats.json"
-#put id:"create_report", label:"Generate Sales Report", node_type:"output", input:"processed_data.csv", output:"sales_report.html"
+# put id:"create_summary", label:"Calculate Summary Stats", node_type:"process", input:"processed_data.csv", output:"summary_stats.json"
+# put id:"create_report", label:"Generate Sales Report", node_type:"output", input:"processed_data.csv", output:"sales_report.html"
 
 # Your R code here...
 ```
@@ -931,19 +955,19 @@ results = analyze(data);
 
 ``` r
 # main_workflow.R
-#put id:"workflow_start", label:"Start Analysis Pipeline", node_type:"start", output:"config.json"
+# put id:"workflow_start", label:"Start Analysis Pipeline", node_type:"start", output:"config.json"
 
-#put id:"workflow_end", label:"Pipeline Complete", node_type:"end", input:"final_report.pdf"
+# put id:"workflow_end", label:"Pipeline Complete", node_type:"end", input:"final_report.pdf"
 ```
 
 **Workflow Boundary Examples:**
 
 ``` r
 # Complete pipeline with boundaries
-#put id:"pipeline_start", label:"Data Pipeline Start", node_type:"start", output:"raw_config.json"
-#put id:"extract_data", label:"Extract Raw Data", node_type:"process", input:"raw_config.json", output:"raw_data.csv"
-#put id:"transform_data", label:"Transform Data", node_type:"process", input:"raw_data.csv", output:"clean_data.csv"
-#put id:"pipeline_end", label:"Pipeline Complete", node_type:"end", input:"clean_data.csv"
+# put id:"pipeline_start", label:"Data Pipeline Start", node_type:"start", output:"raw_config.json"
+# put id:"extract_data", label:"Extract Raw Data", node_type:"process", input:"raw_config.json", output:"raw_data.csv"
+# put id:"transform_data", label:"Transform Data", node_type:"process", input:"raw_data.csv", output:"clean_data.csv"
+# put id:"pipeline_end", label:"Pipeline Complete", node_type:"end", input:"clean_data.csv"
 ```
 
 **Generated Workflow with Boundaries:**
@@ -974,10 +998,10 @@ language-specific comment syntax:
 
 | Comment Style | Languages                                                                     | Extensions                                                                                                  |
 |---------------|-------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
-| `#put`        | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML                               | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`, `.yml`, `.toml`                                           |
-| `--put`       | SQL, Lua, Haskell                                                             | `.sql`, `.lua`, `.hs`                                                                                       |
-| `//put`       | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala | `.js`, `.ts`, `.jsx`, `.tsx`, `.c`, `.cpp`, `.java`, `.go`, `.rs`, `.swift`, `.kt`, `.cs`, `.php`, `.scala` |
-| `%put`        | MATLAB, LaTeX                                                                 | `.m`, `.tex`                                                                                                |
+| `# put`       | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML                               | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`, `.yml`, `.toml`                                           |
+| `-- put`      | SQL, Lua, Haskell                                                             | `.sql`, `.lua`, `.hs`                                                                                       |
+| `// put`      | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala | `.js`, `.ts`, `.jsx`, `.tsx`, `.c`, `.cpp`, `.java`, `.go`, `.rs`, `.swift`, `.kt`, `.cs`, `.php`, `.scala` |
+| `% put`       | MATLAB, LaTeX                                                                 | `.m`, `.tex`                                                                                                |
 
 **Unknown extensions default to `#` prefix.**
 
@@ -1012,8 +1036,8 @@ workflow <- put("./src/", include_line_numbers = TRUE)
 workflow <- put("./src/", validate = FALSE)
 
 # Test annotation syntax
-is_valid_put_annotation('#put id:"test", label:"Test Node"')  # TRUE
-is_valid_put_annotation("#put invalid syntax")                 # FALSE
+is_valid_put_annotation('# put id:"test", label:"Test Node"')  # TRUE
+is_valid_put_annotation("# put invalid syntax")                # FALSE
 ```
 
 ### UUID Auto-Generation
@@ -1023,8 +1047,8 @@ UUID:
 
 ``` r
 # Annotations without explicit IDs
-#put label:"Load Data", node_type:"input", output:"data.csv"
-#put label:"Process Data", node_type:"process", input:"data.csv"
+# put label:"Load Data", node_type:"input", output:"data.csv"
+# put label:"Process Data", node_type:"process", input:"data.csv"
 
 # Extract workflow - IDs will be auto-generated
 workflow <- put("./")
@@ -1047,16 +1071,16 @@ show the sourcing relationships:
 
 ``` r
 # main.R - sources other scripts
-#put label:"Main Workflow", input:"utils.R,analysis.R", output:"results.csv"
+# put label:"Main Workflow", input:"utils.R,analysis.R", output:"results.csv"
 source("utils.R")     # Reading utils.R into main.R
 source("analysis.R")  # Reading analysis.R into main.R
 
-# utils.R - sourced by main.R  
-#put label:"Utility Functions", node_type:"input"
+# utils.R - sourced by main.R
+# put label:"Utility Functions", node_type:"input"
 # output defaults to "utils.R"
 
 # analysis.R - sourced by main.R, depends on utils.R
-#put label:"Analysis Functions", input:"utils.R"  
+# put label:"Analysis Functions", input:"utils.R"
 # output defaults to "analysis.R"
 ```
 
@@ -1070,12 +1094,12 @@ Track in-memory variables and objects alongside persistent files:
 
 ``` r
 # Script 1: Create and save data
-#put output:'my_data.internal, my_data.RData'
+# put output:'my_data.internal, my_data.RData'
 my_data <- process_data()
 save(my_data, file = 'my_data.RData')
 
 # Script 2: Load data and create new variables
-#put input:'my_data.RData', output:'results.internal, summary.csv'
+# put input:'my_data.RData', output:'results.internal, summary.csv'
 load('my_data.RData')  # Load the persistent file
 results <- analyze(my_data)  # Create new in-memory variable
 write.csv(results, 'summary.csv')
@@ -1204,7 +1228,7 @@ Quick reference for all exported functions:
 | [`get_comment_prefix()`](https://pjt222.github.io/putior/reference/get_comment_prefix.md)             | Get comment prefix for extension  | `get_comment_prefix("sql")` → `"--"`                                                                  |
 | [`get_supported_extensions()`](https://pjt222.github.io/putior/reference/get_supported_extensions.md) | List all supported extensions     | [`get_supported_extensions()`](https://pjt222.github.io/putior/reference/get_supported_extensions.md) |
 | [`set_putior_log_level()`](https://pjt222.github.io/putior/reference/set_putior_log_level.md)         | Configure logging verbosity       | `set_putior_log_level("DEBUG")`                                                                       |
-| [`is_valid_put_annotation()`](https://pjt222.github.io/putior/reference/is_valid_put_annotation.md)   | Validate annotation syntax        | `is_valid_put_annotation("#put ...")`                                                                 |
+| [`is_valid_put_annotation()`](https://pjt222.github.io/putior/reference/is_valid_put_annotation.md)   | Validate annotation syntax        | `is_valid_put_annotation("# put ...")`                                                                |
 | [`get_diagram_themes()`](https://pjt222.github.io/putior/reference/get_diagram_themes.md)             | List available themes             | [`get_diagram_themes()`](https://pjt222.github.io/putior/reference/get_diagram_themes.md)             |
 | [`split_file_list()`](https://pjt222.github.io/putior/reference/split_file_list.md)                   | Parse comma-separated files       | `split_file_list("a.csv, b.csv")`                                                                     |
 
@@ -1353,13 +1377,13 @@ targets/drake/Airflow *execute* them. They’re complementary!
 
 ``` r
 # _targets.R
-#put label:"Load Raw Data", node_type:"input", output:"raw_data"
+# put label:"Load Raw Data", node_type:"input", output:"raw_data"
 tar_target(raw_data, read_csv("data/sales.csv"))
 
-#put label:"Clean Data", input:"raw_data", output:"clean_data"
+# put label:"Clean Data", input:"raw_data", output:"clean_data"
 tar_target(clean_data, clean_sales(raw_data))
 
-#put label:"Generate Report", node_type:"output", input:"clean_data"
+# put label:"Generate Report", node_type:"output", input:"clean_data"
 tar_target(report, render_report(clean_data))
 ```
 

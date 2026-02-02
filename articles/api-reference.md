@@ -128,7 +128,7 @@ put_diagram(
 | `output`                   | character  | `"console"` | Output mode: “console”, “file”, “clipboard”, “raw”                                                                                                              |
 | `file`                     | character  | `NULL`      | Output file path (when output = “file”)                                                                                                                         |
 | `direction`                | character  | `"TD"`      | Flow direction: “TD”, “LR”, “BT”, “RL”                                                                                                                          |
-| `theme`                    | character  | `"github"`  | Theme: “github”, “light”, “dark”, “auto”, “minimal”                                                                                                             |
+| `theme`                    | character  | `"github"`  | Theme: “github”, “light”, “dark”, “auto”, “minimal”, “viridis”, “magma”, “plasma”, “cividis” (colorblind-safe)                                                  |
 | `show_artifacts`           | logical    | `FALSE`     | Show data file nodes                                                                                                                                            |
 | `show_files`               | logical    | `FALSE`     | Show file names on connections                                                                                                                                  |
 | `style_nodes`              | logical    | `TRUE`      | Apply color styling to nodes                                                                                                                                    |
@@ -524,10 +524,35 @@ Character vector of theme names.
 
 ``` r
 get_diagram_themes()
-#> [1] "light"   "dark"    "auto"    "minimal" "github"
+#> $light
+#> [1] "Default light theme with bright colors - perfect for documentation sites"
+#>
+#> $dark
+#> [1] "Dark theme with muted colors - ideal for dark mode environments and terminals"
+#>
+#> $auto
+#> [1] "GitHub-adaptive theme with solid colors that work in both light and dark modes"
+#>
+#> $minimal
+#> [1] "Grayscale professional theme - print-friendly and great for business documents"
+#>
+#> $github
+#> [1] "Optimized specifically for GitHub README files with maximum mermaid compatibility"
+#>
+#> $viridis
+#> [1] "Colorblind-safe theme (purple-blue-green-yellow) - perceptually uniform, accessible"
+#>
+#> $magma
+#> [1] "Colorblind-safe warm theme (purple-red-yellow) - high contrast, print-friendly"
+#>
+#> $plasma
+#> [1] "Colorblind-safe vibrant theme (purple-pink-yellow) - bold colors for presentations"
+#>
+#> $cividis
+#> [1] "Colorblind-safe theme optimized for deuteranopia/protanopia (blue-yellow only)"
 
 # Use with put_diagram
-put_diagram(workflow, theme = get_diagram_themes()[1])
+put_diagram(workflow, theme = "viridis")
 ```
 
 ------------------------------------------------------------------------
@@ -600,29 +625,29 @@ Logical: `TRUE` if valid PUT annotation, `FALSE` otherwise.
 
 ``` r
 # Valid annotations - hash style (R, Python)
-is_valid_put_annotation('#put label:"My Step"')
+is_valid_put_annotation('# put label:"My Step"')
 #> [1] TRUE
 
-is_valid_put_annotation('#put id:"step1", label:"Process Data", node_type:"process"')
+is_valid_put_annotation('# put id:"step1", label:"Process Data", node_type:"process"')
 #> [1] TRUE
 
 # Valid annotations - dash style (SQL)
-is_valid_put_annotation('--put label:"Load Data"')
+is_valid_put_annotation('-- put label:"Load Data"')
 #> [1] TRUE
 
 is_valid_put_annotation('-- put id:"query", label:"SQL Query"')
 #> [1] TRUE
 
 # Valid annotations - slash style (JavaScript)
-is_valid_put_annotation('//put label:"Process JSON"')
+is_valid_put_annotation('// put label:"Process JSON"')
 #> [1] TRUE
 
 # Valid annotations - percent style (MATLAB)
-is_valid_put_annotation('%put label:"Compute Statistics"')
+is_valid_put_annotation('% put label:"Compute Statistics"')
 #> [1] TRUE
 
 # Invalid annotations
-is_valid_put_annotation("#put invalid syntax")
+is_valid_put_annotation("# put invalid syntax")
 #> [1] FALSE
 
 is_valid_put_annotation("# Regular comment")
@@ -752,7 +777,7 @@ set_putior_log_level("DEBUG")
 workflow <- put("./src/", include_line_numbers = TRUE)
 
 # Test individual annotations
-is_valid_put_annotation('#put label:"Test"')
+is_valid_put_annotation('# put label:"Test"')
 
 # Return to normal
 set_putior_log_level("WARN")

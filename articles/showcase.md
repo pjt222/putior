@@ -13,13 +13,13 @@ A basic extract-transform-load workflow:
 
 ``` r
 # 01_extract.R
-#put label:"Extract Data", node_type:"input", output:"raw_data.csv"
+# put label:"Extract Data", node_type:"input", output:"raw_data.csv"
 
 # 02_transform.R
-#put label:"Transform Data", input:"raw_data.csv", output:"clean_data.csv"
+# put label:"Transform Data", input:"raw_data.csv", output:"clean_data.csv"
 
 # 03_load.R
-#put label:"Load to Database", node_type:"output", input:"clean_data.csv"
+# put label:"Load to Database", node_type:"output", input:"clean_data.csv"
 ```
 
 **Generated Diagram:**
@@ -49,13 +49,13 @@ A simple report generation workflow:
 
 ``` r
 # fetch_metrics.R
-#put label:"Fetch Metrics", node_type:"input", output:"metrics.json"
+# put label:"Fetch Metrics", node_type:"input", output:"metrics.json"
 
 # analyze.R
-#put label:"Analyze Trends", input:"metrics.json", output:"analysis.rds"
+# put label:"Analyze Trends", input:"metrics.json", output:"analysis.rds"
 
 # report.R
-#put label:"Generate Report", node_type:"output", input:"analysis.rds", output:"report.html"
+# put label:"Generate Report", node_type:"output", input:"analysis.rds", output:"report.html"
 ```
 
 **Generated Diagram:**
@@ -90,34 +90,34 @@ A complete ML workflow from data collection to model deployment:
 
 ``` r
 # 01_collect_data.py
-#put label:"Collect Raw Data", node_type:"input", output:"raw_data.csv"
+# put label:"Collect Raw Data", node_type:"input", output:"raw_data.csv"
 
 # 02_clean_data.R
-#put label:"Clean Data", input:"raw_data.csv", output:"clean_data.csv"
+# put label:"Clean Data", input:"raw_data.csv", output:"clean_data.csv"
 
 # 03_feature_eng.R
-#put label:"Feature Engineering", input:"clean_data.csv", output:"features.csv"
+# put label:"Feature Engineering", input:"clean_data.csv", output:"features.csv"
 
 # 04_split_data.R
-#put label:"Train/Test Split", input:"features.csv", output:"train.csv, test.csv"
+# put label:"Train/Test Split", input:"features.csv", output:"train.csv, test.csv"
 
 # 05_train_model.py
-#put label:"Train Model", input:"train.csv", output:"model.pkl"
+# put label:"Train Model", input:"train.csv", output:"model.pkl"
 
 # 06_evaluate.py
-#put label:"Evaluate Model", input:"model.pkl, test.csv", output:"metrics.json"
+# put label:"Evaluate Model", input:"model.pkl, test.csv", output:"metrics.json"
 
 # 07_hyperparameter.py
-#put label:"Hyperparameter Tuning", input:"train.csv", output:"best_params.json"
+# put label:"Hyperparameter Tuning", input:"train.csv", output:"best_params.json"
 
 # 08_retrain.py
-#put label:"Retrain with Best Params", input:"train.csv, best_params.json", output:"final_model.pkl"
+# put label:"Retrain with Best Params", input:"train.csv, best_params.json", output:"final_model.pkl"
 
 # 09_validate.R
-#put label:"Final Validation", input:"final_model.pkl, test.csv", output:"validation_report.html"
+# put label:"Final Validation", input:"final_model.pkl, test.csv", output:"validation_report.html"
 
 # 10_deploy.sh
-#put label:"Deploy Model", node_type:"output", input:"final_model.pkl, validation_report.html"
+# put label:"Deploy Model", node_type:"output", input:"final_model.pkl, validation_report.html"
 ```
 
 **Generated Diagram:**
@@ -172,31 +172,31 @@ Combining data from multiple sources:
 
 ``` r
 # sources/fetch_sales.R
-#put label:"Fetch Sales API", node_type:"input", output:"sales_raw.json"
+# put label:"Fetch Sales API", node_type:"input", output:"sales_raw.json"
 
 # sources/fetch_inventory.R
-#put label:"Fetch Inventory DB", node_type:"input", output:"inventory_raw.csv"
+# put label:"Fetch Inventory DB", node_type:"input", output:"inventory_raw.csv"
 
 # sources/fetch_customers.py
-#put label:"Fetch Customer CRM", node_type:"input", output:"customers_raw.csv"
+# put label:"Fetch Customer CRM", node_type:"input", output:"customers_raw.csv"
 
 # transform/clean_sales.R
-#put label:"Clean Sales", input:"sales_raw.json", output:"sales_clean.csv"
+# put label:"Clean Sales", input:"sales_raw.json", output:"sales_clean.csv"
 
 # transform/clean_inventory.R
-#put label:"Clean Inventory", input:"inventory_raw.csv", output:"inventory_clean.csv"
+# put label:"Clean Inventory", input:"inventory_raw.csv", output:"inventory_clean.csv"
 
 # transform/clean_customers.R
-#put label:"Clean Customers", input:"customers_raw.csv", output:"customers_clean.csv"
+# put label:"Clean Customers", input:"customers_raw.csv", output:"customers_clean.csv"
 
 # integrate/merge_data.R
-#put label:"Merge All Sources", input:"sales_clean.csv, inventory_clean.csv, customers_clean.csv", output:"integrated_data.csv"
+# put label:"Merge All Sources", input:"sales_clean.csv, inventory_clean.csv, customers_clean.csv", output:"integrated_data.csv"
 
 # analyze/business_metrics.R
-#put label:"Calculate Metrics", input:"integrated_data.csv", output:"metrics.rds"
+# put label:"Calculate Metrics", input:"integrated_data.csv", output:"metrics.rds"
 
 # report/dashboard.R
-#put label:"Generate Dashboard", node_type:"output", input:"metrics.rds", output:"dashboard.html"
+# put label:"Generate Dashboard", node_type:"output", input:"metrics.rds", output:"dashboard.html"
 ```
 
 **Generated Diagram:**
@@ -345,22 +345,22 @@ comment syntax detection** for 30+ languages.
 
 ### Language-Specific Comment Syntax
 
-| Comment Style | Languages                                 | Example                        |
-|---------------|-------------------------------------------|--------------------------------|
-| `#put`        | R, Python, Shell, Julia, Ruby, YAML       | `#put label:"Process Data"`    |
-| `--put`       | SQL, Lua, Haskell                         | `--put label:"Query Database"` |
-| `//put`       | JavaScript, TypeScript, C, Go, Rust, Java | `//put label:"Transform JSON"` |
-| `%put`        | MATLAB, LaTeX                             | `%put label:"Compute Matrix"`  |
+| Comment Style | Languages                                 | Example                         |
+|---------------|-------------------------------------------|---------------------------------|
+| `# put`       | R, Python, Shell, Julia, Ruby, YAML       | `# put label:"Process Data"`    |
+| `-- put`      | SQL, Lua, Haskell                         | `-- put label:"Query Database"` |
+| `// put`      | JavaScript, TypeScript, C, Go, Rust, Java | `// put label:"Transform JSON"` |
+| `% put`       | MATLAB, LaTeX                             | `% put label:"Compute Matrix"`  |
 
 ### JavaScript/TypeScript Example
 
 ``` javascript
 // api_handler.js
-//put label:"API Handler", node_type:"input", output:"api_response.json"
+// put label:"API Handler", node_type:"input", output:"api_response.json"
 const response = await fetch('/api/data');
 const data = await response.json();
 
-//put label:"Data Validation", input:"api_response.json", output:"validated.json"
+// put label:"Data Validation", input:"api_response.json", output:"validated.json"
 const validated = validateSchema(data);
 ```
 
@@ -368,7 +368,7 @@ const validated = validateSchema(data);
 
 ``` go
 // processor.go
-//put label:"Data Processor", input:"input.json", output:"output.json"
+// put label:"Data Processor", input:"input.json", output:"output.json"
 func ProcessData(input []byte) ([]byte, error) {
     // Processing logic
 }
@@ -378,10 +378,10 @@ func ProcessData(input []byte) ([]byte, error) {
 
 ``` matlab
 % signal_analysis.m
-%put label:"Signal Processing", node_type:"input", output:"signal_data.mat"
+% put label:"Signal Processing", node_type:"input", output:"signal_data.mat"
 data = load('raw_signal.mat');
 
-%put label:"FFT Analysis", input:"signal_data.mat", output:"frequency_spectrum.mat"
+% put label:"FFT Analysis", input:"signal_data.mat", output:"frequency_spectrum.mat"
 spectrum = fft(data.signal);
 ```
 
@@ -391,30 +391,30 @@ Each language uses its native comment syntax:
 
 ``` sql
 -- extract.sql (SQL uses -- comments)
---put label:"SQL Extract", node_type:"input", output:"raw_query_results.csv"
+-- put label:"SQL Extract", node_type:"input", output:"raw_query_results.csv"
 SELECT * FROM sales WHERE date > '2024-01-01';
 ```
 
 ``` python
 # transform.py (Python uses # comments)
-#put label:"Python Transform", input:"raw_query_results.csv", output:"transformed.parquet"
+# put label:"Python Transform", input:"raw_query_results.csv", output:"transformed.parquet"
 import pandas as pd
 df = pd.read_csv("raw_query_results.csv")
 ```
 
 ``` r
 # analyze.R (R uses # comments)
-#put label:"R Statistical Analysis", input:"transformed.parquet", output:"stats.rds"
+# put label:"R Statistical Analysis", input:"transformed.parquet", output:"stats.rds"
 library(arrow)
 data <- read_parquet("transformed.parquet")
 ```
 
 ``` r
 # visualize.R
-#put label:"R Visualization", input:"stats.rds", output:"plots.pdf"
+# put label:"R Visualization", input:"stats.rds", output:"plots.pdf"
 
 # report.py
-#put label:"Python Report Gen", node_type:"output", input:"stats.rds, plots.pdf", output:"final_report.html"
+# put label:"Python Report Gen", node_type:"output", input:"stats.rds, plots.pdf", output:"final_report.html"
 ```
 
 **Generated Diagram:**
@@ -455,25 +455,25 @@ A genomics analysis workflow processing FASTA sequences:
 
 ``` r
 # sequences/fetch_sequences.R
-#put label:"Fetch FASTA Sequences", node_type:"input", output:"raw_sequences.fasta"
+# put label:"Fetch FASTA Sequences", node_type:"input", output:"raw_sequences.fasta"
 
 # sequences/quality_control.py
-#put label:"Quality Control", input:"raw_sequences.fasta", output:"filtered_sequences.fasta, qc_report.html"
+# put label:"Quality Control", input:"raw_sequences.fasta", output:"filtered_sequences.fasta, qc_report.html"
 
 # alignment/run_blast.sh
-#put label:"BLAST Alignment", input:"filtered_sequences.fasta", output:"blast_results.xml"
+# put label:"BLAST Alignment", input:"filtered_sequences.fasta", output:"blast_results.xml"
 
 # alignment/parse_blast.R
-#put label:"Parse BLAST Results", input:"blast_results.xml", output:"alignments.csv"
+# put label:"Parse BLAST Results", input:"blast_results.xml", output:"alignments.csv"
 
 # analysis/differential_expression.R
-#put label:"Differential Expression", input:"alignments.csv", output:"de_results.rds"
+# put label:"Differential Expression", input:"alignments.csv", output:"de_results.rds"
 
 # analysis/pathway_analysis.R
-#put label:"Pathway Enrichment", input:"de_results.rds", output:"pathways.csv"
+# put label:"Pathway Enrichment", input:"de_results.rds", output:"pathways.csv"
 
 # report/bioinformatics_report.R
-#put label:"Generate Report", node_type:"output", input:"de_results.rds, pathways.csv, qc_report.html", output:"analysis_report.html"
+# put label:"Generate Report", node_type:"output", input:"de_results.rds, pathways.csv, qc_report.html", output:"analysis_report.html"
 ```
 
 **Generated Diagram:**
@@ -517,25 +517,25 @@ Portfolio analysis and risk assessment workflow:
 
 ``` r
 # data/fetch_market_data.py
-#put label:"Fetch Market Data", node_type:"input", output:"market_prices.parquet"
+# put label:"Fetch Market Data", node_type:"input", output:"market_prices.parquet"
 
 # data/fetch_holdings.R
-#put label:"Load Portfolio Holdings", node_type:"input", output:"holdings.csv"
+# put label:"Load Portfolio Holdings", node_type:"input", output:"holdings.csv"
 
 # analysis/calculate_returns.R
-#put label:"Calculate Returns", input:"market_prices.parquet, holdings.csv", output:"returns.rds"
+# put label:"Calculate Returns", input:"market_prices.parquet, holdings.csv", output:"returns.rds"
 
 # analysis/risk_metrics.R
-#put label:"Compute Risk Metrics", input:"returns.rds", output:"var_results.rds, sharpe_ratios.csv"
+# put label:"Compute Risk Metrics", input:"returns.rds", output:"var_results.rds, sharpe_ratios.csv"
 
 # analysis/attribution.py
-#put label:"Performance Attribution", input:"returns.rds, holdings.csv", output:"attribution.json"
+# put label:"Performance Attribution", input:"returns.rds, holdings.csv", output:"attribution.json"
 
 # optimization/portfolio_optimize.R
-#put label:"Portfolio Optimization", input:"returns.rds, var_results.rds", output:"optimal_weights.csv"
+# put label:"Portfolio Optimization", input:"returns.rds, var_results.rds", output:"optimal_weights.csv"
 
 # report/risk_dashboard.R
-#put label:"Risk Dashboard", node_type:"output", input:"var_results.rds, sharpe_ratios.csv, attribution.json, optimal_weights.csv", output:"risk_report.html"
+# put label:"Risk Dashboard", node_type:"output", input:"var_results.rds, sharpe_ratios.csv, attribution.json, optimal_weights.csv", output:"risk_report.html"
 ```
 
 **Generated Diagram:**
@@ -581,25 +581,25 @@ Data extraction from web sources:
 
 ``` r
 # scrape/fetch_urls.py
-#put label:"Fetch URL List", node_type:"input", output:"target_urls.txt"
+# put label:"Fetch URL List", node_type:"input", output:"target_urls.txt"
 
 # scrape/scrape_pages.py
-#put label:"Scrape Web Pages", input:"target_urls.txt", output:"raw_html.json"
+# put label:"Scrape Web Pages", input:"target_urls.txt", output:"raw_html.json"
 
 # extract/parse_html.py
-#put label:"Parse HTML Content", input:"raw_html.json", output:"extracted_text.json"
+# put label:"Parse HTML Content", input:"raw_html.json", output:"extracted_text.json"
 
 # extract/extract_entities.py
-#put label:"Named Entity Recognition", input:"extracted_text.json", output:"entities.csv"
+# put label:"Named Entity Recognition", input:"extracted_text.json", output:"entities.csv"
 
 # transform/clean_data.R
-#put label:"Clean and Normalize", input:"entities.csv", output:"clean_entities.csv"
+# put label:"Clean and Normalize", input:"entities.csv", output:"clean_entities.csv"
 
 # transform/deduplicate.R
-#put label:"Remove Duplicates", input:"clean_entities.csv", output:"unique_entities.csv"
+# put label:"Remove Duplicates", input:"clean_entities.csv", output:"unique_entities.csv"
 
 # load/save_to_db.py
-#put label:"Load to Database", node_type:"output", input:"unique_entities.csv"
+# put label:"Load to Database", node_type:"output", input:"unique_entities.csv"
 ```
 
 **Generated Diagram:**
@@ -642,34 +642,34 @@ R for reporting:
 
 ``` r
 # data/load_raw_data.R
-#put label:"Load Raw Data (R)", node_type:"input", output:"raw_data.rds"
+# put label:"Load Raw Data (R)", node_type:"input", output:"raw_data.rds"
 
 # data/eda_analysis.R
-#put label:"Exploratory Analysis (R)", input:"raw_data.rds", output:"eda_report.html, data_summary.json"
+# put label:"Exploratory Analysis (R)", input:"raw_data.rds", output:"eda_report.html, data_summary.json"
 
 # preprocessing/feature_engineering.R
-#put label:"Feature Engineering (R)", input:"raw_data.rds, data_summary.json", output:"features.parquet"
+# put label:"Feature Engineering (R)", input:"raw_data.rds, data_summary.json", output:"features.parquet"
 
 # preprocessing/split_data.R
-#put label:"Train/Test Split (R)", input:"features.parquet", output:"train.parquet, test.parquet"
+# put label:"Train/Test Split (R)", input:"features.parquet", output:"train.parquet, test.parquet"
 
 # training/train_model.py
-#put label:"Train XGBoost (Python)", input:"train.parquet", output:"model.pkl, training_metrics.json"
+# put label:"Train XGBoost (Python)", input:"train.parquet", output:"model.pkl, training_metrics.json"
 
 # training/hyperparameter_search.py
-#put label:"Hyperparameter Tuning (Python)", input:"train.parquet", output:"best_params.json"
+# put label:"Hyperparameter Tuning (Python)", input:"train.parquet", output:"best_params.json"
 
 # training/final_model.py
-#put label:"Final Model Training (Python)", input:"train.parquet, best_params.json", output:"final_model.pkl"
+# put label:"Final Model Training (Python)", input:"train.parquet, best_params.json", output:"final_model.pkl"
 
 # evaluation/model_evaluation.py
-#put label:"Model Evaluation (Python)", input:"final_model.pkl, test.parquet", output:"predictions.csv, eval_metrics.json"
+# put label:"Model Evaluation (Python)", input:"final_model.pkl, test.parquet", output:"predictions.csv, eval_metrics.json"
 
 # reporting/model_report.R
-#put label:"Model Report (R)", node_type:"output", input:"eval_metrics.json, training_metrics.json, eda_report.html", output:"final_report.html"
+# put label:"Model Report (R)", node_type:"output", input:"eval_metrics.json, training_metrics.json, eda_report.html", output:"final_report.html"
 
 # deployment/export_model.py
-#put label:"Export for Production (Python)", node_type:"output", input:"final_model.pkl", output:"model_artifact.tar.gz"
+# put label:"Export for Production (Python)", node_type:"output", input:"final_model.pkl", output:"model_artifact.tar.gz"
 ```
 
 **Generated Diagram:**
@@ -739,12 +739,12 @@ This ETL script has common problems:
 ``` r
 # etl_pipeline.R - typical messy annotations
 
-#put id:"step1", output:"data"
+# put id:"step1", output:"data"
 # ^ Problem: Vague ID and output name
 
 raw <- read.csv("sales_2024.csv")
 
-#put id:"2", input:"data"
+# put id:"2", input:"data"
 # ^ Problem: Inconsistent ID style (numeric), output missing
 
 clean <- raw[complete.cases(raw), ]
@@ -753,7 +753,7 @@ clean$date <- as.Date(clean$date)
 # (No annotation here - important step is undocumented!)
 aggregated <- aggregate(amount ~ region, clean, sum)
 
-#put label:"final step"
+# put label:"final step"
 # ^ Problem: Missing ID, vague label, no input/output
 
 write.csv(aggregated, "regional_sales.csv")
@@ -815,21 +815,21 @@ put_generate("etl_pipeline.R")
 ``` r
 # etl_pipeline.R - improved annotations
 
-#put id:"extract_sales", label:"Load Sales Data", \
-#    node_type:"input", output:"sales_2024.csv"
+# put id:"extract_sales", label:"Load Sales Data", \
+#     node_type:"input", output:"sales_2024.csv"
 raw <- read.csv("sales_2024.csv")
 
-#put id:"clean_data", label:"Clean & Validate", \
-#    input:"sales_2024.csv", output:"clean_sales.internal"
+# put id:"clean_data", label:"Clean & Validate", \
+#     input:"sales_2024.csv", output:"clean_sales.internal"
 clean <- raw[complete.cases(raw), ]
 clean$date <- as.Date(clean$date)
 
-#put id:"aggregate_regions", label:"Aggregate by Region", \
-#    input:"clean_sales.internal", output:"aggregated.internal"
+# put id:"aggregate_regions", label:"Aggregate by Region", \
+#     input:"clean_sales.internal", output:"aggregated.internal"
 aggregated <- aggregate(amount ~ region, clean, sum)
 
-#put id:"export_results", label:"Export Regional Report", \
-#    node_type:"output", input:"aggregated.internal", output:"regional_sales.csv"
+# put id:"export_results", label:"Export Regional Report", \
+#     node_type:"output", input:"aggregated.internal", output:"regional_sales.csv"
 write.csv(aggregated, "regional_sales.csv")
 ```
 

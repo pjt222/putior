@@ -229,14 +229,14 @@ Note: If output is not specified in an annotation, it defaults to the file name.
 <p>PUT annotations can be written in single-line or multiline format.
 The comment prefix is determined automatically by file extension.</p>
 <p><strong>Single-line format (various languages):</strong></p><div class="sourceCode"><pre><code>
-#put id:"node1", label:"Process"       # R/Python
+# put id:"node1", label:"Process"       # R/Python
 --put id:"node1", label:"Query"        -- SQL
 //put id:"node1", label:"Handler"      // JavaScript
 <!-- %put id:"node1", label:"Compute"       % MATLAB -->
 </code></pre></div>
 
 <p><strong>Multiline format:</strong> Use backslash (\) for line continuation</p><div class="sourceCode"><pre><code><span></span>
-<span><span class="co">#put id:"node1", label:"Process Data", \</span></span>
+<span><span class="co"># put id:"node1", label:"Process Data", \</span></span>
 <span><span class="co">#    input:"data.csv", \</span></span>
 <span><span class="co">#    output:"result.csv"</span></span></code></pre></div>
 
@@ -272,13 +272,13 @@ The comment prefix is determined automatically by file extension.</p>
 <span class="r-in"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu">put</span><span class="op">(</span><span class="st">"./sql/"</span>, pattern <span class="op">=</span> <span class="st">"\\.sql$"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Single-line PUT annotations (various languages):</span></span></span>
-<span class="r-in"><span><span class="co"># R/Python: #put id:"load_data", label:"Load Dataset"</span></span></span>
+<span class="r-in"><span><span class="co"># R/Python: # put id:"load_data", label:"Load Dataset"</span></span></span>
 <span class="r-in"><span><span class="co"># SQL:      --put id:"query", label:"Execute Query"</span></span></span>
 <span class="r-in"><span><span class="co"># JS/TS:    //put id:"handler", label:"API Handler"</span></span></span>
 <span class="r-in"><span><span class="co"># MATLAB:   %put id:"compute", label:"Compute Results"</span></span></span>
 <span class="r-in"><span><span class="co">#</span></span></span>
 <span class="r-in"><span><span class="co"># Multiline PUT annotations work the same across languages:</span></span></span>
-<span class="r-in"><span><span class="co"># #put id:"complex_process", label:"Complex Processing", \</span></span></span>
+<span class="r-in"><span><span class="co"># # put id:"complex_process", label:"Complex Processing", \</span></span></span>
 <span class="r-in"><span><span class="co"># #    input:"file1.csv,file2.csv", \</span></span></span>
 <span class="r-in"><span><span class="co"># #    output:"results.csv"</span></span></span>
 <span class="r-in"><span><span class="co">#</span></span></span>

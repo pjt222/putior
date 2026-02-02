@@ -35,12 +35,12 @@ files.
 
 **Solution:** Use the correct comment prefix for your language:
 
-| Language          | Correct Prefix | Example                |
-|-------------------|----------------|------------------------|
-| R, Python         | `#put`         | `#put label:"Step 1"`  |
-| SQL, Lua          | `--put`        | `--put label:"Step 1"` |
-| JavaScript, Go, C | `//put`        | `//put label:"Step 1"` |
-| MATLAB            | `%put`         | `%put label:"Step 1"`  |
+| Language          | Correct Prefix | Example                 |
+|-------------------|----------------|-------------------------|
+| R, Python         | `# put`        | `# put label:"Step 1"`  |
+| SQL, Lua          | `-- put`       | `-- put label:"Step 1"` |
+| JavaScript, Go, C | `// put`       | `// put label:"Step 1"` |
+| MATLAB            | `% put`        | `% put label:"Step 1"`  |
 
 ``` r
 # Check what prefix your file type needs
@@ -63,12 +63,12 @@ workflow.
 
 ``` r
 # WRONG - Names don't match
-#put id:"step1", output:"data.csv"      # Outputs "data.csv"
-#put id:"step2", input:"Data.csv"       # Expects "Data.csv" (case mismatch!)
+# put id:"step1", output:"data.csv"      # Outputs "data.csv"
+# put id:"step2", input:"Data.csv"       # Expects "Data.csv" (case mismatch!)
 
 # CORRECT - Exact match
-#put id:"step1", output:"data.csv"
-#put id:"step2", input:"data.csv"
+# put id:"step1", output:"data.csv"
+# put id:"step2", input:"data.csv"
 ```
 
 **Diagnostic:**
@@ -168,7 +168,7 @@ workflow <- put("./src/", validate = TRUE, include_line_numbers = TRUE)
 nrow(workflow)  # Should be > 0 if annotations exist
 
 # 2. Test a single annotation
-is_valid_put_annotation('#put id:"test", label:"Test Node"')  # Should be TRUE
+is_valid_put_annotation('# put id:"test", label:"Test Node"')  # Should be TRUE
 
 # 3. Check supported extensions
 get_supported_extensions()
@@ -188,34 +188,34 @@ workflow <- put("./src/")  # Now shows detailed output
 
 ``` r
 # WRONG - No quotes around values
-#put id:my_node, label:My Process
+# put id:my_node, label:My Process
 
 # WRONG - Mismatched quotes
-#put id:"my_node', label:"My Process"
+# put id:"my_node', label:"My Process"
 
 # WRONG - Missing closing quote
-#put id:"my_node, label:"My Process"
+# put id:"my_node, label:"My Process"
 ```
 
 **Solution**: Always use matching quotes around all values.
 
 ``` r
 # CORRECT - Double quotes
-#put id:"my_node", label:"My Process"
+# put id:"my_node", label:"My Process"
 
 # CORRECT - Single quotes
-#put id:'my_node', label:'My Process'
+# put id:'my_node', label:'My Process'
 
 # CORRECT - Mixed (but consistent per value)
-#put id:"my_node", label:'My Process'
+# put id:"my_node", label:'My Process'
 ```
 
 **Diagnostic**:
 
 ``` r
 # Test your annotation syntax
-is_valid_put_annotation('#put id:"my_node", label:"My Process"')  # TRUE
-is_valid_put_annotation('#put id:my_node, label:My Process')      # FALSE
+is_valid_put_annotation('# put id:"my_node", label:"My Process"')  # TRUE
+is_valid_put_annotation('# put id:my_node, label:My Process')      # FALSE
 ```
 
 ### Invalid Node Types
@@ -224,19 +224,19 @@ is_valid_put_annotation('#put id:my_node, label:My Process')      # FALSE
 
 ``` r
 # Triggers warning - non-standard type
-#put id:"step1", label:"Process", node_type:"transform"
+# put id:"step1", label:"Process", node_type:"transform"
 ```
 
 **Solution**: Use standard node types for consistency.
 
 ``` r
 # Standard node types
-#put id:"step1", label:"Load Data", node_type:"input"
-#put id:"step2", label:"Transform", node_type:"process"
-#put id:"step3", label:"Save Results", node_type:"output"
-#put id:"step4", label:"Check Quality", node_type:"decision"
-#put id:"step5", label:"Start Pipeline", node_type:"start"
-#put id:"step6", label:"End Pipeline", node_type:"end"
+# put id:"step1", label:"Load Data", node_type:"input"
+# put id:"step2", label:"Transform", node_type:"process"
+# put id:"step3", label:"Save Results", node_type:"output"
+# put id:"step4", label:"Check Quality", node_type:"decision"
+# put id:"step5", label:"Start Pipeline", node_type:"start"
+# put id:"step6", label:"End Pipeline", node_type:"end"
 ```
 
 **Note**: Custom node types work but generate warnings. Suppress with
@@ -252,14 +252,14 @@ workflow <- put("./src/", validate = FALSE)
 
 ``` r
 # WRONG - Comma breaks the label
-#put id:"step1", label:Load, clean, transform data
+# put id:"step1", label:Load, clean, transform data
 ```
 
 **Solution**: Enclose values with commas in quotes.
 
 ``` r
 # CORRECT - Quotes protect the comma
-#put id:"step1", label:"Load, clean, transform data"
+# put id:"step1", label:"Load, clean, transform data"
 ```
 
 ### Empty or Missing IDs
@@ -268,10 +268,10 @@ workflow <- put("./src/", validate = FALSE)
 
 ``` r
 # WRONG - Empty ID string
-#put id:"", label:"My Process"
+# put id:"", label:"My Process"
 
 # OK - Missing ID (auto-generated UUID)
-#put label:"My Process"
+# put label:"My Process"
 ```
 
 **Solution**: Either omit the ID entirely (auto-generated) or provide a
@@ -283,8 +283,8 @@ workflow <- put("./src/")
 print(workflow$id)  # Shows UUIDs like "a1b2c3d4-..."
 
 # With explicit IDs
-#put id:"step1", label:"First Step"
-#put id:"step2", label:"Second Step"
+# put id:"step1", label:"First Step"
+# put id:"step2", label:"Second Step"
 ```
 
 ### Duplicate IDs
@@ -293,20 +293,20 @@ print(workflow$id)  # Shows UUIDs like "a1b2c3d4-..."
 
 ``` r
 # In file1.R
-#put id:"load_data", label:"Load from CSV"
+# put id:"load_data", label:"Load from CSV"
 
 # In file2.R
-#put id:"load_data", label:"Load from JSON"  # DUPLICATE!
+# put id:"load_data", label:"Load from JSON"  # DUPLICATE!
 ```
 
 **Solution**: Use unique IDs across all files in your workflow.
 
 ``` r
 # In file1.R
-#put id:"load_csv", label:"Load from CSV"
+# put id:"load_csv", label:"Load from CSV"
 
 # In file2.R
-#put id:"load_json", label:"Load from JSON"
+# put id:"load_json", label:"Load from JSON"
 ```
 
 ### Multiline Annotation Issues
@@ -315,15 +315,15 @@ print(workflow$id)  # Shows UUIDs like "a1b2c3d4-..."
 
 ``` r
 # WRONG - Missing backslash
-#put id:"step1", label:"Process",
-#    input:"data.csv", output:"results.csv"
+# put id:"step1", label:"Process",
+#     input:"data.csv", output:"results.csv"
 
 # WRONG - Backslash not at end of line
-#put id:"step1", label:"Process", \
-#    input:"data.csv"
+# put id:"step1", label:"Process", \
+#     input:"data.csv"
 
 # WRONG - Missing comment prefix on continuation
-#put id:"step1", label:"Process", \
+# put id:"step1", label:"Process", \
     input:"data.csv"
 ```
 
@@ -331,25 +331,25 @@ print(workflow$id)  # Shows UUIDs like "a1b2c3d4-..."
 
 ``` r
 # CORRECT - Backslash at end, comment prefix on each line
-#put id:"step1", label:"Process Data", \
-#    input:"data.csv,config.json", \
-#    output:"results.csv"
+# put id:"step1", label:"Process Data", \
+#     input:"data.csv,config.json", \
+#     output:"results.csv"
 ```
 
 **For SQL files**:
 
 ``` sql
---put id:"etl_job", label:"ETL Process", \
---    input:"source_table", \
---    output:"target_table"
+-- put id:"etl_job", label:"ETL Process", \
+--     input:"source_table", \
+--     output:"target_table"
 ```
 
 **For JavaScript files**:
 
 ``` javascript
-//put id:"handler", label:"API Handler", \
-//    input:"request.json", \
-//    output:"response.json"
+// put id:"handler", label:"API Handler", \
+//     input:"request.json", \
+//     output:"response.json"
 ```
 
 ------------------------------------------------------------------------
@@ -465,23 +465,23 @@ cat(mermaid_code)
 
 ``` r
 # Problem: Quotes in labels
-#put id:"step1", label:"Load "raw" data"
+# put id:"step1", label:"Load "raw" data"
 
 # Solution: Use single quotes or escape
-#put id:"step1", label:"Load 'raw' data"
-#put id:"step1", label:"Load raw data"
+# put id:"step1", label:"Load 'raw' data"
+# put id:"step1", label:"Load raw data"
 ```
 
 2.  **Reserved words in IDs**: Some words are reserved in Mermaid.
 
 ``` r
 # Problem: Reserved word as ID
-#put id:"end", label:"Finish"
-#put id:"class", label:"Classify"
+# put id:"end", label:"Finish"
+# put id:"class", label:"Classify"
 
 # Solution: Use different IDs
-#put id:"end_step", label:"Finish"
-#put id:"classify", label:"Classify"
+# put id:"end_step", label:"Finish"
+# put id:"classify", label:"Classify"
 ```
 
 ### Theme Issues
@@ -491,7 +491,8 @@ cat(mermaid_code)
 ``` r
 # Check available themes
 get_diagram_themes()
-#> [1] "light" "dark" "auto" "minimal" "github"
+#> $light, $dark, $auto, $minimal, $github
+#> $viridis, $magma, $plasma, $cividis (colorblind-safe)
 ```
 
 **Solutions**:
@@ -508,6 +509,7 @@ put_diagram(workflow, style_nodes = FALSE)
 # "github" works best on GitHub README
 # "dark" for dark mode applications
 # "minimal" for printing/PDFs
+# "viridis", "magma", "plasma", "cividis" for colorblind accessibility
 ```
 
 ### Missing Connections
@@ -518,12 +520,12 @@ put_diagram(workflow, style_nodes = FALSE)
 
 ``` r
 # Problem: Typo in file name
-#put id:"step1", output:"data.csv"
-#put id:"step2", input:"Data.csv"  # Case mismatch!
+# put id:"step1", output:"data.csv"
+# put id:"step2", input:"Data.csv"  # Case mismatch!
 
 # Solution: Match exactly
-#put id:"step1", output:"data.csv"
-#put id:"step2", input:"data.csv"
+# put id:"step1", output:"data.csv"
+# put id:"step2", input:"data.csv"
 ```
 
 **Diagnostic**:
@@ -558,18 +560,18 @@ put_diagram(workflow, show_artifacts = TRUE)
 
 ``` sql
 -- WRONG for SQL - using hash instead of dash
-#put id:"query", label:"Run Query"
+# put id:"query", label:"Run Query"
 
 -- CORRECT for SQL
---put id:"query", label:"Run Query"
+-- put id:"query", label:"Run Query"
 ```
 
 ``` javascript
 // WRONG for JavaScript - using hash
-#put id:"handler", label:"Handle Request"
+# put id:"handler", label:"Handle Request"
 
 // CORRECT for JavaScript
-//put id:"handler", label:"Handle Request"
+// put id:"handler", label:"Handle Request"
 ```
 
 **Check the correct prefix**:
@@ -586,18 +588,18 @@ get_comment_prefix("rs")    # "//"
 
 ### Reference Table
 
-| Extension     | Comment Prefix | Example                             |
-|---------------|----------------|-------------------------------------|
-| `.R`, `.r`    | `#`            | `#put id:"step", label:"Process"`   |
-| `.py`         | `#`            | `#put id:"step", label:"Process"`   |
-| `.sql`        | `--`           | `--put id:"query", label:"Query"`   |
-| `.js`, `.ts`  | `//`           | `//put id:"func", label:"Function"` |
-| `.go`         | `//`           | `//put id:"main", label:"Main"`     |
-| `.rs`         | `//`           | `//put id:"fn", label:"Handler"`    |
-| `.m` (MATLAB) | `%`            | `%put id:"calc", label:"Compute"`   |
-| `.tex`        | `%`            | `%put id:"sec", label:"Section"`    |
-| `.sh`         | `#`            | `#put id:"cmd", label:"Command"`    |
-| `.lua`        | `--`           | `--put id:"fn", label:"Function"`   |
+| Extension     | Comment Prefix | Example                              |
+|---------------|----------------|--------------------------------------|
+| `.R`, `.r`    | `#`            | `# put id:"step", label:"Process"`   |
+| `.py`         | `#`            | `# put id:"step", label:"Process"`   |
+| `.sql`        | `--`           | `-- put id:"query", label:"Query"`   |
+| `.js`, `.ts`  | `//`           | `// put id:"func", label:"Function"` |
+| `.go`         | `//`           | `// put id:"main", label:"Main"`     |
+| `.rs`         | `//`           | `// put id:"fn", label:"Handler"`    |
+| `.m` (MATLAB) | `%`            | `% put id:"calc", label:"Compute"`   |
+| `.tex`        | `%`            | `% put id:"sec", label:"Section"`    |
+| `.sh`         | `#`            | `# put id:"cmd", label:"Command"`    |
+| `.lua`        | `--`           | `-- put id:"fn", label:"Function"`   |
 
 ### Unsupported Extension
 
@@ -618,7 +620,7 @@ get_supported_extensions()
 comments)
 
     # In your .xyz file (if it supports # comments)
-    #put id:"step1", label:"Process Data"
+    # put id:"step1", label:"Process Data"
 
 **Option 2: Create a wrapper annotation file**
 
@@ -626,8 +628,8 @@ comments)
 # workflow-annotations.R
 # This file documents the workflow for unsupported file types
 
-#put id:"xyz_step1", label:"Process in XYZ format", input:"data.xyz", output:"result.xyz"
-#put id:"xyz_step2", label:"Convert output", input:"result.xyz", output:"final.csv"
+# put id:"xyz_step1", label:"Process in XYZ format", input:"data.xyz", output:"result.xyz"
+# put id:"xyz_step2", label:"Convert output", input:"result.xyz", output:"final.csv"
 
 # Then scan this file instead
 workflow <- put("workflow-annotations.R")
@@ -638,8 +640,8 @@ workflow <- put("workflow-annotations.R")
 ``` r
 # Define workflow without files
 workflow <- put(text = '
-#put id:"step1", label:"Custom Step 1", output:"data.xyz"
-#put id:"step2", label:"Custom Step 2", input:"data.xyz"
+# put id:"step1", label:"Custom Step 1", output:"data.xyz"
+# put id:"step2", label:"Custom Step 2", input:"data.xyz"
 ')
 put_diagram(workflow)
 ```
@@ -704,9 +706,9 @@ put_diagram(workflow, theme = "minimal", style_nodes = FALSE)
 ``` r
 # Annotate key steps only, not every function
 # Good: Major pipeline stages
-#put id:"ingest", label:"Data Ingestion", node_type:"input"
-#put id:"transform", label:"Data Transformation", node_type:"process"
-#put id:"export", label:"Export Results", node_type:"output"
+# put id:"ingest", label:"Data Ingestion", node_type:"input"
+# put id:"transform", label:"Data Transformation", node_type:"process"
+# put id:"export", label:"Export Results", node_type:"output"
 
 # Avoid: Every small helper function
 # (Don't annotate utility functions unless they're significant)
@@ -796,12 +798,12 @@ workflow <- put("./src/")
 2.  **Missing quotes** around property values
 3.  **File not matching pattern** (check
     [`list.files()`](https://rdrr.io/r/base/list.files.html))
-4.  **Typo in “put”** keyword (must be lowercase: `#put` not `#PUT`)
+4.  **Typo in “put”** keyword (must be lowercase: `# put` not `# PUT`)
 
 ``` r
 # Validate syntax
-is_valid_put_annotation('#put id:"test", label:"Test"')  # TRUE
-is_valid_put_annotation('#PUT id:"test", label:"Test"')  # FALSE (uppercase)
+is_valid_put_annotation('# put id:"test", label:"Test"')  # TRUE
+is_valid_put_annotation('# PUT id:"test", label:"Test"')  # FALSE (uppercase)
 ```
 
 ### Q: How do I connect nodes between files?
@@ -810,10 +812,10 @@ is_valid_put_annotation('#PUT id:"test", label:"Test"')  # FALSE (uppercase)
 
 ``` r
 # In 01_load.R
-#put id:"load", label:"Load Data", output:"raw_data.csv"
+# put id:"load", label:"Load Data", output:"raw_data.csv"
 
 # In 02_process.R
-#put id:"process", label:"Process", input:"raw_data.csv", output:"clean_data.csv"
+# put id:"process", label:"Process", input:"raw_data.csv", output:"clean_data.csv"
 ```
 
 ### Q: What if I don’t specify an output?
@@ -822,11 +824,11 @@ is_valid_put_annotation('#PUT id:"test", label:"Test"')  # FALSE (uppercase)
 
 ``` r
 # In process_data.R
-#put id:"process", label:"Process Data", input:"raw.csv"
+# put id:"process", label:"Process Data", input:"raw.csv"
 # Output defaults to "process_data.R"
 
 # In analyze.R
-#put id:"analyze", label:"Analyze", input:"process_data.R"
+# put id:"analyze", label:"Analyze", input:"process_data.R"
 # This creates a connection from process_data.R to analyze.R
 ```
 
@@ -849,12 +851,12 @@ put_diagram(workflow,
 
 ``` r
 # Variables created during script execution
-#put id:"create", output:"dataset.internal, dataset.RData"
+# put id:"create", output:"dataset.internal, dataset.RData"
 dataset <- data.frame(x = 1:100)
 save(dataset, file = "dataset.RData")
 
 # Next script uses the saved file, not .internal
-#put id:"analyze", input:"dataset.RData", output:"results.internal"
+# put id:"analyze", input:"dataset.RData", output:"results.internal"
 load("dataset.RData")
 results <- summary(dataset)
 ```
@@ -882,11 +884,11 @@ put_diagram(workflow, theme = "minimal", style_nodes = FALSE)
 **A**: Yes, putior preserves any properties you define:
 
 ``` r
-#put id:"train", label:"Train Model", \
-#    node_type:"process", \
-#    runtime:"2h", \
-#    gpu:"required", \
-#    priority:"high"
+# put id:"train", label:"Train Model", \
+#     node_type:"process", \
+#     runtime:"2h", \
+#     gpu:"required", \
+#     priority:"high"
 ```
 
 ``` r

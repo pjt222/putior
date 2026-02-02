@@ -224,16 +224,16 @@ With output="raw", returns as single string.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ## Annotation Syntax</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Add `#put` comments to source files to define workflow nodes:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Add `# put` comments to source files to define workflow nodes:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```r</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> #put id:"load", label:"Load Data", output:"raw_data.csv"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # put id:"load", label:"Load Data", output:"raw_data.csv"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> data &lt;- read.csv("input.csv")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> #put id:"transform", label:"Clean Data", input:"raw_data.csv", output:"clean.rds"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # put id:"transform", label:"Clean Data", input:"raw_data.csv", output:"clean.rds"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> clean &lt;- transform(data)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> #put id:"analyze", label:"Run Analysis", input:"clean.rds", node_type:"decision"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # put id:"analyze", label:"Run Analysis", input:"clean.rds", node_type:"decision"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> results &lt;- analyze(clean)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -252,10 +252,10 @@ With output="raw", returns as single string.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Use backslash for continuation:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```r</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> #put id:"complex_step", \</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> #put   label:"Multi-step Process", \</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> #put   input:"file1.csv, file2.csv", \</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> #put   output:"combined.rds"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # put id:"complex_step", \</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> #     label:"Multi-step Process", \</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> #     input:"file1.csv, file2.csv", \</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> #     output:"combined.rds"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ## Multi-Language Comment Syntax</span>
@@ -264,28 +264,28 @@ With output="raw", returns as single string.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | Prefix | Languages | Extensions |</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |--------|-----------|------------|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> | `#put` | R, Python, Shell, Julia, Ruby, Perl, YAML | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml` |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> | `--put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> | `//put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs` |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> | `%put` | MATLAB, LaTeX | `.m`, `.tex` |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `# put` | R, Python, Shell, Julia, Ruby, Perl, YAML | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml` |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `-- put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `// put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs` |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `% put` | MATLAB, LaTeX | `.m`, `.tex` |</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ### Examples by Language</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```sql</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -- query.sql</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> --put id:"fetch", label:"Fetch Customers", output:"customers"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -- put id:"fetch", label:"Fetch Customers", output:"customers"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> SELECT * FROM customers;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```javascript</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> // transform.js</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> //put id:"process", label:"Transform JSON", input:"data.json", output:"output.json"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> // put id:"process", label:"Transform JSON", input:"data.json", output:"output.json"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> const result = data.map(transform);</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```matlab</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> % analysis.m</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> %put id:"stats", label:"Statistical Analysis", input:"data.mat", output:"results.mat"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> % put id:"stats", label:"Statistical Analysis", input:"data.mat", output:"results.mat"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> results = compute_statistics(data);</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -316,9 +316,15 @@ With output="raw", returns as single string.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # Customize appearance</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> put_diagram(workflow,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   direction = "LR",           # Left-to-right (default: TB top-bottom)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   theme = "forest",           # Theme: default, forest, dark, neutral</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   theme = "github",           # Theme: github, light, dark, auto, minimal</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   show_artifacts = TRUE       # Show data files as nodes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # Colorblind-safe themes (viridis family)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> put_diagram(workflow, theme = "viridis")  # Purple-blue-green-yellow</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> put_diagram(workflow, theme = "magma")    # Warm: purple-red-yellow</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> put_diagram(workflow, theme = "plasma")   # Vibrant: purple-pink-yellow</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> put_diagram(workflow, theme = "cividis")  # Blue-yellow (max accessibility)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # Interactive features</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> put_diagram(workflow,</span>

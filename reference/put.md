@@ -82,13 +82,13 @@ comment prefix is determined automatically by file extension.
 
 **Single-line format (various languages):**
 
-    #put id:"node1", label:"Process"       # R/Python
+    # put id:"node1", label:"Process"       # R/Python
     --put id:"node1", label:"Query"        -- SQL
     //put id:"node1", label:"Handler"      // JavaScript
 
 **Multiline format:** Use backslash (\\ for line continuation
 
-    #put id:"node1", label:"Process Data", \
+    # put id:"node1", label:"Process Data", \
     #    input:"data.csv", \
     #    output:"result.csv"
 
@@ -136,13 +136,13 @@ workflow <- put("./frontend/", pattern = "\\.(js|ts|jsx|tsx)$")
 workflow <- put("./sql/", pattern = "\\.sql$")
 
 # Single-line PUT annotations (various languages):
-# R/Python: #put id:"load_data", label:"Load Dataset"
+# R/Python: # put id:"load_data", label:"Load Dataset"
 # SQL:      --put id:"query", label:"Execute Query"
 # JS/TS:    //put id:"handler", label:"API Handler"
 # MATLAB:   %put id:"compute", label:"Compute Results"
 #
 # Multiline PUT annotations work the same across languages:
-# #put id:"complex_process", label:"Complex Processing", \
+# # put id:"complex_process", label:"Complex Processing", \
 # #    input:"file1.csv,file2.csv", \
 # #    output:"results.csv"
 #

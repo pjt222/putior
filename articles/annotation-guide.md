@@ -25,25 +25,25 @@ simple:
 
 **Minimal annotation (just a label):**
 
-    #put label:"Load Data"
+    # put label:"Load Data"
 
 That’s all you need! putior will: - Auto-generate a unique ID - Default
 `node_type` to `"process"` - Default `output` to the filename
 
 **Add more detail as needed:**
 
-    #put label:"Load Data", node_type:"input", output:"data.csv"
+    # put label:"Load Data", node_type:"input", output:"data.csv"
 
 **Full R script example:**
 
     # data_processing.R
-    #put label:"Load Customer Data", node_type:"input", output:"raw_data.csv"
+    # put label:"Load Customer Data", node_type:"input", output:"raw_data.csv"
 
     # Your actual code
     data <- read.csv("customer_data.csv")
     write.csv(data, "raw_data.csv")
 
-    #put label:"Clean and Validate", input:"raw_data.csv", output:"clean_data.csv"
+    # put label:"Clean and Validate", input:"raw_data.csv", output:"clean_data.csv"
 
     # Data cleaning code
     cleaned_data <- data %>%
@@ -55,7 +55,7 @@ That’s all you need! putior will: - Auto-generate a unique ID - Default
 **Python script example:**
 
     # analysis.py
-    #put id:"analyze_sales", label:"Sales Analysis", node_type:"process", input:"clean_data.csv", output:"sales_report.json"
+    # put id:"analyze_sales", label:"Sales Analysis", node_type:"process", input:"clean_data.csv", output:"sales_report.json"
 
     import pandas as pd
     import json
@@ -127,17 +127,17 @@ Custom properties you define are also included as additional columns.
 
 The general syntax for PUT annotations is:
 
-    #put property1:"value1", property2:"value2", property3:"value3"
+    # put property1:"value1", property2:"value2", property3:"value3"
 
 ### Flexible Syntax Options
 
 PUT annotations support several formats to fit different coding styles:
 
-    #put id:"my_node", label:"My Process"           # Standard format
-    # put id:"my_node", label:"My Process"          # Space after #
-    #put| id:"my_node", label:"My Process"          # Pipe separator
-    #put id:'my_node', label:'Single quotes'        # Single quotes
-    #put id:"my_node", label:'Mixed quotes'         # Mixed quote styles
+    # put id:"my_node", label:"My Process"          # Standard format (matches logo)
+    #put id:"my_node", label:"My Process"           # Also valid (no space)
+    # put| id:"my_node", label:"My Process"         # Pipe separator
+    # put id:'my_node', label:'Single quotes'       # Single quotes
+    # put id:"my_node", label:'Mixed quotes'        # Mixed quote styles
 
 ### Multiline Annotations
 
@@ -147,13 +147,13 @@ continuation:
 **R/Python style:**
 
 ``` r
-#put id:"complex_etl", \
-#    label:"Complex ETL Process", \
-#    node_type:"process", \
-#    input:"raw_data.csv, config.yaml", \
-#    output:"processed.parquet", \
-#    author:"Data Team", \
-#    version:"2.0"
+# put id:"complex_etl", \
+#     label:"Complex ETL Process", \
+#     node_type:"process", \
+#     input:"raw_data.csv, config.yaml", \
+#     output:"processed.parquet", \
+#     author:"Data Team", \
+#     version:"2.0"
 ```
 
 **SQL style:**
@@ -187,15 +187,15 @@ SELECT * FROM raw_customers;
 **Example with many properties:**
 
 ``` r
-#put id:"train_model", \
-#    label:"Train Random Forest Model", \
-#    node_type:"process", \
-#    input:"features.csv, labels.csv", \
-#    output:"model.rds, metrics.json", \
-#    group:"machine_learning", \
-#    stage:"3", \
-#    estimated_time:"45min", \
-#    memory_intensive:"true"
+# put id:"train_model", \
+#     label:"Train Random Forest Model", \
+#     node_type:"process", \
+#     input:"features.csv, labels.csv", \
+#     output:"model.rds, metrics.json", \
+#     group:"machine_learning", \
+#     stage:"3", \
+#     estimated_time:"45min", \
+#     memory_intensive:"true"
 ```
 
 > **When Multiline Annotations Don’t Work:**
@@ -216,10 +216,10 @@ extension:
 
 | Comment Style | Languages                                 | Extensions                                |
 |:--------------|:------------------------------------------|:------------------------------------------|
-| `#put`        | R, Python, Shell, Julia, Ruby, YAML       | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.yaml` |
-| `--put`       | SQL, Lua, Haskell                         | `.sql`, `.lua`, `.hs`                     |
-| `//put`       | JavaScript, TypeScript, C, Java, Go, Rust | `.js`, `.ts`, `.c`, `.java`, `.go`, `.rs` |
-| `%put`        | MATLAB, LaTeX                             | `.m`, `.tex`                              |
+| `# put`       | R, Python, Shell, Julia, Ruby, YAML       | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.yaml` |
+| `-- put`      | SQL, Lua, Haskell                         | `.sql`, `.lua`, `.hs`                     |
+| `// put`      | JavaScript, TypeScript, C, Java, Go, Rust | `.js`, `.ts`, `.c`, `.java`, `.go`, `.rs` |
+| `% put`       | MATLAB, LaTeX                             | `.m`, `.tex`                              |
 
 **SQL Example:**
 
@@ -290,7 +290,7 @@ flowchart TD
 
 Add any properties you need for visualization or metadata:
 
-    #put id:"train_model", label:"Train ML Model", node_type:"process", color:"green", group:"machine_learning", duration:"45min", priority:"high"
+    # put id:"train_model", label:"Train ML Model", node_type:"process", color:"green", group:"machine_learning", duration:"45min", priority:"high"
 
 These custom properties can be used by visualization tools or workflow
 management systems.
@@ -358,8 +358,8 @@ UUID:
 
 ``` r
 # Annotations without explicit IDs get auto-generated UUIDs
-#put label:"Load Data", node_type:"input", output:"data.csv"
-#put label:"Process Data", node_type:"process", input:"data.csv", output:"clean.csv"
+# put label:"Load Data", node_type:"input", output:"data.csv"
+# put label:"Process Data", node_type:"process", input:"data.csv", output:"clean.csv"
 
 # Extract workflow - IDs will be auto-generated
 workflow <- put("./")
@@ -376,11 +376,11 @@ as the output:
 
 ``` r
 # In process_data.R:
-#put label:"Process Step", node_type:"process", input:"raw.csv"
+# put label:"Process Step", node_type:"process", input:"raw.csv"
 # No output specified - will default to "process_data.R"
 
 # In analyze_data.R:
-#put label:"Analyze", node_type:"process", input:"process_data.R", output:"results.csv"
+# put label:"Analyze", node_type:"process", input:"process_data.R", output:"results.csv"
 # This creates a connection from process_data.R to analyze_data.R
 ```
 
@@ -394,16 +394,16 @@ pattern:
 
 ``` r
 # In main.R (sources other scripts):
-#put label:"Main Analysis", input:"load_data.R,process_data.R", output:"report.pdf"
+# put label:"Main Analysis", input:"load_data.R,process_data.R", output:"report.pdf"
 source("load_data.R")    # Reading load_data.R into main.R
 source("process_data.R") # Reading process_data.R into main.R
 
 # In load_data.R (sourced by main.R):
-#put label:"Data Loader", node_type:"input"
+# put label:"Data Loader", node_type:"input"
 # output defaults to "load_data.R"
 
 # In process_data.R (sourced by main.R, depends on load_data.R):
-#put label:"Data Processor", input:"load_data.R"
+# put label:"Data Processor", input:"load_data.R"
 # output defaults to "process_data.R"
 ```
 
@@ -431,12 +431,12 @@ both inputs and outputs - Required for connected workflows - Example:
 
 ``` r
 # Script 1: Create variable and save it
-#put id:"create_data", output:"dataset.internal, dataset.RData"
+# put id:"create_data", output:"dataset.internal, dataset.RData"
 dataset <- data.frame(x = 1:100, y = rnorm(100))
 save(dataset, file = "dataset.RData")
 
-# Script 2: Load data and create new variables  
-#put id:"analyze_data", input:"dataset.RData", output:"analysis.internal, summary.txt"
+# Script 2: Load data and create new variables
+# put id:"analyze_data", input:"dataset.RData", output:"analysis.internal, summary.txt"
 load("dataset.RData")  # Load the persistent file (NOT dataset.internal)
 analysis <- summary(dataset)  # Create new in-memory variable
 writeLines(capture.output(analysis), "summary.txt")
@@ -446,10 +446,10 @@ writeLines(capture.output(analysis), "summary.txt")
 
 ``` r
 # INCORRECT: Using .internal as input between scripts
-#put input:"dataset.internal"  # This is wrong!
+# put input:"dataset.internal"  # This is wrong!
 
 # CORRECT: Use persistent files as inputs
-#put input:"dataset.RData"     # This is correct!
+# put input:"dataset.RData"     # This is correct!
 ```
 
 ### Complete Example
@@ -470,7 +470,7 @@ Let’s walk through a complete data science workflow:
 ### 1. Data Collection (Python)
 
     # 01_collect_data.py
-    #put id:"fetch_api_data", label:"Fetch Data from API", node_type:"input", output:"raw_api_data.json"
+    # put id:"fetch_api_data", label:"Fetch Data from API", node_type:"input", output:"raw_api_data.json"
 
     import requests
     import json
@@ -483,8 +483,8 @@ Let’s walk through a complete data science workflow:
 
 ### 2. Data Processing (R)
 
-    # 02_process_data.R  
-    #put id:"clean_api_data", label:"Clean and Structure Data", node_type:"process", input:"raw_api_data.json", output:"processed_sales.csv"
+    # 02_process_data.R
+    # put id:"clean_api_data", label:"Clean and Structure Data", node_type:"process", input:"raw_api_data.json", output:"processed_sales.csv"
 
     library(jsonlite)
     library(dplyr)
@@ -507,18 +507,18 @@ Let’s walk through a complete data science workflow:
 ### 3. Analysis and Reporting (R)
 
     # 03_analyze_report.R
-    #put id:"sales_analysis", label:"Perform Sales Analysis", node_type:"process", input:"processed_sales.csv", output:"analysis_results.rds"
-    #put id:"generate_report", label:"Generate HTML Report", node_type:"output", input:"analysis_results.rds", output:"sales_report.html"
+    # put id:"sales_analysis", label:"Perform Sales Analysis", node_type:"process", input:"processed_sales.csv", output:"analysis_results.rds"
+    # put id:"generate_report", label:"Generate HTML Report", node_type:"output", input:"analysis_results.rds", output:"sales_report.html"
 
     library(dplyr)
 
-    # Load processed data  
+    # Load processed data
     sales_data <- read.csv("processed_sales.csv")
 
     # Perform analysis
     analysis_results <- list(
       total_sales = sum(sales_data$sale_amount),
-      monthly_trends = sales_data %>% 
+      monthly_trends = sales_data %>%
         group_by(month = format(sale_date, "%Y-%m")) %>%
         summarise(monthly_total = sum(sale_amount)),
       top_products = sales_data %>%
@@ -532,7 +532,7 @@ Let’s walk through a complete data science workflow:
     saveRDS(analysis_results, "analysis_results.rds")
 
     # Generate report
-    rmarkdown::render("report_template.Rmd", 
+    rmarkdown::render("report_template.Rmd",
                       output_file = "sales_report.html")
 
 ### 4. Extract the Complete Workflow
@@ -553,40 +553,40 @@ Report
 Choose clear, descriptive names that explain what each step does:
 
     # Good
-    #put name:"load_customer_transactions", label:"Load Customer Transaction Data"
-    #put name:"calculate_monthly_revenue", label:"Calculate Monthly Revenue Totals"
+    # put name:"load_customer_transactions", label:"Load Customer Transaction Data"
+    # put name:"calculate_monthly_revenue", label:"Calculate Monthly Revenue Totals"
 
     # Less descriptive
-    #put name:"step1", label:"Load data"
-    #put name:"process", label:"Do calculations"
+    # put name:"step1", label:"Load data"
+    # put name:"process", label:"Do calculations"
 
 ### 2. Document Data Dependencies
 
 Always specify inputs and outputs for data processing steps:
 
-    #put name:"merge_datasets", label:"Merge Customer and Transaction Data", input:"customers.csv,transactions.csv", output:"merged_data.csv"
+    # put name:"merge_datasets", label:"Merge Customer and Transaction Data", input:"customers.csv,transactions.csv", output:"merged_data.csv"
 
 ### 3. Use Consistent Node Types
 
 Stick to a standard set of node types across your team:
 
-    #put name:"load_raw_data", label:"Load Raw Sales Data", node_type:"input"
-    #put name:"clean_data", label:"Clean and Validate", node_type:"process"  
-    #put name:"export_results", label:"Export Final Results", node_type:"output"
+    # put name:"load_raw_data", label:"Load Raw Sales Data", node_type:"input"
+    # put name:"clean_data", label:"Clean and Validate", node_type:"process"
+    # put name:"export_results", label:"Export Final Results", node_type:"output"
 
 ### 4. Add Helpful Metadata
 
 Include metadata that helps with workflow understanding:
 
-    #put name:"train_model", label:"Train Random Forest Model", node_type:"process", estimated_time:"30min", requires:"tidymodels", memory_intensive:"true"
+    # put name:"train_model", label:"Train Random Forest Model", node_type:"process", estimated_time:"30min", requires:"tidymodels", memory_intensive:"true"
 
 ### 5. Group Related Operations
 
 Use grouping properties to organize complex workflows:
 
-    #put name:"feature_engineering", label:"Engineer Features", group:"preprocessing", stage:"1"
-    #put name:"model_training", label:"Train Model", group:"modeling", stage:"2"
-    #put name:"model_evaluation", label:"Evaluate Model", group:"modeling", stage:"3"
+    # put name:"feature_engineering", label:"Engineer Features", group:"preprocessing", stage:"1"
+    # put name:"model_training", label:"Train Model", group:"modeling", stage:"2"
+    # put name:"model_evaluation", label:"Evaluate Model", group:"modeling", stage:"3"
 
 ## Troubleshooting
 
@@ -610,7 +610,7 @@ Guide](https://pjt222.github.io/putior/articles/troubleshooting.md) for:
 
 ``` r
 # Test if your annotation is valid
-is_valid_put_annotation('#put id:"test", label:"Test Node"')  # Should be TRUE
+is_valid_put_annotation('# put id:"test", label:"Test Node"')  # Should be TRUE
 ```
 
 ## See Also

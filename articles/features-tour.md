@@ -140,10 +140,10 @@ put_generate("./src/")
 **Example Output:**
 
     # For file: process_data.R
-    #put id:"process_data", label:"Process Data", node_type:"process", input:"raw_data.csv", output:"clean_data.csv"
+    # put id:"process_data", label:"Process Data", node_type:"process", input:"raw_data.csv", output:"clean_data.csv"
 
     # For file: analyze.R
-    #put id:"analyze", label:"Analyze", node_type:"process", input:"clean_data.csv", output:"results.json"
+    # put id:"analyze", label:"Analyze", node_type:"process", input:"clean_data.csv", output:"results.json"
 
 **Copy to Clipboard:**
 
@@ -157,12 +157,12 @@ put_generate("./src/", output = "clipboard")
 ``` r
 # Single-line style (default)
 put_generate("./src/", style = "single")
-# Output: #put id:"step1", label:"Step 1", input:"a.csv", output:"b.csv"
+# Output: # put id:"step1", label:"Step 1", input:"a.csv", output:"b.csv"
 
 # Multiline style for complex annotations
 put_generate("./src/", style = "multiline")
 # Output:
-# #put id:"step1", \
+# # put id:"step1", \
 # #     label:"Step 1", \
 # #     input:"a.csv", \
 # #     output:"b.csv"
@@ -507,11 +507,11 @@ run_sandbox()
 
 ``` r
 # ===== File: 01_load.R =====
-#put label:"Load Data", node_type:"input", output:"data.csv"
+# put label:"Load Data", node_type:"input", output:"data.csv"
 data <- read.csv("source.csv")
 
 # ===== File: 02_process.R =====
-#put label:"Process", input:"data.csv", output:"results.csv"
+# put label:"Process", input:"data.csv", output:"results.csv"
 # Processing code here
 ```
 
@@ -600,8 +600,15 @@ put_diagram(workflow, show_artifacts = TRUE)
 
 ``` r
 get_diagram_themes()
-#> [1] "light"   "dark"    "auto"    "minimal" "github"
+#> $light
+#> [1] "Default light theme with bright colors - perfect for documentation sites"
+#>
+#> $dark
+#> [1] "Dark theme with muted colors - ideal for dark mode environments and terminals"
+#> ...
 ```
+
+#### Standard Themes
 
 | Theme     | Best For            | Colors                          |
 |-----------|---------------------|---------------------------------|
@@ -610,6 +617,27 @@ get_diagram_themes()
 | `dark`    | Dark mode apps      | Muted colors on dark            |
 | `auto`    | Adaptive sites      | Works in both modes             |
 | `minimal` | Reports, printing   | Professional grayscale          |
+
+#### Colorblind-Safe Themes (Viridis Family)
+
+These themes are perceptually uniform and tested for accessibility with
+color vision deficiencies (deuteranopia, protanopia, tritanopia).
+
+| Theme     | Best For              | Palette                                   |
+|-----------|-----------------------|-------------------------------------------|
+| `viridis` | General use           | Purple -\> Blue -\> Green -\> Yellow      |
+| `magma`   | Print, high contrast  | Purple -\> Red -\> Yellow                 |
+| `plasma`  | Presentations         | Purple -\> Pink -\> Orange -\> Yellow     |
+| `cividis` | Maximum accessibility | Blue -\> Gray -\> Yellow (red-green safe) |
+
+``` r
+# Use colorblind-safe theme
+workflow <- put("./src/")
+put_diagram(workflow, theme = "viridis")
+
+# Cividis is optimized for red-green color blindness
+put_diagram(workflow, theme = "cividis")
+```
 
 ### Theme Examples
 

@@ -323,6 +323,8 @@
 <strong>MCP Server Integration</strong> - Expose putior functions as MCP tools for AI assistants (Claude Code, Claude Desktop)</li>
 <li>
 <strong>ACP Server Integration</strong> - Expose putior as an ACP agent for inter-agent communication via REST API</li>
+<li>
+<strong>Colorblind-Safe Themes</strong> - Added 4 viridis family themes (viridis, magma, plasma, cividis) for accessibility</li>
 </ol></div>
 <div class="section level2">
 <h2 id="mcp-server-integration">MCP Server Integration<a class="anchor" aria-label="anchor" href="#mcp-server-integration"></a></h2>
@@ -488,22 +490,22 @@ Then use put_diagram to create a visualization</code></pre>
 <table class="table"><colgroup><col width="39%"><col width="28%"><col width="31%"></colgroup><thead><tr class="header"><th>Comment Style</th>
 <th>Languages</th>
 <th>Extensions</th>
-</tr></thead><tbody><tr class="odd"><td><code>#put</code></td>
+</tr></thead><tbody><tr class="odd"><td><code># put</code></td>
 <td>R, Python, Shell, Julia, Ruby, Perl, YAML, TOML</td>
 <td>
 <code>.R</code>, <code>.py</code>, <code>.sh</code>, <code>.jl</code>, <code>.rb</code>, <code>.pl</code>, <code>.yaml</code>
 </td>
-</tr><tr class="even"><td><code>--put</code></td>
+</tr><tr class="even"><td><code>-- put</code></td>
 <td>SQL, Lua, Haskell</td>
 <td>
 <code>.sql</code>, <code>.lua</code>, <code>.hs</code>
 </td>
-</tr><tr class="odd"><td><code>//put</code></td>
+</tr><tr class="odd"><td><code>// put</code></td>
 <td>JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala</td>
 <td>
 <code>.js</code>, <code>.ts</code>, <code>.c</code>, <code>.cpp</code>, <code>.java</code>, <code>.go</code>, <code>.rs</code>
 </td>
-</tr><tr class="even"><td><code>%put</code></td>
+</tr><tr class="even"><td><code>% put</code></td>
 <td>MATLAB, LaTeX</td>
 <td>
 <code>.m</code>, <code>.tex</code>
@@ -527,13 +529,13 @@ Then use put_diagram to create a visualization</code></pre>
 <div class="section level3">
 <h3 id="example-annotations">Example Annotations<a class="anchor" aria-label="anchor" href="#example-annotations"></a></h3>
 <div class="sourceCode" id="cb9"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co">-- query.sql</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">--put id:"load_data", label:"Load Customer Data", output:"customers"</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">-- put id:"load_data", label:"Load Customer Data", output:"customers"</span></span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> customers;</span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co">// process.js</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">//put id:"transform", label:"Transform JSON", input:"data.json", output:"output.json"</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">// put id:"transform", label:"Transform JSON", input:"data.json", output:"output.json"</span></span>
 <span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="kw">const</span> transformed <span class="op">=</span> data<span class="op">.</span><span class="fu">map</span>(<span class="bu">process</span>)<span class="op">;</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co">% analysis.m</span></span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co">%put id:"compute", label:"Statistical Analysis", input:"data.mat", output:"results.mat"</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co">% put id:"compute", label:"Statistical Analysis", input:"data.mat", output:"results.mat"</span></span>
 <span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="va">results</span> <span class="op">=</span> <span class="va">compute_statistics</span>(<span class="va">data</span>)<span class="op">;</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -642,7 +644,7 @@ Then use put_diagram to create a visualization</code></pre>
 <ol style="list-style-type: decimal"><li>
 <strong>Direct detection</strong>: <code><a href="reference/put_auto.html">put_auto()</a></code> analyzes code and produces workflow data without requiring annotations</li>
 <li>
-<strong>Comment generation</strong>: <code><a href="reference/put_generate.html">put_generate()</a></code> creates <code>#put</code> annotation text for persistent documentation</li>
+<strong>Comment generation</strong>: <code><a href="reference/put_generate.html">put_generate()</a></code> creates <code># put</code> annotation text for persistent documentation</li>
 </ol></div>
 <div class="section level3">
 <h3 id="core-functions">Core Functions<a class="anchor" aria-label="anchor" href="#core-functions"></a></h3>
@@ -845,12 +847,12 @@ Then use put_diagram to create a visualization</code></pre>
 <h3 id="example-implementation">Example Implementation<a class="anchor" aria-label="anchor" href="#example-implementation"></a></h3>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Script 1: Creates variable and saves it</span></span>
-<span><span class="co">#put output:'data.internal, data.RData'</span></span>
+<span><span class="co"># put output:'data.internal, data.RData'</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">process_something</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></span><span class="op">(</span><span class="va">data</span>, file <span class="op">=</span> <span class="st">'data.RData'</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Script 2: Uses saved file, creates new variable  </span></span>
-<span><span class="co">#put input:'data.RData', output:'results.internal, results.csv'</span></span>
+<span><span class="co"># Script 2: Uses saved file, creates new variable</span></span>
+<span><span class="co"># put input:'data.RData', output:'results.internal, results.csv'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">'data.RData'</span><span class="op">)</span>  <span class="co"># NOT 'data.internal'</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">analyze</span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">results</span>, <span class="st">'results.csv'</span><span class="op">)</span></span></code></pre></div>
@@ -903,6 +905,42 @@ Then use put_diagram to create a visualization</code></pre>
 </ul></div>
 </div>
 <div class="section level2">
+<h2 id="diagram-themes">Diagram Themes<a class="anchor" aria-label="anchor" href="#diagram-themes"></a></h2>
+<div class="section level3">
+<h3 id="available-themes-9-total">Available Themes (9 total)<a class="anchor" aria-label="anchor" href="#available-themes-9-total"></a></h3>
+<p><strong>Standard Themes:</strong> | Theme | Description | |——-|————-| | <code>light</code> | Default light theme with bright colors | | <code>dark</code> | Dark theme for dark mode environments | | <code>auto</code> | GitHub-adaptive with solid colors | | <code>minimal</code> | Grayscale professional, print-friendly | | <code>github</code> | Optimized for GitHub README files |</p>
+<p><strong>Colorblind-Safe Themes (Viridis Family):</strong> | Theme | Palette | Best For | |——-|———|———-| | <code>viridis</code> | Purple→Blue→Green→Yellow | General accessibility | | <code>magma</code> | Purple→Red→Yellow | Print, high contrast | | <code>plasma</code> | Purple→Pink→Orange→Yellow | Presentations | | <code>cividis</code> | Blue→Gray→Yellow | Deuteranopia/protanopia |</p>
+</div>
+<div class="section level3">
+<h3 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h3>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Standard themes</span></span>
+<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"github"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Colorblind-safe themes</span></span>
+<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"viridis"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"cividis"</span><span class="op">)</span>  <span class="co"># Maximum accessibility</span></span>
+<span></span>
+<span><span class="co"># List all available themes</span></span>
+<span><span class="fu"><a href="reference/get_diagram_themes.html">get_diagram_themes</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="key-characteristics-1">Key Characteristics<a class="anchor" aria-label="anchor" href="#key-characteristics-1"></a></h3>
+<ul><li>Viridis themes are perceptually uniform (equal steps appear equally different)</li>
+<li>All viridis themes tested for deuteranopia, protanopia, and tritanopia</li>
+<li>Cividis avoids red-green entirely, making it optimal for red-green colorblindness</li>
+<li>Artifact nodes use neutral gray across all themes for consistency</li>
+</ul></div>
+<div class="section level3">
+<h3 id="reference-4">Reference<a class="anchor" aria-label="anchor" href="#reference-4"></a></h3>
+<ul><li>
+<strong>Example</strong>: <code>inst/examples/theme-examples.R</code>
+</li>
+<li>
+<strong>Key File</strong>: <code>R/put_diagram.R</code> (functions: <code><a href="reference/get_theme_colors.html">get_theme_colors()</a></code>, <code><a href="reference/get_diagram_themes.html">get_diagram_themes()</a></code>)</li>
+</ul></div>
+</div>
+<div class="section level2">
 <h2 id="interactive-sandbox-shiny-app">Interactive Sandbox (Shiny App)<a class="anchor" aria-label="anchor" href="#interactive-sandbox-shiny-app"></a></h2>
 <div class="section level3">
 <h3 id="overview-7">Overview<a class="anchor" aria-label="anchor" href="#overview-7"></a></h3>
@@ -910,7 +948,7 @@ Then use put_diagram to create a visualization</code></pre>
 </div>
 <div class="section level3">
 <h3 id="launch">Launch<a class="anchor" aria-label="anchor" href="#launch"></a></h3>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/run_sandbox.html">run_sandbox</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># Requires shiny package</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -957,11 +995,11 @@ Then use put_diagram to create a visualization</code></pre>
 </div>
 <div class="section level3">
 <h3 id="usage-pattern">Usage Pattern<a class="anchor" aria-label="anchor" href="#usage-pattern"></a></h3>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Chunk 1: Generate code (visible, foldable)</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./R/"</span><span class="op">)</span></span>
 <span><span class="va">mermaid_code</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Chunk 2: Output as native mermaid chunk (hidden)</span></span>
 <span><span class="co">#| output: asis</span></span>
 <span><span class="co">#| echo: false</span></span>
@@ -969,7 +1007,7 @@ Then use put_diagram to create a visualization</code></pre>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/knit_child.html" class="external-link">knit_child</a></span><span class="op">(</span>text <span class="op">=</span> <span class="va">mermaid_chunk</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="reference-4">Reference<a class="anchor" aria-label="anchor" href="#reference-4"></a></h3>
+<h3 id="reference-5">Reference<a class="anchor" aria-label="anchor" href="#reference-5"></a></h3>
 <ul><li>
 <strong>Example</strong>: <code>inst/examples/quarto-example.qmd</code>
 </li>
@@ -991,8 +1029,8 @@ Then use put_diagram to create a visualization</code></pre>
 <h3 id="key-settings">Key Settings<a class="anchor" aria-label="anchor" href="#key-settings"></a></h3>
 <ul><li>
 <p><code>_pkgdown.yml</code>: Development mode must be disabled/commented out:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="co"># development:</span></span>
-<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a><span class="co">#   mode: auto</span></span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="co"># development:</span></span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a><span class="co">#   mode: auto</span></span></code></pre></div>
 </li>
 <li><p>GitHub Pages Settings: Deploy from <code>gh-pages</code> branch (NOT GitHub Actions)</p></li>
 <li><p>Site URL: <a href="https://pjt222.github.io/putior/" class="uri">https://pjt222.github.io/putior/</a></p></li>

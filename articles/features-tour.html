@@ -365,10 +365,10 @@ API docs</a>)</em></p>
 <span><span class="fu"><a href="../reference/put_generate.html">put_generate</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Example Output:</strong></p>
 <pre><code><span><span class="co"># For file: process_data.R</span></span>
-<span><span class="co">#put id:"process_data", label:"Process Data", node_type:"process", input:"raw_data.csv", output:"clean_data.csv"</span></span>
+<span><span class="co"># put id:"process_data", label:"Process Data", node_type:"process", input:"raw_data.csv", output:"clean_data.csv"</span></span>
 <span></span>
 <span><span class="co"># For file: analyze.R</span></span>
-<span><span class="co">#put id:"analyze", label:"Analyze", node_type:"process", input:"clean_data.csv", output:"results.json"</span></span></code></pre>
+<span><span class="co"># put id:"analyze", label:"Analyze", node_type:"process", input:"clean_data.csv", output:"results.json"</span></span></code></pre>
 <p><strong>Copy to Clipboard:</strong></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Copy annotations to clipboard for pasting</span></span>
@@ -377,12 +377,12 @@ API docs</a>)</em></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Single-line style (default)</span></span>
 <span><span class="fu"><a href="../reference/put_generate.html">put_generate</a></span><span class="op">(</span><span class="st">"./src/"</span>, style <span class="op">=</span> <span class="st">"single"</span><span class="op">)</span></span>
-<span><span class="co"># Output: #put id:"step1", label:"Step 1", input:"a.csv", output:"b.csv"</span></span>
+<span><span class="co"># Output: # put id:"step1", label:"Step 1", input:"a.csv", output:"b.csv"</span></span>
 <span></span>
 <span><span class="co"># Multiline style for complex annotations</span></span>
 <span><span class="fu"><a href="../reference/put_generate.html">put_generate</a></span><span class="op">(</span><span class="st">"./src/"</span>, style <span class="op">=</span> <span class="st">"multiline"</span><span class="op">)</span></span>
 <span><span class="co"># Output:</span></span>
-<span><span class="co"># #put id:"step1", \</span></span>
+<span><span class="co"># # put id:"step1", \</span></span>
 <span><span class="co"># #     label:"Step 1", \</span></span>
 <span><span class="co"># #     input:"a.csv", \</span></span>
 <span><span class="co"># #     output:"b.csv"</span></span></code></pre></div>
@@ -958,11 +958,11 @@ simulate multiple files:</p></li>
 </ol>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># ===== File: 01_load.R =====</span></span>
-<span><span class="co">#put label:"Load Data", node_type:"input", output:"data.csv"</span></span>
+<span><span class="co"># put label:"Load Data", node_type:"input", output:"data.csv"</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"source.csv"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># ===== File: 02_process.R =====</span></span>
-<span><span class="co">#put label:"Process", input:"data.csv", output:"results.csv"</span></span>
+<span><span class="co"># put label:"Process", input:"data.csv", output:"results.csv"</span></span>
 <span><span class="co"># Processing code here</span></span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li><p><strong>Real-time Preview</strong>: See diagram updates as you
@@ -1087,7 +1087,15 @@ complete</td>
 </h3>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_diagram_themes.html">get_diagram_themes</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "light"   "dark"    "auto"    "minimal" "github"</span></span></code></pre></div>
+<span><span class="co">#&gt; $light</span></span>
+<span><span class="co">#&gt; [1] "Default light theme with bright colors - perfect for documentation sites"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $dark</span></span>
+<span><span class="co">#&gt; [1] "Dark theme with muted colors - ideal for dark mode environments and terminals"</span></span>
+<span><span class="co">#&gt; ...</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="standard-themes">Standard Themes<a class="anchor" aria-label="anchor" href="#standard-themes"></a>
+</h4>
 <table class="table">
 <thead><tr class="header">
 <th>Theme</th>
@@ -1123,10 +1131,59 @@ complete</td>
 </tbody>
 </table>
 </div>
+<div class="section level4">
+<h4 id="colorblind-safe-themes-viridis-family">Colorblind-Safe Themes (Viridis Family)<a class="anchor" aria-label="anchor" href="#colorblind-safe-themes-viridis-family"></a>
+</h4>
+<p>These themes are perceptually uniform and tested for accessibility
+with color vision deficiencies (deuteranopia, protanopia,
+tritanopia).</p>
+<table class="table">
+<colgroup>
+<col width="26%">
+<col width="38%">
+<col width="34%">
+</colgroup>
+<thead><tr class="header">
+<th>Theme</th>
+<th>Best For</th>
+<th>Palette</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>viridis</code></td>
+<td>General use</td>
+<td>Purple -&gt; Blue -&gt; Green -&gt; Yellow</td>
+</tr>
+<tr class="even">
+<td><code>magma</code></td>
+<td>Print, high contrast</td>
+<td>Purple -&gt; Red -&gt; Yellow</td>
+</tr>
+<tr class="odd">
+<td><code>plasma</code></td>
+<td>Presentations</td>
+<td>Purple -&gt; Pink -&gt; Orange -&gt; Yellow</td>
+</tr>
+<tr class="even">
+<td><code>cividis</code></td>
+<td>Maximum accessibility</td>
+<td>Blue -&gt; Gray -&gt; Yellow (red-green safe)</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Use colorblind-safe theme</span></span>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"viridis"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Cividis is optimized for red-green color blindness</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"cividis"</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
 <div class="section level3">
 <h3 id="theme-examples">Theme Examples<a class="anchor" aria-label="anchor" href="#theme-examples"></a>
 </h3>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># GitHub (recommended for README)</span></span>
@@ -1141,7 +1198,7 @@ complete</td>
 <div class="section level3">
 <h3 id="styling-options">Styling Options<a class="anchor" aria-label="anchor" href="#styling-options"></a>
 </h3>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>,</span>
 <span>  theme <span class="op">=</span> <span class="st">"github"</span>,              <span class="co"># Color theme</span></span>
 <span>  direction <span class="op">=</span> <span class="st">"TD"</span>,              <span class="co"># Flow direction</span></span>
@@ -1316,7 +1373,7 @@ matching.</p>
 </h3>
 <p><strong>1. Use specific file patterns instead of scanning
 everything:</strong></p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Slow: scans all files recursively</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
 <span></span>
@@ -1327,19 +1384,19 @@ everything:</strong></p>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"./src/etl/"</span>, <span class="st">"./src/analysis/"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><strong>2. Disable validation for performance-critical
 scripts:</strong></p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Skip validation checks for faster processing</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, validate <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><strong>3. Use <code>recursive = FALSE</code> when
 appropriate:</strong></p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Only scan top-level directory</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, recursive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Then add specific subdirectories as needed</span></span>
 <span><span class="va">workflow2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/important_module/"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><strong>4. Consider splitting large directories:</strong></p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Process in chunks for very large projects</span></span>
 <span><span class="va">etl_workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/etl/"</span><span class="op">)</span></span>
 <span><span class="va">analysis_workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/analysis/"</span><span class="op">)</span></span>
@@ -1348,7 +1405,7 @@ appropriate:</strong></p>
 <span><span class="co"># Combine if needed</span></span>
 <span><span class="co"># all_workflows &lt;- rbind(etl_workflow, analysis_workflow, reporting_workflow)</span></span></code></pre></div>
 <p><strong>5. Cache results for repeated use:</strong></p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Save workflow for reuse</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">workflow</span>, <span class="st">"workflow_cache.rds"</span><span class="op">)</span></span>
@@ -1357,7 +1414,7 @@ appropriate:</strong></p>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"workflow_cache.rds"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span></code></pre></div>
 <p><strong>6. Profile before optimizing:</strong></p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Measure actual time</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
 <span>  <span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -1396,7 +1453,7 @@ between builds</li>
 <div class="section level3">
 <h3 id="complete-interactive-documentation-workflow">Complete Interactive Documentation Workflow<a class="anchor" aria-label="anchor" href="#complete-interactive-documentation-workflow"></a>
 </h3>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pjt222.github.io/putior/">putior</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># 1. Enable logging for debugging</span></span>
@@ -1432,7 +1489,7 @@ between builds</li>
 <div class="section level3">
 <h3 id="quick-visualization-of-unknown-code">Quick Visualization of Unknown Code<a class="anchor" aria-label="anchor" href="#quick-visualization-of-unknown-code"></a>
 </h3>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Instantly understand a new codebase</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./unfamiliar_project/"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_artifacts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -1466,7 +1523,7 @@ documentation</li>
 <div class="section level2">
 <h2 id="try-the-examples">Try the Examples<a class="anchor" aria-label="anchor" href="#try-the-examples"></a>
 </h2>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Auto-annotation example</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"auto-annotation-example.R"</span>, package <span class="op">=</span> <span class="st">"putior"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>

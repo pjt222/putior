@@ -221,7 +221,7 @@
 <strong>File flow tracking</strong> - Automatically connects scripts based on input/output files<br>
 </li>
 <li>
-<strong>Multiple themes</strong> - 5 built-in themes including GitHub-optimized</li>
+<strong>Multiple themes</strong> - 9 built-in themes including GitHub-optimized and colorblind-safe (viridis family)</li>
 <li>
 <strong>Cross-language support</strong> - Works with 30+ file types including R, Python, SQL, JavaScript, TypeScript, Go, Rust, and more</li>
 <li>
@@ -238,7 +238,7 @@
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Add annotation to your script</span></span>
-<span><span class="co">#put label:"Load Data", output:"clean.csv"</span></span>
+<span><span class="co"># put label:"Load Data", output:"clean.csv"</span></span>
 <span></span>
 <span><span class="co"># 2. Generate diagram</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pjt222.github.io/putior/">putior</a></span><span class="op">)</span></span>
@@ -279,28 +279,28 @@ See result
 <div class="section level3">
 <h3 id="step-1-annotate-your-code">Step 1: Annotate Your Code<a class="anchor" aria-label="anchor" href="#step-1-annotate-your-code"></a>
 </h3>
-<p>Add <code>#put</code> comments to describe each step in your workflow. Start simple:</p>
+<p>Add <code># put</code> comments to describe each step in your workflow. Start simple:</p>
 <blockquote>
-<p>[!TIP] <strong>One line is enough!</strong> The simplest annotation is <code>#put label:"My Step"</code> - ID, type, and output are auto-generated.</p>
+<p>[!TIP] <strong>One line is enough!</strong> The simplest annotation is <code># put label:"My Step"</code> - ID, type, and output are auto-generated.</p>
 </blockquote>
 <p><strong>Minimal annotation (just a label):</strong></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#put label:"Load Data"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># put label:"Load Data"</span></span></code></pre></div>
 <p>That’s it! putior will: - Auto-generate a unique ID for the node - Default <code>node_type</code> to <code>"process"</code> - Default <code>output</code> to the current filename (for connecting scripts)</p>
 <p><strong>Add more detail as needed:</strong></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#put label:"Fetch Sales Data", node_type:"input", output:"sales_data.csv"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># put label:"Fetch Sales Data", node_type:"input", output:"sales_data.csv"</span></span></code></pre></div>
 <p><strong>Complete example with two files:</strong></p>
 <p><strong><code>01_fetch_data.R</code></strong></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#put label:"Fetch Sales Data", node_type:"input", output:"sales_data.csv"</span></span>
+<code class="sourceCode R"><span><span class="co"># put label:"Fetch Sales Data", node_type:"input", output:"sales_data.csv"</span></span>
 <span></span>
 <span><span class="co"># Your actual code</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://readr.tidyverse.org" class="external-link">readr</a></span><span class="op">)</span></span>
 <span><span class="va">sales_data</span> <span class="op">&lt;-</span> <span class="fu">fetch_sales_from_api</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html" class="external-link">write_csv</a></span><span class="op">(</span><span class="va">sales_data</span>, <span class="st">"sales_data.csv"</span><span class="op">)</span></span></code></pre></div>
 <p><strong><code>02_clean_data.py</code></strong></p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">#put label:"Clean and Process", input:"sales_data.csv", output:"clean_sales.csv"</span></span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># put label:"Clean and Process", input:"sales_data.csv", output:"clean_sales.csv"</span></span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"sales_data.csv"</span>)</span>
@@ -342,7 +342,7 @@ See result
 <p>The most common data science pattern: modularize functions into separate scripts and orchestrate them in a main workflow:</p>
 <p><strong><code>utils.R</code> - Utility functions</strong></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#put label:"Data Utilities", node_type:"input"</span></span>
+<code class="sourceCode R"><span><span class="co"># put label:"Data Utilities", node_type:"input"</span></span>
 <span></span>
 <span><span class="va">load_and_clean</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">file</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span>
@@ -355,7 +355,7 @@ See result
 <span><span class="op">}</span></span></code></pre></div>
 <p><strong><code>analysis.R</code> - Analysis functions</strong></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#put label:"Statistical Analysis", input:"utils.R"</span></span>
+<code class="sourceCode R"><span><span class="co"># put label:"Statistical Analysis", input:"utils.R"</span></span>
 <span></span>
 <span><span class="va">perform_analysis</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># Uses utility functions from utils.R</span></span>
@@ -364,7 +364,7 @@ See result
 <span><span class="op">}</span></span></code></pre></div>
 <p><strong><code>main.R</code> - Workflow orchestrator</strong></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#put label:"Main Analysis Pipeline", input:"utils.R,analysis.R", output:"results.csv"</span></span>
+<code class="sourceCode R"><span><span class="co"># put label:"Main Analysis Pipeline", input:"utils.R,analysis.R", output:"results.csv"</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"utils.R"</span><span class="op">)</span>     <span class="co"># Load utility functions</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"analysis.R"</span><span class="op">)</span>  <span class="co"># Load analysis functions</span></span>
@@ -634,13 +634,16 @@ See result
 <div class="section level2">
 <h2 id="id_-theme-system">🎨 Theme System<a class="anchor" aria-label="anchor" href="#id_-theme-system"></a>
 </h2>
-<p>putior provides 5 carefully designed themes optimized for different environments:</p>
+<p>putior provides 9 carefully designed themes optimized for different environments:</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get list of available themes</span></span>
 <span><span class="fu"><a href="reference/get_diagram_themes.html">get_diagram_themes</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="theme-overview">Theme Overview<a class="anchor" aria-label="anchor" href="#theme-overview"></a>
 </h3>
+<div class="section level4">
+<h4 id="standard-themes">Standard Themes<a class="anchor" aria-label="anchor" href="#standard-themes"></a>
+</h4>
 <table class="table">
 <colgroup>
 <col width="23%">
@@ -680,6 +683,46 @@ See result
 </tr>
 </tbody>
 </table>
+</div>
+<div class="section level4">
+<h4 id="colorblind-safe-themes-viridis-family">Colorblind-Safe Themes (Viridis Family)<a class="anchor" aria-label="anchor" href="#colorblind-safe-themes-viridis-family"></a>
+</h4>
+<table class="table">
+<colgroup>
+<col width="26%">
+<col width="38%">
+<col width="34%">
+</colgroup>
+<thead><tr class="header">
+<th>Theme</th>
+<th>Best For</th>
+<th>Palette</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>viridis</code></td>
+<td>General accessibility</td>
+<td>Purple → Blue → Green → Yellow</td>
+</tr>
+<tr class="even">
+<td><code>magma</code></td>
+<td>Print, high contrast</td>
+<td>Purple → Red → Yellow</td>
+</tr>
+<tr class="odd">
+<td><code>plasma</code></td>
+<td>Presentations</td>
+<td>Purple → Pink → Orange → Yellow</td>
+</tr>
+<tr class="even">
+<td><code>cividis</code></td>
+<td>Maximum accessibility</td>
+<td>Blue → Gray → Yellow (red-green safe)</td>
+</tr>
+</tbody>
+</table>
+<p>All viridis themes are perceptually uniform and tested for deuteranopia, protanopia, and tritanopia.</p>
+</div>
 </div>
 <div class="section level3">
 <h3 id="theme-examples">Theme Examples<a class="anchor" aria-label="anchor" href="#theme-examples"></a>
@@ -815,6 +858,16 @@ See result
 <td>Business reports, presentations</td>
 <td>Print-friendly</td>
 </tr>
+<tr class="even">
+<td><code>viridis</code></td>
+<td><strong>Accessibility (recommended)</strong></td>
+<td>Colorblind-safe</td>
+</tr>
+<tr class="odd">
+<td><code>cividis</code></td>
+<td>Red-green colorblindness</td>
+<td>Maximum accessibility</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -830,6 +883,8 @@ See result
 <strong>For Reports</strong>: Use <code>theme = "minimal"</code> for professional, print-friendly diagrams</li>
 <li>
 <strong>For Demos</strong>: Light theme usually shows colors best in presentations</li>
+<li>
+<strong>For Accessibility</strong>: Use <code>theme = "viridis"</code> or <code>theme = "cividis"</code> for colorblind-safe diagrams</li>
 </ul>
 </div>
 <div class="section level3">
@@ -839,7 +894,7 @@ See result
 <code class="sourceCode R"><span><span class="co"># For GitHub README (recommended)</span></span>
 <span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"github"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># For GitHub README (adaptive)  </span></span>
+<span><span class="co"># For GitHub README (adaptive)</span></span>
 <span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"auto"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># For dark documentation sites</span></span>
@@ -848,12 +903,17 @@ See result
 <span><span class="co"># For professional reports</span></span>
 <span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"minimal"</span>, output <span class="op">=</span> <span class="st">"file"</span>, file <span class="op">=</span> <span class="st">"report.md"</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># For colorblind-safe diagrams</span></span>
+<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"viridis"</span><span class="op">)</span>     <span class="co"># General accessibility</span></span>
+<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"cividis"</span><span class="op">)</span>     <span class="co"># Red-green colorblindness</span></span>
+<span></span>
 <span><span class="co"># Save all themes for comparison</span></span>
-<span><span class="va">themes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"light"</span>, <span class="st">"dark"</span>, <span class="st">"auto"</span>, <span class="st">"github"</span>, <span class="st">"minimal"</span><span class="op">)</span></span>
+<span><span class="va">themes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"light"</span>, <span class="st">"dark"</span>, <span class="st">"auto"</span>, <span class="st">"github"</span>, <span class="st">"minimal"</span>,</span>
+<span>            <span class="st">"viridis"</span>, <span class="st">"magma"</span>, <span class="st">"plasma"</span>, <span class="st">"cividis"</span><span class="op">)</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">theme</span> <span class="kw">in</span> <span class="va">themes</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, </span>
+<span>  <span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>,</span>
 <span>             theme <span class="op">=</span> <span class="va">theme</span>,</span>
-<span>             output <span class="op">=</span> <span class="st">"file"</span>, </span>
+<span>             output <span class="op">=</span> <span class="st">"file"</span>,</span>
 <span>             file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"workflow_"</span>, <span class="va">theme</span>, <span class="st">".md"</span><span class="op">)</span>,</span>
 <span>             title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Workflow -"</span>, <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html" class="external-link">str_to_title</a></span><span class="op">(</span><span class="va">theme</span><span class="op">)</span>, <span class="st">"Theme"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
@@ -971,30 +1031,30 @@ See result
 </table>
 <p><strong>Minimal valid annotation:</strong></p>
 <div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#put label:"My Step"</span></span>
+<code class="sourceCode R"><span><span class="co"># put label:"My Step"</span></span>
 <span><span class="co"># That's all you need to get started!</span></span></code></pre></div>
 <p><strong>Progressively add detail:</strong></p>
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#put label:"My Step"                                          # Minimal</span></span>
-<span><span class="co">#put label:"My Step", node_type:"input"                       # + type</span></span>
-<span><span class="co">#put label:"My Step", node_type:"input", output:"data.csv"    # + output</span></span>
-<span><span class="co">#put id:"step1", label:"My Step", node_type:"input", output:"data.csv"  # Full</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># put label:"My Step"                                          # Minimal</span></span>
+<span><span class="co"># put label:"My Step", node_type:"input"                       # + type</span></span>
+<span><span class="co"># put label:"My Step", node_type:"input", output:"data.csv"    # + output</span></span>
+<span><span class="co"># put id:"step1", label:"My Step", node_type:"input", output:"data.csv"  # Full</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="basic-syntax">Basic Syntax<a class="anchor" aria-label="anchor" href="#basic-syntax"></a>
 </h3>
 <p>All PUT annotations follow this format:</p>
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#put property1:"value1", property2:"value2", property3:"value3"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># put property1:"value1", property2:"value2", property3:"value3"</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="alternative-formats-all-valid">Alternative Formats (All Valid)<a class="anchor" aria-label="anchor" href="#alternative-formats-all-valid"></a>
+<h3 id="flexible-syntax-options-all-valid">Flexible Syntax Options (All Valid)<a class="anchor" aria-label="anchor" href="#flexible-syntax-options-all-valid"></a>
 </h3>
 <div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#put id:"node_id", label:"Description"              # Standard</span></span>
-<span><span class="co"># put id:"node_id", label:"Description"             # Space after #</span></span>
-<span><span class="co">#put| id:"node_id", label:"Description"             # Pipe separator</span></span>
-<span><span class="co">#put: id:"node_id", label:"Description"             # Colon separator</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># put id:"node_id", label:"Description"             # Standard format (matches logo)</span></span>
+<span><span class="co">#put id:"node_id", label:"Description"              # Also valid (no space)</span></span>
+<span><span class="co"># put| id:"node_id", label:"Description"            # Pipe separator</span></span>
+<span><span class="co"># put: id:"node_id", label:"Description"            # Colon separator</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="annotations">Annotations<a class="anchor" aria-label="anchor" href="#annotations"></a>
@@ -1100,17 +1160,17 @@ See result
 </h3>
 <p><strong>R Scripts:</strong></p>
 <div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#put id:"load_sales_data", label:"Load Sales Data from API", node_type:"input", output:"raw_sales.csv, metadata.json"</span></span>
+<code class="sourceCode R"><span><span class="co"># put id:"load_sales_data", label:"Load Sales Data from API", node_type:"input", output:"raw_sales.csv, metadata.json"</span></span>
 <span></span>
-<span><span class="co">#put id:"validate_data", label:"Validate and Clean Data", node_type:"process", input:"raw_sales.csv", output:"clean_sales.csv"</span></span>
+<span><span class="co"># put id:"validate_data", label:"Validate and Clean Data", node_type:"process", input:"raw_sales.csv", output:"clean_sales.csv"</span></span>
 <span></span>
-<span><span class="co">#put id:"generate_report", label:"Generate Executive Summary", node_type:"output", input:"clean_sales.csv, metadata.json", output:"executive_summary.pdf"</span></span></code></pre></div>
+<span><span class="co"># put id:"generate_report", label:"Generate Executive Summary", node_type:"output", input:"clean_sales.csv, metadata.json", output:"executive_summary.pdf"</span></span></code></pre></div>
 <p><strong>Python Scripts:</strong></p>
-<div class="sourceCode" id="cb53"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a><span class="co">#put id:"collect_data", label:"Collect Raw Data", node_type:"input", output:"raw_data.csv"</span></span>
+<div class="sourceCode" id="cb53"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a><span class="co"># put id:"collect_data", label:"Collect Raw Data", node_type:"input", output:"raw_data.csv"</span></span>
 <span id="cb53-2"><a href="#cb53-2" tabindex="-1"></a></span>
-<span id="cb53-3"><a href="#cb53-3" tabindex="-1"></a><span class="co">#put id:"train_model", label:"Train ML Model", node_type:"process", input:"features.csv", output:"model.pkl"</span></span>
+<span id="cb53-3"><a href="#cb53-3" tabindex="-1"></a><span class="co"># put id:"train_model", label:"Train ML Model", node_type:"process", input:"features.csv", output:"model.pkl"</span></span>
 <span id="cb53-4"><a href="#cb53-4" tabindex="-1"></a></span>
-<span id="cb53-5"><a href="#cb53-5" tabindex="-1"></a><span class="co">#put id:"predict", label:"Generate Predictions", node_type:"output", input:"model.pkl, test_data.csv", output:"predictions.csv"</span></span></code></pre></div>
+<span id="cb53-5"><a href="#cb53-5" tabindex="-1"></a><span class="co"># put id:"predict", label:"Generate Predictions", node_type:"output", input:"model.pkl, test_data.csv", output:"predictions.csv"</span></span></code></pre></div>
 <p><strong>SQL Scripts:</strong></p>
 <div class="sourceCode" id="cb54"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb54-1"><a href="#cb54-1" tabindex="-1"></a><span class="co">--put id:"load_customers", label:"Load Customer Data", node_type:"input", output:"customers"</span></span>
 <span id="cb54-2"><a href="#cb54-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> raw_customers <span class="kw">WHERE</span> active <span class="op">=</span> <span class="dv">1</span>;</span>
@@ -1132,23 +1192,23 @@ See result
 <p><strong>Multiple Annotations Per File:</strong></p>
 <div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># analysis.R</span></span>
-<span><span class="co">#put id:"create_summary", label:"Calculate Summary Stats", node_type:"process", input:"processed_data.csv", output:"summary_stats.json"</span></span>
-<span><span class="co">#put id:"create_report", label:"Generate Sales Report", node_type:"output", input:"processed_data.csv", output:"sales_report.html"</span></span>
+<span><span class="co"># put id:"create_summary", label:"Calculate Summary Stats", node_type:"process", input:"processed_data.csv", output:"summary_stats.json"</span></span>
+<span><span class="co"># put id:"create_report", label:"Generate Sales Report", node_type:"output", input:"processed_data.csv", output:"sales_report.html"</span></span>
 <span></span>
 <span><span class="co"># Your R code here...</span></span></code></pre></div>
 <p><strong>Workflow Entry and Exit Points:</strong></p>
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># main_workflow.R</span></span>
-<span><span class="co">#put id:"workflow_start", label:"Start Analysis Pipeline", node_type:"start", output:"config.json"</span></span>
+<span><span class="co"># put id:"workflow_start", label:"Start Analysis Pipeline", node_type:"start", output:"config.json"</span></span>
 <span></span>
-<span><span class="co">#put id:"workflow_end", label:"Pipeline Complete", node_type:"end", input:"final_report.pdf"</span></span></code></pre></div>
+<span><span class="co"># put id:"workflow_end", label:"Pipeline Complete", node_type:"end", input:"final_report.pdf"</span></span></code></pre></div>
 <p><strong>Workflow Boundary Examples:</strong></p>
 <div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Complete pipeline with boundaries</span></span>
-<span><span class="co">#put id:"pipeline_start", label:"Data Pipeline Start", node_type:"start", output:"raw_config.json"</span></span>
-<span><span class="co">#put id:"extract_data", label:"Extract Raw Data", node_type:"process", input:"raw_config.json", output:"raw_data.csv"</span></span>
-<span><span class="co">#put id:"transform_data", label:"Transform Data", node_type:"process", input:"raw_data.csv", output:"clean_data.csv"</span></span>
-<span><span class="co">#put id:"pipeline_end", label:"Pipeline Complete", node_type:"end", input:"clean_data.csv"</span></span></code></pre></div>
+<span><span class="co"># put id:"pipeline_start", label:"Data Pipeline Start", node_type:"start", output:"raw_config.json"</span></span>
+<span><span class="co"># put id:"extract_data", label:"Extract Raw Data", node_type:"process", input:"raw_config.json", output:"raw_data.csv"</span></span>
+<span><span class="co"># put id:"transform_data", label:"Transform Data", node_type:"process", input:"raw_data.csv", output:"clean_data.csv"</span></span>
+<span><span class="co"># put id:"pipeline_end", label:"Pipeline Complete", node_type:"end", input:"clean_data.csv"</span></span></code></pre></div>
 <p><strong>Generated Workflow with Boundaries:</strong></p>
 <pre class="mermaid"><code>flowchart TD
     pipeline_start([Data Pipeline Start])
@@ -1184,28 +1244,28 @@ See result
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td><code>#put</code></td>
+<td><code># put</code></td>
 <td>R, Python, Shell, Julia, Ruby, Perl, YAML, TOML</td>
 <td>
 <code>.R</code>, <code>.py</code>, <code>.sh</code>, <code>.jl</code>, <code>.rb</code>, <code>.pl</code>, <code>.yaml</code>, <code>.yml</code>, <code>.toml</code>
 </td>
 </tr>
 <tr class="even">
-<td><code>--put</code></td>
+<td><code>-- put</code></td>
 <td>SQL, Lua, Haskell</td>
 <td>
 <code>.sql</code>, <code>.lua</code>, <code>.hs</code>
 </td>
 </tr>
 <tr class="odd">
-<td><code>//put</code></td>
+<td><code>// put</code></td>
 <td>JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala</td>
 <td>
 <code>.js</code>, <code>.ts</code>, <code>.jsx</code>, <code>.tsx</code>, <code>.c</code>, <code>.cpp</code>, <code>.java</code>, <code>.go</code>, <code>.rs</code>, <code>.swift</code>, <code>.kt</code>, <code>.cs</code>, <code>.php</code>, <code>.scala</code>
 </td>
 </tr>
 <tr class="even">
-<td><code>%put</code></td>
+<td><code>% put</code></td>
 <td>MATLAB, LaTeX</td>
 <td>
 <code>.m</code>, <code>.tex</code>
@@ -1249,8 +1309,8 @@ See result
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, validate <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Test annotation syntax</span></span>
-<span><span class="fu"><a href="reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'#put id:"test", label:"Test Node"'</span><span class="op">)</span>  <span class="co"># TRUE</span></span>
-<span><span class="fu"><a href="reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">"#put invalid syntax"</span><span class="op">)</span>                 <span class="co"># FALSE</span></span></code></pre></div>
+<span><span class="fu"><a href="reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'# put id:"test", label:"Test Node"'</span><span class="op">)</span>  <span class="co"># TRUE</span></span>
+<span><span class="fu"><a href="reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">"# put invalid syntax"</span><span class="op">)</span>                <span class="co"># FALSE</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="uuid-auto-generation">UUID Auto-Generation<a class="anchor" aria-label="anchor" href="#uuid-auto-generation"></a>
@@ -1258,8 +1318,8 @@ See result
 <p>When you omit the <code>id</code> field, putior automatically generates a unique UUID:</p>
 <div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Annotations without explicit IDs</span></span>
-<span><span class="co">#put label:"Load Data", node_type:"input", output:"data.csv"</span></span>
-<span><span class="co">#put label:"Process Data", node_type:"process", input:"data.csv"</span></span>
+<span><span class="co"># put label:"Load Data", node_type:"input", output:"data.csv"</span></span>
+<span><span class="co"># put label:"Process Data", node_type:"process", input:"data.csv"</span></span>
 <span></span>
 <span><span class="co"># Extract workflow - IDs will be auto-generated</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./"</span><span class="op">)</span></span>
@@ -1275,16 +1335,16 @@ See result
 <p>When you have a main script that sources other scripts, annotate them to show the sourcing relationships:</p>
 <div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># main.R - sources other scripts</span></span>
-<span><span class="co">#put label:"Main Workflow", input:"utils.R,analysis.R", output:"results.csv"</span></span>
+<span><span class="co"># put label:"Main Workflow", input:"utils.R,analysis.R", output:"results.csv"</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"utils.R"</span><span class="op">)</span>     <span class="co"># Reading utils.R into main.R</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"analysis.R"</span><span class="op">)</span>  <span class="co"># Reading analysis.R into main.R</span></span>
 <span></span>
-<span><span class="co"># utils.R - sourced by main.R  </span></span>
-<span><span class="co">#put label:"Utility Functions", node_type:"input"</span></span>
+<span><span class="co"># utils.R - sourced by main.R</span></span>
+<span><span class="co"># put label:"Utility Functions", node_type:"input"</span></span>
 <span><span class="co"># output defaults to "utils.R"</span></span>
 <span></span>
 <span><span class="co"># analysis.R - sourced by main.R, depends on utils.R</span></span>
-<span><span class="co">#put label:"Analysis Functions", input:"utils.R"  </span></span>
+<span><span class="co"># put label:"Analysis Functions", input:"utils.R"</span></span>
 <span><span class="co"># output defaults to "analysis.R"</span></span></code></pre></div>
 <p>This creates a diagram showing: - <code>utils.R</code> → <code>main.R</code> (sourced into) - <code>analysis.R</code> → <code>main.R</code> (sourced into) - <code>utils.R</code> → <code>analysis.R</code> (dependency)</p>
 </div>
@@ -1294,12 +1354,12 @@ See result
 <p>Track in-memory variables and objects alongside persistent files:</p>
 <div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Script 1: Create and save data</span></span>
-<span><span class="co">#put output:'my_data.internal, my_data.RData'</span></span>
+<span><span class="co"># put output:'my_data.internal, my_data.RData'</span></span>
 <span><span class="va">my_data</span> <span class="op">&lt;-</span> <span class="fu">process_data</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></span><span class="op">(</span><span class="va">my_data</span>, file <span class="op">=</span> <span class="st">'my_data.RData'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Script 2: Load data and create new variables</span></span>
-<span><span class="co">#put input:'my_data.RData', output:'results.internal, summary.csv'</span></span>
+<span><span class="co"># put input:'my_data.RData', output:'results.internal, summary.csv'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">'my_data.RData'</span><span class="op">)</span>  <span class="co"># Load the persistent file</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">analyze</span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span>  <span class="co"># Create new in-memory variable</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">results</span>, <span class="st">'summary.csv'</span><span class="op">)</span></span></code></pre></div>
@@ -1465,7 +1525,7 @@ See result
 <tr class="even">
 <td><code><a href="reference/is_valid_put_annotation.html">is_valid_put_annotation()</a></code></td>
 <td>Validate annotation syntax</td>
-<td><code>is_valid_put_annotation("#put ...")</code></td>
+<td><code>is_valid_put_annotation("# put ...")</code></td>
 </tr>
 <tr class="odd">
 <td><code><a href="reference/get_diagram_themes.html">get_diagram_themes()</a></code></td>
@@ -1680,13 +1740,13 @@ flowchart TD
 <p><strong>Example: Using putior WITH targets</strong></p>
 <div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># _targets.R</span></span>
-<span><span class="co">#put label:"Load Raw Data", node_type:"input", output:"raw_data"</span></span>
+<span><span class="co"># put label:"Load Raw Data", node_type:"input", output:"raw_data"</span></span>
 <span><span class="fu">tar_target</span><span class="op">(</span><span class="va">raw_data</span>, <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="st">"data/sales.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#put label:"Clean Data", input:"raw_data", output:"clean_data"</span></span>
+<span><span class="co"># put label:"Clean Data", input:"raw_data", output:"clean_data"</span></span>
 <span><span class="fu">tar_target</span><span class="op">(</span><span class="va">clean_data</span>, <span class="fu">clean_sales</span><span class="op">(</span><span class="va">raw_data</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#put label:"Generate Report", node_type:"output", input:"clean_data"</span></span>
+<span><span class="co"># put label:"Generate Report", node_type:"output", input:"clean_data"</span></span>
 <span><span class="fu">tar_target</span><span class="op">(</span><span class="va">report</span>, <span class="fu">render_report</span><span class="op">(</span><span class="va">clean_data</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Document your targets pipeline</span></span>

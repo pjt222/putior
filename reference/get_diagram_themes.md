@@ -32,6 +32,18 @@ get_diagram_themes()
 #> $github
 #> [1] "Optimized specifically for GitHub README files with maximum mermaid compatibility"
 #> 
+#> $viridis
+#> [1] "Colorblind-safe theme (purple-blue-green-yellow) - perceptually uniform, accessible"
+#> 
+#> $magma
+#> [1] "Colorblind-safe warm theme (purple-red-yellow) - high contrast, print-friendly"
+#> 
+#> $plasma
+#> [1] "Colorblind-safe vibrant theme (purple-pink-yellow) - bold colors for presentations"
+#> 
+#> $cividis
+#> [1] "Colorblind-safe theme optimized for deuteranopia/protanopia (blue-yellow only)"
+#> 
 
 if (FALSE) { # \dontrun{
 # Use a specific theme (requires actual workflow data)

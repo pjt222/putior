@@ -8,7 +8,7 @@ put("./src/") |> put_diagram()
 
 ## Annotation Syntax
 
-    #put id:"node_id", label:"Description", node_type:"process", input:"in.csv", output:"out.csv"
+    # put id:"node_id", label:"Description", node_type:"process", input:"in.csv", output:"out.csv"
 
 | Field       | Required | Default   | Description                              |
 |-------------|----------|-----------|------------------------------------------|
@@ -24,10 +24,10 @@ put("./src/") |> put_diagram()
 
 Find your language:
 
-    #put  →  R, Python, Shell, Julia, Ruby, YAML, Perl, TOML
-    --put →  SQL, Lua
-    //put →  JavaScript, TypeScript, Go, Rust, Java, C, C++, Swift
-    %put  →  MATLAB, LaTeX
+    # put  →  R, Python, Shell, Julia, Ruby, YAML, Perl, TOML
+    -- put →  SQL, Lua
+    // put →  JavaScript, TypeScript, Go, Rust, Java, C, C++, Swift
+    % put  →  MATLAB, LaTeX
 
 ## Core Functions
 

@@ -339,16 +339,16 @@ content as a string.</p>
 <div class="section level3">
 <h3 id="annotation-syntax">Annotation Syntax<a class="anchor" aria-label="anchor" href="#annotation-syntax"></a>
 </h3>
-<p>Add <code>#put</code> comments to source files to define workflow
+<p>Add <code># put</code> comments to source files to define workflow
 nodes:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#put id:"load", label:"Load Data", output:"raw_data.csv"</span></span>
+<code class="sourceCode R"><span><span class="co"># put id:"load", label:"Load Data", output:"raw_data.csv"</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"input.csv"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#put id:"transform", label:"Clean Data", input:"raw_data.csv", output:"clean.rds"</span></span>
+<span><span class="co"># put id:"transform", label:"Clean Data", input:"raw_data.csv", output:"clean.rds"</span></span>
 <span><span class="va">clean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/transform.html" class="external-link">transform</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#put id:"analyze", label:"Run Analysis", input:"clean.rds", node_type:"decision"</span></span>
+<span><span class="co"># put id:"analyze", label:"Run Analysis", input:"clean.rds", node_type:"decision"</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">analyze</span><span class="op">(</span><span class="va">clean</span><span class="op">)</span></span></code></pre></div>
 <div class="section level4">
 <h4 id="annotation-properties">Annotation Properties<a class="anchor" aria-label="anchor" href="#annotation-properties"></a>
@@ -405,10 +405,10 @@ nodes:</p>
 </h4>
 <p>Use backslash for continuation:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#put id:"complex_step", \</span></span>
-<span><span class="co">#put   label:"Multi-step Process", \</span></span>
-<span><span class="co">#put   input:"file1.csv, file2.csv", \</span></span>
-<span><span class="co">#put   output:"combined.rds"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># put id:"complex_step", \</span></span>
+<span><span class="co">#     label:"Multi-step Process", \</span></span>
+<span><span class="co">#     input:"file1.csv, file2.csv", \</span></span>
+<span><span class="co">#     output:"combined.rds"</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -428,7 +428,7 @@ nodes:</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td><code>#put</code></td>
+<td><code># put</code></td>
 <td>R, Python, Shell, Julia, Ruby, Perl, YAML</td>
 <td>
 <code>.R</code>, <code>.py</code>, <code>.sh</code>,
@@ -437,14 +437,14 @@ nodes:</p>
 </td>
 </tr>
 <tr class="even">
-<td><code>--put</code></td>
+<td><code>-- put</code></td>
 <td>SQL, Lua, Haskell</td>
 <td>
 <code>.sql</code>, <code>.lua</code>, <code>.hs</code>
 </td>
 </tr>
 <tr class="odd">
-<td><code>//put</code></td>
+<td><code>// put</code></td>
 <td>JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#,
 PHP</td>
 <td>
@@ -454,7 +454,7 @@ PHP</td>
 </td>
 </tr>
 <tr class="even">
-<td><code>%put</code></td>
+<td><code>% put</code></td>
 <td>MATLAB, LaTeX</td>
 <td>
 <code>.m</code>, <code>.tex</code>
@@ -466,13 +466,13 @@ PHP</td>
 <h4 id="examples-by-language">Examples by Language<a class="anchor" aria-label="anchor" href="#examples-by-language"></a>
 </h4>
 <div class="sourceCode" id="cb5"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">-- query.sql</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">--put id:"fetch", label:"Fetch Customers", output:"customers"</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">-- put id:"fetch", label:"Fetch Customers", output:"customers"</span></span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> customers;</span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">// transform.js</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">//put id:"process", label:"Transform JSON", input:"data.json", output:"output.json"</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">// put id:"process", label:"Transform JSON", input:"data.json", output:"output.json"</span></span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="kw">const</span> result <span class="op">=</span> data<span class="op">.</span><span class="fu">map</span>(transform)<span class="op">;</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">% analysis.m</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">%put id:"stats", label:"Statistical Analysis", input:"data.mat", output:"results.mat"</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">% put id:"stats", label:"Statistical Analysis", input:"data.mat", output:"results.mat"</span></span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="va">results</span> <span class="op">=</span> <span class="va">compute_statistics</span>(<span class="va">data</span>)<span class="op">;</span></span></code></pre></div>
 </div>
 </div>
@@ -507,9 +507,15 @@ PHP</td>
 <span><span class="co"># Customize appearance</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>,</span>
 <span>  direction <span class="op">=</span> <span class="st">"LR"</span>,           <span class="co"># Left-to-right (default: TB top-bottom)</span></span>
-<span>  theme <span class="op">=</span> <span class="st">"forest"</span>,           <span class="co"># Theme: default, forest, dark, neutral</span></span>
+<span>  theme <span class="op">=</span> <span class="st">"github"</span>,           <span class="co"># Theme: github, light, dark, auto, minimal</span></span>
 <span>  show_artifacts <span class="op">=</span> <span class="cn">TRUE</span>       <span class="co"># Show data files as nodes</span></span>
 <span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Colorblind-safe themes (viridis family)</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"viridis"</span><span class="op">)</span>  <span class="co"># Purple-blue-green-yellow</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"magma"</span><span class="op">)</span>    <span class="co"># Warm: purple-red-yellow</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"plasma"</span><span class="op">)</span>   <span class="co"># Vibrant: purple-pink-yellow</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"cividis"</span><span class="op">)</span>  <span class="co"># Blue-yellow (max accessibility)</span></span>
 <span></span>
 <span><span class="co"># Interactive features</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>,</span>

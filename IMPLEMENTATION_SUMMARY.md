@@ -10,8 +10,9 @@ workflows and data pipelines.
 
 ### 1. Annotation System
 
-- **Syntax**: `#put key:"value", key2:"value2"`
-- **Alternative formats**: `# put`, `#put|`, `#put:`
+- **Syntax**: `# put key:"value", key2:"value2"` (standard format,
+  matches logo)
+- **Alternative formats**: `#put` (no space), `#put|`, `#put:`
 - **Supported file types**: R, Python, SQL, Shell, Julia
 
 ### 2. Field Changes and Defaults

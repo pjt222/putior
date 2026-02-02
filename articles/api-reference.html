@@ -480,7 +480,8 @@ Logging</a>
 <td><code>theme</code></td>
 <td>character</td>
 <td><code>"github"</code></td>
-<td>Theme: “github”, “light”, “dark”, “auto”, “minimal”</td>
+<td>Theme: “github”, “light”, “dark”, “auto”, “minimal”, “viridis”,
+“magma”, “plasma”, “cividis” (colorblind-safe)</td>
 </tr>
 <tr class="even">
 <td><code>show_artifacts</code></td>
@@ -1133,10 +1134,35 @@ Extensions<a class="anchor" aria-label="anchor" href="#get_supported_extensions-
 <p><strong>Examples:</strong></p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_diagram_themes.html">get_diagram_themes</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "light"   "dark"    "auto"    "minimal" "github"</span></span>
+<span><span class="co">#&gt; $light</span></span>
+<span><span class="co">#&gt; [1] "Default light theme with bright colors - perfect for documentation sites"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $dark</span></span>
+<span><span class="co">#&gt; [1] "Dark theme with muted colors - ideal for dark mode environments and terminals"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $auto</span></span>
+<span><span class="co">#&gt; [1] "GitHub-adaptive theme with solid colors that work in both light and dark modes"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $minimal</span></span>
+<span><span class="co">#&gt; [1] "Grayscale professional theme - print-friendly and great for business documents"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $github</span></span>
+<span><span class="co">#&gt; [1] "Optimized specifically for GitHub README files with maximum mermaid compatibility"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $viridis</span></span>
+<span><span class="co">#&gt; [1] "Colorblind-safe theme (purple-blue-green-yellow) - perceptually uniform, accessible"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $magma</span></span>
+<span><span class="co">#&gt; [1] "Colorblind-safe warm theme (purple-red-yellow) - high contrast, print-friendly"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $plasma</span></span>
+<span><span class="co">#&gt; [1] "Colorblind-safe vibrant theme (purple-pink-yellow) - bold colors for presentations"</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; $cividis</span></span>
+<span><span class="co">#&gt; [1] "Colorblind-safe theme optimized for deuteranopia/protanopia (blue-yellow only)"</span></span>
 <span></span>
 <span><span class="co"># Use with put_diagram</span></span>
-<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="fu"><a href="../reference/get_diagram_themes.html">get_diagram_themes</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"viridis"</span><span class="op">)</span></span></code></pre></div>
 <hr>
 </div>
 <div class="section level3">
@@ -1239,29 +1265,29 @@ Syntax<a class="anchor" aria-label="anchor" href="#is_valid_put_annotation---val
 <p><strong>Examples:</strong></p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Valid annotations - hash style (R, Python)</span></span>
-<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'#put label:"My Step"'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'# put label:"My Step"'</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'#put id:"step1", label:"Process Data", node_type:"process"'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'# put id:"step1", label:"Process Data", node_type:"process"'</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span></span>
 <span><span class="co"># Valid annotations - dash style (SQL)</span></span>
-<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'--put label:"Load Data"'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'-- put label:"Load Data"'</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'-- put id:"query", label:"SQL Query"'</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span></span>
 <span><span class="co"># Valid annotations - slash style (JavaScript)</span></span>
-<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'//put label:"Process JSON"'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'// put label:"Process JSON"'</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span></span>
 <span><span class="co"># Valid annotations - percent style (MATLAB)</span></span>
-<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'%put label:"Compute Statistics"'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'% put label:"Compute Statistics"'</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span></span>
 <span><span class="co"># Invalid annotations</span></span>
-<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">"#put invalid syntax"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">"# put invalid syntax"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] FALSE</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">"# Regular comment"</span><span class="op">)</span></span>
@@ -1392,7 +1418,7 @@ highlighting)</li>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, include_line_numbers <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Test individual annotations</span></span>
-<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'#put label:"Test"'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'# put label:"Test"'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Return to normal</span></span>
 <span><span class="fu"><a href="../reference/set_putior_log_level.html">set_putior_log_level</a></span><span class="op">(</span><span class="st">"WARN"</span><span class="op">)</span></span></code></pre></div>

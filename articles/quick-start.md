@@ -14,17 +14,17 @@ library(putior)
 
 #### Step 2: Add Annotations to Your Code
 
-Add `#put` comments to your R scripts:
+Add `# put` comments to your R scripts:
 
 ``` r
 # my_analysis.R
-#put label:"Load Data", output:"raw_data"
+# put label:"Load Data", output:"raw_data"
 data <- read.csv("sales.csv")
 
-#put label:"Clean Data", input:"raw_data", output:"clean_data"
+# put label:"Clean Data", input:"raw_data", output:"clean_data"
 clean <- data[complete.cases(data), ]
 
-#put label:"Generate Report", input:"clean_data", output:"report.html"
+# put label:"Generate Report", input:"clean_data", output:"report.html"
 rmarkdown::render("report.Rmd")
 ```
 
@@ -64,19 +64,19 @@ flowchart TD
 # Create a temporary file with annotations
 temp_file <- tempfile(fileext = ".R")
 writeLines(c(
-  '#put label:"Extract", output:"raw.csv"',
+  '# put label:"Extract", output:"raw.csv"',
   'data <- read.csv("source.csv")',
   '',
-  '#put label:"Transform", input:"raw.csv", output:"clean.csv"',
+  '# put label:"Transform", input:"raw.csv", output:"clean.csv"',
   'clean <- transform(data)',
   '',
-  '#put label:"Load", input:"clean.csv", output:"database"',
+  '# put label:"Load", input:"clean.csv", output:"database"',
   'write_to_db(clean)'
 ), temp_file)
 
 # Scan and visualize
 workflow <- put(temp_file)
-#> Warning in doTryCatch(return(expr), name, parentenv, handler): Validation issues in file25642258bb7c.R line 7:
+#> Warning in doTryCatch(return(expr), name, parentenv, handler): Validation issues in file259a1e0e0491.R line 7:
 #> File reference missing extension: database
 ```
 
@@ -89,13 +89,13 @@ cat("```mermaid\n")
 cat(put_diagram(workflow, output = "raw"))
 ```
 
-flowchart TD node_5a9a61c5_da65_4112_a4a1_c7e16591089d\[Extract\]
-node_08b01a35_7bb9_41ab_8ebf_9a137daeda03\[Transform\]
-f224f16c_7e37_4bf3_ab23_8e285c5ee702\[Load\]
+flowchart TD node_59221438_ca02_4b2e_9c3b_e4f434f5aca6\[Extract\]
+node_415a102d_c177_4dfa_b1a6_551e3ed3f647\[Transform\]
+c4e654c9_df76_40d4_a42c_4de3b056cfe4\[Load\]
 
     %% Connections
-    node_5a9a61c5_da65_4112_a4a1_c7e16591089d --> node_08b01a35_7bb9_41ab_8ebf_9a137daeda03
-    node_08b01a35_7bb9_41ab_8ebf_9a137daeda03 --> f224f16c_7e37_4bf3_ab23_8e285c5ee702
+    node_59221438_ca02_4b2e_9c3b_e4f434f5aca6 --> node_415a102d_c177_4dfa_b1a6_551e3ed3f647
+    node_415a102d_c177_4dfa_b1a6_551e3ed3f647 --> c4e654c9_df76_40d4_a42c_4de3b056cfe4
 
 ``` r
 cat("\n```\n")
@@ -108,7 +108,7 @@ unlink(temp_file)
     ---
     ## Annotation Syntax at a Glance
 
-\#put label:“Step Name”, input:“file.csv”, output:“result.csv”
+## put label:“Step Name”, input:“file.csv”, output:“result.csv”
 
     | Field | Purpose | Required |
     |-------|---------|----------|
@@ -128,10 +128,10 @@ unlink(temp_file)
 
     | Language | Annotation |
     |----------|------------|
-    | R, Python, Shell | `#put label:"..."` |
-    | SQL, Lua | `--put label:"..."` |
-    | JavaScript, Go, Rust | `//put label:"..."` |
-    | MATLAB | `%put label:"..."` |
+    | R, Python, Shell | `# put label:"..."` |
+    | SQL, Lua | `-- put label:"..."` |
+    | JavaScript, Go, Rust | `// put label:"..."` |
+    | MATLAB | `% put label:"..."` |
 
     ---
 

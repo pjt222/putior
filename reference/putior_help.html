@@ -206,12 +206,12 @@ Call without arguments to see available topics.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> === PUT Annotation Syntax ===</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> SINGLE-LINE FORMAT:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   #put id:"node_id", label:"Description", node_type:"process"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   # put id:"node_id", label:"Description", node_type:"process"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> MULTILINE FORMAT (use backslash for continuation):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   #put id:"node_id", label:"Description", \</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   #    input:"data.csv", \</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   #    output:"result.csv"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   # put id:"node_id", label:"Description", \</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   #     input:"data.csv", \</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   #     output:"result.csv"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> AVAILABLE PROPERTIES:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   id          - Unique node identifier (auto-generated if omitted)</span>
@@ -226,10 +226,10 @@ Call without arguments to see available topics.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Internal var:   output:"my_var.internal"  (in-memory, not saved)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> COMMENT PREFIX BY LANGUAGE:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   R/Python:   #put id:"x", label:"y"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   SQL:        --put id:"x", label:"y"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   JavaScript: //put id:"x", label:"y"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   MATLAB:     %put id:"x", label:"y"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   R/Python:   # put id:"x", label:"y"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   SQL:        -- put id:"x", label:"y"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   JavaScript: // put id:"x", label:"y"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   MATLAB:     % put id:"x", label:"y"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Show supported languages</span></span></span>
@@ -273,6 +273,10 @@ Call without arguments to see available topics.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   auto       - GitHub-adaptive theme with solid colors that work in both light and dark modes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   minimal    - Grayscale professional theme - print-friendly and great for business documents</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   github     - Optimized specifically for GitHub README files with maximum mermaid compatibility</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   viridis    - Colorblind-safe theme (purple-blue-green-yellow) - perceptually uniform, accessible</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   magma      - Colorblind-safe warm theme (purple-red-yellow) - high contrast, print-friendly</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   plasma     - Colorblind-safe vibrant theme (purple-pink-yellow) - bold colors for presentations</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cividis    - Colorblind-safe theme optimized for deuteranopia/protanopia (blue-yellow only)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Example:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   workflow &lt;- put("./src/")</span>
@@ -284,7 +288,7 @@ Call without arguments to see available topics.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> === Available Node Types ===</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Use with: #put id:"x", label:"y", node_type:"type"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Use with: # put id:"x", label:"y", node_type:"type"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> TYPE        SHAPE           TYPICAL USE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------- --------------- ----------------------------------</span>
@@ -301,9 +305,9 @@ Call without arguments to see available topics.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Enable special styling with: put_diagram(workflow, show_workflow_boundaries = TRUE)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Example:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   #put id:"begin", label:"Start Pipeline", node_type:"start"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   #put id:"load", label:"Load Data", node_type:"input", output:"raw.csv"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   #put id:"done", label:"Complete", node_type:"end", input:"final.csv"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   # put id:"begin", label:"Start Pipeline", node_type:"start"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   # put id:"load", label:"Load Data", node_type:"input", output:"raw.csv"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   # put id:"done", label:"Complete", node_type:"end", input:"final.csv"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Show detection patterns info</span></span></span>
@@ -348,9 +352,9 @@ Call without arguments to see available topics.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> BASIC WORKFLOW:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   # 1. Add PUT annotations to your source files:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   #put id:"load", label:"Load Data", output:"data.csv"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   #put id:"process", label:"Process", input:"data.csv", output:"clean.csv"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   #put id:"analyze", label:"Analyze", input:"clean.csv"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   # put id:"load", label:"Load Data", output:"data.csv"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   # put id:"process", label:"Process", input:"data.csv", output:"clean.csv"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   # put id:"analyze", label:"Analyze", input:"clean.csv"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   # 2. Scan and visualize:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   workflow &lt;- put("./src/")</span>

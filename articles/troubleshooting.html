@@ -233,23 +233,23 @@ language:</p>
 <tbody>
 <tr class="odd">
 <td>R, Python</td>
-<td><code>#put</code></td>
-<td><code>#put label:"Step 1"</code></td>
+<td><code># put</code></td>
+<td><code># put label:"Step 1"</code></td>
 </tr>
 <tr class="even">
 <td>SQL, Lua</td>
-<td><code>--put</code></td>
-<td><code>--put label:"Step 1"</code></td>
+<td><code>-- put</code></td>
+<td><code>-- put label:"Step 1"</code></td>
 </tr>
 <tr class="odd">
 <td>JavaScript, Go, C</td>
-<td><code>//put</code></td>
-<td><code>//put label:"Step 1"</code></td>
+<td><code>// put</code></td>
+<td><code>// put label:"Step 1"</code></td>
 </tr>
 <tr class="even">
 <td>MATLAB</td>
-<td><code>%put</code></td>
-<td><code>%put label:"Step 1"</code></td>
+<td><code>% put</code></td>
+<td><code>% put label:"Step 1"</code></td>
 </tr>
 </tbody>
 </table>
@@ -271,12 +271,12 @@ exactly.</p>
 input of the next:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># WRONG - Names don't match</span></span>
-<span><span class="co">#put id:"step1", output:"data.csv"      # Outputs "data.csv"</span></span>
-<span><span class="co">#put id:"step2", input:"Data.csv"       # Expects "Data.csv" (case mismatch!)</span></span>
+<span><span class="co"># put id:"step1", output:"data.csv"      # Outputs "data.csv"</span></span>
+<span><span class="co"># put id:"step2", input:"Data.csv"       # Expects "Data.csv" (case mismatch!)</span></span>
 <span></span>
 <span><span class="co"># CORRECT - Exact match</span></span>
-<span><span class="co">#put id:"step1", output:"data.csv"</span></span>
-<span><span class="co">#put id:"step2", input:"data.csv"</span></span></code></pre></div>
+<span><span class="co"># put id:"step1", output:"data.csv"</span></span>
+<span><span class="co"># put id:"step2", input:"data.csv"</span></span></code></pre></div>
 <p><strong>Diagnostic:</strong></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
@@ -367,7 +367,7 @@ manual annotations with the correct comment prefix.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span>  <span class="co"># Should be &gt; 0 if annotations exist</span></span>
 <span></span>
 <span><span class="co"># 2. Test a single annotation</span></span>
-<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'#put id:"test", label:"Test Node"'</span><span class="op">)</span>  <span class="co"># Should be TRUE</span></span>
+<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'# put id:"test", label:"Test Node"'</span><span class="op">)</span>  <span class="co"># Should be TRUE</span></span>
 <span></span>
 <span><span class="co"># 3. Check supported extensions</span></span>
 <span><span class="fu"><a href="../reference/get_supported_extensions.html">get_supported_extensions</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -387,29 +387,29 @@ manual annotations with the correct comment prefix.</p>
 are missing.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># WRONG - No quotes around values</span></span>
-<span><span class="co">#put id:my_node, label:My Process</span></span>
+<span><span class="co"># put id:my_node, label:My Process</span></span>
 <span></span>
 <span><span class="co"># WRONG - Mismatched quotes</span></span>
-<span><span class="co">#put id:"my_node', label:"My Process"</span></span>
+<span><span class="co"># put id:"my_node', label:"My Process"</span></span>
 <span></span>
 <span><span class="co"># WRONG - Missing closing quote</span></span>
-<span><span class="co">#put id:"my_node, label:"My Process"</span></span></code></pre></div>
+<span><span class="co"># put id:"my_node, label:"My Process"</span></span></code></pre></div>
 <p><strong>Solution</strong>: Always use matching quotes around all
 values.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># CORRECT - Double quotes</span></span>
-<span><span class="co">#put id:"my_node", label:"My Process"</span></span>
+<span><span class="co"># put id:"my_node", label:"My Process"</span></span>
 <span></span>
 <span><span class="co"># CORRECT - Single quotes</span></span>
-<span><span class="co">#put id:'my_node', label:'My Process'</span></span>
+<span><span class="co"># put id:'my_node', label:'My Process'</span></span>
 <span></span>
 <span><span class="co"># CORRECT - Mixed (but consistent per value)</span></span>
-<span><span class="co">#put id:"my_node", label:'My Process'</span></span></code></pre></div>
+<span><span class="co"># put id:"my_node", label:'My Process'</span></span></code></pre></div>
 <p><strong>Diagnostic</strong>:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Test your annotation syntax</span></span>
-<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'#put id:"my_node", label:"My Process"'</span><span class="op">)</span>  <span class="co"># TRUE</span></span>
-<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'#put id:my_node, label:My Process'</span><span class="op">)</span>      <span class="co"># FALSE</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'# put id:"my_node", label:"My Process"'</span><span class="op">)</span>  <span class="co"># TRUE</span></span>
+<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'# put id:my_node, label:My Process'</span><span class="op">)</span>      <span class="co"># FALSE</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="invalid-node-types">Invalid Node Types<a class="anchor" aria-label="anchor" href="#invalid-node-types"></a>
@@ -418,17 +418,17 @@ values.</p>
 node_type.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Triggers warning - non-standard type</span></span>
-<span><span class="co">#put id:"step1", label:"Process", node_type:"transform"</span></span></code></pre></div>
+<span><span class="co"># put id:"step1", label:"Process", node_type:"transform"</span></span></code></pre></div>
 <p><strong>Solution</strong>: Use standard node types for
 consistency.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Standard node types</span></span>
-<span><span class="co">#put id:"step1", label:"Load Data", node_type:"input"</span></span>
-<span><span class="co">#put id:"step2", label:"Transform", node_type:"process"</span></span>
-<span><span class="co">#put id:"step3", label:"Save Results", node_type:"output"</span></span>
-<span><span class="co">#put id:"step4", label:"Check Quality", node_type:"decision"</span></span>
-<span><span class="co">#put id:"step5", label:"Start Pipeline", node_type:"start"</span></span>
-<span><span class="co">#put id:"step6", label:"End Pipeline", node_type:"end"</span></span></code></pre></div>
+<span><span class="co"># put id:"step1", label:"Load Data", node_type:"input"</span></span>
+<span><span class="co"># put id:"step2", label:"Transform", node_type:"process"</span></span>
+<span><span class="co"># put id:"step3", label:"Save Results", node_type:"output"</span></span>
+<span><span class="co"># put id:"step4", label:"Check Quality", node_type:"decision"</span></span>
+<span><span class="co"># put id:"step5", label:"Start Pipeline", node_type:"start"</span></span>
+<span><span class="co"># put id:"step6", label:"End Pipeline", node_type:"end"</span></span></code></pre></div>
 <p><strong>Note</strong>: Custom node types work but generate warnings.
 Suppress with <code>validate = FALSE</code>:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
@@ -440,11 +440,11 @@ Suppress with <code>validate = FALSE</code>:</p>
 <p><strong>Problem</strong>: Values containing commas are truncated.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># WRONG - Comma breaks the label</span></span>
-<span><span class="co">#put id:"step1", label:Load, clean, transform data</span></span></code></pre></div>
+<span><span class="co"># put id:"step1", label:Load, clean, transform data</span></span></code></pre></div>
 <p><strong>Solution</strong>: Enclose values with commas in quotes.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># CORRECT - Quotes protect the comma</span></span>
-<span><span class="co">#put id:"step1", label:"Load, clean, transform data"</span></span></code></pre></div>
+<span><span class="co"># put id:"step1", label:"Load, clean, transform data"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="empty-or-missing-ids">Empty or Missing IDs<a class="anchor" aria-label="anchor" href="#empty-or-missing-ids"></a>
@@ -452,10 +452,10 @@ Suppress with <code>validate = FALSE</code>:</p>
 <p><strong>Problem</strong>: Warning about empty ID.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># WRONG - Empty ID string</span></span>
-<span><span class="co">#put id:"", label:"My Process"</span></span>
+<span><span class="co"># put id:"", label:"My Process"</span></span>
 <span></span>
 <span><span class="co"># OK - Missing ID (auto-generated UUID)</span></span>
-<span><span class="co">#put label:"My Process"</span></span></code></pre></div>
+<span><span class="co"># put label:"My Process"</span></span></code></pre></div>
 <p><strong>Solution</strong>: Either omit the ID entirely
 (auto-generated) or provide a valid one.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
@@ -464,8 +464,8 @@ Suppress with <code>validate = FALSE</code>:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">$</span><span class="va">id</span><span class="op">)</span>  <span class="co"># Shows UUIDs like "a1b2c3d4-..."</span></span>
 <span></span>
 <span><span class="co"># With explicit IDs</span></span>
-<span><span class="co">#put id:"step1", label:"First Step"</span></span>
-<span><span class="co">#put id:"step2", label:"Second Step"</span></span></code></pre></div>
+<span><span class="co"># put id:"step1", label:"First Step"</span></span>
+<span><span class="co"># put id:"step2", label:"Second Step"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="duplicate-ids">Duplicate IDs<a class="anchor" aria-label="anchor" href="#duplicate-ids"></a>
@@ -473,18 +473,18 @@ Suppress with <code>validate = FALSE</code>:</p>
 <p><strong>Problem</strong>: Warning about duplicate node IDs.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># In file1.R</span></span>
-<span><span class="co">#put id:"load_data", label:"Load from CSV"</span></span>
+<span><span class="co"># put id:"load_data", label:"Load from CSV"</span></span>
 <span></span>
 <span><span class="co"># In file2.R</span></span>
-<span><span class="co">#put id:"load_data", label:"Load from JSON"  # DUPLICATE!</span></span></code></pre></div>
+<span><span class="co"># put id:"load_data", label:"Load from JSON"  # DUPLICATE!</span></span></code></pre></div>
 <p><strong>Solution</strong>: Use unique IDs across all files in your
 workflow.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># In file1.R</span></span>
-<span><span class="co">#put id:"load_csv", label:"Load from CSV"</span></span>
+<span><span class="co"># put id:"load_csv", label:"Load from CSV"</span></span>
 <span></span>
 <span><span class="co"># In file2.R</span></span>
-<span><span class="co">#put id:"load_json", label:"Load from JSON"</span></span></code></pre></div>
+<span><span class="co"># put id:"load_json", label:"Load from JSON"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="multiline-annotation-issues">Multiline Annotation Issues<a class="anchor" aria-label="anchor" href="#multiline-annotation-issues"></a>
@@ -493,30 +493,30 @@ workflow.</p>
 correctly.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># WRONG - Missing backslash</span></span>
-<span><span class="co">#put id:"step1", label:"Process",</span></span>
-<span><span class="co">#    input:"data.csv", output:"results.csv"</span></span>
+<span><span class="co"># put id:"step1", label:"Process",</span></span>
+<span><span class="co">#     input:"data.csv", output:"results.csv"</span></span>
 <span></span>
 <span><span class="co"># WRONG - Backslash not at end of line</span></span>
-<span><span class="co">#put id:"step1", label:"Process", \</span></span>
-<span><span class="co">#    input:"data.csv"</span></span>
+<span><span class="co"># put id:"step1", label:"Process", \</span></span>
+<span><span class="co">#     input:"data.csv"</span></span>
 <span></span>
 <span><span class="co"># WRONG - Missing comment prefix on continuation</span></span>
-<span><span class="co">#put id:"step1", label:"Process", \</span></span>
+<span><span class="co"># put id:"step1", label:"Process", \</span></span>
 <span>    <span class="va">input</span><span class="op">:</span><span class="st">"data.csv"</span></span></code></pre></div>
 <p><strong>Solution</strong>: Use proper multiline syntax.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># CORRECT - Backslash at end, comment prefix on each line</span></span>
-<span><span class="co">#put id:"step1", label:"Process Data", \</span></span>
-<span><span class="co">#    input:"data.csv,config.json", \</span></span>
-<span><span class="co">#    output:"results.csv"</span></span></code></pre></div>
+<span><span class="co"># put id:"step1", label:"Process Data", \</span></span>
+<span><span class="co">#     input:"data.csv,config.json", \</span></span>
+<span><span class="co">#     output:"results.csv"</span></span></code></pre></div>
 <p><strong>For SQL files</strong>:</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="co">--put id:"etl_job", label:"ETL Process", \</span></span>
-<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a><span class="co">--    input:"source_table", \</span></span>
-<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a><span class="co">--    output:"target_table"</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="co">-- put id:"etl_job", label:"ETL Process", \</span></span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a><span class="co">--     input:"source_table", \</span></span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a><span class="co">--     output:"target_table"</span></span></code></pre></div>
 <p><strong>For JavaScript files</strong>:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="co">//put id:"handler", label:"API Handler", \</span></span>
-<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a><span class="co">//    input:"request.json", \</span></span>
-<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a><span class="co">//    output:"response.json"</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="co">// put id:"handler", label:"API Handler", \</span></span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a><span class="co">//     input:"request.json", \</span></span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a><span class="co">//     output:"response.json"</span></span></code></pre></div>
 <hr>
 </div>
 </div>
@@ -620,11 +620,11 @@ characters.</li>
 </ol>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Problem: Quotes in labels</span></span>
-<span><span class="co">#put id:"step1", label:"Load "raw" data"</span></span>
+<span><span class="co"># put id:"step1", label:"Load "raw" data"</span></span>
 <span></span>
 <span><span class="co"># Solution: Use single quotes or escape</span></span>
-<span><span class="co">#put id:"step1", label:"Load 'raw' data"</span></span>
-<span><span class="co">#put id:"step1", label:"Load raw data"</span></span></code></pre></div>
+<span><span class="co"># put id:"step1", label:"Load 'raw' data"</span></span>
+<span><span class="co"># put id:"step1", label:"Load raw data"</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>
 <strong>Reserved words in IDs</strong>: Some words are reserved in
@@ -632,12 +632,12 @@ Mermaid.</li>
 </ol>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Problem: Reserved word as ID</span></span>
-<span><span class="co">#put id:"end", label:"Finish"</span></span>
-<span><span class="co">#put id:"class", label:"Classify"</span></span>
+<span><span class="co"># put id:"end", label:"Finish"</span></span>
+<span><span class="co"># put id:"class", label:"Classify"</span></span>
 <span></span>
 <span><span class="co"># Solution: Use different IDs</span></span>
-<span><span class="co">#put id:"end_step", label:"Finish"</span></span>
-<span><span class="co">#put id:"classify", label:"Classify"</span></span></code></pre></div>
+<span><span class="co"># put id:"end_step", label:"Finish"</span></span>
+<span><span class="co"># put id:"classify", label:"Classify"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="theme-issues">Theme Issues<a class="anchor" aria-label="anchor" href="#theme-issues"></a>
@@ -647,7 +647,8 @@ wrong.</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check available themes</span></span>
 <span><span class="fu"><a href="../reference/get_diagram_themes.html">get_diagram_themes</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "light" "dark" "auto" "minimal" "github"</span></span></code></pre></div>
+<span><span class="co">#&gt; $light, $dark, $auto, $minimal, $github</span></span>
+<span><span class="co">#&gt; $viridis, $magma, $plasma, $cividis (colorblind-safe)</span></span></code></pre></div>
 <p><strong>Solutions</strong>:</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Try a different theme</span></span>
@@ -660,7 +661,8 @@ wrong.</p>
 <span><span class="co"># Check if theme is compatible with your viewer</span></span>
 <span><span class="co"># "github" works best on GitHub README</span></span>
 <span><span class="co"># "dark" for dark mode applications</span></span>
-<span><span class="co"># "minimal" for printing/PDFs</span></span></code></pre></div>
+<span><span class="co"># "minimal" for printing/PDFs</span></span>
+<span><span class="co"># "viridis", "magma", "plasma", "cividis" for colorblind accessibility</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="missing-connections">Missing Connections<a class="anchor" aria-label="anchor" href="#missing-connections"></a>
@@ -671,12 +673,12 @@ them.</p>
 nodes.</p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Problem: Typo in file name</span></span>
-<span><span class="co">#put id:"step1", output:"data.csv"</span></span>
-<span><span class="co">#put id:"step2", input:"Data.csv"  # Case mismatch!</span></span>
+<span><span class="co"># put id:"step1", output:"data.csv"</span></span>
+<span><span class="co"># put id:"step2", input:"Data.csv"  # Case mismatch!</span></span>
 <span></span>
 <span><span class="co"># Solution: Match exactly</span></span>
-<span><span class="co">#put id:"step1", output:"data.csv"</span></span>
-<span><span class="co">#put id:"step2", input:"data.csv"</span></span></code></pre></div>
+<span><span class="co"># put id:"step1", output:"data.csv"</span></span>
+<span><span class="co"># put id:"step2", input:"data.csv"</span></span></code></pre></div>
 <p><strong>Diagnostic</strong>:</p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check what inputs and outputs are defined</span></span>
@@ -708,15 +710,15 @@ or other files.</p>
 <p><strong>Cause</strong>: Using wrong comment syntax for the
 language.</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="co">-- WRONG for SQL - using hash instead of dash</span></span>
-<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a>#put <span class="kw">id</span>:<span class="ot">"query"</span>, <span class="kw">label</span>:<span class="ot">"Run Query"</span></span>
+<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a># put <span class="kw">id</span>:<span class="ot">"query"</span>, <span class="kw">label</span>:<span class="ot">"Run Query"</span></span>
 <span id="cb39-3"><a href="#cb39-3" tabindex="-1"></a></span>
 <span id="cb39-4"><a href="#cb39-4" tabindex="-1"></a><span class="co">-- CORRECT for SQL</span></span>
-<span id="cb39-5"><a href="#cb39-5" tabindex="-1"></a><span class="co">--put id:"query", label:"Run Query"</span></span></code></pre></div>
+<span id="cb39-5"><a href="#cb39-5" tabindex="-1"></a><span class="co">-- put id:"query", label:"Run Query"</span></span></code></pre></div>
 <div class="sourceCode" id="cb40"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a><span class="co">// WRONG for JavaScript - using hash</span></span>
-<span id="cb40-2"><a href="#cb40-2" tabindex="-1"></a>#put id<span class="op">:</span><span class="st">"handler"</span><span class="op">,</span> label<span class="op">:</span><span class="st">"Handle Request"</span></span>
+<span id="cb40-2"><a href="#cb40-2" tabindex="-1"></a># put id<span class="op">:</span><span class="st">"handler"</span><span class="op">,</span> label<span class="op">:</span><span class="st">"Handle Request"</span></span>
 <span id="cb40-3"><a href="#cb40-3" tabindex="-1"></a></span>
 <span id="cb40-4"><a href="#cb40-4" tabindex="-1"></a><span class="co">// CORRECT for JavaScript</span></span>
-<span id="cb40-5"><a href="#cb40-5" tabindex="-1"></a><span class="co">//put id:"handler", label:"Handle Request"</span></span></code></pre></div>
+<span id="cb40-5"><a href="#cb40-5" tabindex="-1"></a><span class="co">// put id:"handler", label:"Handle Request"</span></span></code></pre></div>
 <p><strong>Check the correct prefix</strong>:</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get comment prefix for any extension</span></span>
@@ -742,55 +744,55 @@ language.</p>
 <code>.R</code>, <code>.r</code>
 </td>
 <td><code>#</code></td>
-<td><code>#put id:"step", label:"Process"</code></td>
+<td><code># put id:"step", label:"Process"</code></td>
 </tr>
 <tr class="even">
 <td><code>.py</code></td>
 <td><code>#</code></td>
-<td><code>#put id:"step", label:"Process"</code></td>
+<td><code># put id:"step", label:"Process"</code></td>
 </tr>
 <tr class="odd">
 <td><code>.sql</code></td>
 <td><code>--</code></td>
-<td><code>--put id:"query", label:"Query"</code></td>
+<td><code>-- put id:"query", label:"Query"</code></td>
 </tr>
 <tr class="even">
 <td>
 <code>.js</code>, <code>.ts</code>
 </td>
 <td><code>//</code></td>
-<td><code>//put id:"func", label:"Function"</code></td>
+<td><code>// put id:"func", label:"Function"</code></td>
 </tr>
 <tr class="odd">
 <td><code>.go</code></td>
 <td><code>//</code></td>
-<td><code>//put id:"main", label:"Main"</code></td>
+<td><code>// put id:"main", label:"Main"</code></td>
 </tr>
 <tr class="even">
 <td><code>.rs</code></td>
 <td><code>//</code></td>
-<td><code>//put id:"fn", label:"Handler"</code></td>
+<td><code>// put id:"fn", label:"Handler"</code></td>
 </tr>
 <tr class="odd">
 <td>
 <code>.m</code> (MATLAB)</td>
 <td><code>%</code></td>
-<td><code>%put id:"calc", label:"Compute"</code></td>
+<td><code>% put id:"calc", label:"Compute"</code></td>
 </tr>
 <tr class="even">
 <td><code>.tex</code></td>
 <td><code>%</code></td>
-<td><code>%put id:"sec", label:"Section"</code></td>
+<td><code>% put id:"sec", label:"Section"</code></td>
 </tr>
 <tr class="odd">
 <td><code>.sh</code></td>
 <td><code>#</code></td>
-<td><code>#put id:"cmd", label:"Command"</code></td>
+<td><code># put id:"cmd", label:"Command"</code></td>
 </tr>
 <tr class="even">
 <td><code>.lua</code></td>
 <td><code>--</code></td>
-<td><code>--put id:"fn", label:"Function"</code></td>
+<td><code>-- put id:"fn", label:"Function"</code></td>
 </tr>
 </tbody>
 </table>
@@ -810,14 +812,14 @@ language.</p>
 <p><strong>Option 1: Use fallback <code>#</code> prefix</strong> (if
 your language supports <code>#</code> comments)</p>
 <pre><code><span><span class="co"># In your .xyz file (if it supports # comments)</span></span>
-<span><span class="co">#put id:"step1", label:"Process Data"</span></span></code></pre>
+<span><span class="co"># put id:"step1", label:"Process Data"</span></span></code></pre>
 <p><strong>Option 2: Create a wrapper annotation file</strong></p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># workflow-annotations.R</span></span>
 <span><span class="co"># This file documents the workflow for unsupported file types</span></span>
 <span></span>
-<span><span class="co">#put id:"xyz_step1", label:"Process in XYZ format", input:"data.xyz", output:"result.xyz"</span></span>
-<span><span class="co">#put id:"xyz_step2", label:"Convert output", input:"result.xyz", output:"final.csv"</span></span>
+<span><span class="co"># put id:"xyz_step1", label:"Process in XYZ format", input:"data.xyz", output:"result.xyz"</span></span>
+<span><span class="co"># put id:"xyz_step2", label:"Convert output", input:"result.xyz", output:"final.csv"</span></span>
 <span></span>
 <span><span class="co"># Then scan this file instead</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"workflow-annotations.R"</span><span class="op">)</span></span></code></pre></div>
@@ -825,8 +827,8 @@ your language supports <code>#</code> comments)</p>
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define workflow without files</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">'</span></span>
-<span><span class="st">#put id:"step1", label:"Custom Step 1", output:"data.xyz"</span></span>
-<span><span class="st">#put id:"step2", label:"Custom Step 2", input:"data.xyz"</span></span>
+<span><span class="st"># put id:"step1", label:"Custom Step 1", output:"data.xyz"</span></span>
+<span><span class="st"># put id:"step2", label:"Custom Step 2", input:"data.xyz"</span></span>
 <span><span class="st">'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Option 4: Request new language support</strong></p>
@@ -887,9 +889,9 @@ issues.</p>
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Annotate key steps only, not every function</span></span>
 <span><span class="co"># Good: Major pipeline stages</span></span>
-<span><span class="co">#put id:"ingest", label:"Data Ingestion", node_type:"input"</span></span>
-<span><span class="co">#put id:"transform", label:"Data Transformation", node_type:"process"</span></span>
-<span><span class="co">#put id:"export", label:"Export Results", node_type:"output"</span></span>
+<span><span class="co"># put id:"ingest", label:"Data Ingestion", node_type:"input"</span></span>
+<span><span class="co"># put id:"transform", label:"Data Transformation", node_type:"process"</span></span>
+<span><span class="co"># put id:"export", label:"Export Results", node_type:"output"</span></span>
 <span></span>
 <span><span class="co"># Avoid: Every small helper function</span></span>
 <span><span class="co"># (Don't annotate utility functions unless they're significant)</span></span></code></pre></div>
@@ -1007,12 +1009,12 @@ works silently without logging. Install it for debugging:</p>
 <code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code>)</li>
 <li>
 <strong>Typo in “put”</strong> keyword (must be lowercase:
-<code>#put</code> not <code>#PUT</code>)</li>
+<code># put</code> not <code># PUT</code>)</li>
 </ol>
 <div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Validate syntax</span></span>
-<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'#put id:"test", label:"Test"'</span><span class="op">)</span>  <span class="co"># TRUE</span></span>
-<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'#PUT id:"test", label:"Test"'</span><span class="op">)</span>  <span class="co"># FALSE (uppercase)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'# put id:"test", label:"Test"'</span><span class="op">)</span>  <span class="co"># TRUE</span></span>
+<span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'# PUT id:"test", label:"Test"'</span><span class="op">)</span>  <span class="co"># FALSE (uppercase)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="q-how-do-i-connect-nodes-between-files">Q: How do I connect nodes between files?<a class="anchor" aria-label="anchor" href="#q-how-do-i-connect-nodes-between-files"></a>
@@ -1020,10 +1022,10 @@ works silently without logging. Install it for debugging:</p>
 <p><strong>A</strong>: Use matching input/output file names:</p>
 <div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># In 01_load.R</span></span>
-<span><span class="co">#put id:"load", label:"Load Data", output:"raw_data.csv"</span></span>
+<span><span class="co"># put id:"load", label:"Load Data", output:"raw_data.csv"</span></span>
 <span></span>
 <span><span class="co"># In 02_process.R</span></span>
-<span><span class="co">#put id:"process", label:"Process", input:"raw_data.csv", output:"clean_data.csv"</span></span></code></pre></div>
+<span><span class="co"># put id:"process", label:"Process", input:"raw_data.csv", output:"clean_data.csv"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="q-what-if-i-dont-specify-an-output">Q: What if I don’t specify an output?<a class="anchor" aria-label="anchor" href="#q-what-if-i-dont-specify-an-output"></a>
@@ -1032,11 +1034,11 @@ works silently without logging. Install it for debugging:</p>
 output.</p>
 <div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># In process_data.R</span></span>
-<span><span class="co">#put id:"process", label:"Process Data", input:"raw.csv"</span></span>
+<span><span class="co"># put id:"process", label:"Process Data", input:"raw.csv"</span></span>
 <span><span class="co"># Output defaults to "process_data.R"</span></span>
 <span></span>
 <span><span class="co"># In analyze.R</span></span>
-<span><span class="co">#put id:"analyze", label:"Analyze", input:"process_data.R"</span></span>
+<span><span class="co"># put id:"analyze", label:"Analyze", input:"process_data.R"</span></span>
 <span><span class="co"># This creates a connection from process_data.R to analyze.R</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -1057,12 +1059,12 @@ output.</p>
 <p><strong>A</strong>: Use the <code>.internal</code> extension:</p>
 <div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Variables created during script execution</span></span>
-<span><span class="co">#put id:"create", output:"dataset.internal, dataset.RData"</span></span>
+<span><span class="co"># put id:"create", output:"dataset.internal, dataset.RData"</span></span>
 <span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></span><span class="op">(</span><span class="va">dataset</span>, file <span class="op">=</span> <span class="st">"dataset.RData"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Next script uses the saved file, not .internal</span></span>
-<span><span class="co">#put id:"analyze", input:"dataset.RData", output:"results.internal"</span></span>
+<span><span class="co"># put id:"analyze", input:"dataset.RData", output:"results.internal"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">"dataset.RData"</span><span class="op">)</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">dataset</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Important</strong>: <code>.internal</code> files can only be
@@ -1089,11 +1091,11 @@ differently.</p>
 <p><strong>A</strong>: Yes, putior preserves any properties you
 define:</p>
 <div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#put id:"train", label:"Train Model", \</span></span>
-<span><span class="co">#    node_type:"process", \</span></span>
-<span><span class="co">#    runtime:"2h", \</span></span>
-<span><span class="co">#    gpu:"required", \</span></span>
-<span><span class="co">#    priority:"high"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># put id:"train", label:"Train Model", \</span></span>
+<span><span class="co">#     node_type:"process", \</span></span>
+<span><span class="co">#     runtime:"2h", \</span></span>
+<span><span class="co">#     gpu:"required", \</span></span>
+<span><span class="co">#     priority:"high"</span></span></code></pre></div>
 <div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">$</span><span class="va">runtime</span><span class="op">)</span>   <span class="co"># "2h"</span></span>

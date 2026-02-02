@@ -62,12 +62,12 @@ putior_help("annotation")
 #> === PUT Annotation Syntax ===
 #> 
 #> SINGLE-LINE FORMAT:
-#>   #put id:"node_id", label:"Description", node_type:"process"
+#>   # put id:"node_id", label:"Description", node_type:"process"
 #> 
 #> MULTILINE FORMAT (use backslash for continuation):
-#>   #put id:"node_id", label:"Description", \
-#>   #    input:"data.csv", \
-#>   #    output:"result.csv"
+#>   # put id:"node_id", label:"Description", \
+#>   #     input:"data.csv", \
+#>   #     output:"result.csv"
 #> 
 #> AVAILABLE PROPERTIES:
 #>   id          - Unique node identifier (auto-generated if omitted)
@@ -82,10 +82,10 @@ putior_help("annotation")
 #>   Internal var:   output:"my_var.internal"  (in-memory, not saved)
 #> 
 #> COMMENT PREFIX BY LANGUAGE:
-#>   R/Python:   #put id:"x", label:"y"
-#>   SQL:        --put id:"x", label:"y"
-#>   JavaScript: //put id:"x", label:"y"
-#>   MATLAB:     %put id:"x", label:"y"
+#>   R/Python:   # put id:"x", label:"y"
+#>   SQL:        -- put id:"x", label:"y"
+#>   JavaScript: // put id:"x", label:"y"
+#>   MATLAB:     % put id:"x", label:"y"
 #> 
 
 # Show supported languages
@@ -129,6 +129,10 @@ putior_help("themes")
 #>   auto       - GitHub-adaptive theme with solid colors that work in both light and dark modes
 #>   minimal    - Grayscale professional theme - print-friendly and great for business documents
 #>   github     - Optimized specifically for GitHub README files with maximum mermaid compatibility
+#>   viridis    - Colorblind-safe theme (purple-blue-green-yellow) - perceptually uniform, accessible
+#>   magma      - Colorblind-safe warm theme (purple-red-yellow) - high contrast, print-friendly
+#>   plasma     - Colorblind-safe vibrant theme (purple-pink-yellow) - bold colors for presentations
+#>   cividis    - Colorblind-safe theme optimized for deuteranopia/protanopia (blue-yellow only)
 #> 
 #> Example:
 #>   workflow <- put("./src/")
@@ -140,7 +144,7 @@ putior_help("node_types")
 #> 
 #> === Available Node Types ===
 #> 
-#> Use with: #put id:"x", label:"y", node_type:"type"
+#> Use with: # put id:"x", label:"y", node_type:"type"
 #> 
 #> TYPE        SHAPE           TYPICAL USE
 #> ----------- --------------- ----------------------------------
@@ -157,9 +161,9 @@ putior_help("node_types")
 #>   Enable special styling with: put_diagram(workflow, show_workflow_boundaries = TRUE)
 #> 
 #> Example:
-#>   #put id:"begin", label:"Start Pipeline", node_type:"start"
-#>   #put id:"load", label:"Load Data", node_type:"input", output:"raw.csv"
-#>   #put id:"done", label:"Complete", node_type:"end", input:"final.csv"
+#>   # put id:"begin", label:"Start Pipeline", node_type:"start"
+#>   # put id:"load", label:"Load Data", node_type:"input", output:"raw.csv"
+#>   # put id:"done", label:"Complete", node_type:"end", input:"final.csv"
 #> 
 
 # Show detection patterns info
@@ -204,9 +208,9 @@ putior_help("examples")
 #> 
 #> BASIC WORKFLOW:
 #>   # 1. Add PUT annotations to your source files:
-#>   #put id:"load", label:"Load Data", output:"data.csv"
-#>   #put id:"process", label:"Process", input:"data.csv", output:"clean.csv"
-#>   #put id:"analyze", label:"Analyze", input:"clean.csv"
+#>   # put id:"load", label:"Load Data", output:"data.csv"
+#>   # put id:"process", label:"Process", input:"data.csv", output:"clean.csv"
+#>   # put id:"analyze", label:"Analyze", input:"clean.csv"
 #> 
 #>   # 2. Scan and visualize:
 #>   workflow <- put("./src/")

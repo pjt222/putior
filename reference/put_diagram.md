@@ -90,8 +90,29 @@ put_diagram(
 
 - theme:
 
-  Character string specifying color theme. Options: "light" (default),
-  "dark", "auto" (GitHub adaptive), "minimal", "github"
+  Character string specifying color theme. Options:
+
+  - "light" - Default light theme with bright colors (default)
+
+  - "dark" - Dark theme for dark mode environments
+
+  - "auto" - GitHub-adaptive with solid colors for both modes
+
+  - "minimal" - Grayscale professional, print-friendly
+
+  - "github" - Optimized for GitHub README files
+
+  - "viridis" - Colorblind-safe (purple-blue-green-yellow)
+
+  - "magma" - Colorblind-safe warm (purple-red-yellow)
+
+  - "plasma" - Colorblind-safe vibrant (purple-pink-yellow)
+
+  - "cividis" - Colorblind-safe for deuteranopia/protanopia
+    (blue-yellow)
+
+  The viridis family themes are perceptually uniform and tested for
+  accessibility.
 
 - show_source_info:
 
