@@ -23,7 +23,7 @@ cat("Creating example workflow in:", temp_dir, "\n")
 # Demonstrates: input node with output annotation
 file1_lines <- c(
   "# Data Collection Script",
-  "#put id:\"collect_data\", label:\"Collect Raw Data\", node_type:\"input\", output:\"raw_data.csv\"",
+  "# put id:\"collect_data\", label:\"Collect Raw Data\", node_type:\"input\", output:\"raw_data.csv\"",
   "",
   "import pandas as pd",
   "import requests",
@@ -47,7 +47,7 @@ file1_lines <- c(
 # Demonstrates: process node with input and output annotations
 file2_lines <- c(
   "# Data Processing Script",
-  "#put id:\"process_data\", label:\"Clean and Transform Data\", node_type:\"process\", input:\"raw_data.csv\", output:\"processed_data.csv\"",
+  "# put id:\"process_data\", label:\"Clean and Transform Data\", node_type:\"process\", input:\"raw_data.csv\", output:\"processed_data.csv\"",
   "",
   "library(dplyr)",
   "library(readr)",
@@ -75,8 +75,8 @@ file2_lines <- c(
 # Demonstrates: multiple PUT annotations in one file
 file3_lines <- c(
   "# Analysis and Reporting Script",
-  "#put id:\"create_report\", label:\"Generate Sales Report\", node_type:\"output\", input:\"processed_data.csv\", output:\"sales_report.html\"",
-  "#put id:\"create_summary\", label:\"Calculate Summary Stats\", node_type:\"process\", input:\"processed_data.csv\", output:\"summary_stats.json\"",
+  "# put id:\"create_report\", label:\"Generate Sales Report\", node_type:\"output\", input:\"processed_data.csv\", output:\"sales_report.html\"",
+  "# put id:\"create_summary\", label:\"Calculate Summary Stats\", node_type:\"process\", input:\"processed_data.csv\", output:\"summary_stats.json\"",
   "",
   "library(dplyr)",
   "library(readr)",

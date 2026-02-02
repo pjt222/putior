@@ -32,7 +32,7 @@ cat("Creating variable reference example in:", temp_dir, "\n")
 script1_content <- c(
   "# Variable Creation Script",
   "# Demonstrates: Using 'internal' extension to track variables",
-  "#put id:'create_var', label:'Create Variable', node_type:'start', output:'var.internal, var.RData'",
+  "# put id:'create_var', label:'Create Variable', node_type:'start', output:'var.internal, var.RData'",
   "",
   "# Create a variable (exists in memory)",
   "var <- letters[1:5]",
@@ -49,7 +49,7 @@ script1_content <- c(
 script2_content <- c(
   "# Variable Processing Script", 
   "# Demonstrates: Loading persisted data and creating new variables",
-  "#put id:'process_var', label:'Process Variable', node_type:'process', input:'var.RData', output:'processed_var.internal, result.txt'",
+  "# put id:'process_var', label:'Process Variable', node_type:'process', input:'var.RData', output:'processed_var.internal, result.txt'",
   "",
   "# Load the variable if working with persistent version",
   "load('var.RData')",
@@ -76,7 +76,7 @@ writeLines(script2_content, file.path(temp_dir, "02_process_variable.R"))
 # Script 3: Further processing using results from Script 2
 script3_content <- c(
   "# Advanced Processing Script",
-  "#put id:'advanced_process', label:'Advanced Data Processing', node_type:'process', input:'result.txt', output:'enhanced_data.internal, enhanced_results.csv'",
+  "# put id:'advanced_process', label:'Advanced Data Processing', node_type:'process', input:'result.txt', output:'enhanced_data.internal, enhanced_results.csv'",
   "",
   "# Read results from previous script",
   "processed_text <- readLines('result.txt')",
@@ -97,7 +97,7 @@ script3_content <- c(
 # Script 4: Final analysis using all previous outputs
 script4_content <- c(
   "# Final Analysis Script",
-  "#put id:'final_analysis', label:'Final Analysis & Report', node_type:'output', input:'var.RData, enhanced_results.csv', output:'final_report.internal, complete_analysis.txt'",
+  "# put id:'final_analysis', label:'Final Analysis & Report', node_type:'output', input:'var.RData, enhanced_results.csv', output:'final_report.internal, complete_analysis.txt'",
   "",
   "# Load original variable",
   "load('var.RData')",

@@ -9,7 +9,7 @@ has_shinyAce <- requireNamespace("shinyAce", quietly = TRUE)
 
 # Sample code for users to try
 sample_r_code <- '# Example R script with PUT annotations
-#put label:"Load Data", node_type:"input", output:"data.csv"
+# put label:"Load Data", node_type:"input", output:"data.csv"
 
 # Your R code here
 data <- read.csv("source.csv")
@@ -17,7 +17,7 @@ write.csv(data, "data.csv")
 '
 
 sample_python_code <- '# Example Python script with PUT annotations
-#put label:"Process Data", input:"data.csv", output:"results.json"
+# put label:"Process Data", input:"data.csv", output:"results.json"
 
 import pandas as pd
 import json
@@ -30,14 +30,14 @@ with open("results.json", "w") as f:
 '
 
 sample_multi_file <- '# ===== File: 01_fetch.R =====
-#put label:"Fetch Data", node_type:"input", output:"raw_data.csv"
+# put label:"Fetch Data", node_type:"input", output:"raw_data.csv"
 
 # Fetch data from API
 data <- fetch_api_data()
 write.csv(data, "raw_data.csv")
 
 # ===== File: 02_clean.R =====
-#put label:"Clean Data", input:"raw_data.csv", output:"clean_data.csv"
+# put label:"Clean Data", input:"raw_data.csv", output:"clean_data.csv"
 
 # Clean the data
 data <- read.csv("raw_data.csv")
@@ -45,7 +45,7 @@ clean_data <- na.omit(data)
 write.csv(clean_data, "clean_data.csv")
 
 # ===== File: 03_analyze.R =====
-#put label:"Analyze", input:"clean_data.csv", output:"results.rds"
+# put label:"Analyze", input:"clean_data.csv", output:"results.rds"
 
 # Run analysis
 data <- read.csv("clean_data.csv")
@@ -53,7 +53,7 @@ results <- summary(data)
 saveRDS(results, "results.rds")
 
 # ===== File: 04_report.R =====
-#put label:"Generate Report", node_type:"output", input:"results.rds", output:"report.html"
+# put label:"Generate Report", node_type:"output", input:"results.rds", output:"report.html"
 
 # Generate report
 results <- readRDS("results.rds")
@@ -273,7 +273,7 @@ ui <- fluidPage(
         tabPanel("Help",
           br(),
           h4("PUT Annotation Syntax"),
-          pre('#put label:"Step Name", node_type:"input", output:"file.csv"'),
+          pre('# put label:"Step Name", node_type:"input", output:"file.csv"'),
 
           h5("Required Fields"),
           tags$ul(
@@ -319,7 +319,7 @@ server <- function(input, output, session) {
   # Template loader
   observeEvent(input$template, {
     code <- switch(input$template,
-      "empty" = "#put label:\"My Step\"\n\n# Your code here\n",
+      "empty" = "# put label:\"My Step\"\n\n# Your code here\n",
       "r_simple" = sample_r_code,
       "python" = sample_python_code,
       "multi" = sample_multi_file
@@ -437,7 +437,7 @@ server <- function(input, output, session) {
   output$status <- renderText({
     workflow <- workflow_data()
     if (is.null(workflow)) {
-      return("No annotations found. Add #put comments to your code.")
+      return("No annotations found. Add # put comments to your code.")
     }
     paste0("Found ", nrow(workflow), " workflow node(s)")
   })

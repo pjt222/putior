@@ -21,7 +21,7 @@ cat("📁 Creating sample workflow...\n")
 # Simple but representative workflow
 workflow_files <- list(
   "collect.py" = c(
-    "#put id:\"fetch_data\", label:\"Fetch API Data\", node_type:\"input\", output:\"raw_data.json\"",
+    "# put id:\"fetch_data\", label:\"Fetch API Data\", node_type:\"input\", output:\"raw_data.json\"",
     "import requests",
     "data = requests.get('/api/data').json()",
     "with open('raw_data.json', 'w') as f:",
@@ -29,7 +29,7 @@ workflow_files <- list(
   ),
   
   "process.R" = c(
-    "#put id:\"clean_data\", label:\"Clean and Validate\", node_type:\"process\", input:\"raw_data.json\", output:\"clean_data.csv\"",
+    "# put id:\"clean_data\", label:\"Clean and Validate\", node_type:\"process\", input:\"raw_data.json\", output:\"clean_data.csv\"",
     "library(jsonlite)",
     "raw <- fromJSON('raw_data.json')",
     "clean <- clean_dataset(raw)",
@@ -37,15 +37,15 @@ workflow_files <- list(
   ),
   
   "analyze.R" = c(
-    "#put id:\"statistical_analysis\", label:\"Statistical Analysis\", node_type:\"process\", input:\"clean_data.csv\", output:\"results.rds\"",
-    "#put id:\"quality_check\", label:\"Data Quality Check\", node_type:\"decision\", input:\"clean_data.csv\", output:\"quality_report.json\"",
+    "# put id:\"statistical_analysis\", label:\"Statistical Analysis\", node_type:\"process\", input:\"clean_data.csv\", output:\"results.rds\"",
+    "# put id:\"quality_check\", label:\"Data Quality Check\", node_type:\"decision\", input:\"clean_data.csv\", output:\"quality_report.json\"",
     "data <- read.csv('clean_data.csv')",
     "results <- perform_analysis(data)",
     "saveRDS(results, 'results.rds')"
   ),
   
   "report.R" = c(
-    "#put id:\"generate_report\", label:\"Generate Final Report\", node_type:\"output\", input:\"results.rds\", output:\"final_report.html\"",
+    "# put id:\"generate_report\", label:\"Generate Final Report\", node_type:\"output\", input:\"results.rds\", output:\"final_report.html\"",
     "results <- readRDS('results.rds')",
     "rmarkdown::render('report_template.Rmd', output_file = 'final_report.html')"
   )

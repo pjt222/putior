@@ -39,16 +39,16 @@ workflow <- put_auto("./src/")
 
 ## Annotation Syntax
 
-Add `#put` comments to source files to define workflow nodes:
+Add `# put` comments to source files to define workflow nodes:
 
 ```r
-#put id:"load", label:"Load Data", output:"raw_data.csv"
+# put id:"load", label:"Load Data", output:"raw_data.csv"
 data <- read.csv("input.csv")
 
-#put id:"transform", label:"Clean Data", input:"raw_data.csv", output:"clean.rds"
+# put id:"transform", label:"Clean Data", input:"raw_data.csv", output:"clean.rds"
 clean <- transform(data)
 
-#put id:"analyze", label:"Run Analysis", input:"clean.rds", node_type:"decision"
+# put id:"analyze", label:"Run Analysis", input:"clean.rds", node_type:"decision"
 results <- analyze(clean)
 ```
 
@@ -67,10 +67,10 @@ results <- analyze(clean)
 Use backslash for continuation:
 
 ```r
-#put id:"complex_step", \
-#put   label:"Multi-step Process", \
-#put   input:"file1.csv, file2.csv", \
-#put   output:"combined.rds"
+# put id:"complex_step", \
+#     label:"Multi-step Process", \
+#     input:"file1.csv, file2.csv", \
+#     output:"combined.rds"
 ```
 
 ## Multi-Language Comment Syntax
@@ -79,28 +79,28 @@ putior automatically detects comment style by file extension:
 
 | Prefix | Languages | Extensions |
 |--------|-----------|------------|
-| `#put` | R, Python, Shell, Julia, Ruby, Perl, YAML | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml` |
-| `--put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |
-| `//put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs` |
-| `%put` | MATLAB, LaTeX | `.m`, `.tex` |
+| `# put` | R, Python, Shell, Julia, Ruby, Perl, YAML | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml` |
+| `-- put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |
+| `// put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs` |
+| `% put` | MATLAB, LaTeX | `.m`, `.tex` |
 
 ### Examples by Language
 
 ```sql
 -- query.sql
---put id:"fetch", label:"Fetch Customers", output:"customers"
+-- put id:"fetch", label:"Fetch Customers", output:"customers"
 SELECT * FROM customers;
 ```
 
 ```javascript
 // transform.js
-//put id:"process", label:"Transform JSON", input:"data.json", output:"output.json"
+// put id:"process", label:"Transform JSON", input:"data.json", output:"output.json"
 const result = data.map(transform);
 ```
 
 ```matlab
 % analysis.m
-%put id:"stats", label:"Statistical Analysis", input:"data.mat", output:"results.mat"
+% put id:"stats", label:"Statistical Analysis", input:"data.mat", output:"results.mat"
 results = compute_statistics(data);
 ```
 

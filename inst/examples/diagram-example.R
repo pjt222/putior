@@ -21,8 +21,8 @@ cat("📁 Creating sample workflow files...\n")
 # File 1: Data Collection (Python)
 data_collection <- c(
   "# Data Collection from Multiple Sources",
-  "#put id:\"fetch_sales\", label:\"Fetch Sales Data\", node_type:\"input\", output:\"raw_sales.csv\"",
-  "#put id:\"fetch_customers\", label:\"Fetch Customer Data\", node_type:\"input\", output:\"raw_customers.csv\"",
+  "# put id:\"fetch_sales\", label:\"Fetch Sales Data\", node_type:\"input\", output:\"raw_sales.csv\"",
+  "# put id:\"fetch_customers\", label:\"Fetch Customer Data\", node_type:\"input\", output:\"raw_customers.csv\"",
   "",
   "import pandas as pd",
   "import requests",
@@ -39,9 +39,9 @@ data_collection <- c(
 # File 2: Data Processing (R)
 data_processing <- c(
   "# Data Cleaning and Integration", 
-  "#put id:\"clean_sales\", label:\"Clean Sales Data\", node_type:\"process\", input:\"raw_sales.csv\", output:\"clean_sales.csv\"",
-  "#put id:\"clean_customers\", label:\"Clean Customer Data\", node_type:\"process\", input:\"raw_customers.csv\", output:\"clean_customers.csv\"",
-  "#put id:\"merge_data\", label:\"Merge Datasets\", node_type:\"process\", input:\"clean_sales.csv,clean_customers.csv\", output:\"merged_data.csv\"",
+  "# put id:\"clean_sales\", label:\"Clean Sales Data\", node_type:\"process\", input:\"raw_sales.csv\", output:\"clean_sales.csv\"",
+  "# put id:\"clean_customers\", label:\"Clean Customer Data\", node_type:\"process\", input:\"raw_customers.csv\", output:\"clean_customers.csv\"",
+  "# put id:\"merge_data\", label:\"Merge Datasets\", node_type:\"process\", input:\"clean_sales.csv,clean_customers.csv\", output:\"merged_data.csv\"",
   "",
   "library(dplyr)",
   "library(readr)",
@@ -66,9 +66,9 @@ data_processing <- c(
 # File 3: Analysis and Decision Making (R)
 analysis <- c(
   "# Statistical Analysis and Decision Making",
-  "#put id:\"analyze_trends\", label:\"Analyze Trends\", node_type:\"process\", input:\"merged_data.csv\", output:\"trend_analysis.rds\"",
-  "#put id:\"quality_check\", label:\"Data Quality Check\", node_type:\"decision\", input:\"merged_data.csv\", output:\"quality_report.json\"",
-  "#put id:\"generate_insights\", label:\"Generate Insights\", node_type:\"process\", input:\"trend_analysis.rds\", output:\"insights.rds\"",
+  "# put id:\"analyze_trends\", label:\"Analyze Trends\", node_type:\"process\", input:\"merged_data.csv\", output:\"trend_analysis.rds\"",
+  "# put id:\"quality_check\", label:\"Data Quality Check\", node_type:\"decision\", input:\"merged_data.csv\", output:\"quality_report.json\"",
+  "# put id:\"generate_insights\", label:\"Generate Insights\", node_type:\"process\", input:\"trend_analysis.rds\", output:\"insights.rds\"",
   "",
   "library(dplyr)",
   "",
@@ -90,9 +90,9 @@ analysis <- c(
 # File 4: Reporting (R)
 reporting <- c(
   "# Report Generation and Distribution",
-  "#put id:\"create_dashboard\", label:\"Create Dashboard\", node_type:\"output\", input:\"insights.rds\", output:\"dashboard.html\"",
-  "#put id:\"executive_summary\", label:\"Executive Summary\", node_type:\"output\", input:\"insights.rds\", output:\"executive_summary.pdf\"",
-  "#put id:\"data_export\", label:\"Export Data\", node_type:\"output\", input:\"merged_data.csv\", output:\"final_dataset.xlsx\"",
+  "# put id:\"create_dashboard\", label:\"Create Dashboard\", node_type:\"output\", input:\"insights.rds\", output:\"dashboard.html\"",
+  "# put id:\"executive_summary\", label:\"Executive Summary\", node_type:\"output\", input:\"insights.rds\", output:\"executive_summary.pdf\"",
+  "# put id:\"data_export\", label:\"Export Data\", node_type:\"output\", input:\"merged_data.csv\", output:\"final_dataset.xlsx\"",
   "",
   "library(rmarkdown)",
   "library(plotly)",

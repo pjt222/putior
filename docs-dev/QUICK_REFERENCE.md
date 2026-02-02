@@ -238,7 +238,7 @@ urlchecker::url_check()
 ### PUT Annotations
 
 ```r
-#put id:"node_id", label:"Description", node_type:"process", input:"file.csv", output:"result.csv"
+# put id:"node_id", label:"Description", node_type:"process", input:"file.csv", output:"result.csv"
 ```
 
 ### Node Types

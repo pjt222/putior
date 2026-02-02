@@ -8,7 +8,7 @@
 #
 # Two primary modes:
 # 1. Direct detection: put_auto() analyzes code and produces workflow data
-# 2. Comment generation: put_generate() creates #put annotation text
+# 2. Comment generation: put_generate() creates # put annotation text
 #
 # =============================================================================
 
@@ -132,7 +132,7 @@ cat("\n")
 
 # Add a manual annotation to one of the files
 writeLines(c(
-  '#put id:"custom_loader", label:"Custom Data Loader", node_type:"input"',
+  '# put id:"custom_loader", label:"Custom Data Loader", node_type:"input"',
   "# Load raw data from various sources",
   "raw_sales <- read.csv('data/raw_sales.csv')",
   "raw_customers <- read_csv('data/raw_customers.csv')"
@@ -153,7 +153,7 @@ cat("=== Example 7: Supplement Strategy ===\n\n")
 
 # Modify file to have partial manual annotation
 writeLines(c(
-  '#put id:"analyzer", label:"Sales Analyzer"',
+  '# put id:"analyzer", label:"Sales Analyzer"',
   "# Note: input/output not specified - will be auto-detected",
   "sales <- read.csv('data/clean_sales.csv')",
   "saveRDS(results, 'output/analysis_results.rds')"
@@ -204,7 +204,7 @@ cat("   put_generate('./scripts/', output = 'clipboard')\n")
 cat("   # Paste into your files and customize\n\n")
 
 cat("3. Hybrid Workflow (manual control + auto-detection):\n")
-cat("   # Add #put annotations to key files\n")
+cat("   # Add # put annotations to key files\n")
 cat("   # Let put_merge() handle the rest\n")
 cat("   workflow <- put_merge('./project/', merge_strategy = 'supplement')\n\n")
 

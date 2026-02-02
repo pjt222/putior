@@ -1,4 +1,4 @@
-#put id:"put_entry", label:"Entry Point - Scan Files", node_type:"start", output:"workflow_data.rds"
+# put id:"put_entry", label:"Entry Point - Scan Files", node_type:"start", output:"workflow_data.rds"
 #' Scan Source Files for PUT Annotations
 #'
 #' Scans source files in a directory for PUT annotations that define workflow
@@ -41,7 +41,7 @@
 #'
 #' **Single-line format (various languages):**
 #' \preformatted{
-#' #put id:"node1", label:"Process"       # R/Python
+#' # put id:"node1", label:"Process"       # R/Python
 #' --put id:"node1", label:"Query"        -- SQL
 #' //put id:"node1", label:"Handler"      // JavaScript
 #' %put id:"node1", label:"Compute"       % MATLAB
@@ -49,7 +49,7 @@
 #'
 #' **Multiline format:** Use backslash (\\) for line continuation
 #' \preformatted{
-#' #put id:"node1", label:"Process Data", \\
+#' # put id:"node1", label:"Process Data", \\
 #' #    input:"data.csv", \\
 #' #    output:"result.csv"
 #' }
@@ -93,13 +93,13 @@
 #' workflow <- put("./sql/", pattern = "\\.sql$")
 #'
 #' # Single-line PUT annotations (various languages):
-#' # R/Python: #put id:"load_data", label:"Load Dataset"
+#' # R/Python: # put id:"load_data", label:"Load Dataset"
 #' # SQL:      --put id:"query", label:"Execute Query"
 #' # JS/TS:    //put id:"handler", label:"API Handler"
 #' # MATLAB:   %put id:"compute", label:"Compute Results"
 #' #
 #' # Multiline PUT annotations work the same across languages:
-#' # #put id:"complex_process", label:"Complex Processing", \
+#' # # put id:"complex_process", label:"Complex Processing", \
 #' # #    input:"file1.csv,file2.csv", \
 #' # #    output:"results.csv"
 #' #
@@ -227,7 +227,7 @@ put <- function(path,
   }
 }
 
-#put id:"process_file", label:"Process Single File", node_type:"process", input:"source_files", output:"annotations.rds"
+# put id:"process_file", label:"Process Single File", node_type:"process", input:"source_files", output:"annotations.rds"
 #' Process a single file for PUT annotations
 #' @param file Path to file
 #' @param include_line_numbers Whether to include line numbers
@@ -357,7 +357,7 @@ process_single_file <- function(file, include_line_numbers, validate) {
           warning(
             "Invalid PUT annotation syntax in ", basename(file), " line ", line_idx, ":\n",
             "  ", full_content, "\n",
-            "Expected format: #put id:\"node_id\", label:\"Description\"\n",
+            "Expected format: # put id:\"node_id\", label:\"Description\"\n",
             "See putior_help(\"annotation\") for syntax details.",
             call. = FALSE
           )
@@ -372,7 +372,7 @@ process_single_file <- function(file, include_line_numbers, validate) {
   )
 }
 
-#put id:"validate", label:"Validate Annotations", node_type:"process", input:"annotations.rds", output:"validated_annotations.rds"
+# put id:"validate", label:"Validate Annotations", node_type:"process", input:"annotations.rds", output:"validated_annotations.rds"
 #' Validate PUT annotation for common issues
 #' @param properties List of annotation properties
 #' @param line_content Original line content
@@ -413,7 +413,7 @@ validate_annotation <- function(properties, line_content) {
   return(issues)
 }
 
-#put id:"parser", label:"Parse Annotation Syntax", node_type:"process", input:"annotations.rds", output:"properties.rds"
+# put id:"parser", label:"Parse Annotation Syntax", node_type:"process", input:"annotations.rds", output:"properties.rds"
 #' Extract PUT Annotation Properties
 #'
 #' Parses a single line containing a PUT annotation and extracts key-value pairs.
@@ -528,7 +528,7 @@ parse_comma_separated_pairs <- function(text) {
   return(pairs)
 }
 
-#put id:"convert_df", label:"Convert to Data Frame", node_type:"process", input:"properties.rds", output:"workflow_data.rds"
+# put id:"convert_df", label:"Convert to Data Frame", node_type:"process", input:"properties.rds", output:"workflow_data.rds"
 #' Convert results list to data frame
 #' @param results List of annotation results
 #' @param include_line_numbers Whether line numbers are included
@@ -589,8 +589,8 @@ empty_result_df <- function(include_line_numbers = FALSE) {
 #' @export
 #'
 #' @examples
-#' is_valid_put_annotation('#put name:"test", label:"Test"') # TRUE
-#' is_valid_put_annotation("#put invalid syntax") # FALSE
+#' is_valid_put_annotation('# put name:"test", label:"Test"') # TRUE
+#' is_valid_put_annotation("# put invalid syntax") # FALSE
 is_valid_put_annotation <- function(line) {
   result <- parse_put_annotation(line)
   !is.null(result) && length(result) > 0

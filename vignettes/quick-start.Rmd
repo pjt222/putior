@@ -27,17 +27,17 @@ library(putior)
 
 ### Step 2: Add Annotations to Your Code
 
-Add `#put` comments to your R scripts:
+Add `# put` comments to your R scripts:
 
 ```r
 # my_analysis.R
-#put label:"Load Data", output:"raw_data"
+# put label:"Load Data", output:"raw_data"
 data <- read.csv("sales.csv")
 
-#put label:"Clean Data", input:"raw_data", output:"clean_data"
+# put label:"Clean Data", input:"raw_data", output:"clean_data"
 clean <- data[complete.cases(data), ]
 
-#put label:"Generate Report", input:"clean_data", output:"report.html"
+# put label:"Generate Report", input:"clean_data", output:"report.html"
 rmarkdown::render("report.Rmd")
 ```
 
@@ -74,13 +74,13 @@ cat("\n```\n")
 # Create a temporary file with annotations
 temp_file <- tempfile(fileext = ".R")
 writeLines(c(
-  '#put label:"Extract", output:"raw.csv"',
+  '# put label:"Extract", output:"raw.csv"',
   'data <- read.csv("source.csv")',
   '',
-  '#put label:"Transform", input:"raw.csv", output:"clean.csv"',
+  '# put label:"Transform", input:"raw.csv", output:"clean.csv"',
   'clean <- transform(data)',
   '',
-  '#put label:"Load", input:"clean.csv", output:"database"',
+  '# put label:"Load", input:"clean.csv", output:"database"',
   'write_to_db(clean)'
 ), temp_file)
 
@@ -98,7 +98,7 @@ unlink(temp_file)
 ## Annotation Syntax at a Glance
 
 ```
-#put label:"Step Name", input:"file.csv", output:"result.csv"
+# put label:"Step Name", input:"file.csv", output:"result.csv"
 ```
 
 | Field | Purpose | Required |
@@ -119,10 +119,10 @@ putior works with 30+ languages. Comment prefix is auto-detected:
 
 | Language | Annotation |
 |----------|------------|
-| R, Python, Shell | `#put label:"..."` |
-| SQL, Lua | `--put label:"..."` |
-| JavaScript, Go, Rust | `//put label:"..."` |
-| MATLAB | `%put label:"..."` |
+| R, Python, Shell | `# put label:"..."` |
+| SQL, Lua | `-- put label:"..."` |
+| JavaScript, Go, Rust | `// put label:"..."` |
+| MATLAB | `% put label:"..."` |
 
 ---
 

@@ -103,7 +103,7 @@ f1 <- image_annotate(f1, "# sales_pipeline.R",
                      size = code_size, color = gray,
                      location = paste0("+", round(50*scale), "+", y), font = "mono")
 y <- y + line_height + 10
-f1 <- image_annotate(f1, "#put label:\"Load Data\", node_type:\"input\",",
+f1 <- image_annotate(f1, "# put label:\"Load Data\", node_type:\"input\",",
                      size = code_size, color = green,
                      location = paste0("+", round(50*scale), "+", y), font = "mono")
 y <- y + line_height
@@ -119,7 +119,7 @@ f1 <- image_annotate(f1, "write.csv(data, \"data.csv\")",
                      size = code_size, color = fg,
                      location = paste0("+", round(50*scale), "+", y), font = "mono")
 y <- y + block_gap + 10
-f1 <- image_annotate(f1, "#put label:\"Analyze\", input:\"data.csv\",",
+f1 <- image_annotate(f1, "# put label:\"Analyze\", input:\"data.csv\",",
                      size = code_size, color = green,
                      location = paste0("+", round(50*scale), "+", y), font = "mono")
 y <- y + line_height

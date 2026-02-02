@@ -120,7 +120,7 @@ tests/
 test_that("UUID generation works when id is missing", {
   skip_if_not_installed("uuid")
   
-  annotation <- '#put label:"Test Node"'
+  annotation <- '# put label:"Test Node"'
   result <- parse_put_annotation(annotation)
   
   expect_true(!is.null(result$id))
@@ -133,7 +133,7 @@ test_that("UUID generation works when id is missing", {
 test_that("Output defaults to filename when not specified", {
   # Create temporary file with annotation
   temp_file <- tempfile(fileext = ".R")
-  writeLines('#put label:"Test"', temp_file)
+  writeLines('# put label:"Test"', temp_file)
   
   result <- process_single_file(temp_file)
   

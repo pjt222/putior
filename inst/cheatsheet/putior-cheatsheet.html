@@ -205,8 +205,8 @@
 
       <div class="section-title blue">Quick Start</div>
 <pre># 1. Add annotation
-#put label:"Load Data",
-     output:"clean.csv"
+# put label:"Load Data",
+      output:"clean.csv"
 
 # 2. Generate diagram
 library(putior)
@@ -214,24 +214,24 @@ put_diagram(put("./"))</pre>
 
       <div class="section-title blue">Annotation Syntax</div>
       <div class="subsection-title">Basic Format</div>
-<pre>#put key:"value", key:"value"</pre>
+<pre># put key:"value", key:"value"</pre>
 
       <div class="subsection-title">Minimal (label only)</div>
-<pre>#put label:"My Step"</pre>
+<pre># put label:"My Step"</pre>
       <div class="note">ID auto-generated, type = "process"</div>
 
       <div class="subsection-title">Full Annotation</div>
-<pre>#put id:"step1", \
-     label:"Load Data", \
-     node_type:"input", \
-     input:"config.json", \
-     output:"data.csv"</pre>
+<pre># put id:"step1", \
+      label:"Load Data", \
+      node_type:"input", \
+      input:"config.json", \
+      output:"data.csv"</pre>
 
       <div class="subsection-title">Alternative Formats</div>
-<pre>#put label:"Step"   # Standard
-# put label:"Step"  # Space
-#put| label:"Step"  # Pipe
-#put: label:"Step"  # Colon</pre>
+<pre># put label:"Step"  # Standard (matches logo)
+#put label:"Step"   # Also valid (no space)
+#put| label:"Step"  # Pipe separator
+#put: label:"Step"  # Colon separator</pre>
     </div>
 
     <!-- Column 2: Node Types + Fields + Artifacts -->
@@ -267,12 +267,12 @@ output:"result.internal"</pre>
 
       <div class="subsection-title">Connecting Scripts</div>
 <pre># Script A outputs file
-#put label:"Fetch",
-     output:"data.csv"
+# put label:"Fetch",
+      output:"data.csv"
 
 # Script B reads that file
-#put label:"Process",
-     input:"data.csv"</pre>
+# put label:"Process",
+      input:"data.csv"</pre>
     </div>
 
     <!-- Column 3: Key Functions -->
@@ -368,7 +368,7 @@ workflow &lt;- put("./",
 
 # Validate syntax
 is_valid_put_annotation(
-  '#put label:"Test"')</pre>
+  '# put label:"Test"')</pre>
 
       <div class="subsection-title">Detection Patterns</div>
 <pre># View auto-detect patterns
@@ -392,86 +392,86 @@ pak::pak("pjt222/putior")</pre>
       <div class="example">
         <div class="subsection-title">Simple Linear Pipeline</div>
 <pre># 01_fetch.R
-#put label:"Fetch Sales Data",
-     node_type:"input",
-     output:"sales.csv"
+# put label:"Fetch Sales Data",
+      node_type:"input",
+      output:"sales.csv"
 
 # 02_clean.py
-#put label:"Clean Data",
-     input:"sales.csv",
-     output:"clean.csv"
+# put label:"Clean Data",
+      input:"sales.csv",
+      output:"clean.csv"
 
 # 03_report.R
-#put label:"Generate Report",
-     node_type:"output",
-     input:"clean.csv"</pre>
+# put label:"Generate Report",
+      node_type:"output",
+      input:"clean.csv"</pre>
         <img src="diagrams/linear.png" alt="Linear pipeline">
       </div>
 
       <div class="example">
         <div class="subsection-title">Branching & Merging</div>
 <pre># 01_fetch_sales.R
-#put label:"Fetch Sales",
-     node_type:"input", output:"sales.csv"
+# put label:"Fetch Sales",
+      node_type:"input", output:"sales.csv"
 
 # 02_fetch_customers.R
-#put label:"Fetch Customers",
-     node_type:"input", output:"customers.csv"
+# put label:"Fetch Customers",
+      node_type:"input", output:"customers.csv"
 
 # 03_merge.R
-#put label:"Merge Datasets",
-     input:"sales.csv, customers.csv",
-     output:"merged.csv"
+# put label:"Merge Datasets",
+      input:"sales.csv, customers.csv",
+      output:"merged.csv"
 
 # 04_analyze.py
-#put label:"Analyze",
-     input:"merged.csv", output:"stats.json"
+# put label:"Analyze",
+      input:"merged.csv", output:"stats.json"
 
 # 05_report.R
-#put label:"Report",
-     node_type:"output", input:"stats.json"</pre>
+# put label:"Report",
+      node_type:"output", input:"stats.json"</pre>
         <img src="diagrams/branching.png" alt="Branching pipeline">
       </div>
 
       <div class="example">
         <div class="subsection-title">Modular source() Pattern</div>
 <pre># utils.R - Utility functions
-#put label:"Data Utilities",
-     node_type:"input"
+# put label:"Data Utilities",
+      node_type:"input"
 
 # analysis.R - Uses utils
-#put label:"Analysis Functions",
-     input:"utils.R"
+# put label:"Analysis Functions",
+      input:"utils.R"
 
 # main.R - Orchestrates both
-#put label:"Main Pipeline",
-     input:"utils.R, analysis.R",
-     output:"results.csv"</pre>
+# put label:"Main Pipeline",
+      input:"utils.R, analysis.R",
+      output:"results.csv"</pre>
         <img src="diagrams/modular.png" alt="Modular pattern">
       </div>
 
       <div class="example">
         <div class="subsection-title">Decision/Branching Logic</div>
 <pre># start.R
-#put label:"Load Config",
-     node_type:"start", output:"config.json"
+# put label:"Load Config",
+      node_type:"start", output:"config.json"
 
 # check.R
-#put label:"Validate Data?",
-     node_type:"decision", input:"config.json"
+# put label:"Validate Data?",
+      node_type:"decision", input:"config.json"
 
 # path_a.R
-#put label:"Full Analysis",
-     input:"config.json", output:"full.csv"
+# put label:"Full Analysis",
+      input:"config.json", output:"full.csv"
 
 # path_b.R
-#put label:"Quick Summary",
-     input:"config.json", output:"summary.csv"
+# put label:"Quick Summary",
+      input:"config.json", output:"summary.csv"
 
 # end.R
-#put label:"Complete",
-     node_type:"end",
-     input:"full.csv, summary.csv"</pre>
+# put label:"Complete",
+      node_type:"end",
+      input:"full.csv, summary.csv"</pre>
         <img src="diagrams/decision.png" alt="Decision logic">
       </div>
     </div>

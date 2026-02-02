@@ -21,12 +21,12 @@ cat("📁 Creating example files with and without explicit IDs...\n\n")
 # File 1: Annotations without IDs (will get auto-generated UUIDs)
 no_ids_script <- c(
   "# Script with annotations that omit the id field",
-  "#put label:\"Load Configuration\", node_type:\"input\", output:\"config.json\"",
+  "# put label:\"Load Configuration\", node_type:\"input\", output:\"config.json\"",
   "",
   "config <- load_config()",
   "save_json(config, 'config.json')",
   "",
-  "#put label:\"Process Data\", node_type:\"process\", input:\"config.json\", output:\"processed.csv\"", 
+  "# put label:\"Process Data\", node_type:\"process\", input:\"config.json\", output:\"processed.csv\"", 
   "",
   "data <- process_with_config('config.json')",
   "write.csv(data, 'processed.csv')"
@@ -35,24 +35,24 @@ no_ids_script <- c(
 # File 2: Mix of explicit IDs and omitted IDs
 mixed_ids_script <- c(
   "# Script with some explicit IDs and some omitted",
-  "#put id:\"fetch_data\", label:\"Fetch Raw Data\", node_type:\"input\", output:\"raw.csv\"",
+  "# put id:\"fetch_data\", label:\"Fetch Raw Data\", node_type:\"input\", output:\"raw.csv\"",
   "",
   "raw_data <- fetch_from_api()",
   "write.csv(raw_data, 'raw.csv')",
   "",
   "# This annotation omits the id - will get UUID",
-  "#put label:\"Validate Data\", node_type:\"process\", input:\"raw.csv\", output:\"validated.csv\"",
+  "# put label:\"Validate Data\", node_type:\"process\", input:\"raw.csv\", output:\"validated.csv\"",
   "",
   "validated <- validate_data(read.csv('raw.csv'))",
   "write.csv(validated, 'validated.csv')",
   "",
-  "#put id:\"generate_report\", label:\"Generate Report\", node_type:\"output\", input:\"validated.csv\""
+  "# put id:\"generate_report\", label:\"Generate Report\", node_type:\"output\", input:\"validated.csv\""
 )
 
 # File 3: Example with empty ID (will generate warning)
 empty_id_script <- c(
   "# Script demonstrating empty id warning",
-  "#put id:\"\", label:\"This will warn\", node_type:\"process\"",
+  "# put id:\"\", label:\"This will warn\", node_type:\"process\"",
   "",
   "# Empty IDs generate validation warnings"
 )

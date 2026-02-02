@@ -673,7 +673,7 @@ make_tool_is_valid_put_annotation <- function() {
     ),
     arguments = list(
       line = ellmer::type_string(
-        description = "PUT annotation line to validate (e.g., '#put id:\"test\", label:\"Test\"')"
+        description = "PUT annotation line to validate (e.g., '# put id:\"test\", label:\"Test\"')"
       )
     )
   )

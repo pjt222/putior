@@ -8,12 +8,12 @@ This document provides technical implementation details for the putior package, 
 
 ### 1. Annotation System
 
-**Syntax**: `#put key:"value", key2:"value2"`
+**Syntax**: `# put key:"value", key2:"value2"` (standard format, matches logo)
 
 **Alternative formats**:
 ```r
-#put property:"value"              # Standard
-# put property:"value"             # Space after #
+# put property:"value"             # Standard (matches logo)
+#put property:"value"              # Also valid (no space)
 #put| property:"value"             # Pipe separator
 #put: property:"value"             # Colon separator
 ```
@@ -82,10 +82,10 @@ if (is.null(properties$output) || properties$output == "") {
 Implemented backslash continuation syntax:
 
 ```r
-#put id:"complex_node", \
-     label:"This is a long description", \
-     input:"file1.csv,file2.csv", \
-     output:"result.csv"
+# put id:"complex_node", \
+      label:"This is a long description", \
+      input:"file1.csv,file2.csv", \
+      output:"result.csv"
 ```
 
 **Implementation**:
@@ -131,11 +131,11 @@ if (is.null(properties$output) || properties$output == "") {
 **Example**:
 ```r
 # utils.R - sourced by main.R
-#put label:"Utility Functions"
+# put label:"Utility Functions"
 # output defaults to "utils.R"
 
 # main.R - sources utils.R
-#put label:"Main Script", input:"utils.R", output:"results.csv"
+# put label:"Main Script", input:"utils.R", output:"results.csv"
 # Creates connection: utils.R → main.R
 ```
 
@@ -145,14 +145,14 @@ if (is.null(properties$output) || properties$output == "") {
 
 **Main script**:
 ```r
-#put input:"script1.R,script2.R"  # Scripts being sourced
+# put input:"script1.R,script2.R"  # Scripts being sourced
 source("script1.R")
 source("script2.R")
 ```
 
 **Sourced scripts**:
 ```r
-#put label:"Helper Functions"
+# put label:"Helper Functions"
 # output defaults to filename
 ```
 
@@ -226,12 +226,12 @@ if (show_workflow_boundaries && node_type %in% c("start", "end")) {
 **Example**:
 ```r
 # Script 1: Creates variable and saves it
-#put output:'data.internal, data.RData'
+# put output:'data.internal, data.RData'
 data <- process_something()
 save(data, file = 'data.RData')
 
 # Script 2: Uses saved file, creates new variable
-#put input:'data.RData', output:'results.internal, results.csv'
+# put input:'data.RData', output:'results.internal, results.csv'
 load('data.RData')  # NOT 'data.internal'
 results <- analyze(data)
 write.csv(results, 'results.csv')
@@ -298,7 +298,7 @@ RSTUDIO_PANDOC="C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools"
 test_that("UUID generation works when id is missing", {
   skip_if_not_installed("uuid")
   
-  annotation <- '#put label:"Test Node"'
+  annotation <- '# put label:"Test Node"'
   result <- parse_put_annotation(annotation)
   
   expect_true(!is.null(result$id))

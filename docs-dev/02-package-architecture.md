@@ -242,8 +242,8 @@ This demonstrates "eating your own dog food" principle and shows:
 
 **Flexible syntax support**:
 ```r
-#put property:\"value\"              # Standard
-# put property:\"value\"             # Space after #
+# put property:\"value\"             # Standard (matches logo)
+#put property:\"value\"              # Also valid (no space)
 #put| property:\"value\"             # Pipe separator
 #put: property:\"value\"             # Colon separator
 ```

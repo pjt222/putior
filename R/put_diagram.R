@@ -1,4 +1,4 @@
-#put id:"diagram_gen", label:"Generate Mermaid Diagram", node_type:"process", input:"workflow_data.rds", output:"diagram.md"
+# put id:"diagram_gen", label:"Generate Mermaid Diagram", node_type:"process", input:"workflow_data.rds", output:"diagram.md"
 #' Create Mermaid Diagram from PUT Workflow
 #'
 #' Generates a Mermaid flowchart diagram from putior workflow data, showing
@@ -202,7 +202,7 @@ put_diagram <- function(workflow,
       "- PUT annotations don't include 'id' properties and uuid package is not installed\n",
       "- The annotation syntax is incorrect\n",
       "Solution: Either add explicit IDs to your annotations:\n",
-      "  #put id:\"my_node\", label:\"Description\"\n",
+      "  # put id:\"my_node\", label:\"Description\"\n",
       "Or install the uuid package for auto-generation:\n",
       "  install.packages(\"uuid\")\n",
       "See putior_help(\"annotation\") for syntax details.",
@@ -315,7 +315,7 @@ put_diagram <- function(workflow,
   return(invisible(mermaid_code))
 }
 
-#put id:"styling", label:"Apply Theme Styling", node_type:"process", input:"nodes.rds", output:"styled_nodes.rds"
+# put id:"styling", label:"Apply Theme Styling", node_type:"process", input:"nodes.rds", output:"styled_nodes.rds"
 #' Generate node styling based on node types and theme
 #' @param workflow Workflow data frame
 #' @param theme Color theme ("light", "dark", "auto", "minimal", "github")
@@ -448,7 +448,7 @@ get_diagram_themes <- function() {
   )
 }
 
-#put id:"node_defs", label:"Create Node Definitions", node_type:"process", input:"workflow_data.rds", output:"nodes.rds"
+# put id:"node_defs", label:"Create Node Definitions", node_type:"process", input:"workflow_data.rds", output:"nodes.rds"
 #' Generate node definitions for mermaid diagram
 #' @param workflow Workflow data frame
 #' @param node_labels What to show in node labels
@@ -873,7 +873,7 @@ create_artifact_nodes <- function(workflow) {
   return(artifact_nodes)
 }
 
-#put id:"connections", label:"Generate Node Connections", node_type:"process", input:"nodes.rds", output:"edges.rds"
+# put id:"connections", label:"Generate Node Connections", node_type:"process", input:"nodes.rds", output:"edges.rds"
 #' Generate connections between nodes
 #' @param workflow Workflow data frame with combined script and artifact nodes
 #' @param show_files Whether to show file-based connections
@@ -1031,7 +1031,7 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
   return(connections)
 }
 
-#put id:"output_handler", label:"Output Final Diagram", node_type:"end", input:"diagram.md"
+# put id:"output_handler", label:"Output Final Diagram", node_type:"end", input:"diagram.md"
 #' Handle diagram output to different destinations
 #' @param mermaid_code Generated mermaid code
 #' @param output Output format

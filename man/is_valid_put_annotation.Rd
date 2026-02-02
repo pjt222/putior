@@ -16,6 +16,6 @@ Logical indicating if the annotation is valid
 Test helper function to validate PUT annotation syntax
 }
 \examples{
-is_valid_put_annotation('#put name:"test", label:"Test"') # TRUE
-is_valid_put_annotation("#put invalid syntax") # FALSE
+is_valid_put_annotation('# put name:"test", label:"Test"') # TRUE
+is_valid_put_annotation("# put invalid syntax") # FALSE
 }

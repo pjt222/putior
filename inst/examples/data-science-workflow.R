@@ -21,7 +21,7 @@ cat("📁 Creating modular data science workflow...\n")
 # utils.R - Utility functions
 utils_script <- c(
   "# Data utilities - sourced by main workflow",
-  "#put label:\"Data Utilities\", node_type:\"input\"",
+  "# put label:\"Data Utilities\", node_type:\"input\"",
   "# output defaults to 'utils.R' - this script provides itself",
   "",
   "load_and_clean <- function(file_path) {",
@@ -57,7 +57,7 @@ utils_script <- c(
 # analysis.R - Analysis functions that depend on utils.R
 analysis_script <- c(
   "# Analysis functions - sourced by main workflow, depends on utils.R",
-  "#put label:\"Statistical Analysis\", node_type:\"process\", input:\"utils.R\"",
+  "# put label:\"Statistical Analysis\", node_type:\"process\", input:\"utils.R\"",
   "# input: utils.R because we use utility functions",
   "# output defaults to 'analysis.R'",
   "",
@@ -91,7 +91,7 @@ analysis_script <- c(
 # visualization.R - Plotting functions that depend on analysis.R
 visualization_script <- c(
   "# Visualization functions - sourced by main workflow, depends on analysis.R",
-  "#put label:\"Data Visualization\", node_type:\"process\", input:\"analysis.R\"",
+  "# put label:\"Data Visualization\", node_type:\"process\", input:\"analysis.R\"",
   "# input: analysis.R because we use analysis results",
   "# output defaults to 'visualization.R'",
   "",
@@ -134,7 +134,7 @@ visualization_script <- c(
 # main.R - Main workflow orchestrator
 main_script <- c(
   "# Main data science workflow - orchestrates the entire analysis",
-  "#put label:\"Data Science Pipeline\", node_type:\"process\", input:\"utils.R,analysis.R,visualization.R\", output:\"analysis_report.md,plots/\"",
+  "# put label:\"Data Science Pipeline\", node_type:\"process\", input:\"utils.R,analysis.R,visualization.R\", output:\"analysis_report.md,plots/\"",
   "",
   "# Source all function modules",
   "source(\"utils.R\")         # Load data utility functions",

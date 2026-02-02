@@ -14,7 +14,7 @@ dir.create(example_dir, showWarnings = FALSE)
 # Example 1: Traditional single-line annotation (can get very long)
 single_line_content <- c(
   "# Traditional approach - can be very long and violate style guidelines",
-  "#put id:\"data_merger\", label:\"Merge Multiple Data Sources\", node_type:\"process\", input:\"sales_data.csv,customer_data.csv,product_data.csv,inventory_data.csv,returns_data.csv\", output:\"merged_dataset.csv\"",
+  "# put id:\"data_merger\", label:\"Merge Multiple Data Sources\", node_type:\"process\", input:\"sales_data.csv,customer_data.csv,product_data.csv,inventory_data.csv,returns_data.csv\", output:\"merged_dataset.csv\"",
   "",
   "# Simulate data merging code",
   "cat(\"Merging multiple data sources...\\n\")"
@@ -23,7 +23,7 @@ single_line_content <- c(
 # Example 2: Multiline annotation (more readable and style-compliant)
 multiline_content <- c(
   "# Multiline approach - readable and follows style guidelines",
-  "#put id:\"data_processor\", \\",
+  "# put id:\"data_processor\", \\",
   "#    label:\"Advanced Data Processing Pipeline\", \\",
   "#    node_type:\"process\", \\",
   "#    input:\"raw_sales.csv,customer_profiles.csv,product_catalog.csv,inventory_status.csv,returns_log.csv\", \\",
@@ -33,7 +33,7 @@ multiline_content <- c(
   "cat(\"Processing data with complex transformations...\\n\")",
   "",
   "# Another multiline example",
-  "#put id:\"visualization_generator\", \\",
+  "# put id:\"visualization_generator\", \\",
   "#    label:\"Generate Comprehensive Visualizations\", \\",
   "#    node_type:\"output\", \\",
   "#    input:\"processed_dataset.csv,summary_report.csv\", \\",

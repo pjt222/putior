@@ -294,10 +294,10 @@ putior now automatically detects the correct comment prefix based on file extens
 
 | Comment Style | Languages | Extensions |
 |---------------|-----------|------------|
-| `#put` | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml` |
-| `--put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |
-| `//put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs` |
-| `%put` | MATLAB, LaTeX | `.m`, `.tex` |
+| `# put` | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml` |
+| `-- put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |
+| `// put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs` |
+| `% put` | MATLAB, LaTeX | `.m`, `.tex` |
 
 ### Key Functions
 ```r
@@ -317,19 +317,19 @@ list_supported_languages(detection_only = TRUE)  # Only with auto-detection patt
 ### Example Annotations
 ```sql
 -- query.sql
---put id:"load_data", label:"Load Customer Data", output:"customers"
+-- put id:"load_data", label:"Load Customer Data", output:"customers"
 SELECT * FROM customers;
 ```
 
 ```javascript
 // process.js
-//put id:"transform", label:"Transform JSON", input:"data.json", output:"output.json"
+// put id:"transform", label:"Transform JSON", input:"data.json", output:"output.json"
 const transformed = data.map(process);
 ```
 
 ```matlab
 % analysis.m
-%put id:"compute", label:"Statistical Analysis", input:"data.mat", output:"results.mat"
+% put id:"compute", label:"Statistical Analysis", input:"data.mat", output:"results.mat"
 results = compute_statistics(data);
 ```
 
@@ -424,7 +424,7 @@ list(
 Automatic detection of workflow elements from code analysis, similar to how roxygen2 auto-generates documentation skeletons. Two primary modes:
 
 1. **Direct detection**: `put_auto()` analyzes code and produces workflow data without requiring annotations
-2. **Comment generation**: `put_generate()` creates `#put` annotation text for persistent documentation
+2. **Comment generation**: `put_generate()` creates `# put` annotation text for persistent documentation
 
 ### Core Functions
 
@@ -608,12 +608,12 @@ putior auto-detects modern AI/ML library usage for workflow visualization. This 
 ### Example Implementation
 ```r
 # Script 1: Creates variable and saves it
-#put output:'data.internal, data.RData'
+# put output:'data.internal, data.RData'
 data <- process_something()
 save(data, file = 'data.RData')
 
-# Script 2: Uses saved file, creates new variable  
-#put input:'data.RData', output:'results.internal, results.csv'
+# Script 2: Uses saved file, creates new variable
+# put input:'data.RData', output:'results.internal, results.csv'
 load('data.RData')  # NOT 'data.internal'
 results <- analyze(data)
 write.csv(results, 'results.csv')

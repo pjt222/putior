@@ -21,7 +21,7 @@ cat("📁 Creating example workflow with source() relationships...\n")
 # Main orchestrator script
 main_script <- c(
   "# Main workflow script that sources utility modules",
-  "#put label:\"Main Analysis Pipeline\", input:\"utils.R,analysis.R,plotting.R\", output:\"final_results.csv\"",
+  "# put label:\"Main Analysis Pipeline\", input:\"utils.R,analysis.R,plotting.R\", output:\"final_results.csv\"",
   "",
   "# Source utility modules (reading them INTO this script)",
   "source(\"utils.R\")     # Reading utils.R into main.R",
@@ -38,7 +38,7 @@ main_script <- c(
 # Utility functions script 
 utils_script <- c(
   "# Utility functions - sourced BY main.R",
-  "#put label:\"Data Utilities\", node_type:\"input\"",
+  "# put label:\"Data Utilities\", node_type:\"input\"",
   "# output defaults to 'utils.R' - this script provides itself",
   "",
   "load_and_clean <- function(file) {",
@@ -51,7 +51,7 @@ utils_script <- c(
 # Analysis functions script
 analysis_script <- c(
   "# Analysis functions - sourced BY main.R, depends on utils.R",
-  "#put label:\"Statistical Analysis\", node_type:\"process\", input:\"utils.R\"",
+  "# put label:\"Statistical Analysis\", node_type:\"process\", input:\"utils.R\"",
   "# input: utils.R because we depend on functions from utils.R",
   "# output defaults to 'analysis.R'",
   "",
@@ -65,7 +65,7 @@ analysis_script <- c(
 # Plotting functions script
 plotting_script <- c(
   "# Plotting functions - sourced BY main.R, depends on analysis.R",
-  "#put label:\"Data Visualization\", node_type:\"output\", input:\"analysis.R\"",
+  "# put label:\"Data Visualization\", node_type:\"output\", input:\"analysis.R\"",
   "# input: analysis.R because we depend on analysis functions",
   "# output defaults to 'plotting.R'",
   "",

@@ -595,29 +595,29 @@ Logical: `TRUE` if valid PUT annotation, `FALSE` otherwise.
 
 ```{r}
 # Valid annotations - hash style (R, Python)
-is_valid_put_annotation('#put label:"My Step"')
+is_valid_put_annotation('# put label:"My Step"')
 #> [1] TRUE
 
-is_valid_put_annotation('#put id:"step1", label:"Process Data", node_type:"process"')
+is_valid_put_annotation('# put id:"step1", label:"Process Data", node_type:"process"')
 #> [1] TRUE
 
 # Valid annotations - dash style (SQL)
-is_valid_put_annotation('--put label:"Load Data"')
+is_valid_put_annotation('-- put label:"Load Data"')
 #> [1] TRUE
 
 is_valid_put_annotation('-- put id:"query", label:"SQL Query"')
 #> [1] TRUE
 
 # Valid annotations - slash style (JavaScript)
-is_valid_put_annotation('//put label:"Process JSON"')
+is_valid_put_annotation('// put label:"Process JSON"')
 #> [1] TRUE
 
 # Valid annotations - percent style (MATLAB)
-is_valid_put_annotation('%put label:"Compute Statistics"')
+is_valid_put_annotation('% put label:"Compute Statistics"')
 #> [1] TRUE
 
 # Invalid annotations
-is_valid_put_annotation("#put invalid syntax")
+is_valid_put_annotation("# put invalid syntax")
 #> [1] FALSE
 
 is_valid_put_annotation("# Regular comment")
@@ -744,7 +744,7 @@ set_putior_log_level("DEBUG")
 workflow <- put("./src/", include_line_numbers = TRUE)
 
 # Test individual annotations
-is_valid_put_annotation('#put label:"Test"')
+is_valid_put_annotation('# put label:"Test"')
 
 # Return to normal
 set_putior_log_level("WARN")
