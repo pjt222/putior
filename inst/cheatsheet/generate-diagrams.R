@@ -104,13 +104,14 @@ modular_workflow <- data.frame(
 )
 
 # Decision workflow: Start/end boundaries with decision node
+# Note: Decision node must output an artifact that branches consume to maintain flow
 decision_workflow <- data.frame(
   file_name = c("start.R", "check.R", "path_a.R", "path_b.R", "end.R"),
   id = c("start", "check", "full", "quick", "complete"),
   label = c("Load Config", "Validate Data?", "Full Analysis", "Quick Summary", "Complete"),
   node_type = c("start", "decision", "process", "process", "end"),
-  input = c(NA, "config.json", "config.json", "config.json", "full.csv,summary.csv"),
-  output = c("config.json", NA, "full.csv", "summary.csv", NA),
+  input = c(NA, "config.json", "validated", "validated", "full.csv,summary.csv"),
+  output = c("config.json", "validated", "full.csv", "summary.csv", NA),
   stringsAsFactors = FALSE
 )
 
