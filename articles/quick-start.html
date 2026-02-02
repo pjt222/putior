@@ -255,19 +255,19 @@
 <span></span>
 <span><span class="co"># Scan and visualize</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="va">temp_file</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in doTryCatch(return(expr), name, parentenv, handler): Validation issues in file259a1e0e0491.R line 7:</span></span>
+<span><span class="co">#&gt; Warning in doTryCatch(return(expr), name, parentenv, handler): Validation issues in file25944f93ea4.R line 7:</span></span>
 <span><span class="co">#&gt; File reference missing extension: database</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"```mermaid\n"</span><span class="op">)</span></span></code></pre></div>
 <pre class="mermaid"><code>
 ``` r
 cat(put_diagram(workflow, output = "raw"))</code></pre>
-<p>flowchart TD node_59221438_ca02_4b2e_9c3b_e4f434f5aca6[Extract]
-node_415a102d_c177_4dfa_b1a6_551e3ed3f647[Transform]
-c4e654c9_df76_40d4_a42c_4de3b056cfe4[Load]</p>
+<p>flowchart TD f2ce9f40_bcfb_4b28_87e8_7e67e2bf122d[Extract]
+node_4f8c85dd_a2ea_4e9c_8283_ed39f6657b25[Transform]
+node_28c8dd5a_49a5_4b10_b475_a27c2a1fb899[Load]</p>
 <pre><code>%% Connections
-node_59221438_ca02_4b2e_9c3b_e4f434f5aca6 --&gt; node_415a102d_c177_4dfa_b1a6_551e3ed3f647
-node_415a102d_c177_4dfa_b1a6_551e3ed3f647 --&gt; c4e654c9_df76_40d4_a42c_4de3b056cfe4</code></pre>
+f2ce9f40_bcfb_4b28_87e8_7e67e2bf122d --&gt; node_4f8c85dd_a2ea_4e9c_8283_ed39f6657b25
+node_4f8c85dd_a2ea_4e9c_8283_ed39f6657b25 --&gt; node_28c8dd5a_49a5_4b10_b475_a27c2a1fb899</code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n```\n"</span><span class="op">)</span></span></code></pre></div>
 </div>
