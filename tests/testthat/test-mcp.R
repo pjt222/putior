@@ -243,4 +243,9 @@ test_that("get_diagram_themes works correctly for MCP integration", {
   expect_true("light" %in% names(themes))
   expect_true("dark" %in% names(themes))
   expect_true("github" %in% names(themes))
+  # Colorblind-safe viridis family themes
+  expect_true("viridis" %in% names(themes))
+  expect_true("magma" %in% names(themes))
+  expect_true("plasma" %in% names(themes))
+  expect_true("cividis" %in% names(themes))
 })

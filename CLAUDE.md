@@ -120,6 +120,7 @@ putior is an R package that extracts structured annotations from source code fil
 18. **Full Language Detection Patterns** - Added auto-detection patterns for 10 new languages (JS, TS, Go, Rust, Java, C, C++, MATLAB, Ruby, Lua), bringing total to 15 languages with 862 patterns
 19. **MCP Server Integration** - Expose putior functions as MCP tools for AI assistants (Claude Code, Claude Desktop)
 20. **ACP Server Integration** - Expose putior as an ACP agent for inter-agent communication via REST API
+21. **Colorblind-Safe Themes** - Added 4 viridis family themes (viridis, magma, plasma, cividis) for accessibility
 
 ## MCP Server Integration
 
@@ -672,6 +673,50 @@ put_diagram(workflow, show_source_info = TRUE, enable_clicks = TRUE)
 
 ### Reference
 - **Example**: `inst/examples/interactive-diagrams-example.R`
+
+## Diagram Themes
+
+### Available Themes (9 total)
+
+**Standard Themes:**
+| Theme | Description |
+|-------|-------------|
+| `light` | Default light theme with bright colors |
+| `dark` | Dark theme for dark mode environments |
+| `auto` | GitHub-adaptive with solid colors |
+| `minimal` | Grayscale professional, print-friendly |
+| `github` | Optimized for GitHub README files |
+
+**Colorblind-Safe Themes (Viridis Family):**
+| Theme | Palette | Best For |
+|-------|---------|----------|
+| `viridis` | Purple→Blue→Green→Yellow | General accessibility |
+| `magma` | Purple→Red→Yellow | Print, high contrast |
+| `plasma` | Purple→Pink→Orange→Yellow | Presentations |
+| `cividis` | Blue→Gray→Yellow | Deuteranopia/protanopia |
+
+### Usage
+```r
+# Standard themes
+put_diagram(workflow, theme = "github")
+
+# Colorblind-safe themes
+put_diagram(workflow, theme = "viridis")
+put_diagram(workflow, theme = "cividis")  # Maximum accessibility
+
+# List all available themes
+get_diagram_themes()
+```
+
+### Key Characteristics
+- Viridis themes are perceptually uniform (equal steps appear equally different)
+- All viridis themes tested for deuteranopia, protanopia, and tritanopia
+- Cividis avoids red-green entirely, making it optimal for red-green colorblindness
+- Artifact nodes use neutral gray across all themes for consistency
+
+### Reference
+- **Example**: `inst/examples/theme-examples.R`
+- **Key File**: `R/put_diagram.R` (functions: `get_theme_colors()`, `get_diagram_themes()`)
 
 ## Interactive Sandbox (Shiny App)
 

@@ -57,7 +57,18 @@ workflow boundary styling (icons, colors). When FALSE, they render as regular no
 \item{style_nodes}{Logical indicating whether to apply styling based on node_type}
 
 \item{theme}{Character string specifying color theme. Options:
-"light" (default), "dark", "auto" (GitHub adaptive), "minimal", "github"}
+\itemize{
+\item "light" - Default light theme with bright colors (default)
+\item "dark" - Dark theme for dark mode environments
+\item "auto" - GitHub-adaptive with solid colors for both modes
+\item "minimal" - Grayscale professional, print-friendly
+\item "github" - Optimized for GitHub README files
+\item "viridis" - Colorblind-safe (purple-blue-green-yellow)
+\item "magma" - Colorblind-safe warm (purple-red-yellow)
+\item "plasma" - Colorblind-safe vibrant (purple-pink-yellow)
+\item "cividis" - Colorblind-safe for deuteranopia/protanopia (blue-yellow)
+}
+The viridis family themes are perceptually uniform and tested for accessibility.}
 
 \item{show_source_info}{Logical indicating whether to display source file
 information in diagram nodes. When TRUE, each node shows its originating

@@ -131,9 +131,15 @@ put_diagram(workflow)
 # Customize appearance
 put_diagram(workflow,
   direction = "LR",           # Left-to-right (default: TB top-bottom)
-  theme = "forest",           # Theme: default, forest, dark, neutral
+  theme = "github",           # Theme: github, light, dark, auto, minimal
   show_artifacts = TRUE       # Show data files as nodes
 )
+
+# Colorblind-safe themes (viridis family)
+put_diagram(workflow, theme = "viridis")  # Purple-blue-green-yellow
+put_diagram(workflow, theme = "magma")    # Warm: purple-red-yellow
+put_diagram(workflow, theme = "plasma")   # Vibrant: purple-pink-yellow
+put_diagram(workflow, theme = "cividis")  # Blue-yellow (max accessibility)
 
 # Interactive features
 put_diagram(workflow,

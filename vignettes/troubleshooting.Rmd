@@ -490,7 +490,8 @@ cat(mermaid_code)
 ```{r}
 # Check available themes
 get_diagram_themes()
-#> [1] "light" "dark" "auto" "minimal" "github"
+#> $light, $dark, $auto, $minimal, $github
+#> $viridis, $magma, $plasma, $cividis (colorblind-safe)
 ```
 
 **Solutions**:
@@ -507,6 +508,7 @@ put_diagram(workflow, style_nodes = FALSE)
 # "github" works best on GitHub README
 # "dark" for dark mode applications
 # "minimal" for printing/PDFs
+# "viridis", "magma", "plasma", "cividis" for colorblind accessibility
 ```
 
 ### Missing Connections

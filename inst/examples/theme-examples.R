@@ -1,7 +1,9 @@
-# Putior Theme Examples: Light and Dark Mode Support
+# Putior Theme Examples: Standard and Colorblind-Safe Themes
 # ==============================================================================
-# This example demonstrates putior's theme support for different environments
-# and user preferences.
+# This example demonstrates putior's 9 themes including colorblind-safe options.
+#
+# Standard themes: light, dark, auto, minimal, github
+# Colorblind-safe (viridis family): viridis, magma, plasma, cividis
 #
 # To run this example:
 #   source(system.file("examples", "theme-examples.R", package = "putior"))
@@ -104,6 +106,39 @@ put_diagram(workflow,
             node_labels = "both")
 
 cat("\n", paste(rep("=", 50), collapse = ""), "\n")
+cat("🎯 VIRIDIS THEME (Colorblind-Safe)\n")
+cat("Perfect for: Accessibility, general use, perceptually uniform\n")
+cat(paste(rep("-", 50), collapse = ""), "\n")
+put_diagram(workflow,
+            title = "Data Processing Pipeline - Viridis Theme",
+            theme = "viridis")
+
+cat("\n", paste(rep("=", 50), collapse = ""), "\n")
+cat("🔥 MAGMA THEME (Colorblind-Safe, Warm)\n")
+cat("Perfect for: High contrast, print materials\n")
+cat(paste(rep("-", 50), collapse = ""), "\n")
+put_diagram(workflow,
+            title = "Data Processing Pipeline - Magma Theme",
+            theme = "magma")
+
+cat("\n", paste(rep("=", 50), collapse = ""), "\n")
+cat("🌈 PLASMA THEME (Colorblind-Safe, Vibrant)\n")
+cat("Perfect for: Presentations, digital displays\n")
+cat(paste(rep("-", 50), collapse = ""), "\n")
+put_diagram(workflow,
+            title = "Data Processing Pipeline - Plasma Theme",
+            theme = "plasma",
+            direction = "LR")
+
+cat("\n", paste(rep("=", 50), collapse = ""), "\n")
+cat("👁️ CIVIDIS THEME (Maximum Colorblind Accessibility)\n")
+cat("Perfect for: Red-green colorblindness (deuteranopia/protanopia)\n")
+cat(paste(rep("-", 50), collapse = ""), "\n")
+put_diagram(workflow,
+            title = "Data Processing Pipeline - Cividis Theme",
+            theme = "cividis")
+
+cat("\n", paste(rep("=", 50), collapse = ""), "\n")
 cat("💡 USAGE RECOMMENDATIONS\n")
 cat(paste(rep("=", 50), collapse = ""), "\n\n")
 
@@ -127,6 +162,26 @@ cat("  • Grayscale with subtle borders\n")
 cat("  • Professional appearance for business documents\n")
 cat("  • Print-friendly and accessible\n\n")
 
+cat("🎯 Viridis Theme (Colorblind-Safe):\n")
+cat("  • Purple → Blue → Green → Yellow palette\n")
+cat("  • Most widely tested colorblind-safe palette\n")
+cat("  • Perceptually uniform - equal steps appear equally different\n\n")
+
+cat("🔥 Magma Theme (Colorblind-Safe):\n")
+cat("  • Purple → Red → Yellow warm palette\n")
+cat("  • High contrast for print and presentations\n")
+cat("  • Works well in grayscale\n\n")
+
+cat("🌈 Plasma Theme (Colorblind-Safe):\n")
+cat("  • Purple → Pink → Orange → Yellow vibrant palette\n")
+cat("  • Bold colors ideal for digital displays\n")
+cat("  • Great for presentations\n\n")
+
+cat("👁️ Cividis Theme (Maximum Accessibility):\n")
+cat("  • Blue → Gray → Yellow palette\n")
+cat("  • Specifically optimized for deuteranopia and protanopia\n")
+cat("  • Avoids red-green entirely\n\n")
+
 cat("📋 Example Usage:\n")
 cat("  # For GitHub README (adapts to user's theme)\n")
 cat("  put_diagram(workflow, theme = 'auto')\n\n")
@@ -134,11 +189,15 @@ cat("  # For dark documentation sites\n")
 cat("  put_diagram(workflow, theme = 'dark', direction = 'LR')\n\n")
 cat("  # For professional reports\n")
 cat("  put_diagram(workflow, theme = 'minimal', output = 'file')\n\n")
+cat("  # For colorblind-safe diagrams\n")
+cat("  put_diagram(workflow, theme = 'viridis')  # General accessibility\n")
+cat("  put_diagram(workflow, theme = 'cividis')  # Red-green colorblindness\n\n")
 
 # Save examples to files for comparison
 cat("💾 Saving theme examples to files...\n")
 
-themes_to_save <- c("light", "dark", "auto", "minimal")
+themes_to_save <- c("light", "dark", "auto", "minimal", "github",
+                    "viridis", "magma", "plasma", "cividis")
 for (theme in themes_to_save) {
   filename <- file.path(temp_dir, paste0("workflow_", theme, "_theme.md"))
   put_diagram(workflow,

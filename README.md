@@ -43,7 +43,7 @@
 - **Simple annotations** - Add structured comments to your existing code
 - **Beautiful diagrams** - Generate professional Mermaid flowcharts
 - **File flow tracking** - Automatically connects scripts based on input/output files  
-- **Multiple themes** - 5 built-in themes including GitHub-optimized
+- **Multiple themes** - 9 built-in themes including GitHub-optimized and colorblind-safe (viridis family)
 - **Cross-language support** - Works with 30+ file types including R, Python, SQL, JavaScript, TypeScript, Go, Rust, and more
 - **Flexible output** - Console, file, or clipboard export
 - **Customizable styling** - Control colors, direction, and node shapes
@@ -477,7 +477,7 @@ put_diagram(workflow, show_artifacts = TRUE, show_files = TRUE)
 
 ## 🎨 Theme System
 
-putior provides 5 carefully designed themes optimized for different environments:
+putior provides 9 carefully designed themes optimized for different environments:
 
 ```r
 # Get list of available themes
@@ -486,6 +486,8 @@ get_diagram_themes()
 
 ### Theme Overview
 
+#### Standard Themes
+
 | Theme | Best For | Description |
 |-------|----------|-------------|
 | `light` | Documentation sites, tutorials | Default light theme with bright colors |
@@ -493,6 +495,17 @@ get_diagram_themes()
 | `auto` | GitHub README files | GitHub-adaptive theme that works in both modes |
 | `minimal` | Business reports, presentations | Grayscale professional theme |
 | `github` | **GitHub README (recommended)** | Optimized for maximum GitHub compatibility |
+
+#### Colorblind-Safe Themes (Viridis Family)
+
+| Theme | Best For | Palette |
+|-------|----------|---------|
+| `viridis` | General accessibility | Purple → Blue → Green → Yellow |
+| `magma` | Print, high contrast | Purple → Red → Yellow |
+| `plasma` | Presentations | Purple → Pink → Orange → Yellow |
+| `cividis` | Maximum accessibility | Blue → Gray → Yellow (red-green safe) |
+
+All viridis themes are perceptually uniform and tested for deuteranopia, protanopia, and tritanopia.
 
 ### Theme Examples
 
@@ -620,6 +633,8 @@ flowchart TD
 | `auto` | GitHub README files | Adapts automatically |
 | `github` | **GitHub README (recommended)** | Maximum compatibility |
 | `minimal` | Business reports, presentations | Print-friendly |
+| `viridis` | **Accessibility (recommended)** | Colorblind-safe |
+| `cividis` | Red-green colorblindness | Maximum accessibility |
 
 ### Pro Tips
 
@@ -627,6 +642,7 @@ flowchart TD
 - **For Documentation**: Use `theme = "light"` or `theme = "dark"` to match your site
 - **For Reports**: Use `theme = "minimal"` for professional, print-friendly diagrams
 - **For Demos**: Light theme usually shows colors best in presentations
+- **For Accessibility**: Use `theme = "viridis"` or `theme = "cividis"` for colorblind-safe diagrams
 
 ### Theme Usage Examples
 
@@ -634,7 +650,7 @@ flowchart TD
 # For GitHub README (recommended)
 put_diagram(workflow, theme = "github")
 
-# For GitHub README (adaptive)  
+# For GitHub README (adaptive)
 put_diagram(workflow, theme = "auto")
 
 # For dark documentation sites
@@ -643,12 +659,17 @@ put_diagram(workflow, theme = "dark", direction = "LR")
 # For professional reports
 put_diagram(workflow, theme = "minimal", output = "file", file = "report.md")
 
+# For colorblind-safe diagrams
+put_diagram(workflow, theme = "viridis")     # General accessibility
+put_diagram(workflow, theme = "cividis")     # Red-green colorblindness
+
 # Save all themes for comparison
-themes <- c("light", "dark", "auto", "github", "minimal")
+themes <- c("light", "dark", "auto", "github", "minimal",
+            "viridis", "magma", "plasma", "cividis")
 for(theme in themes) {
-  put_diagram(workflow, 
+  put_diagram(workflow,
              theme = theme,
-             output = "file", 
+             output = "file",
              file = paste0("workflow_", theme, ".md"),
              title = paste("Workflow -", stringr::str_to_title(theme), "Theme"))
 }

@@ -568,8 +568,15 @@ put_diagram(workflow, show_artifacts = TRUE)
 
 ```{r}
 get_diagram_themes()
-#> [1] "light"   "dark"    "auto"    "minimal" "github"
+#> $light
+#> [1] "Default light theme with bright colors - perfect for documentation sites"
+#>
+#> $dark
+#> [1] "Dark theme with muted colors - ideal for dark mode environments and terminals"
+#> ...
 ```
+
+#### Standard Themes
 
 | Theme | Best For | Colors |
 |-------|----------|--------|
@@ -578,6 +585,26 @@ get_diagram_themes()
 | `dark` | Dark mode apps | Muted colors on dark |
 | `auto` | Adaptive sites | Works in both modes |
 | `minimal` | Reports, printing | Professional grayscale |
+
+#### Colorblind-Safe Themes (Viridis Family)
+
+These themes are perceptually uniform and tested for accessibility with color vision deficiencies (deuteranopia, protanopia, tritanopia).
+
+| Theme | Best For | Palette |
+|-------|----------|---------|
+| `viridis` | General use | Purple -> Blue -> Green -> Yellow |
+| `magma` | Print, high contrast | Purple -> Red -> Yellow |
+| `plasma` | Presentations | Purple -> Pink -> Orange -> Yellow |
+| `cividis` | Maximum accessibility | Blue -> Gray -> Yellow (red-green safe) |
+
+```{r}
+# Use colorblind-safe theme
+workflow <- put("./src/")
+put_diagram(workflow, theme = "viridis")
+
+# Cividis is optimized for red-green color blindness
+put_diagram(workflow, theme = "cividis")
+```
 
 ### Theme Examples
 

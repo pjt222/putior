@@ -751,7 +751,8 @@ test_that("click directives skip artifact nodes", {
 
 test_that("enable_clicks works with all themes", {
   workflow <- create_test_workflow()
-  themes <- c("light", "dark", "github", "minimal", "auto")
+  themes <- c("light", "dark", "github", "minimal", "auto",
+              "viridis", "magma", "plasma", "cividis")
 
   for (theme in themes) {
     expect_no_error({
@@ -781,4 +782,155 @@ test_that("show_source_info and enable_clicks work together", {
   expect_true(grepl("<small>", diagram_code))
   expect_true(grepl("click ", diagram_code))
   expect_true(grepl("vscode://file/", diagram_code))
+})
+
+# ===========================================================================
+# Colorblind-Safe Viridis Theme Tests
+# ===========================================================================
+
+test_that("viridis theme produces valid diagram with correct styling", {
+  workflow <- create_test_workflow()
+
+  diagram_code <- put_diagram(workflow, theme = "viridis", output = "none")
+
+  # Should contain mermaid code
+
+  expect_true(grepl("flowchart", diagram_code))
+  expect_true(grepl("classDef", diagram_code))
+
+  # Check viridis-specific colors (deep purple for input)
+  expect_true(grepl("#440154", diagram_code))
+})
+
+test_that("magma theme produces valid diagram with correct styling", {
+  workflow <- create_test_workflow()
+
+  diagram_code <- put_diagram(workflow, theme = "magma", output = "none")
+
+  expect_true(grepl("flowchart", diagram_code))
+  expect_true(grepl("classDef", diagram_code))
+
+  # Check magma-specific colors (deep purple for input)
+  expect_true(grepl("#3b0f70", diagram_code))
+})
+
+test_that("plasma theme produces valid diagram with correct styling", {
+  workflow <- create_test_workflow()
+
+  diagram_code <- put_diagram(workflow, theme = "plasma", output = "none")
+
+  expect_true(grepl("flowchart", diagram_code))
+  expect_true(grepl("classDef", diagram_code))
+
+  # Check plasma-specific colors (deep blue for input)
+  expect_true(grepl("#0d0887", diagram_code))
+})
+
+test_that("cividis theme produces valid diagram with correct styling", {
+  workflow <- create_test_workflow()
+
+  diagram_code <- put_diagram(workflow, theme = "cividis", output = "none")
+
+  expect_true(grepl("flowchart", diagram_code))
+  expect_true(grepl("classDef", diagram_code))
+
+  # Check cividis-specific colors (navy for input)
+  expect_true(grepl("#00204d", diagram_code))
+})
+
+test_that("get_diagram_themes includes viridis family themes", {
+  themes <- get_diagram_themes()
+
+  # Check all viridis family themes are present
+  expect_true("viridis" %in% names(themes))
+  expect_true("magma" %in% names(themes))
+  expect_true("plasma" %in% names(themes))
+  expect_true("cividis" %in% names(themes))
+
+  # Check descriptions mention colorblind-safe
+  expect_true(grepl("colorblind", tolower(themes$viridis)))
+  expect_true(grepl("colorblind", tolower(themes$magma)))
+  expect_true(grepl("colorblind", tolower(themes$plasma)))
+  expect_true(grepl("colorblind", tolower(themes$cividis)))
+})
+
+test_that("viridis themes work with all node types", {
+  # Create workflow with all node types
+  workflow <- data.frame(
+    id = c("start_node", "input_node", "process_node", "decision_node",
+           "output_node", "end_node"),
+    label = c("Start", "Input Data", "Process", "Decision",
+              "Output Data", "End"),
+    node_type = c("start", "input", "process", "decision", "output", "end"),
+    file_path = rep("/test/file.R", 6),
+    file_name = rep("file.R", 6),
+    line_number = 1:6,
+    input = rep(NA_character_, 6),
+    output = rep(NA_character_, 6),
+    stringsAsFactors = FALSE
+  )
+
+  viridis_themes <- c("viridis", "magma", "plasma", "cividis")
+
+  for (theme in viridis_themes) {
+    expect_no_error({
+      diagram_code <- put_diagram(workflow, theme = theme, output = "none")
+      # All node types should have class definitions
+      expect_true(grepl("classDef input", diagram_code))
+      expect_true(grepl("classDef process", diagram_code))
+      expect_true(grepl("classDef output", diagram_code))
+      expect_true(grepl("classDef decision", diagram_code))
+      expect_true(grepl("classDef start", diagram_code))
+      expect_true(grepl("classDef end", diagram_code))
+    })
+  }
+})
+
+test_that("viridis themes work with artifacts", {
+  workflow <- create_test_workflow()
+
+  viridis_themes <- c("viridis", "magma", "plasma", "cividis")
+
+  for (theme in viridis_themes) {
+    expect_no_error({
+      diagram_code <- put_diagram(
+        workflow,
+        theme = theme,
+        show_artifacts = TRUE,
+        output = "none"
+      )
+      # Should have artifact class definition
+      expect_true(grepl("classDef artifact", diagram_code))
+    })
+  }
+})
+
+test_that("enable_clicks works with viridis themes", {
+  workflow <- create_test_workflow()
+
+  viridis_themes <- c("viridis", "magma", "plasma", "cividis")
+
+  for (theme in viridis_themes) {
+    expect_no_error({
+      diagram_code <- put_diagram(
+        workflow,
+        enable_clicks = TRUE,
+        theme = theme,
+        output = "none"
+      )
+      expect_true(grepl("click ", diagram_code))
+    })
+  }
+})
+
+test_that("invalid theme falls back to light with warning", {
+  workflow <- create_test_workflow()
+
+  expect_warning(
+    diagram_code <- put_diagram(workflow, theme = "nonexistent", output = "none"),
+    "Invalid theme"
+  )
+
+  # Should still produce valid diagram
+  expect_true(grepl("flowchart", diagram_code))
 })

@@ -27,7 +27,18 @@
 #'   workflow boundary styling (icons, colors). When FALSE, they render as regular nodes.
 #' @param style_nodes Logical indicating whether to apply styling based on node_type
 #' @param theme Character string specifying color theme. Options:
-#'   "light" (default), "dark", "auto" (GitHub adaptive), "minimal", "github"
+#'   \itemize{
+#'     \item "light" - Default light theme with bright colors (default)
+#'     \item "dark" - Dark theme for dark mode environments
+#'     \item "auto" - GitHub-adaptive with solid colors for both modes
+#'     \item "minimal" - Grayscale professional, print-friendly
+#'     \item "github" - Optimized for GitHub README files
+#'     \item "viridis" - Colorblind-safe (purple-blue-green-yellow)
+#'     \item "magma" - Colorblind-safe warm (purple-red-yellow)
+#'     \item "plasma" - Colorblind-safe vibrant (purple-pink-yellow)
+#'     \item "cividis" - Colorblind-safe for deuteranopia/protanopia (blue-yellow)
+#'   }
+#'   The viridis family themes are perceptually uniform and tested for accessibility.
 #' @param show_source_info Logical indicating whether to display source file
 #'   information in diagram nodes. When TRUE, each node shows its originating
 #'   file name. Default is FALSE for backward compatibility.
@@ -155,7 +166,8 @@ put_diagram <- function(workflow,
   }
 
   # Validate theme
-  valid_themes <- c("light", "dark", "auto", "minimal", "github")
+  valid_themes <- c("light", "dark", "auto", "minimal", "github",
+                    "viridis", "magma", "plasma", "cividis")
   if (!theme %in% valid_themes) {
     warning(
       "Invalid theme '", theme, "'. Using 'light'.\n",
@@ -409,6 +421,57 @@ get_theme_colors <- function(theme) {
       "end" = "fill:#dcfce7,stroke:#16a34a,stroke-width:3px,color:#15803d"
     ),
 
+    # VIRIDIS FAMILY - Colorblind-safe, perceptually uniform palettes
+    # All tested for deuteranopia, protanopia, tritanopia, and grayscale
+
+    "viridis" = list(
+      # Classic colorblind-safe palette (purple -> blue -> green -> yellow)
+      # Most widely tested and validated for accessibility
+      "input" = "fill:#440154,stroke:#31688e,stroke-width:2px,color:#ffffff",
+      "process" = "fill:#31688e,stroke:#21918c,stroke-width:2px,color:#ffffff",
+      "output" = "fill:#35b779,stroke:#21918c,stroke-width:2px,color:#000000",
+      "decision" = "fill:#fde725,stroke:#90d743,stroke-width:2px,color:#000000",
+      "artifact" = "fill:#e8e8e8,stroke:#757575,stroke-width:1px,color:#333333",
+      "start" = "fill:#b5de2b,stroke:#90d743,stroke-width:3px,color:#000000",
+      "end" = "fill:#35b779,stroke:#21918c,stroke-width:3px,color:#000000"
+    ),
+
+    "magma" = list(
+      # Warm colorblind-safe palette (black -> purple -> red -> yellow)
+      # High contrast, excellent for print and presentations
+      "input" = "fill:#3b0f70,stroke:#8c2981,stroke-width:2px,color:#ffffff",
+      "process" = "fill:#b63679,stroke:#de4968,stroke-width:2px,color:#ffffff",
+      "output" = "fill:#fe9f6d,stroke:#fcfdbf,stroke-width:2px,color:#000000",
+      "decision" = "fill:#fcfdbf,stroke:#feb078,stroke-width:2px,color:#000000",
+      "artifact" = "fill:#e8e8e8,stroke:#757575,stroke-width:1px,color:#333333",
+      "start" = "fill:#feb078,stroke:#fe9f6d,stroke-width:3px,color:#000000",
+      "end" = "fill:#fe9f6d,stroke:#de4968,stroke-width:3px,color:#000000"
+    ),
+
+    "plasma" = list(
+      # Vibrant colorblind-safe palette (purple -> pink -> orange -> yellow)
+      # Bold colors ideal for presentations and digital displays
+      "input" = "fill:#0d0887,stroke:#5302a3,stroke-width:2px,color:#ffffff",
+      "process" = "fill:#7e03a8,stroke:#b83289,stroke-width:2px,color:#ffffff",
+      "output" = "fill:#f89540,stroke:#fdca26,stroke-width:2px,color:#000000",
+      "decision" = "fill:#f0f921,stroke:#fdca26,stroke-width:2px,color:#000000",
+      "artifact" = "fill:#e8e8e8,stroke:#757575,stroke-width:1px,color:#333333",
+      "start" = "fill:#fdca26,stroke:#f89540,stroke-width:3px,color:#000000",
+      "end" = "fill:#f89540,stroke:#cc4778,stroke-width:3px,color:#000000"
+    ),
+
+    "cividis" = list(
+      # Optimized specifically for deuteranopia and protanopia (blue -> gray -> yellow)
+      # Maximum colorblind safety with blue-yellow only palette
+      "input" = "fill:#00204d,stroke:#355f8d,stroke-width:2px,color:#ffffff",
+      "process" = "fill:#355f8d,stroke:#7d7c78,stroke-width:2px,color:#ffffff",
+      "output" = "fill:#cae11f,stroke:#ffe945,stroke-width:2px,color:#000000",
+      "decision" = "fill:#ffe945,stroke:#cae11f,stroke-width:2px,color:#000000",
+      "artifact" = "fill:#e8e8e8,stroke:#757575,stroke-width:1px,color:#333333",
+      "start" = "fill:#a69d75,stroke:#7d7c78,stroke-width:3px,color:#000000",
+      "end" = "fill:#cae11f,stroke:#a69d75,stroke-width:3px,color:#000000"
+    ),
+
     # Default to light theme
     list(
       "input" = "fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000000",
@@ -444,7 +507,11 @@ get_diagram_themes <- function() {
     "dark" = "Dark theme with muted colors - ideal for dark mode environments and terminals",
     "auto" = "GitHub-adaptive theme with solid colors that work in both light and dark modes",
     "minimal" = "Grayscale professional theme - print-friendly and great for business documents",
-    "github" = "Optimized specifically for GitHub README files with maximum mermaid compatibility"
+    "github" = "Optimized specifically for GitHub README files with maximum mermaid compatibility",
+    "viridis" = "Colorblind-safe theme (purple-blue-green-yellow) - perceptually uniform, accessible",
+    "magma" = "Colorblind-safe warm theme (purple-red-yellow) - high contrast, print-friendly",
+    "plasma" = "Colorblind-safe vibrant theme (purple-pink-yellow) - bold colors for presentations",
+    "cividis" = "Colorblind-safe theme optimized for deuteranopia/protanopia (blue-yellow only)"
   )
 }
 
