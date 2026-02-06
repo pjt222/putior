@@ -255,19 +255,19 @@
 <span></span>
 <span><span class="co"># Scan and visualize</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="va">temp_file</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Validation issues in file25bf75f22335.R line 7:</span></span>
+<span><span class="co">#&gt; Warning: Validation issues in file25c571509fe.R line 7:</span></span>
 <span><span class="co">#&gt; File reference missing extension: database</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"```mermaid\n"</span><span class="op">)</span></span></code></pre></div>
 <pre class="mermaid"><code>
 ``` r
 cat(put_diagram(workflow, output = "raw"))</code></pre>
-<p>flowchart TD node_4fb0f301_fbd3_4fe6_b14c_304a2b08fddf[“Extract”]
-node_859f7b4c_3bc0_4dd4_a6ac_3712309f535a[“Transform”]
-cb8f5832_1969_421b_8f69_b25cdae82780[“Load”]</p>
+<p>flowchart TD node_7cc5988d_9f23_4f0a_98a7_3f6bfabb91d5[“Extract”]
+node_4c34e39f_b4ad_45fc_b30c_332ee1f90427[“Transform”]
+a1ecab97_2819_4a93_9e3e_c4c2d7e26823[“Load”]</p>
 <pre><code>%% Connections
-node_4fb0f301_fbd3_4fe6_b14c_304a2b08fddf --&gt; node_859f7b4c_3bc0_4dd4_a6ac_3712309f535a
-node_859f7b4c_3bc0_4dd4_a6ac_3712309f535a --&gt; cb8f5832_1969_421b_8f69_b25cdae82780</code></pre>
+node_7cc5988d_9f23_4f0a_98a7_3f6bfabb91d5 --&gt; node_4c34e39f_b4ad_45fc_b30c_332ee1f90427
+node_4c34e39f_b4ad_45fc_b30c_332ee1f90427 --&gt; a1ecab97_2819_4a93_9e3e_c4c2d7e26823</code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n```\n"</span><span class="op">)</span></span></code></pre></div>
 </div>
