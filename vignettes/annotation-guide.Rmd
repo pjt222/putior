@@ -532,40 +532,40 @@ This would show the complete data flow: API → JSON → CSV → Analysis → Re
 Choose clear, descriptive names that explain what each step does:
 
     # Good
-    # put name:"load_customer_transactions", label:"Load Customer Transaction Data"
-    # put name:"calculate_monthly_revenue", label:"Calculate Monthly Revenue Totals"
+    # put id:"load_customer_transactions", label:"Load Customer Transaction Data"
+    # put id:"calculate_monthly_revenue", label:"Calculate Monthly Revenue Totals"
 
     # Less descriptive
-    # put name:"step1", label:"Load data"
-    # put name:"process", label:"Do calculations"
+    # put id:"step1", label:"Load data"
+    # put id:"process", label:"Do calculations"
 
 ### 2. Document Data Dependencies
 
 Always specify inputs and outputs for data processing steps:
 
-    # put name:"merge_datasets", label:"Merge Customer and Transaction Data", input:"customers.csv,transactions.csv", output:"merged_data.csv"
+    # put id:"merge_datasets", label:"Merge Customer and Transaction Data", input:"customers.csv,transactions.csv", output:"merged_data.csv"
 
 ### 3. Use Consistent Node Types
 
 Stick to a standard set of node types across your team:
 
-    # put name:"load_raw_data", label:"Load Raw Sales Data", node_type:"input"
-    # put name:"clean_data", label:"Clean and Validate", node_type:"process"
-    # put name:"export_results", label:"Export Final Results", node_type:"output"
+    # put id:"load_raw_data", label:"Load Raw Sales Data", node_type:"input"
+    # put id:"clean_data", label:"Clean and Validate", node_type:"process"
+    # put id:"export_results", label:"Export Final Results", node_type:"output"
 
 ### 4. Add Helpful Metadata
 
 Include metadata that helps with workflow understanding:
 
-    # put name:"train_model", label:"Train Random Forest Model", node_type:"process", estimated_time:"30min", requires:"tidymodels", memory_intensive:"true"
+    # put id:"train_model", label:"Train Random Forest Model", node_type:"process", estimated_time:"30min", requires:"tidymodels", memory_intensive:"true"
 
 ### 5. Group Related Operations
 
 Use grouping properties to organize complex workflows:
 
-    # put name:"feature_engineering", label:"Engineer Features", group:"preprocessing", stage:"1"
-    # put name:"model_training", label:"Train Model", group:"modeling", stage:"2"
-    # put name:"model_evaluation", label:"Evaluate Model", group:"modeling", stage:"3"
+    # put id:"feature_engineering", label:"Engineer Features", group:"preprocessing", stage:"1"
+    # put id:"model_training", label:"Train Model", group:"modeling", stage:"2"
+    # put id:"model_evaluation", label:"Evaluate Model", group:"modeling", stage:"3"
 
 ## Troubleshooting
 

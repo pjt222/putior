@@ -7,6 +7,16 @@
 #' @keywords internal
 NULL
 
+# =============================================================================
+# Internal Utilities
+# =============================================================================
+
+#' Null coalescing operator
+#' @noRd
+`%||%` <- function(x, y) {
+  if (is.null(x)) y else x
+}
+
 .onLoad <- function(libname, pkgname) {
   # Set default package options
   op <- options()

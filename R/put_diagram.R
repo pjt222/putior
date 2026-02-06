@@ -528,7 +528,7 @@ generate_node_definitions <- function(workflow, node_labels = "label",
                                       show_source_info = FALSE) {
   node_defs <- character()
 
-  for (i in 1:nrow(workflow)) {
+  for (i in seq_len(nrow(workflow))) {
     node <- workflow[i, ]
     node_id <- sanitize_node_id(node$id)
 
@@ -536,17 +536,7 @@ generate_node_definitions <- function(workflow, node_labels = "label",
     node_shape <- get_node_shape(node$node_type, show_workflow_boundaries)
 
     # Determine label text
-    label_text <- switch(node_labels,
-      "name" = node$id,
-      "label" = if (!is.na(node$label) && node$label != "") node$label else node$id,
-      "both" = if (!is.na(node$label) && node$label != "") {
-        paste0(node$id, ": ", node$label)
-      } else {
-        node$id
-      },
-      # Default to label
-      if (!is.na(node$label) && node$label != "") node$label else node$id
-    )
+    label_text <- resolve_label(node, node_labels)
 
     # Append source file info if requested (skip for artifacts)
     is_artifact_node <- "is_artifact" %in% names(node) &&
@@ -600,6 +590,25 @@ get_node_shape <- function(node_type, show_workflow_boundaries = TRUE) {
     "end" = c("([", "])"), # Stadium for end (when boundaries disabled)
     "artifact" = c("[(", ")]"), # Cylindrical shape for data files
     c("[", "]") # Default rectangle
+  )
+}
+
+#' Resolve label text for a workflow node
+#' @param node A single row from the workflow data frame
+#' @param node_labels Label display mode: "name", "label", or "both"
+#' @return Character string of the resolved label text
+#' @keywords internal
+resolve_label <- function(node, node_labels) {
+  switch(node_labels,
+    "name" = node$id,
+    "label" = if (!is.na(node$label) && node$label != "") node$label else node$id,
+    "both" = if (!is.na(node$label) && node$label != "") {
+      paste0(node$id, ": ", node$label)
+    } else {
+      node$id
+    },
+    # Default to label
+    if (!is.na(node$label) && node$label != "") node$label else node$id
   )
 }
 
@@ -735,7 +744,7 @@ generate_click_url <- function(file_path, line_number = NULL, protocol = "vscode
 generate_click_directives <- function(workflow, protocol = "vscode") {
   click_lines <- character()
 
-  for (i in 1:nrow(workflow)) {
+  for (i in seq_len(nrow(workflow))) {
     node <- workflow[i, ]
     node_id <- sanitize_node_id(node$id)
 
@@ -809,21 +818,12 @@ generate_file_subgraphs <- function(workflow, node_labels = "label",
   # Process artifact nodes first (they go outside subgraphs)
   artifact_nodes <- workflow[artifact_indicator, ]
   if (nrow(artifact_nodes) > 0) {
-    for (i in 1:nrow(artifact_nodes)) {
+    for (i in seq_len(nrow(artifact_nodes))) {
       node <- artifact_nodes[i, ]
       node_id <- sanitize_node_id(node$id)
       node_shape <- get_node_shape(node$node_type, show_workflow_boundaries)
 
-      label_text <- switch(node_labels,
-        "name" = node$id,
-        "label" = if (!is.na(node$label) && node$label != "") node$label else node$id,
-        "both" = if (!is.na(node$label) && node$label != "") {
-          paste0(node$id, ": ", node$label)
-        } else {
-          node$id
-        },
-        if (!is.na(node$label) && node$label != "") node$label else node$id
-      )
+      label_text <- resolve_label(node, node_labels)
 
       node_def <- paste0("    ", node_id, node_shape[1], label_text, node_shape[2])
       subgraph_lines <- c(subgraph_lines, node_def)
@@ -851,22 +851,12 @@ generate_file_subgraphs <- function(workflow, node_labels = "label",
                        paste0("    subgraph ", subgraph_id, " [", file_name, "]"))
 
     # Add nodes within subgraph
-    for (i in 1:nrow(file_nodes)) {
+    for (i in seq_len(nrow(file_nodes))) {
       node <- file_nodes[i, ]
       node_id <- sanitize_node_id(node$id)
       node_shape <- get_node_shape(node$node_type, show_workflow_boundaries)
 
-      # Determine label text
-      label_text <- switch(node_labels,
-        "name" = node$id,
-        "label" = if (!is.na(node$label) && node$label != "") node$label else node$id,
-        "both" = if (!is.na(node$label) && node$label != "") {
-          paste0(node$id, ": ", node$label)
-        } else {
-          node$id
-        },
-        if (!is.na(node$label) && node$label != "") node$label else node$id
-      )
+      label_text <- resolve_label(node, node_labels)
 
       node_def <- paste0("        ", node_id, node_shape[1], label_text, node_shape[2])
       subgraph_lines <- c(subgraph_lines, node_def)
@@ -888,10 +878,10 @@ create_artifact_nodes <- function(workflow) {
   # Collect all unique input and output files
   all_inputs <- character()
   all_outputs <- character()
-  
-  for (i in 1:nrow(workflow)) {
+
+  for (i in seq_len(nrow(workflow))) {
     node <- workflow[i, ]
-    
+
     # Process input files
     if (!is.null(node$input) && !is.na(node$input) && node$input != "") {
       input_files <- strsplit(trimws(node$input), ",")[[1]]
@@ -957,7 +947,7 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
     script_nodes <- workflow[is.na(workflow$is_artifact) | !workflow$is_artifact, ]
     
     # FIRST: Create script-to-script connections (like simple mode)
-    for (i in 1:nrow(script_nodes)) {
+    for (i in seq_len(nrow(script_nodes))) {
       node <- script_nodes[i, ]
       target_id <- sanitize_node_id(node$id)
 
@@ -981,7 +971,7 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
             ]
 
             if (nrow(source_nodes) > 0) {
-              for (j in 1:nrow(source_nodes)) {
+              for (j in seq_len(nrow(source_nodes))) {
                 source_id <- sanitize_node_id(source_nodes[j, ]$id)
 
                 # Create script-to-script connection
@@ -1000,7 +990,7 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
     }
     
     # SECOND: Create script-to-artifact connections
-    for (i in 1:nrow(script_nodes)) {
+    for (i in seq_len(nrow(script_nodes))) {
       node <- script_nodes[i, ]
       target_id <- sanitize_node_id(node$id)
       
@@ -1050,7 +1040,7 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
   } else {
     # Without artifacts: original logic (script-to-script connections only)
     
-    for (i in 1:nrow(workflow)) {
+    for (i in seq_len(nrow(workflow))) {
       node <- workflow[i, ]
       target_id <- sanitize_node_id(node$id)
 
@@ -1074,7 +1064,7 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
             ]
 
             if (nrow(source_nodes) > 0) {
-              for (j in 1:nrow(source_nodes)) {
+              for (j in seq_len(nrow(source_nodes))) {
                 source_id <- sanitize_node_id(source_nodes[j, ]$id)
 
                 # Create connection with optional file label

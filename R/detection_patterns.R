@@ -45,9 +45,7 @@ NULL
 get_detection_patterns <- function(language = "r", type = NULL) {
   language <- tolower(language)
 
-  valid_languages <- c("r", "python", "sql", "shell", "julia",
-                       "javascript", "typescript", "go", "rust",
-                       "java", "c", "cpp", "matlab", "ruby", "lua")
+  valid_languages <- .LANGUAGES_WITH_DETECTION
   if (!language %in% valid_languages) {
     stop(
       "Unsupported language for auto-detection: '", language, "'\n",

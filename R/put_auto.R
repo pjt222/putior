@@ -109,7 +109,7 @@ put_auto <- function(path,
     # Single file case
     if (!grepl(pattern, path)) {
       warning("File does not match pattern '", pattern, "': ", path)
-      return(empty_auto_result_df(include_line_numbers))
+      return(as_putior_workflow(empty_auto_result_df(include_line_numbers)))
     }
     files <- path
   }
@@ -117,7 +117,7 @@ put_auto <- function(path,
   if (length(files) == 0) {
     putior_log("WARN", "No files matching pattern '{pattern}' found in: {path}")
     warning("No files matching pattern '", pattern, "' found in: ", path)
-    return(empty_auto_result_df(include_line_numbers))
+    return(as_putior_workflow(empty_auto_result_df(include_line_numbers)))
   }
 
   putior_log("INFO", "Found {length(files)} file(s) to analyze")
@@ -145,10 +145,10 @@ put_auto <- function(path,
     df <- do.call(rbind, lapply(results, as.data.frame, stringsAsFactors = FALSE))
     rownames(df) <- NULL
     putior_log("INFO", "Auto-detection complete: found {nrow(df)} workflow node(s)")
-    return(df)
+    return(as_putior_workflow(df))
   } else {
     putior_log("INFO", "Auto-detection complete: no workflow elements detected")
-    return(empty_auto_result_df(include_line_numbers))
+    return(as_putior_workflow(empty_auto_result_df(include_line_numbers)))
   }
 }
 
@@ -166,6 +166,7 @@ put_auto <- function(path,
 #' @param output Character string specifying output destination:
 #'   \itemize{
 #'     \item "console" - Print to console (default)
+#'     \item "raw" - Return as string without printing
 #'     \item "clipboard" - Copy to clipboard (requires clipr package)
 #'     \item "file" - Write to files with .put suffix
 #'   }
@@ -229,7 +230,7 @@ put_generate <- function(path,
     )
   }
 
-  valid_outputs <- c("console", "clipboard", "file")
+  valid_outputs <- c("console", "clipboard", "file", "raw")
   if (!output %in% valid_outputs) {
     stop(
       "Invalid output: '", output, "'\n",
@@ -237,7 +238,8 @@ put_generate <- function(path,
       "Examples:\n",
       "  put_generate(path, output = \"console\")   # Print to screen\n",
       "  put_generate(path, output = \"clipboard\") # Copy to clipboard\n",
-      "  put_generate(path, output = \"file\")      # Write to .put files",
+      "  put_generate(path, output = \"file\")      # Write to .put files\n",
+      "  put_generate(path, output = \"raw\")       # Return as string",
       call. = FALSE
     )
   }
@@ -295,6 +297,9 @@ put_generate <- function(path,
   switch(output,
     "console" = {
       cat(combined, "\n")
+    },
+    "raw" = {
+      # Return as string without printing
     },
     "clipboard" = {
       if (requireNamespace("clipr", quietly = TRUE)) {
@@ -402,7 +407,7 @@ put_merge <- function(path,
   # If one is empty, return the other
 
   if (nrow(manual) == 0 && nrow(auto) == 0) {
-    return(empty_auto_result_df(include_line_numbers))
+    return(as_putior_workflow(empty_auto_result_df(include_line_numbers)))
   }
 
   if (nrow(manual) == 0) {
@@ -416,7 +421,7 @@ put_merge <- function(path,
   # Merge based on strategy
   merged <- merge_annotations(manual, auto, merge_strategy)
 
-  return(merged)
+  return(as_putior_workflow(merged))
 }
 
 # Internal helper functions

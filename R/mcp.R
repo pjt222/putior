@@ -305,8 +305,8 @@ make_tool_put_diagram <- function() {
         required = FALSE
       ),
       theme = ellmer::type_enum(
-        description = "Color theme: light, dark, auto, minimal, github (default: light)",
-        values = c("light", "dark", "auto", "minimal", "github"),
+        description = "Color theme: light, dark, auto, minimal, github, viridis, magma, plasma, cividis (default: light)",
+        values = c("light", "dark", "auto", "minimal", "github", "viridis", "magma", "plasma", "cividis"),
         required = FALSE
       ),
       show_source_info = ellmer::type_boolean(
@@ -419,8 +419,8 @@ make_tool_put_generate <- function() {
         required = FALSE
       ),
       output = ellmer::type_enum(
-        description = "Output: console, clipboard, or file (default: console)",
-        values = c("console", "clipboard", "file"),
+        description = "Output: console, raw, clipboard, or file (default: console)",
+        values = c("console", "raw", "clipboard", "file"),
         required = FALSE
       ),
       insert = ellmer::type_boolean(
@@ -570,7 +570,8 @@ make_tool_get_diagram_themes <- function() {
     fun = get_diagram_themes,
     description = paste0(
       "Get information about available color themes for workflow diagrams. ",
-      "Returns a named list describing light, dark, auto, minimal, and github themes."
+      "Returns a named list describing 9 themes: light, dark, auto, minimal, github, ",
+      "and 4 colorblind-safe viridis family themes (viridis, magma, plasma, cividis)."
     ),
     name = "get_diagram_themes",
     annotations = list(

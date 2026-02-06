@@ -182,7 +182,7 @@ extract_parameters <- function(content) {
   # Extract theme if mentioned
   theme_match <- regmatches(
     tolower(content),
-    regexpr("theme[=: ]*['\"]?(light|dark|auto|minimal|github)['\"]?", tolower(content))
+    regexpr("theme[=: ]*['\"]?(light|dark|auto|minimal|github|viridis|magma|plasma|cividis)['\"]?", tolower(content))
   )
   if (length(theme_match) > 0 && nchar(theme_match[1]) > 0) {
     params$theme <- gsub(".*[=: ]+['\"]?([a-z]+)['\"]?$", "\\1", theme_match[1])
@@ -220,6 +220,42 @@ parse_acp_message <- function(input) {
 }
 
 # =============================================================================
+# Input Sanitization
+# =============================================================================
+
+#' Sanitize a file path from ACP network requests
+#'
+#' Validates and normalizes file paths to prevent directory traversal attacks
+#' and other path injection issues. Rejects paths with control characters
+#' or directory traversal components ("..").
+#'
+#' @param path Character string of the file path to sanitize
+#' @return Sanitized path string, or "." if the path is invalid
+#' @noRd
+sanitize_acp_path <- function(path) {
+  if (is.null(path) || !is.character(path) || length(path) != 1 || nchar(path) == 0) {
+    return(".")
+  }
+
+  # Reject paths with control characters (including null bytes)
+  if (grepl("[[:cntrl:]]", path)) {
+    warning("ACP path rejected: contains control characters", call. = FALSE)
+    return(".")
+  }
+
+  # Normalize path separators for traversal check
+  normalized <- gsub("\\\\", "/", path)
+
+  # Reject directory traversal attempts
+  if (grepl("(^|/)\\.\\.(/|$)", normalized)) {
+    warning("ACP path rejected: directory traversal not allowed: ", path, call. = FALSE)
+    return(".")
+  }
+
+  path
+}
+
+# =============================================================================
 # Request Execution
 # =============================================================================
 
@@ -236,6 +272,11 @@ parse_acp_message <- function(input) {
 #' @noRd
 execute_acp_request <- function(input, session_id = NULL) {
   parsed <- parse_acp_message(input)
+
+  # Sanitize path from network input
+  if (!is.null(parsed$params$path)) {
+    parsed$params$path <- sanitize_acp_path(parsed$params$path)
+  }
 
   result <- tryCatch({
     switch(parsed$operation,
@@ -281,11 +322,12 @@ execute_acp_request <- function(input, session_id = NULL) {
       "generate" = {
         path <- parsed$params$path
         if (is.null(path)) path <- "."
-        put_generate(
+        annotations <- put_generate(
           path = path,
           output = "raw",
           recursive = isTRUE(parsed$params$recursive)
         )
+        paste(annotations, collapse = "\n")
       },
       "merge" = {
         path <- parsed$params$path
@@ -563,12 +605,3 @@ putior_acp_server <- function(host = "127.0.0.1", port = 8080L) {
   plumber2::api_run(pa, host = host, port = as.integer(port))
 }
 
-# =============================================================================
-# Null Coalescing Operator
-# =============================================================================
-
-#' Null coalescing operator
-#' @noRd
-`%||%` <- function(x, y) {
-  if (is.null(x)) y else x
-}

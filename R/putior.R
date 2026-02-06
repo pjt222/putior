@@ -155,7 +155,7 @@ put <- function(path,
     # Single file case
     if (!grepl(pattern, path)) {
       warning("File does not match pattern '", pattern, "': ", path)
-      return(empty_result_df(include_line_numbers))
+      return(as_putior_workflow(empty_result_df(include_line_numbers)))
     }
     files <- path
   }
@@ -170,7 +170,7 @@ put <- function(path,
       "- For other languages, specify a pattern like: pattern = \"\\\\.js$\"",
       call. = FALSE
     )
-    return(empty_result_df(include_line_numbers))
+    return(as_putior_workflow(empty_result_df(include_line_numbers)))
   }
 
   putior_log("INFO", "Found {length(files)} file(s) to scan")
@@ -220,10 +220,10 @@ put <- function(path,
     }
 
     putior_log("INFO", "Scan complete: found {nrow(df)} workflow node(s) in {length(files)} file(s)")
-    return(df)
+    return(as_putior_workflow(df))
   } else {
     putior_log("INFO", "Scan complete: no PUT annotations found in {length(files)} file(s)")
-    empty_result_df(include_line_numbers)
+    as_putior_workflow(empty_result_df(include_line_numbers))
   }
 }
 
@@ -578,6 +578,89 @@ empty_result_df <- function(include_line_numbers = FALSE) {
   data.frame(cols, stringsAsFactors = FALSE)
 }
 
+#' Add putior_workflow class to a data frame
+#' @param df Data frame to class
+#' @return Data frame with "putior_workflow" class prepended
+#' @keywords internal
+as_putior_workflow <- function(df) {
+  class(df) <- c("putior_workflow", class(df))
+  df
+}
+
+#' Print a putior workflow
+#'
+#' Displays a concise summary of a putior workflow data frame.
+#'
+#' @param x A putior_workflow object
+#' @param ... Additional arguments (ignored)
+#' @return Invisibly returns x
+#' @export
+print.putior_workflow <- function(x, ...) {
+  n <- nrow(x)
+  if (n == 0) {
+    cat("putior workflow: 0 nodes\n")
+    return(invisible(x))
+  }
+  files <- unique(x$file_name)
+  n_files <- length(files[!is.na(files)])
+  cat("putior workflow:", n, "node(s) from", n_files, "file(s)\n")
+
+  # Show node summary
+  if ("node_type" %in% names(x)) {
+    types <- table(x$node_type, useNA = "no")
+    if (length(types) > 0) {
+      cat("  Node types:", paste(paste0(names(types), " (", types, ")"), collapse = ", "), "\n")
+    }
+  }
+
+  # Print as data frame
+  cat("\n")
+  print.data.frame(x, ...)
+  invisible(x)
+}
+
+#' Summarize a putior workflow
+#'
+#' Provides a structured summary of a putior workflow data frame.
+#'
+#' @param object A putior_workflow object
+#' @param ... Additional arguments (ignored)
+#' @return Invisibly returns a list with summary information
+#' @export
+summary.putior_workflow <- function(object, ...) {
+  n <- nrow(object)
+  files <- unique(object$file_name)
+  n_files <- length(files[!is.na(files)])
+
+  cat("putior workflow summary\n")
+  cat("  Nodes:", n, "\n")
+  cat("  Files:", n_files, "\n")
+
+  if (n > 0) {
+    if ("node_type" %in% names(object)) {
+      types <- table(object$node_type, useNA = "no")
+      if (length(types) > 0) {
+        cat("  Node types:\n")
+        for (type_name in names(types)) {
+          cat("    ", type_name, ": ", types[[type_name]], "\n", sep = "")
+        }
+      }
+    }
+
+    # Count connections (nodes with both input and output)
+    has_input <- !is.na(object$input) & object$input != ""
+    has_output <- !is.na(object$output) & object$output != ""
+    cat("  Nodes with inputs:", sum(has_input), "\n")
+    cat("  Nodes with outputs:", sum(has_output), "\n")
+  }
+
+  invisible(list(
+    n_nodes = n,
+    n_files = n_files,
+    node_types = if ("node_type" %in% names(object)) table(object$node_type) else NULL
+  ))
+}
+
 # Exported utility functions
 
 #' Validate PUT annotation syntax
@@ -589,7 +672,7 @@ empty_result_df <- function(include_line_numbers = FALSE) {
 #' @export
 #'
 #' @examples
-#' is_valid_put_annotation('# put name:"test", label:"Test"') # TRUE
+#' is_valid_put_annotation('# put id:"test", label:"Test"') # TRUE
 #' is_valid_put_annotation("# put invalid syntax") # FALSE
 is_valid_put_annotation <- function(line) {
   result <- parse_put_annotation(line)

@@ -25,6 +25,7 @@ Default: FALSE}
 \item{output}{Character string specifying output destination:
 \itemize{
 \item "console" - Print to console (default)
+\item "raw" - Return as string without printing
 \item "clipboard" - Copy to clipboard (requires clipr package)
 \item "file" - Write to files with .put suffix
 }}

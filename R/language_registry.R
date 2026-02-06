@@ -95,6 +95,16 @@ get_supported_extensions <- function() {
   unique(extensions)
 }
 
+# Authoritative list of languages with auto-detection pattern support.
+# This is the single source of truth -- referenced by list_supported_languages()
+# and get_detection_patterns(). When adding a new language with detection patterns,
+# add it here and create the corresponding get_<language>_patterns() function.
+.LANGUAGES_WITH_DETECTION <- c(
+  "r", "python", "sql", "shell", "julia",
+  "javascript", "typescript", "go", "rust",
+  "java", "c", "cpp", "matlab", "ruby", "lua"
+)
+
 # Package-level constant for extension to language mapping
 # These are the canonical language names used by get_detection_patterns()
 .LANGUAGE_MAP <- list(
@@ -237,10 +247,7 @@ build_file_pattern <- function(detection_only = FALSE) {
 #' list_supported_languages(detection_only = TRUE)
 list_supported_languages <- function(detection_only = FALSE) {
   if (detection_only) {
-    # Languages with detection pattern support (15 languages)
-    return(c("r", "python", "sql", "shell", "julia",
-             "javascript", "typescript", "go", "rust",
-             "java", "c", "cpp", "matlab", "ruby", "lua"))
+    return(.LANGUAGES_WITH_DETECTION)
   }
 
   # All languages with annotation parsing support
