@@ -235,34 +235,17 @@ reference:
   - run_sandbox
   - set_putior_log_level
 
-- title: "Helper Functions"
-  desc: "Supporting functions for processing annotations"
+- title: "Utilities"
+  desc: "Helper and validation functions"
   contents:
-  - parse_put_annotation
-  - validate_annotation
   - is_valid_put_annotation
-  - process_single_file
   - split_file_list
-
-- title: "Diagram Generation"
-  desc: "Functions for creating Mermaid diagrams"
-  contents:
-  - generate_node_definitions
-  - generate_connections
-  - generate_node_styling
-  - create_artifact_nodes
   - get_diagram_themes
-  - get_theme_colors
-  - get_node_shape
-  - sanitize_node_id
 
-- title: "Data Processing"
-  desc: "Functions for handling results"
+- title: "Internal Functions"
+  desc: "Internal implementation details (not part of the public API)"
   contents:
-  - convert_results_to_df
-  - empty_result_df
-  - handle_output
-  - parse_comma_separated_pairs
+  - has_keyword("internal")
 
 authors:
   Philipp Thoss:
