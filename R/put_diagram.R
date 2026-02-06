@@ -1051,7 +1051,7 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
           if (input_file != "") {
             # Find nodes that output this file
             source_nodes <- workflow[
-              !is.null(workflow$output) & !is.na(workflow$output) &
+              !is.na(workflow$output) &
                 vapply(workflow$output, function(x) {
                   if (is.na(x) || x == "") {
                     return(FALSE)

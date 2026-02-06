@@ -2,13 +2,6 @@
 library(testthat)
 library(putior)
 
-# Helper function to create temporary files for testing
-create_test_file <- function(content, filename, dir) {
-  filepath <- file.path(dir, filename)
-  writeLines(content, filepath)
-  return(filepath)
-}
-
 # Tests for put_generate()
 test_that("put_generate() generates annotation output", {
   temp_dir <- tempdir()

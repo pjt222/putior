@@ -560,3 +560,57 @@ test_that("sanitize_acp_path handles NULL, empty, and invalid input", {
   expect_equal(putior:::sanitize_acp_path(123), ".")
   expect_equal(putior:::sanitize_acp_path(c("a", "b")), ".")
 })
+
+# =============================================================================
+# Run Retrieval Tests
+# =============================================================================
+
+test_that("get_run_by_id returns NULL for non-existent run", {
+  result <- putior:::get_run_by_id("nonexistent_run_id_12345")
+  expect_null(result)
+})
+
+test_that("store_run and get_run_by_id round-trip works", {
+  run_id <- paste0("test_run_", sample(10000:99999, 1))
+  run_data <- list(status = "completed", output = "test output")
+
+  putior:::store_run(run_id, run_data)
+  result <- putior:::get_run_by_id(run_id)
+
+  expect_equal(result$status, "completed")
+  expect_equal(result$output, "test output")
+})
+
+test_that("acp_get_run_handler returns 404 for missing run", {
+  # Create a mock response object
+  mock_response <- new.env(parent = emptyenv())
+  mock_response$status <- 200L
+
+  result <- putior:::acp_get_run_handler("nonexistent_id", mock_response)
+
+  expect_equal(mock_response$status, 404L)
+  expect_equal(result$error, "Run not found")
+  expect_equal(result$run_id, "nonexistent_id")
+})
+
+test_that("acp_get_run_handler returns run data for existing run", {
+  # Store a test run
+  run_id <- paste0("test_handler_", sample(10000:99999, 1))
+  run_data <- list(
+    id = run_id,
+    status = "completed",
+    output = list(list(parts = list(list(content = "test"))))
+  )
+  putior:::store_run(run_id, run_data)
+
+  # Create a mock response object
+  mock_response <- new.env(parent = emptyenv())
+  mock_response$status <- 200L
+
+  result <- putior:::acp_get_run_handler(run_id, mock_response)
+
+  # Status should remain 200 (not changed to 404)
+  expect_equal(mock_response$status, 200L)
+  expect_equal(result$id, run_id)
+  expect_equal(result$status, "completed")
+})

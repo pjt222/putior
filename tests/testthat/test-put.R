@@ -2,13 +2,6 @@
 library(testthat)
 library(putior)
 
-# Helper function to create temporary files for testing
-create_test_file <- function(content, filename, dir) {
-  filepath <- file.path(dir, filename)
-  writeLines(content, filepath)
-  return(filepath)
-}
-
 # Test basic functionality
 test_that("put() handles basic directory scanning", {
   temp_dir <- tempdir()
@@ -546,4 +539,63 @@ test_that("put() handles different multiline syntax variations", {
     expect_equal(style$label, paste("Style", i))
     expect_equal(style$input, paste0("file", i, ".csv"))
   }
+})
+
+# =============================================================================
+# S3 Class Tests (putior_workflow)
+# =============================================================================
+
+test_that("put() returns a putior_workflow object", {
+  test_dir <- tempfile("putior_s3_test_")
+  dir.create(test_dir)
+  on.exit(unlink(test_dir, recursive = TRUE))
+
+  create_test_file(c('# put label:"Step 1", output:"data.csv"'), "test.R", test_dir)
+  result <- put(test_dir)
+
+  expect_s3_class(result, "putior_workflow")
+  expect_s3_class(result, "data.frame")
+})
+
+test_that("print.putior_workflow shows header with counts", {
+  test_dir <- tempfile("putior_print_test_")
+  dir.create(test_dir)
+  on.exit(unlink(test_dir, recursive = TRUE))
+
+  create_test_file(c(
+    '# put label:"Load", node_type:"input", output:"data.csv"',
+    '# put label:"Process", node_type:"process", input:"data.csv"'
+  ), "test.R", test_dir)
+  result <- put(test_dir)
+
+  output <- capture.output(print(result))
+  expect_true(any(grepl("putior workflow:", output)))
+  expect_true(any(grepl("2 node", output)))
+  expect_true(any(grepl("1 file", output)))
+  expect_true(any(grepl("Node types:", output)))
+})
+
+test_that("print.putior_workflow handles empty workflow", {
+  empty_wf <- putior:::as_putior_workflow(putior:::empty_result_df())
+  output <- capture.output(print(empty_wf))
+  expect_true(any(grepl("0 nodes", output)))
+})
+
+test_that("summary.putior_workflow returns structured list", {
+  test_dir <- tempfile("putior_summary_test_")
+  dir.create(test_dir)
+  on.exit(unlink(test_dir, recursive = TRUE))
+
+  create_test_file(c(
+    '# put label:"Load", node_type:"input", output:"data.csv"',
+    '# put label:"Save", node_type:"output", input:"data.csv"'
+  ), "test.R", test_dir)
+  result <- put(test_dir)
+
+  output <- capture.output(summ <- summary(result))
+  expect_true(any(grepl("putior workflow summary", output)))
+  expect_true(any(grepl("Nodes: 2", output)))
+  expect_equal(summ$n_nodes, 2)
+  expect_equal(summ$n_files, 1)
+  expect_true(!is.null(summ$node_types))
 })

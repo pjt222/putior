@@ -103,6 +103,15 @@ putior_mcp_server <- function(type = c("stdio", "http"),
     )
   }
 
+  # Validate port for HTTP transport
+  if (type == "http") {
+    port <- as.integer(port)
+    if (is.na(port) || port < 1L || port > 65535L) {
+      stop("'port' must be an integer between 1 and 65535. Received: ", port,
+           call. = FALSE)
+    }
+  }
+
   # Get all putior tools
   tools <- putior_mcp_tools()
 
