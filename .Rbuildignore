@@ -43,3 +43,4 @@
 ^inst/cheatsheet/node_modules/
 ^inst/cheatsheet/package\.json$
 ^inst/cheatsheet/package-lock\.json$
+^CONTINUE_HERE\.md$
