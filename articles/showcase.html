@@ -205,9 +205,9 @@ simple workflows to complex multi-file pipelines.</p>
 <span><span class="co"># put label:"Load to Database", node_type:"output", input:"clean_data.csv"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    extract([Extract Data])
-    transform[Transform Data]
-    load[[Load to Database]]
+    extract(["Extract Data"])
+    transform["Transform Data"]
+    load[["Load to Database"]]
 
     %% Connections
     extract --&gt; transform
@@ -236,9 +236,9 @@ simple workflows to complex multi-file pipelines.</p>
 <span><span class="co"># put label:"Generate Report", node_type:"output", input:"analysis.rds", output:"report.html"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    fetch([Fetch Metrics])
-    analyze[Analyze Trends]
-    report[[Generate Report]]
+    fetch(["Fetch Metrics"])
+    analyze["Analyze Trends"]
+    report[["Generate Report"]]
 
     %% Connections
     fetch --&gt; analyze
@@ -294,16 +294,16 @@ stages.</p>
 <span><span class="co"># put label:"Deploy Model", node_type:"output", input:"final_model.pkl, validation_report.html"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    collect([Collect Raw Data])
-    clean[Clean Data]
-    feature[Feature Engineering]
-    split[Train/Test Split]
-    train[Train Model]
-    evaluate[Evaluate Model]
-    hyper[Hyperparameter Tuning]
-    retrain[Retrain with Best Params]
-    validate[Final Validation]
-    deploy[[Deploy Model]]
+    collect(["Collect Raw Data"])
+    clean["Clean Data"]
+    feature["Feature Engineering"]
+    split["Train/Test Split"]
+    train["Train Model"]
+    evaluate["Evaluate Model"]
+    hyper["Hyperparameter Tuning"]
+    retrain["Retrain with Best Params"]
+    validate["Final Validation"]
+    deploy[["Deploy Model"]]
 
     %% Connections
     collect --&gt; clean
@@ -368,15 +368,15 @@ stages.</p>
 <span><span class="co"># put label:"Generate Dashboard", node_type:"output", input:"metrics.rds", output:"dashboard.html"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    sales_api([Fetch Sales API])
-    inv_db([Fetch Inventory DB])
-    cust_crm([Fetch Customer CRM])
-    clean_sales[Clean Sales]
-    clean_inv[Clean Inventory]
-    clean_cust[Clean Customers]
-    merge[Merge All Sources]
-    metrics[Calculate Metrics]
-    dashboard[[Generate Dashboard]]
+    sales_api(["Fetch Sales API"])
+    inv_db(["Fetch Inventory DB"])
+    cust_crm(["Fetch Customer CRM"])
+    clean_sales["Clean Sales"]
+    clean_inv["Clean Inventory"]
+    clean_cust["Clean Customers"]
+    merge["Merge All Sources"]
+    metrics["Calculate Metrics"]
+    dashboard[["Generate Dashboard"]]
 
     %% Connections
     sales_api --&gt; clean_sales
@@ -599,11 +599,11 @@ languages.</p>
 <span><span class="co"># put label:"Python Report Gen", node_type:"output", input:"stats.rds, plots.pdf", output:"final_report.html"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    sql([SQL Extract])
-    python_transform[Python Transform]
-    r_stats[R Statistical Analysis]
-    r_viz[R Visualization]
-    python_report[[Python Report Gen]]
+    sql(["SQL Extract"])
+    python_transform["Python Transform"]
+    r_stats["R Statistical Analysis"]
+    r_viz["R Visualization"]
+    python_report[["Python Report Gen"]]
 
     %% Connections
     sql --&gt; python_transform
@@ -654,13 +654,13 @@ languages.</p>
 <span><span class="co"># put label:"Generate Report", node_type:"output", input:"de_results.rds, pathways.csv, qc_report.html", output:"analysis_report.html"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    fetch([Fetch FASTA Sequences])
-    qc[Quality Control]
-    blast[BLAST Alignment]
-    parse[Parse BLAST Results]
-    de[Differential Expression]
-    pathway[Pathway Enrichment]
-    report[[Generate Report]]
+    fetch(["Fetch FASTA Sequences"])
+    qc["Quality Control"]
+    blast["BLAST Alignment"]
+    parse["Parse BLAST Results"]
+    de["Differential Expression"]
+    pathway["Pathway Enrichment"]
+    report[["Generate Report"]]
 
     %% Connections
     fetch --&gt; qc
@@ -711,13 +711,13 @@ languages.</p>
 <span><span class="co"># put label:"Risk Dashboard", node_type:"output", input:"var_results.rds, sharpe_ratios.csv, attribution.json, optimal_weights.csv", output:"risk_report.html"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    market([Fetch Market Data])
-    holdings([Load Portfolio Holdings])
-    returns[Calculate Returns]
-    risk[Compute Risk Metrics]
-    attrib[Performance Attribution]
-    optimize[Portfolio Optimization]
-    dashboard[[Risk Dashboard]]
+    market(["Fetch Market Data"])
+    holdings(["Load Portfolio Holdings"])
+    returns["Calculate Returns"]
+    risk["Compute Risk Metrics"]
+    attrib["Performance Attribution"]
+    optimize["Portfolio Optimization"]
+    dashboard[["Risk Dashboard"]]
 
     %% Connections
     market --&gt; returns
@@ -770,13 +770,13 @@ languages.</p>
 <span><span class="co"># put label:"Load to Database", node_type:"output", input:"unique_entities.csv"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    urls([Fetch URL List])
-    scrape[Scrape Web Pages]
-    parse[Parse HTML Content]
-    ner[Named Entity Recognition]
-    clean[Clean and Normalize]
-    dedup[Remove Duplicates]
-    db[[Load to Database]]
+    urls(["Fetch URL List"])
+    scrape["Scrape Web Pages"]
+    parse["Parse HTML Content"]
+    ner["Named Entity Recognition"]
+    clean["Clean and Normalize"]
+    dedup["Remove Duplicates"]
+    db[["Load to Database"]]
 
     %% Connections
     urls --&gt; scrape
@@ -835,16 +835,16 @@ and R for reporting:</p>
 <span><span class="co"># put label:"Export for Production (Python)", node_type:"output", input:"final_model.pkl", output:"model_artifact.tar.gz"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    load([Load Raw Data - R])
-    eda[Exploratory Analysis - R]
-    features[Feature Engineering - R]
-    split[Train/Test Split - R]
-    train[Train XGBoost - Python]
-    hyper[Hyperparameter Tuning - Python]
-    final[Final Model Training - Python]
-    evaluate[Model Evaluation - Python]
-    report[[Model Report - R]]
-    deploy_export[[Export for Production - Python]]
+    load(["Load Raw Data - R"])
+    eda["Exploratory Analysis - R"]
+    features["Feature Engineering - R"]
+    split["Train/Test Split - R"]
+    train["Train XGBoost - Python"]
+    hyper["Hyperparameter Tuning - Python"]
+    final["Final Model Training - Python"]
+    evaluate["Model Evaluation - Python"]
+    report[["Model Report - R"]]
+    deploy_export[["Export for Production - Python"]]
 
     %% Connections
     load --&gt; eda
@@ -916,9 +916,9 @@ how to clean them up.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">aggregated</span>, <span class="st">"regional_sales.csv"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Resulting diagram (disconnected, unclear):</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    step1[step1]
-    node_2[2]
-    final_step_1[final step]
+    step1["step1"]
+    node_2["2"]
+    final_step_1["final step"]
 
     %% Connections
     step1 --&gt; node_2
@@ -1005,10 +1005,10 @@ how to clean them up.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">aggregated</span>, <span class="st">"regional_sales.csv"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Resulting diagram (connected, clear flow):</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    extract_sales([Load Sales Data])
-    clean_data[Clean &amp; Validate]
-    aggregate_regions[Aggregate by Region]
-    export_results[[Export Regional Report]]
+    extract_sales(["Load Sales Data"])
+    clean_data["Clean &amp; Validate"]
+    aggregate_regions["Aggregate by Region"]
+    export_results[["Export Regional Report"]]
 
     %% Connections
     extract_sales --&gt; clean_data

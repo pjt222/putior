@@ -9,7 +9,7 @@ supplementing information.
 ``` r
 put_merge(
   path,
-  pattern = "\\.(R|r|py|sql|sh|jl)$",
+  pattern = NULL,
   recursive = FALSE,
   merge_strategy = "manual_priority",
   include_line_numbers = FALSE
@@ -24,8 +24,8 @@ put_merge(
 
 - pattern:
 
-  Character string specifying the file pattern to match. Default:
-  "\\(R\|r\|py\|sql\|sh\|jl)\$"
+  Character string specifying the file pattern to match. Default: all
+  extensions with detection pattern support.
 
 - recursive:
 

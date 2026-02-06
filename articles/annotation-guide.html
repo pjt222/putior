@@ -251,9 +251,9 @@ with open("sales_report.json", "w") as f:
     json.dump(sales_summary, f)</code></pre>
 <p><strong>Resulting diagram from both files:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    load_data([Load Customer Data])
-    clean_data[Clean and Validate]
-    analyze_sales[Sales Analysis]
+    load_data(["Load Customer Data"])
+    clean_data["Clean and Validate"]
+    analyze_sales["Sales Analysis"]
 
     %% Connections
     load_data --&gt; clean_data
@@ -534,10 +534,10 @@ workflows</li>
 </ul>
 <p><strong>Visual representation of node types:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    load([Load Data (input)])
-    transform[Transform (process)]
-    export[[Export (output)]]
-    check{Validate? (decision)}
+    load(["Load Data (input)"])
+    transform["Transform (process)"]
+    export[["Export (output)"]]
+    check{"Validate? (decision)"}
 
     %% Connections
     load --&gt; transform
@@ -819,40 +819,40 @@ Report</p>
 </h3>
 <p>Choose clear, descriptive names that explain what each step does:</p>
 <pre><code><span><span class="co"># Good</span></span>
-<span><span class="co"># put name:"load_customer_transactions", label:"Load Customer Transaction Data"</span></span>
-<span><span class="co"># put name:"calculate_monthly_revenue", label:"Calculate Monthly Revenue Totals"</span></span>
+<span><span class="co"># put id:"load_customer_transactions", label:"Load Customer Transaction Data"</span></span>
+<span><span class="co"># put id:"calculate_monthly_revenue", label:"Calculate Monthly Revenue Totals"</span></span>
 <span></span>
 <span><span class="co"># Less descriptive</span></span>
-<span><span class="co"># put name:"step1", label:"Load data"</span></span>
-<span><span class="co"># put name:"process", label:"Do calculations"</span></span></code></pre>
+<span><span class="co"># put id:"step1", label:"Load data"</span></span>
+<span><span class="co"># put id:"process", label:"Do calculations"</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="document-data-dependencies">2. Document Data Dependencies<a class="anchor" aria-label="anchor" href="#document-data-dependencies"></a>
 </h3>
 <p>Always specify inputs and outputs for data processing steps:</p>
-<pre><code><span><span class="co"># put name:"merge_datasets", label:"Merge Customer and Transaction Data", input:"customers.csv,transactions.csv", output:"merged_data.csv"</span></span></code></pre>
+<pre><code><span><span class="co"># put id:"merge_datasets", label:"Merge Customer and Transaction Data", input:"customers.csv,transactions.csv", output:"merged_data.csv"</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="use-consistent-node-types">3. Use Consistent Node Types<a class="anchor" aria-label="anchor" href="#use-consistent-node-types"></a>
 </h3>
 <p>Stick to a standard set of node types across your team:</p>
-<pre><code><span><span class="co"># put name:"load_raw_data", label:"Load Raw Sales Data", node_type:"input"</span></span>
-<span><span class="co"># put name:"clean_data", label:"Clean and Validate", node_type:"process"</span></span>
-<span><span class="co"># put name:"export_results", label:"Export Final Results", node_type:"output"</span></span></code></pre>
+<pre><code><span><span class="co"># put id:"load_raw_data", label:"Load Raw Sales Data", node_type:"input"</span></span>
+<span><span class="co"># put id:"clean_data", label:"Clean and Validate", node_type:"process"</span></span>
+<span><span class="co"># put id:"export_results", label:"Export Final Results", node_type:"output"</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="add-helpful-metadata">4. Add Helpful Metadata<a class="anchor" aria-label="anchor" href="#add-helpful-metadata"></a>
 </h3>
 <p>Include metadata that helps with workflow understanding:</p>
-<pre><code><span><span class="co"># put name:"train_model", label:"Train Random Forest Model", node_type:"process", estimated_time:"30min", requires:"tidymodels", memory_intensive:"true"</span></span></code></pre>
+<pre><code><span><span class="co"># put id:"train_model", label:"Train Random Forest Model", node_type:"process", estimated_time:"30min", requires:"tidymodels", memory_intensive:"true"</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="group-related-operations">5. Group Related Operations<a class="anchor" aria-label="anchor" href="#group-related-operations"></a>
 </h3>
 <p>Use grouping properties to organize complex workflows:</p>
-<pre><code><span><span class="co"># put name:"feature_engineering", label:"Engineer Features", group:"preprocessing", stage:"1"</span></span>
-<span><span class="co"># put name:"model_training", label:"Train Model", group:"modeling", stage:"2"</span></span>
-<span><span class="co"># put name:"model_evaluation", label:"Evaluate Model", group:"modeling", stage:"3"</span></span></code></pre>
+<pre><code><span><span class="co"># put id:"feature_engineering", label:"Engineer Features", group:"preprocessing", stage:"1"</span></span>
+<span><span class="co"># put id:"model_training", label:"Train Model", group:"modeling", stage:"2"</span></span>
+<span><span class="co"># put id:"model_evaluation", label:"Evaluate Model", group:"modeling", stage:"3"</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">

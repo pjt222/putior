@@ -10,7 +10,7 @@ single-line and multiline formats.
 ``` r
 put(
   path,
-  pattern = "\\.(R|r|py|sql|sh|jl)$",
+  pattern = NULL,
   recursive = FALSE,
   include_line_numbers = FALSE,
   validate = TRUE,
@@ -27,10 +27,10 @@ put(
 
 - pattern:
 
-  Character string specifying the file pattern to match. Default:
-  "\\(R\|r\|py\|sql\|sh\|jl)\$" (R, Python, SQL, shell, Julia files).
-  For other languages, specify an appropriate pattern (e.g., "\\js\$"
-  for JavaScript).
+  Character string specifying the file pattern to match. Default: all
+  supported extensions (see
+  [`get_supported_extensions`](https://pjt222.github.io/putior/reference/get_supported_extensions.md)).
+  For a subset, specify a pattern (e.g., "\\js\$" for JavaScript only).
 
 - recursive:
 

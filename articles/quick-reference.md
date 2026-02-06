@@ -87,6 +87,29 @@ put("./", log_level = "DEBUG")
 | `output`   | Stadium   | Reports, exports  |
 | `decision` | Diamond   | Conditional logic |
 
+``` mermaid
+flowchart TD
+    load(["input"])
+    transform["process"]
+    export[["output"]]
+    check{"decision"}
+
+    %% Connections
+    load --> transform
+    transform --> export
+    transform --> check
+
+    %% Styling
+    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    class load inputStyle
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class transform processStyle
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class export outputStyle
+    classDef decisionStyle fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    class check decisionStyle
+```
+
 ## See Also
 
 [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)

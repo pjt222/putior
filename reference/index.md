@@ -8,6 +8,10 @@ Main functions for extracting annotations and creating diagrams
   Source Files for PUT Annotations
 - [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
   : Create Mermaid Diagram from PUT Workflow
+- [`print(`*`<putior_workflow>`*`)`](https://pjt222.github.io/putior/reference/print.putior_workflow.md)
+  : Print a putior workflow
+- [`summary(`*`<putior_workflow>`*`)`](https://pjt222.github.io/putior/reference/summary.putior_workflow.md)
+  : Summarize a putior workflow
 
 ## Auto-Annotation
 

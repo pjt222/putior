@@ -39,9 +39,9 @@ That’s it! You’ll see a flowchart like this:
 
 ``` mermaid
 flowchart TD
-    load([Load Data])
-    clean[Clean Data]
-    report[[Generate Report]]
+    load(["Load Data"])
+    clean["Clean Data"]
+    report[["Generate Report"]]
 
     %% Connections
     load --> clean
@@ -76,7 +76,7 @@ writeLines(c(
 
 # Scan and visualize
 workflow <- put(temp_file)
-#> Warning in doTryCatch(return(expr), name, parentenv, handler): Validation issues in file25944f93ea4.R line 7:
+#> Warning: Validation issues in file25b910ce75f.R line 7:
 #> File reference missing extension: database
 ```
 
@@ -89,13 +89,13 @@ cat("```mermaid\n")
 cat(put_diagram(workflow, output = "raw"))
 ```
 
-flowchart TD f2ce9f40_bcfb_4b28_87e8_7e67e2bf122d\[Extract\]
-node_4f8c85dd_a2ea_4e9c_8283_ed39f6657b25\[Transform\]
-node_28c8dd5a_49a5_4b10_b475_a27c2a1fb899\[Load\]
+flowchart TD aae718b5_eea9_4afd_ac8b_0af194721b4e\[“Extract”\]
+e5807939_7713_45f7_8f50_8b982e5c626f\[“Transform”\]
+node_97d0738a_d3f2_4753_b190_41062028fb7a\[“Load”\]
 
     %% Connections
-    f2ce9f40_bcfb_4b28_87e8_7e67e2bf122d --> node_4f8c85dd_a2ea_4e9c_8283_ed39f6657b25
-    node_4f8c85dd_a2ea_4e9c_8283_ed39f6657b25 --> node_28c8dd5a_49a5_4b10_b475_a27c2a1fb899
+    aae718b5_eea9_4afd_ac8b_0af194721b4e --> e5807939_7713_45f7_8f50_8b982e5c626f
+    e5807939_7713_45f7_8f50_8b982e5c626f --> node_97d0738a_d3f2_4753_b190_41062028fb7a
 
 ``` r
 cat("\n```\n")
@@ -160,13 +160,13 @@ put_diagram(workflow)
 #### Choose a Theme
 
 ``` r
-put_diagram(workflow, theme = "forest")  # or: default, dark, neutral
+put_diagram(workflow, theme = "github")  # or: light, dark, minimal, viridis
 ```
 
 #### Save to File
 
 ``` r
-put_diagram(workflow, output = "workflow.md")
+put_diagram(workflow, output = "file", file = "workflow.md")
 ```
 
 ------------------------------------------------------------------------
@@ -205,7 +205,7 @@ put_generate(path)           # Generate annotation suggestions
 
 # Useful options
 put("./", recursive = TRUE)  # Include subdirectories
-put_diagram(wf, theme = "forest", direction = "LR")
+put_diagram(wf, theme = "github", direction = "LR")
 put_diagram(wf, show_artifacts = FALSE)  # Hide data files
 ```
 

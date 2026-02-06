@@ -26,9 +26,9 @@ A basic extract-transform-load workflow:
 
 ``` mermaid
 flowchart TD
-    extract([Extract Data])
-    transform[Transform Data]
-    load[[Load to Database]]
+    extract(["Extract Data"])
+    transform["Transform Data"]
+    load[["Load to Database"]]
 
     %% Connections
     extract --> transform
@@ -62,9 +62,9 @@ A simple report generation workflow:
 
 ``` mermaid
 flowchart TD
-    fetch([Fetch Metrics])
-    analyze[Analyze Trends]
-    report[[Generate Report]]
+    fetch(["Fetch Metrics"])
+    analyze["Analyze Trends"]
+    report[["Generate Report"]]
 
     %% Connections
     fetch --> analyze
@@ -124,16 +124,16 @@ A complete ML workflow from data collection to model deployment:
 
 ``` mermaid
 flowchart TD
-    collect([Collect Raw Data])
-    clean[Clean Data]
-    feature[Feature Engineering]
-    split[Train/Test Split]
-    train[Train Model]
-    evaluate[Evaluate Model]
-    hyper[Hyperparameter Tuning]
-    retrain[Retrain with Best Params]
-    validate[Final Validation]
-    deploy[[Deploy Model]]
+    collect(["Collect Raw Data"])
+    clean["Clean Data"]
+    feature["Feature Engineering"]
+    split["Train/Test Split"]
+    train["Train Model"]
+    evaluate["Evaluate Model"]
+    hyper["Hyperparameter Tuning"]
+    retrain["Retrain with Best Params"]
+    validate["Final Validation"]
+    deploy[["Deploy Model"]]
 
     %% Connections
     collect --> clean
@@ -203,15 +203,15 @@ Combining data from multiple sources:
 
 ``` mermaid
 flowchart TD
-    sales_api([Fetch Sales API])
-    inv_db([Fetch Inventory DB])
-    cust_crm([Fetch Customer CRM])
-    clean_sales[Clean Sales]
-    clean_inv[Clean Inventory]
-    clean_cust[Clean Customers]
-    merge[Merge All Sources]
-    metrics[Calculate Metrics]
-    dashboard[[Generate Dashboard]]
+    sales_api(["Fetch Sales API"])
+    inv_db(["Fetch Inventory DB"])
+    cust_crm(["Fetch Customer CRM"])
+    clean_sales["Clean Sales"]
+    clean_inv["Clean Inventory"]
+    clean_cust["Clean Customers"]
+    merge["Merge All Sources"]
+    metrics["Calculate Metrics"]
+    dashboard[["Generate Dashboard"]]
 
     %% Connections
     sales_api --> clean_sales
@@ -421,11 +421,11 @@ data <- read_parquet("transformed.parquet")
 
 ``` mermaid
 flowchart TD
-    sql([SQL Extract])
-    python_transform[Python Transform]
-    r_stats[R Statistical Analysis]
-    r_viz[R Visualization]
-    python_report[[Python Report Gen]]
+    sql(["SQL Extract"])
+    python_transform["Python Transform"]
+    r_stats["R Statistical Analysis"]
+    r_viz["R Visualization"]
+    python_report[["Python Report Gen"]]
 
     %% Connections
     sql --> python_transform
@@ -480,13 +480,13 @@ A genomics analysis workflow processing FASTA sequences:
 
 ``` mermaid
 flowchart TD
-    fetch([Fetch FASTA Sequences])
-    qc[Quality Control]
-    blast[BLAST Alignment]
-    parse[Parse BLAST Results]
-    de[Differential Expression]
-    pathway[Pathway Enrichment]
-    report[[Generate Report]]
+    fetch(["Fetch FASTA Sequences"])
+    qc["Quality Control"]
+    blast["BLAST Alignment"]
+    parse["Parse BLAST Results"]
+    de["Differential Expression"]
+    pathway["Pathway Enrichment"]
+    report[["Generate Report"]]
 
     %% Connections
     fetch --> qc
@@ -542,13 +542,13 @@ Portfolio analysis and risk assessment workflow:
 
 ``` mermaid
 flowchart TD
-    market([Fetch Market Data])
-    holdings([Load Portfolio Holdings])
-    returns[Calculate Returns]
-    risk[Compute Risk Metrics]
-    attrib[Performance Attribution]
-    optimize[Portfolio Optimization]
-    dashboard[[Risk Dashboard]]
+    market(["Fetch Market Data"])
+    holdings(["Load Portfolio Holdings"])
+    returns["Calculate Returns"]
+    risk["Compute Risk Metrics"]
+    attrib["Performance Attribution"]
+    optimize["Portfolio Optimization"]
+    dashboard[["Risk Dashboard"]]
 
     %% Connections
     market --> returns
@@ -606,13 +606,13 @@ Data extraction from web sources:
 
 ``` mermaid
 flowchart TD
-    urls([Fetch URL List])
-    scrape[Scrape Web Pages]
-    parse[Parse HTML Content]
-    ner[Named Entity Recognition]
-    clean[Clean and Normalize]
-    dedup[Remove Duplicates]
-    db[[Load to Database]]
+    urls(["Fetch URL List"])
+    scrape["Scrape Web Pages"]
+    parse["Parse HTML Content"]
+    ner["Named Entity Recognition"]
+    clean["Clean and Normalize"]
+    dedup["Remove Duplicates"]
+    db[["Load to Database"]]
 
     %% Connections
     urls --> scrape
@@ -676,16 +676,16 @@ R for reporting:
 
 ``` mermaid
 flowchart TD
-    load([Load Raw Data - R])
-    eda[Exploratory Analysis - R]
-    features[Feature Engineering - R]
-    split[Train/Test Split - R]
-    train[Train XGBoost - Python]
-    hyper[Hyperparameter Tuning - Python]
-    final[Final Model Training - Python]
-    evaluate[Model Evaluation - Python]
-    report[[Model Report - R]]
-    deploy_export[[Export for Production - Python]]
+    load(["Load Raw Data - R"])
+    eda["Exploratory Analysis - R"]
+    features["Feature Engineering - R"]
+    split["Train/Test Split - R"]
+    train["Train XGBoost - Python"]
+    hyper["Hyperparameter Tuning - Python"]
+    final["Final Model Training - Python"]
+    evaluate["Model Evaluation - Python"]
+    report[["Model Report - R"]]
+    deploy_export[["Export for Production - Python"]]
 
     %% Connections
     load --> eda
@@ -763,9 +763,9 @@ write.csv(aggregated, "regional_sales.csv")
 
 ``` mermaid
 flowchart TD
-    step1[step1]
-    node_2[2]
-    final_step_1[final step]
+    step1["step1"]
+    node_2["2"]
+    final_step_1["final step"]
 
     %% Connections
     step1 --> node_2
@@ -837,10 +837,10 @@ write.csv(aggregated, "regional_sales.csv")
 
 ``` mermaid
 flowchart TD
-    extract_sales([Load Sales Data])
-    clean_data[Clean & Validate]
-    aggregate_regions[Aggregate by Region]
-    export_results[[Export Regional Report]]
+    extract_sales(["Load Sales Data"])
+    clean_data["Clean & Validate"]
+    aggregate_regions["Aggregate by Region"]
+    export_results[["Export Regional Report"]]
 
     %% Connections
     extract_sales --> clean_data

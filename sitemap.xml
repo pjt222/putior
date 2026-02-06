@@ -18,6 +18,7 @@
 <url><loc>https://pjt222.github.io/putior/index.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/news/index.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/LANGUAGE_GROUPS.html</loc></url>
+<url><loc>https://pjt222.github.io/putior/reference/as_putior_workflow.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/build_file_pattern.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/convert_results_to_df.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/create_artifact_nodes.html</loc></url>
@@ -71,6 +72,7 @@
 <url><loc>https://pjt222.github.io/putior/reference/normalize_path_for_url.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/parse_comma_separated_pairs.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/parse_put_annotation.html</loc></url>
+<url><loc>https://pjt222.github.io/putior/reference/print.putior_workflow.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/process_single_file.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/put.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/put_auto.html</loc></url>
@@ -88,10 +90,12 @@
 <url><loc>https://pjt222.github.io/putior/reference/putior_mcp_server.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/putior_mcp_tools.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/putior_skills.html</loc></url>
+<url><loc>https://pjt222.github.io/putior/reference/resolve_label.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/run_sandbox.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/sanitize_node_id.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/set_putior_log_level.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/split_file_list.html</loc></url>
+<url><loc>https://pjt222.github.io/putior/reference/summary.putior_workflow.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/validate_annotation.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/with_log_level.html</loc></url>
 </urlset>

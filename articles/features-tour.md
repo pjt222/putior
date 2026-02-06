@@ -57,9 +57,9 @@ put_diagram(workflow)
 
 ``` mermaid
 flowchart TD
-    load_data_R_1[load_data.R]
-    process_R_1[process.R]
-    report_R_1[report.R]
+    load_data_R_1["load_data.R"]
+    process_R_1["process.R"]
+    report_R_1["report.R"]
 
     %% Connections
     load_data_R_1 --> process_R_1
@@ -199,8 +199,8 @@ workflow <- put_merge("./src/", merge_strategy = "union")
 
 ``` mermaid
 flowchart TD
-    extract([Extract Data])
-    load[[Load to DB]]
+    extract(["Extract Data"])
+    load[["Load to DB"]]
 
     %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
@@ -213,9 +213,9 @@ flowchart TD
 
 ``` mermaid
 flowchart TD
-    extract([Extract Data])
-    transform[etl.R]
-    load[[Load to DB]]
+    extract(["Extract Data"])
+    transform["etl.R"]
+    load[["Load to DB"]]
 
     %% Connections
     extract --> transform
@@ -275,8 +275,8 @@ put_diagram(workflow, show_source_info = TRUE)
 
 ``` mermaid
 flowchart TD
-    load([Load Data<br/><small>(01_load.R)</small>])
-    process[Process<br/><small>(02_process.R)</small>]
+    load(["Load Data"<br/><small>(01_load.R)</small>])
+    process["Process"<br/><small>(02_process.R)</small>]
 
     %% Connections
     load --> process
@@ -302,12 +302,12 @@ put_diagram(workflow,
 
 ``` mermaid
 flowchart TD
-    subgraph 01_load [01_load.R]
-        load([Load Data])
+    subgraph 01_load ["01_load.R"]
+        load(["Load Data"])
     end
 
-    subgraph 02_process [02_process.R]
-        process[Process]
+    subgraph 02_process ["02_process.R"]
+        process["Process"]
     end
 
     %% Connections

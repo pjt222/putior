@@ -9,7 +9,7 @@ similar to how roxygen2 generates documentation skeletons.
 ``` r
 put_generate(
   path,
-  pattern = "\\.(R|r|py|sql|sh|jl)$",
+  pattern = NULL,
   recursive = FALSE,
   output = "console",
   insert = FALSE,
@@ -25,8 +25,8 @@ put_generate(
 
 - pattern:
 
-  Character string specifying the file pattern to match. Default:
-  "\\(R\|r\|py\|sql\|sh\|jl)\$"
+  Character string specifying the file pattern to match. Default: all
+  extensions with detection pattern support.
 
 - recursive:
 
@@ -37,6 +37,8 @@ put_generate(
   Character string specifying output destination:
 
   - "console" - Print to console (default)
+
+  - "raw" - Return as string without printing
 
   - "clipboard" - Copy to clipboard (requires clipr package)
 

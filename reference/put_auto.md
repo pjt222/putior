@@ -14,7 +14,7 @@ documentation skeletons.
 ``` r
 put_auto(
   path,
-  pattern = "\\.(R|r|py|sql|sh|jl)$",
+  pattern = NULL,
   recursive = FALSE,
   detect_inputs = TRUE,
   detect_outputs = TRUE,
@@ -33,8 +33,9 @@ put_auto(
 
 - pattern:
 
-  Character string specifying the file pattern to match. Default:
-  "\\(R\|r\|py\|sql\|sh\|jl)\$" (R, Python, SQL, shell, Julia files)
+  Character string specifying the file pattern to match. Default: all
+  extensions with detection pattern support (see
+  [`list_supported_languages`](https://pjt222.github.io/putior/reference/list_supported_languages.md)`(detection_only = TRUE)`).
 
 - recursive:
 

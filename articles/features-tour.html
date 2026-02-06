@@ -295,9 +295,9 @@ docs</a>)</em></p>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Example Auto-Detection Result:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    load_data_R_1[load_data.R]
-    process_R_1[process.R]
-    report_R_1[report.R]
+    load_data_R_1["load_data.R"]
+    process_R_1["process.R"]
+    report_R_1["report.R"]
 
     %% Connections
     load_data_R_1 --&gt; process_R_1
@@ -431,8 +431,8 @@ docs</a>)</em></p>
 <p><strong>Before/After Merge Example:</strong></p>
 <p><em>Manual annotations only (sparse):</em></p>
 <pre class="mermaid"><code>flowchart TD
-    extract([Extract Data])
-    load[[Load to DB]]
+    extract(["Extract Data"])
+    load[["Load to DB"]]
 
     %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
@@ -442,9 +442,9 @@ docs</a>)</em></p>
 <p><em>After merge with <code>supplement</code> strategy (auto-detected
 I/O added):</em></p>
 <pre class="mermaid"><code>flowchart TD
-    extract([Extract Data])
-    transform[etl.R]
-    load[[Load to DB]]
+    extract(["Extract Data"])
+    transform["etl.R"]
+    load[["Load to DB"]]
 
     %% Connections
     extract --&gt; transform
@@ -498,8 +498,8 @@ Reference</a>)</em></p>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_source_info <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Output:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    load([Load Data&lt;br/&gt;&lt;small&gt;(01_load.R)&lt;/small&gt;])
-    process[Process&lt;br/&gt;&lt;small&gt;(02_process.R)&lt;/small&gt;]
+    load(["Load Data"&lt;br/&gt;&lt;small&gt;(01_load.R)&lt;/small&gt;])
+    process["Process"&lt;br/&gt;&lt;small&gt;(02_process.R)&lt;/small&gt;]
 
     %% Connections
     load --&gt; process
@@ -517,12 +517,12 @@ Reference</a>)</em></p>
 <span>            source_info_style <span class="op">=</span> <span class="st">"subgraph"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Output:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    subgraph 01_load [01_load.R]
-        load([Load Data])
+    subgraph 01_load ["01_load.R"]
+        load(["Load Data"])
     end
 
-    subgraph 02_process [02_process.R]
-        process[Process]
+    subgraph 02_process ["02_process.R"]
+        process["Process"]
     end
 
     %% Connections
