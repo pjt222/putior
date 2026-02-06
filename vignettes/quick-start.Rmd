@@ -153,7 +153,7 @@ put_diagram(workflow, theme = "github")  # or: light, dark, minimal, viridis
 
 ### Save to File
 ```{r eval=FALSE}
-put_diagram(workflow, output = "workflow.md")
+put_diagram(workflow, output = "file", file = "workflow.md")
 ```
 
 ---

@@ -22,8 +22,7 @@ NULL
 #' @keywords internal
 putior_log <- function(level, ..., .envir = parent.frame()) {
   # Silent return if logger not installed
-
-if (!requireNamespace("logger", quietly = TRUE)) {
+  if (!requireNamespace("logger", quietly = TRUE)) {
     return(invisible(NULL))
   }
 

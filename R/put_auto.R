@@ -108,7 +108,7 @@ put_auto <- function(path,
   } else {
     # Single file case
     if (!grepl(pattern, path)) {
-      warning("File does not match pattern '", pattern, "': ", path)
+      warning("File does not match pattern '", pattern, "': ", path, call. = FALSE)
       return(as_putior_workflow(empty_auto_result_df(include_line_numbers)))
     }
     files <- path
@@ -116,7 +116,7 @@ put_auto <- function(path,
 
   if (length(files) == 0) {
     putior_log("WARN", "No files matching pattern '{pattern}' found in: {path}")
-    warning("No files matching pattern '", pattern, "' found in: ", path)
+    warning("No files matching pattern '", pattern, "' found in: ", path, call. = FALSE)
     return(as_putior_workflow(empty_auto_result_df(include_line_numbers)))
   }
 
@@ -266,14 +266,14 @@ put_generate <- function(path,
     )
   } else {
     if (!grepl(pattern, path)) {
-      warning("File does not match pattern '", pattern, "': ", path)
+      warning("File does not match pattern '", pattern, "': ", path, call. = FALSE)
       return(invisible(character(0)))
     }
     files <- path
   }
 
   if (length(files) == 0) {
-    warning("No files matching pattern '", pattern, "' found in: ", path)
+    warning("No files matching pattern '", pattern, "' found in: ", path, call. = FALSE)
     return(invisible(character(0)))
   }
 
@@ -519,7 +519,7 @@ detect_workflow_elements <- function(file,
     return(result)
 
   }, error = function(e) {
-    warning("Error processing ", basename(file), ": ", e$message)
+    warning("Error processing ", basename(file), ": ", e$message, call. = FALSE)
     return(NULL)
   })
 }
@@ -780,7 +780,7 @@ insert_annotation_into_file <- function(file, annotation) {
     message("Inserted annotation into: ", basename(file))
 
   }, error = function(e) {
-    warning("Failed to insert annotation into ", basename(file), ": ", e$message)
+    warning("Failed to insert annotation into ", basename(file), ": ", e$message, call. = FALSE)
   })
 }
 

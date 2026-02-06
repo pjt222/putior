@@ -381,9 +381,9 @@ server <- function(input, output, session) {
       }
       dir.create(sandbox_dir)
 
-      # Write each file
+      # Write each file (use basename to prevent path traversal)
       for (f in files) {
-        file_path <- file.path(sandbox_dir, f$name)
+        file_path <- file.path(sandbox_dir, basename(f$name))
         writeLines(f$content, file_path)
       }
 

@@ -467,8 +467,7 @@ acp_create_run_handler <- function(body) {
   )
 
   # Store for later retrieval
-
-store_run(run_id, run_data)
+  store_run(run_id, run_data)
 
   run_data
 }
@@ -574,6 +573,15 @@ putior_acp_server <- function(host = "127.0.0.1", port = 8080L) {
       "The 'plumber2' package is required for ACP server functionality.\n",
       "Install it with: install.packages('plumber2')\n",
       "Or: pak::pak('plumber2')",
+      call. = FALSE
+    )
+  }
+
+  # Warn if binding to all interfaces
+  if (host == "0.0.0.0") {
+    warning(
+      "Binding to 0.0.0.0 exposes the ACP server to all network interfaces.\n",
+      "This may allow remote access. Use host = \"127.0.0.1\" for local-only access.",
       call. = FALSE
     )
   }

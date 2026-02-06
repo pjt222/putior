@@ -349,16 +349,16 @@ generate_node_styling <- function(workflow, theme = "light", show_workflow_bound
     nodes_of_type <- workflow[!is.na(workflow$node_type) & workflow$node_type == node_type, ]
 
     if (nrow(nodes_of_type) > 0) {
-      node_ids <- sapply(nodes_of_type$id, sanitize_node_id)
+      node_ids <- vapply(nodes_of_type$id, sanitize_node_id, character(1))
       class_name <- paste0(node_type, "Style")
 
       # Create class definition
       style_def <- paste0("    classDef ", class_name, " ", color_schemes[[node_type]])
 
       # Apply class to each node individually to avoid line length issues
-      class_applications <- sapply(node_ids, function(id) {
+      class_applications <- vapply(node_ids, function(id) {
         paste0("    class ", id, " ", class_name)
-      })
+      }, character(1))
 
       styling <- c(styling, style_def, class_applications)
     }
@@ -659,11 +659,10 @@ normalize_path_for_url <- function(file_path) {
   file_path <- as.character(file_path)
 
   # Try to get absolute path, but handle gracefully if file doesn't exist
-  tryCatch({
-    normalized <- normalizePath(file_path, winslash = "/", mustWork = FALSE)
-  }, error = function(e) {
-    normalized <- file_path
-  })
+  normalized <- tryCatch(
+    normalizePath(file_path, winslash = "/", mustWork = FALSE),
+    error = function(e) file_path
+  )
 
   # Ensure forward slashes for URLs
   normalized <- gsub("\\\\", "/", normalized)
@@ -960,14 +959,14 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
             # Find script nodes that output this file
             source_nodes <- script_nodes[
               !is.na(script_nodes$output) &
-                sapply(script_nodes$output, function(x) {
+                vapply(script_nodes$output, function(x) {
                   if (is.na(x) || x == "") {
                     return(FALSE)
                   }
                   output_files <- strsplit(trimws(x), ",")[[1]]
                   output_files <- trimws(output_files)
                   input_file %in% output_files
-                }),
+                }, logical(1)),
             ]
 
             if (nrow(source_nodes) > 0) {
@@ -1053,14 +1052,14 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
             # Find nodes that output this file
             source_nodes <- workflow[
               !is.null(workflow$output) & !is.na(workflow$output) &
-                sapply(workflow$output, function(x) {
+                vapply(workflow$output, function(x) {
                   if (is.na(x) || x == "") {
                     return(FALSE)
                   }
                   output_files <- strsplit(trimws(x), ",")[[1]]
                   output_files <- trimws(output_files)
                   input_file %in% output_files
-                }),
+                }, logical(1)),
             ]
 
             if (nrow(source_nodes) > 0) {
@@ -1142,7 +1141,13 @@ handle_output <- function(mermaid_code, output = "console", file = NULL, title =
       # Do nothing - the invisible return in put_diagram() will handle it
     },
     {
-      # Default to console with mermaid blocks
+      # Unrecognized output value - warn and fall back to console
+      warning(
+        "Unrecognized output value: '", output, "'.\n",
+        "Valid options: \"console\", \"file\", \"clipboard\", \"raw\".\n",
+        "Did you mean: put_diagram(workflow, output = \"file\", file = \"", output, "\")?",
+        call. = FALSE
+      )
       cat("```mermaid\n")
       cat(mermaid_code)
       cat("\n```\n")

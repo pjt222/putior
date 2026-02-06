@@ -183,7 +183,7 @@ putior_mcp_tools <- function(include = NULL,
   )
 
   # Name the tools (using @ for S7 object access)
-  names(all_tools) <- sapply(all_tools, function(t) t@name)
+  names(all_tools) <- vapply(all_tools, function(t) t@name, character(1))
 
   # Filter by include
   if (!is.null(include)) {

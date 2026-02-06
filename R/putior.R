@@ -154,7 +154,7 @@ put <- function(path,
   } else {
     # Single file case
     if (!grepl(pattern, path)) {
-      warning("File does not match pattern '", pattern, "': ", path)
+      warning("File does not match pattern '", pattern, "': ", path, call. = FALSE)
       return(as_putior_workflow(empty_result_df(include_line_numbers)))
     }
     files <- path
@@ -195,7 +195,8 @@ put <- function(path,
 
   # Report any errors
   if (length(processing_errors) > 0) {
-    warning("Errors processing files:\n", paste(processing_errors, collapse = "\n"))
+    warning("Errors processing files:\n", paste(processing_errors, collapse = "\n"),
+            call. = FALSE)
   }
 
   # Convert results to data frame
@@ -347,7 +348,8 @@ process_single_file <- function(file, include_line_numbers, validate) {
             if (length(validation_issues) > 0) {
               warning(
                 "Validation issues in ", basename(file), " line ", line_idx, ":\n",
-                paste(validation_issues, collapse = "\n")
+                paste(validation_issues, collapse = "\n"),
+                call. = FALSE
               )
             }
           }

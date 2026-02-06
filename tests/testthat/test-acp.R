@@ -502,3 +502,61 @@ test_that("ACP output format is valid", {
   expect_equal(output[[1]]$parts[[1]]$content_type, "text/plain")
   expect_true(is.character(output[[1]]$parts[[1]]$content))
 })
+
+# =============================================================================
+# Path Sanitization Tests
+# =============================================================================
+
+test_that("sanitize_acp_path allows normal relative paths", {
+  expect_equal(putior:::sanitize_acp_path("./R/"), "./R/")
+  expect_equal(putior:::sanitize_acp_path("src/main.R"), "src/main.R")
+  expect_equal(putior:::sanitize_acp_path("script.R"), "script.R")
+  expect_equal(putior:::sanitize_acp_path("."), ".")
+})
+
+test_that("sanitize_acp_path allows absolute paths", {
+  expect_equal(putior:::sanitize_acp_path("/home/user/project"), "/home/user/project")
+  expect_equal(putior:::sanitize_acp_path("C:/Users/project"), "C:/Users/project")
+})
+
+test_that("sanitize_acp_path rejects directory traversal", {
+  expect_warning(result <- putior:::sanitize_acp_path("../secret"), "directory traversal")
+  expect_equal(result, ".")
+
+  expect_warning(result <- putior:::sanitize_acp_path("foo/../bar"), "directory traversal")
+  expect_equal(result, ".")
+
+  expect_warning(result <- putior:::sanitize_acp_path("../../etc/passwd"), "directory traversal")
+  expect_equal(result, ".")
+
+  expect_warning(result <- putior:::sanitize_acp_path("foo/.."), "directory traversal")
+  expect_equal(result, ".")
+})
+
+test_that("sanitize_acp_path rejects backslash directory traversal", {
+  expect_warning(result <- putior:::sanitize_acp_path("..\\secret"), "directory traversal")
+  expect_equal(result, ".")
+
+  expect_warning(result <- putior:::sanitize_acp_path("foo\\..\\bar"), "directory traversal")
+  expect_equal(result, ".")
+})
+
+test_that("sanitize_acp_path rejects control characters", {
+  # Construct strings with control chars at runtime to avoid null bytes in source
+  null_path <- paste0("file", rawToChar(as.raw(0x01)), "name")
+  expect_warning(result <- putior:::sanitize_acp_path(null_path), "control characters")
+  expect_equal(result, ".")
+
+  expect_warning(result <- putior:::sanitize_acp_path("file\nname"), "control characters")
+  expect_equal(result, ".")
+
+  expect_warning(result <- putior:::sanitize_acp_path("file\tname"), "control characters")
+  expect_equal(result, ".")
+})
+
+test_that("sanitize_acp_path handles NULL, empty, and invalid input", {
+  expect_equal(putior:::sanitize_acp_path(NULL), ".")
+  expect_equal(putior:::sanitize_acp_path(""), ".")
+  expect_equal(putior:::sanitize_acp_path(123), ".")
+  expect_equal(putior:::sanitize_acp_path(c("a", "b")), ".")
+})
