@@ -331,9 +331,9 @@
         </dt>
         <dd>Set putior Log Level</dd>
       </dl></div><div class="section level2">
-      <h2 id="helper-functions">Helper Functions<a class="anchor" aria-label="anchor" href="#helper-functions"></a></h2>
+      <h2 id="utilities">Utilities<a class="anchor" aria-label="anchor" href="#utilities"></a></h2>
 
-      <div class="section-desc"><p>Supporting functions for processing annotations</p></div>
+      <div class="section-desc"><p>Helper and validation functions</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -341,20 +341,6 @@
 
 
       <dl><dt>
-
-          <code><a href="parse_put_annotation.html">parse_put_annotation()</a></code>
-
-        </dt>
-        <dd>Extract PUT Annotation Properties</dd>
-
-        <dt>
-
-          <code><a href="validate_annotation.html">validate_annotation()</a></code>
-
-        </dt>
-        <dd>Validate PUT annotation for common issues</dd>
-
-        <dt>
 
           <code><a href="is_valid_put_annotation.html">is_valid_put_annotation()</a></code>
 
@@ -363,21 +349,21 @@
 
         <dt>
 
-          <code><a href="process_single_file.html">process_single_file()</a></code>
-
-        </dt>
-        <dd>Process a single file for PUT annotations</dd>
-
-        <dt>
-
           <code><a href="split_file_list.html">split_file_list()</a></code>
 
         </dt>
         <dd>Split comma-separated file list</dd>
-      </dl></div><div class="section level2">
-      <h2 id="diagram-generation">Diagram Generation<a class="anchor" aria-label="anchor" href="#diagram-generation"></a></h2>
 
-      <div class="section-desc"><p>Functions for creating Mermaid diagrams</p></div>
+        <dt>
+
+          <code><a href="get_diagram_themes.html">get_diagram_themes()</a></code>
+
+        </dt>
+        <dd>Get available themes for put_diagram</dd>
+      </dl></div><div class="section level2">
+      <h2 id="internal-functions">Internal Functions<a class="anchor" aria-label="anchor" href="#internal-functions"></a></h2>
+
+      <div class="section-desc"><p>Internal implementation details (not part of the public API)</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -386,24 +372,31 @@
 
       <dl><dt>
 
-          <code><a href="generate_node_definitions.html">generate_node_definitions()</a></code>
+          <code><a href="LANGUAGE_GROUPS.html">LANGUAGE_GROUPS</a></code>
 
         </dt>
-        <dd>Generate node definitions for mermaid diagram</dd>
+        <dd>Language Groups by Comment Syntax</dd>
 
         <dt>
 
-          <code><a href="generate_connections.html">generate_connections()</a></code>
+          <code><a href="as_putior_workflow.html">as_putior_workflow()</a></code>
 
         </dt>
-        <dd>Generate connections between nodes</dd>
+        <dd>Add putior_workflow class to a data frame</dd>
 
         <dt>
 
-          <code><a href="generate_node_styling.html">generate_node_styling()</a></code>
+          <code><a href="build_file_pattern.html">build_file_pattern()</a></code>
 
         </dt>
-        <dd>Generate node styling based on node types and theme</dd>
+        <dd>Build File Pattern for Supported Extensions</dd>
+
+        <dt>
+
+          <code><a href="convert_results_to_df.html">convert_results_to_df()</a></code>
+
+        </dt>
+        <dd>Convert results list to data frame</dd>
 
         <dt>
 
@@ -414,47 +407,31 @@
 
         <dt>
 
-          <code><a href="get_diagram_themes.html">get_diagram_themes()</a></code>
+          <code><a href="detect_files_from_patterns.html">detect_files_from_patterns()</a></code>
 
         </dt>
-        <dd>Get available themes for put_diagram</dd>
+        <dd>Detect files from pattern list</dd>
 
         <dt>
 
-          <code><a href="get_theme_colors.html">get_theme_colors()</a></code>
+          <code><a href="detect_workflow_elements.html">detect_workflow_elements()</a></code>
 
         </dt>
-        <dd>Get color schemes for different themes (FIXED VERSION)</dd>
+        <dd>Detect workflow elements in a single file</dd>
 
         <dt>
 
-          <code><a href="get_node_shape.html">get_node_shape()</a></code>
+          <code><a href="detection_patterns.html">detection_patterns</a></code>
 
         </dt>
-        <dd>Get node shape characters based on node type</dd>
+        <dd>Detection Pattern Definitions for Auto-Annotation</dd>
 
         <dt>
 
-          <code><a href="sanitize_node_id.html">sanitize_node_id()</a></code>
+          <code><a href="empty_auto_result_df.html">empty_auto_result_df()</a></code>
 
         </dt>
-        <dd>Sanitize node ID for mermaid compatibility (IMPROVED VERSION)</dd>
-      </dl></div><div class="section level2">
-      <h2 id="data-processing">Data Processing<a class="anchor" aria-label="anchor" href="#data-processing"></a></h2>
-
-      <div class="section-desc"><p>Functions for handling results</p></div>
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="convert_results_to_df.html">convert_results_to_df()</a></code>
-
-        </dt>
-        <dd>Convert results list to data frame</dd>
+        <dd>Create empty result data frame for put_auto</dd>
 
         <dt>
 
@@ -465,6 +442,195 @@
 
         <dt>
 
+          <code><a href="extract_file_path.html">extract_file_path()</a></code>
+
+        </dt>
+        <dd>Extract file path from a matched string (legacy function)</dd>
+
+        <dt>
+
+          <code><a href="extract_file_path_from_line.html">extract_file_path_from_line()</a></code>
+
+        </dt>
+        <dd>Extract file path from a line containing a matched function call</dd>
+
+        <dt>
+
+          <code><a href="generate_annotation_for_file.html">generate_annotation_for_file()</a></code>
+
+        </dt>
+        <dd>Generate annotation text for a single file</dd>
+
+        <dt>
+
+          <code><a href="generate_click_directives.html">generate_click_directives()</a></code>
+
+        </dt>
+        <dd>Generate Mermaid click directives</dd>
+
+        <dt>
+
+          <code><a href="generate_click_url.html">generate_click_url()</a></code>
+
+        </dt>
+        <dd>Generate click URL based on protocol</dd>
+
+        <dt>
+
+          <code><a href="generate_connections.html">generate_connections()</a></code>
+
+        </dt>
+        <dd>Generate connections between nodes</dd>
+
+        <dt>
+
+          <code><a href="generate_file_subgraphs.html">generate_file_subgraphs()</a></code>
+
+        </dt>
+        <dd>Generate file-based subgraphs</dd>
+
+        <dt>
+
+          <code><a href="generate_node_definitions.html">generate_node_definitions()</a></code>
+
+        </dt>
+        <dd>Generate node definitions for mermaid diagram</dd>
+
+        <dt>
+
+          <code><a href="generate_node_styling.html">generate_node_styling()</a></code>
+
+        </dt>
+        <dd>Generate node styling based on node types and theme</dd>
+
+        <dt>
+
+          <code><a href="get_c_patterns.html">get_c_patterns()</a></code>
+
+        </dt>
+        <dd>Get C Detection Patterns</dd>
+
+        <dt>
+
+          <code><a href="get_comment_group.html">get_comment_group()</a></code>
+
+        </dt>
+        <dd>Get Comment Syntax Group for Extension</dd>
+
+        <dt>
+
+          <code><a href="get_cpp_patterns.html">get_cpp_patterns()</a></code>
+
+        </dt>
+        <dd>Get C++ Detection Patterns</dd>
+
+        <dt>
+
+          <code><a href="get_go_patterns.html">get_go_patterns()</a></code>
+
+        </dt>
+        <dd>Get Go Detection Patterns</dd>
+
+        <dt>
+
+          <code><a href="get_java_patterns.html">get_java_patterns()</a></code>
+
+        </dt>
+        <dd>Get Java Detection Patterns</dd>
+
+        <dt>
+
+          <code><a href="get_javascript_patterns.html">get_javascript_patterns()</a></code>
+
+        </dt>
+        <dd>Get JavaScript Detection Patterns</dd>
+
+        <dt>
+
+          <code><a href="get_julia_patterns.html">get_julia_patterns()</a></code>
+
+        </dt>
+        <dd>Get Julia Detection Patterns</dd>
+
+        <dt>
+
+          <code><a href="get_lua_patterns.html">get_lua_patterns()</a></code>
+
+        </dt>
+        <dd>Get Lua Detection Patterns</dd>
+
+        <dt>
+
+          <code><a href="get_matlab_patterns.html">get_matlab_patterns()</a></code>
+
+        </dt>
+        <dd>Get MATLAB Detection Patterns</dd>
+
+        <dt>
+
+          <code><a href="get_node_shape.html">get_node_shape()</a></code>
+
+        </dt>
+        <dd>Get node shape characters based on node type</dd>
+
+        <dt>
+
+          <code><a href="get_python_patterns.html">get_python_patterns()</a></code>
+
+        </dt>
+        <dd>Get Python Detection Patterns</dd>
+
+        <dt>
+
+          <code><a href="get_r_patterns.html">get_r_patterns()</a></code>
+
+        </dt>
+        <dd>Get R Detection Patterns</dd>
+
+        <dt>
+
+          <code><a href="get_ruby_patterns.html">get_ruby_patterns()</a></code>
+
+        </dt>
+        <dd>Get Ruby Detection Patterns</dd>
+
+        <dt>
+
+          <code><a href="get_rust_patterns.html">get_rust_patterns()</a></code>
+
+        </dt>
+        <dd>Get Rust Detection Patterns</dd>
+
+        <dt>
+
+          <code><a href="get_shell_patterns.html">get_shell_patterns()</a></code>
+
+        </dt>
+        <dd>Get Shell Detection Patterns</dd>
+
+        <dt>
+
+          <code><a href="get_sql_patterns.html">get_sql_patterns()</a></code>
+
+        </dt>
+        <dd>Get SQL Detection Patterns</dd>
+
+        <dt>
+
+          <code><a href="get_theme_colors.html">get_theme_colors()</a></code>
+
+        </dt>
+        <dd>Get color schemes for different themes (FIXED VERSION)</dd>
+
+        <dt>
+
+          <code><a href="get_typescript_patterns.html">get_typescript_patterns()</a></code>
+
+        </dt>
+        <dd>Get TypeScript Detection Patterns</dd>
+
+        <dt>
+
           <code><a href="handle_output.html">handle_output()</a></code>
 
         </dt>
@@ -472,10 +638,136 @@
 
         <dt>
 
+          <code><a href="has_logger.html">has_logger()</a></code>
+
+        </dt>
+        <dd>Check if Logger is Available</dd>
+
+        <dt>
+
+          <code><a href="infer_node_type.html">infer_node_type()</a></code>
+
+        </dt>
+        <dd>Infer node type from inputs and outputs</dd>
+
+        <dt>
+
+          <code><a href="insert_annotation_into_file.html">insert_annotation_into_file()</a></code>
+
+        </dt>
+        <dd>Insert annotation at top of file</dd>
+
+        <dt>
+
+          <code><a href="is_likely_file_path.html">is_likely_file_path()</a></code>
+
+        </dt>
+        <dd>Check if a string looks like a file path</dd>
+
+        <dt>
+
+          <code><a href="language_registry.html">language_registry</a></code>
+
+        </dt>
+        <dd>Language Comment Syntax Registry</dd>
+
+        <dt>
+
+          <code><a href="merge_annotations.html">merge_annotations()</a></code>
+
+        </dt>
+        <dd>Merge manual and auto-detected annotations</dd>
+
+        <dt>
+
+          <code><a href="normalize_path_for_url.html">normalize_path_for_url()</a></code>
+
+        </dt>
+        <dd>Normalize file path for URL generation</dd>
+
+        <dt>
+
           <code><a href="parse_comma_separated_pairs.html">parse_comma_separated_pairs()</a></code>
 
         </dt>
         <dd>Parse comma-separated pairs while respecting quotes</dd>
+
+        <dt>
+
+          <code><a href="parse_put_annotation.html">parse_put_annotation()</a></code>
+
+        </dt>
+        <dd>Extract PUT Annotation Properties</dd>
+
+        <dt>
+
+          <code><a href="process_single_file.html">process_single_file()</a></code>
+
+        </dt>
+        <dd>Process a single file for PUT annotations</dd>
+
+        <dt>
+
+          <code><a href="putior-package.html">putior-package</a></code>
+
+        </dt>
+        <dd>putior Package Initialization</dd>
+
+        <dt>
+
+          <code><a href="putior_acp.html">putior_acp</a></code>
+
+        </dt>
+        <dd>ACP Server Integration for putior</dd>
+
+        <dt>
+
+          <code><a href="putior_log.html">putior_log()</a></code>
+
+        </dt>
+        <dd>Internal Logging Function</dd>
+
+        <dt>
+
+          <code><a href="putior_logging.html">putior_logging</a></code>
+
+        </dt>
+        <dd>Logging Infrastructure for putior</dd>
+
+        <dt>
+
+          <code><a href="putior_mcp.html">putior_mcp</a></code>
+
+        </dt>
+        <dd>MCP Server Integration for putior</dd>
+
+        <dt>
+
+          <code><a href="resolve_label.html">resolve_label()</a></code>
+
+        </dt>
+        <dd>Resolve label text for a workflow node</dd>
+
+        <dt>
+
+          <code><a href="sanitize_node_id.html">sanitize_node_id()</a></code>
+
+        </dt>
+        <dd>Sanitize node ID for mermaid compatibility (IMPROVED VERSION)</dd>
+
+        <dt>
+
+          <code><a href="validate_annotation.html">validate_annotation()</a></code>
+
+        </dt>
+        <dd>Validate PUT annotation for common issues</dd>
+
+        <dt>
+
+          <code><a href="with_log_level.html">with_log_level()</a></code>
+
+        </dt>
+        <dd>Temporarily Set Log Level for a Code Block</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
