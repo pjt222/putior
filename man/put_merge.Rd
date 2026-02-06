@@ -6,7 +6,7 @@
 \usage{
 put_merge(
   path,
-  pattern = "\\\\.(R|r|py|sql|sh|jl)$",
+  pattern = NULL,
   recursive = FALSE,
   merge_strategy = "manual_priority",
   include_line_numbers = FALSE
@@ -16,7 +16,7 @@ put_merge(
 \item{path}{Character string specifying the path to a file or directory}
 
 \item{pattern}{Character string specifying the file pattern to match.
-Default: "\\.(R|r|py|sql|sh|jl)$"}
+Default: all extensions with detection pattern support.}
 
 \item{recursive}{Logical. Should subdirectories be searched recursively?
 Default: FALSE}

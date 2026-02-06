@@ -6,7 +6,7 @@
 \usage{
 put_auto(
   path,
-  pattern = "\\\\.(R|r|py|sql|sh|jl)$",
+  pattern = NULL,
   recursive = FALSE,
   detect_inputs = TRUE,
   detect_outputs = TRUE,
@@ -20,7 +20,8 @@ put_auto(
 or path to a single file}
 
 \item{pattern}{Character string specifying the file pattern to match.
-Default: "\\.(R|r|py|sql|sh|jl)$" (R, Python, SQL, shell, Julia files)}
+Default: all extensions with detection pattern support (see
+\code{\link{list_supported_languages}(detection_only = TRUE)}).}
 
 \item{recursive}{Logical. Should subdirectories be searched recursively?
 Default: FALSE}

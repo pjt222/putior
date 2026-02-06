@@ -15,7 +15,8 @@ NULL
 #' @param path Character string specifying the path to the folder containing files,
 #'   or path to a single file
 #' @param pattern Character string specifying the file pattern to match.
-#'   Default: "\\.(R|r|py|sql|sh|jl)$" (R, Python, SQL, shell, Julia files)
+#'   Default: all extensions with detection pattern support (see
+#'   \code{\link{list_supported_languages}(detection_only = TRUE)}).
 #' @param recursive Logical. Should subdirectories be searched recursively?
 #'   Default: FALSE
 #' @param detect_inputs Logical. Should file inputs be detected? Default: TRUE
@@ -60,7 +61,7 @@ NULL
 #'   \code{\link{put_generate}} for generating annotation comments,
 #'   \code{\link{put_merge}} for combining manual and auto-detected annotations
 put_auto <- function(path,
-                     pattern = "\\.(R|r|py|sql|sh|jl)$",
+                     pattern = NULL,
                      recursive = FALSE,
                      detect_inputs = TRUE,
                      detect_outputs = TRUE,
@@ -70,6 +71,9 @@ put_auto <- function(path,
   # Set log level for this call if specified
   restore_log_level <- with_log_level(log_level)
   on.exit(restore_log_level(), add = TRUE)
+
+  # Default pattern covers languages with detection support
+  if (is.null(pattern)) pattern <- build_file_pattern(detection_only = TRUE)
 
   putior_log("INFO", "Starting auto-detection scan")
   putior_log("DEBUG", "Auto-detection parameters: path='{path}', detect_inputs={detect_inputs}, detect_outputs={detect_outputs}, detect_dependencies={detect_dependencies}")
@@ -160,7 +164,7 @@ put_auto <- function(path,
 #'
 #' @param path Character string specifying the path to a file or directory
 #' @param pattern Character string specifying the file pattern to match.
-#'   Default: "\\.(R|r|py|sql|sh|jl)$"
+#'   Default: all extensions with detection pattern support.
 #' @param recursive Logical. Should subdirectories be searched recursively?
 #'   Default: FALSE
 #' @param output Character string specifying output destination:
@@ -202,11 +206,14 @@ put_auto <- function(path,
 #' @seealso \code{\link{put_auto}} for direct workflow detection,
 #'   \code{\link{put}} for extracting existing annotations
 put_generate <- function(path,
-                         pattern = "\\.(R|r|py|sql|sh|jl)$",
+                         pattern = NULL,
                          recursive = FALSE,
                          output = "console",
                          insert = FALSE,
                          style = "multiline") {
+  # Default pattern covers languages with detection support
+  if (is.null(pattern)) pattern <- build_file_pattern(detection_only = TRUE)
+
   # Input validation
   if (!is.character(path) || length(path) != 1) {
     stop(
@@ -337,7 +344,7 @@ put_generate <- function(path,
 #'
 #' @param path Character string specifying the path to a file or directory
 #' @param pattern Character string specifying the file pattern to match.
-#'   Default: "\\.(R|r|py|sql|sh|jl)$"
+#'   Default: all extensions with detection pattern support.
 #' @param recursive Logical. Should subdirectories be searched recursively?
 #'   Default: FALSE
 #' @param merge_strategy Character string specifying how to merge:
@@ -370,10 +377,13 @@ put_generate <- function(path,
 #' @seealso \code{\link{put}} for manual annotation extraction,
 #'   \code{\link{put_auto}} for auto-detection
 put_merge <- function(path,
-                      pattern = "\\.(R|r|py|sql|sh|jl)$",
+                      pattern = NULL,
                       recursive = FALSE,
                       merge_strategy = "manual_priority",
                       include_line_numbers = FALSE) {
+  # Default pattern covers languages with detection support
+  if (is.null(pattern)) pattern <- build_file_pattern(detection_only = TRUE)
+
   # Input validation
   valid_strategies <- c("manual_priority", "supplement", "union")
   if (!merge_strategy %in% valid_strategies) {

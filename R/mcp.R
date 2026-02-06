@@ -233,7 +233,7 @@ make_tool_put <- function() {
         description = "Path to directory or file to scan for PUT annotations"
       ),
       pattern = ellmer::type_string(
-        description = "File pattern regex (default: R/Python/SQL/Shell/Julia files)",
+        description = "File pattern regex (default: all supported extensions)",
         required = FALSE
       ),
       recursive = ellmer::type_boolean(
@@ -367,7 +367,7 @@ make_tool_put_auto <- function() {
         description = "Path to directory or file to analyze"
       ),
       pattern = ellmer::type_string(
-        description = "File pattern regex (default: R/Python/SQL/Shell/Julia files)",
+        description = "File pattern regex (default: all supported extensions)",
         required = FALSE
       ),
       recursive = ellmer::type_boolean(
@@ -420,7 +420,7 @@ make_tool_put_generate <- function() {
         description = "Path to file or directory to analyze"
       ),
       pattern = ellmer::type_string(
-        description = "File pattern regex (default: R/Python/SQL/Shell/Julia files)",
+        description = "File pattern regex (default: all supported extensions)",
         required = FALSE
       ),
       recursive = ellmer::type_boolean(
@@ -466,7 +466,7 @@ make_tool_put_merge <- function() {
         description = "Path to file or directory"
       ),
       pattern = ellmer::type_string(
-        description = "File pattern regex (default: R/Python/SQL/Shell/Julia files)",
+        description = "File pattern regex (default: all supported extensions)",
         required = FALSE
       ),
       recursive = ellmer::type_boolean(

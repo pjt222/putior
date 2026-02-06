@@ -6,7 +6,7 @@
 \usage{
 put_generate(
   path,
-  pattern = "\\\\.(R|r|py|sql|sh|jl)$",
+  pattern = NULL,
   recursive = FALSE,
   output = "console",
   insert = FALSE,
@@ -17,7 +17,7 @@ put_generate(
 \item{path}{Character string specifying the path to a file or directory}
 
 \item{pattern}{Character string specifying the file pattern to match.
-Default: "\\.(R|r|py|sql|sh|jl)$"}
+Default: all extensions with detection pattern support.}
 
 \item{recursive}{Logical. Should subdirectories be searched recursively?
 Default: FALSE}

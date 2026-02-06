@@ -953,155 +953,102 @@ create_artifact_nodes <- function(workflow) {
 #' @keywords internal
 generate_connections <- function(workflow, show_files = FALSE, show_artifacts = FALSE) {
   connections <- character()
-  
-  if (show_artifacts) {
-    # With artifacts: create BOTH script-to-script AND script-to-artifact connections
-    
-    # Get script nodes (non-artifacts)
-    script_nodes <- workflow[is.na(workflow$is_artifact) | !workflow$is_artifact, ]
-    
-    # FIRST: Create script-to-script connections (like simple mode)
-    for (i in seq_len(nrow(script_nodes))) {
-      node <- script_nodes[i, ]
-      target_id <- sanitize_node_id(node$id)
 
-      if (!is.null(node$input) && !is.na(node$input) && node$input != "") {
-        input_files <- strsplit(trimws(node$input), ",")[[1]]
-        input_files <- trimws(input_files)
-
-        for (input_file in input_files) {
-          if (input_file != "") {
-            # Find script nodes that output this file
-            source_nodes <- script_nodes[
-              !is.na(script_nodes$output) &
-                vapply(script_nodes$output, function(x) {
-                  if (is.na(x) || x == "") {
-                    return(FALSE)
-                  }
-                  output_files <- strsplit(trimws(x), ",")[[1]]
-                  output_files <- trimws(output_files)
-                  input_file %in% output_files
-                }, logical(1)),
-            ]
-
-            if (nrow(source_nodes) > 0) {
-              for (j in seq_len(nrow(source_nodes))) {
-                source_id <- sanitize_node_id(source_nodes[j, ]$id)
-
-                # Create script-to-script connection
-                if (show_files && input_file != "") {
-                  safe_edge_label <- gsub("|", "/", input_file, fixed = TRUE)
-                  connection <- paste0("    ", source_id, " -->|", safe_edge_label, "| ", target_id)
-                } else {
-                  connection <- paste0("    ", source_id, " --> ", target_id)
-                }
-
-                connections <- c(connections, connection)
-              }
-            }
-          }
-        }
-      }
-    }
-    
-    # SECOND: Create script-to-artifact connections
-    for (i in seq_len(nrow(script_nodes))) {
-      node <- script_nodes[i, ]
-      target_id <- sanitize_node_id(node$id)
-      
-      # Input connections: artifact → script
-      if (!is.null(node$input) && !is.na(node$input) && node$input != "") {
-        input_files <- strsplit(trimws(node$input), ",")[[1]]
-        input_files <- trimws(input_files[input_files != ""])
-        
-        for (input_file in input_files) {
-          # Find the artifact node for this input file
-          artifact_id <- paste0("artifact_", gsub("[^a-zA-Z0-9_]", "_", input_file))
-          artifact_exists <- any(workflow$id == artifact_id, na.rm = TRUE)
-          
-          if (artifact_exists) {
-            if (show_files) {
-              connection <- paste0("    ", artifact_id, " -->|", input_file, "| ", target_id)
-            } else {
-              connection <- paste0("    ", artifact_id, " --> ", target_id)
-            }
-            connections <- c(connections, connection)
-          }
-        }
-      }
-      
-      # Output connections: script → artifact
-      if (!is.null(node$output) && !is.na(node$output) && node$output != "") {
-        output_files <- strsplit(trimws(node$output), ",")[[1]]
-        output_files <- trimws(output_files[output_files != ""])
-        
-        for (output_file in output_files) {
-          # Find the artifact node for this output file
-          artifact_id <- paste0("artifact_", gsub("[^a-zA-Z0-9_]", "_", output_file))
-          artifact_exists <- any(workflow$id == artifact_id, na.rm = TRUE)
-          
-          if (artifact_exists) {
-            if (show_files) {
-              connection <- paste0("    ", target_id, " -->|", output_file, "| ", artifact_id)
-            } else {
-              connection <- paste0("    ", target_id, " --> ", artifact_id)
-            }
-            connections <- c(connections, connection)
-          }
-        }
-      }
-    }
-    
+  # Get script nodes (non-artifacts); handle missing is_artifact column
+  has_artifact_col <- "is_artifact" %in% names(workflow)
+  if (has_artifact_col) {
+    is_artifact <- !is.na(workflow$is_artifact) & workflow$is_artifact
+    script_nodes <- workflow[!is_artifact, ]
   } else {
-    # Without artifacts: original logic (script-to-script connections only)
-    
-    for (i in seq_len(nrow(workflow))) {
-      node <- workflow[i, ]
-      target_id <- sanitize_node_id(node$id)
+    script_nodes <- workflow
+  }
 
-      if (!is.null(node$input) && !is.na(node$input) && node$input != "") {
-        input_files <- strsplit(trimws(node$input), ",")[[1]]
-        input_files <- trimws(input_files)
+  # Script-to-script connections (always generated)
+  source_pool <- if (show_artifacts) script_nodes else workflow
+  for (i in seq_len(nrow(script_nodes))) {
+    node <- script_nodes[i, ]
+    target_id <- sanitize_node_id(node$id)
 
-        for (input_file in input_files) {
-          if (input_file != "") {
-            # Find nodes that output this file
-            source_nodes <- workflow[
-              !is.na(workflow$output) &
-                vapply(workflow$output, function(x) {
-                  if (is.na(x) || x == "") {
-                    return(FALSE)
-                  }
-                  output_files <- strsplit(trimws(x), ",")[[1]]
-                  output_files <- trimws(output_files)
-                  input_file %in% output_files
-                }, logical(1)),
-            ]
+    for (input_file in parse_file_list(node$input)) {
+      source_nodes <- find_nodes_outputting(source_pool, input_file)
+      for (j in seq_len(nrow(source_nodes))) {
+        source_id <- sanitize_node_id(source_nodes[j, ]$id)
+        connections <- c(connections,
+                         make_edge(source_id, target_id, input_file, show_files))
+      }
+    }
+  }
 
-            if (nrow(source_nodes) > 0) {
-              for (j in seq_len(nrow(source_nodes))) {
-                source_id <- sanitize_node_id(source_nodes[j, ]$id)
+  # Artifact connections (only when show_artifacts is TRUE)
+  if (show_artifacts) {
+    for (i in seq_len(nrow(script_nodes))) {
+      node <- script_nodes[i, ]
+      node_id <- sanitize_node_id(node$id)
 
-                # Create connection with optional file label
-                if (show_files && input_file != "") {
-                  safe_edge_label <- gsub("|", "/", input_file, fixed = TRUE)
-                  connection <- paste0("    ", source_id, " -->|", safe_edge_label, "| ", target_id)
-                } else {
-                  connection <- paste0("    ", source_id, " --> ", target_id)
-                }
+      # Input: artifact --> script
+      for (input_file in parse_file_list(node$input)) {
+        artifact_id <- paste0("artifact_", gsub("[^a-zA-Z0-9_]", "_", input_file))
+        if (any(workflow$id == artifact_id, na.rm = TRUE)) {
+          connections <- c(connections,
+                           make_edge(artifact_id, node_id, input_file, show_files))
+        }
+      }
 
-                connections <- c(connections, connection)
-              }
-            }
-          }
+      # Output: script --> artifact
+      for (output_file in parse_file_list(node$output)) {
+        artifact_id <- paste0("artifact_", gsub("[^a-zA-Z0-9_]", "_", output_file))
+        if (any(workflow$id == artifact_id, na.rm = TRUE)) {
+          connections <- c(connections,
+                           make_edge(node_id, artifact_id, output_file, show_files))
         }
       }
     }
   }
 
-  # Remove duplicate connections
-  connections <- unique(connections)
-  return(connections)
+  unique(connections)
+}
+
+#' Parse a comma-separated file list string into a trimmed character vector
+#' @param file_string Comma-separated file list (or NA/NULL/"")
+#' @return Character vector of non-empty file names
+#' @noRd
+parse_file_list <- function(file_string) {
+  if (is.null(file_string) || is.na(file_string) || file_string == "") {
+    return(character())
+  }
+  files <- strsplit(trimws(file_string), ",")[[1]]
+  files <- trimws(files)
+  files[files != ""]
+}
+
+#' Find nodes in a data frame whose output column contains a given file
+#' @param nodes_df Data frame with an output column
+#' @param target_file File name to search for
+#' @return Subset of nodes_df where output contains target_file
+#' @noRd
+find_nodes_outputting <- function(nodes_df, target_file) {
+  nodes_df[
+    !is.na(nodes_df$output) &
+      vapply(nodes_df$output, function(x) {
+        target_file %in% parse_file_list(x)
+      }, logical(1)),
+  ]
+}
+
+#' Create a Mermaid edge string between two nodes
+#' @param from_id Sanitized source node ID
+#' @param to_id Sanitized target node ID
+#' @param label Edge label text
+#' @param show_label Whether to include the label
+#' @return Mermaid edge definition string
+#' @noRd
+make_edge <- function(from_id, to_id, label = "", show_label = FALSE) {
+  if (show_label && label != "") {
+    safe_label <- gsub("|", "/", label, fixed = TRUE)
+    paste0("    ", from_id, " -->|", safe_label, "| ", to_id)
+  } else {
+    paste0("    ", from_id, " --> ", to_id)
+  }
 }
 
 # put id:"output_handler", label:"Output Final Diagram", node_type:"end", input:"diagram.md"

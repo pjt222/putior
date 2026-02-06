@@ -6,7 +6,7 @@
 \usage{
 put(
   path,
-  pattern = "\\\\.(R|r|py|sql|sh|jl)$",
+  pattern = NULL,
   recursive = FALSE,
   include_line_numbers = FALSE,
   validate = TRUE,
@@ -18,8 +18,8 @@ put(
 or path to a single file}
 
 \item{pattern}{Character string specifying the file pattern to match.
-Default: "\\.(R|r|py|sql|sh|jl)$" (R, Python, SQL, shell, Julia files).
-For other languages, specify an appropriate pattern (e.g., "\\.js$" for JavaScript).}
+Default: all supported extensions (see \code{\link{get_supported_extensions}}).
+For a subset, specify a pattern (e.g., "\\.js$" for JavaScript only).}
 
 \item{recursive}{Logical. Should subdirectories be searched recursively?
 Default: FALSE}

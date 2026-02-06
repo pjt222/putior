@@ -8,8 +8,8 @@
 #' @param path Character string specifying the path to the folder containing files,
 #'   or path to a single file
 #' @param pattern Character string specifying the file pattern to match.
-#'   Default: "\\.(R|r|py|sql|sh|jl)$" (R, Python, SQL, shell, Julia files).
-#'   For other languages, specify an appropriate pattern (e.g., "\\.js$" for JavaScript).
+#'   Default: all supported extensions (see \code{\link{get_supported_extensions}}).
+#'   For a subset, specify a pattern (e.g., "\\.js$" for JavaScript only).
 #' @param recursive Logical. Should subdirectories be searched recursively?
 #'   Default: FALSE
 #' @param include_line_numbers Logical. Should line numbers be included in output?
@@ -108,7 +108,7 @@
 #' # --    output:"target_table"
 #' }
 put <- function(path,
-                pattern = "\\.(R|r|py|sql|sh|jl)$",
+                pattern = NULL,
                 recursive = FALSE,
                 include_line_numbers = FALSE,
                 validate = TRUE,
@@ -116,6 +116,9 @@ put <- function(path,
   # Set log level for this call if specified
   restore_log_level <- with_log_level(log_level)
   on.exit(restore_log_level(), add = TRUE)
+
+  # Default pattern covers all supported languages
+  if (is.null(pattern)) pattern <- build_file_pattern(detection_only = FALSE)
 
   putior_log("INFO", "Starting PUT annotation scan")
   putior_log("DEBUG", "Scan parameters: path='{path}', pattern='{pattern}', recursive={recursive}")
@@ -166,8 +169,8 @@ put <- function(path,
       "No files matching pattern '", pattern, "' found in: ", path, "\n",
       "Check that:\n",
       "- The directory contains source files with the expected extensions\n",
-      "- The pattern matches your file types (default matches .R, .py, .sql, .sh, .jl)\n",
-      "- For other languages, specify a pattern like: pattern = \"\\\\.js$\"",
+      "- The pattern matches your file types (default covers all supported extensions)\n",
+      "- To limit: pattern = \"\\\\.R$\" or see get_supported_extensions()",
       call. = FALSE
     )
     return(as_putior_workflow(empty_result_df(include_line_numbers)))
@@ -228,6 +231,60 @@ put <- function(path,
   }
 }
 
+#' Collect a possibly multiline PUT annotation starting at a given line
+#'
+#' If the line ends with backslash, collects continuation lines following the
+#' same comment prefix. Returns the fully assembled annotation string.
+#'
+#' @param lines Character vector of all file lines
+#' @param start_idx Index of the PUT annotation line
+#' @param escaped_prefix Regex-escaped comment prefix (e.g., "\\#", "\\/\\/")
+#' @param comment_pattern Regex matching any comment line
+#' @param put_pattern Regex matching a PUT annotation line
+#' @param file_label File name for log messages
+#' @return Assembled single-line annotation string
+#' @noRd
+collect_multiline_annotation <- function(lines, start_idx, escaped_prefix,
+                                         comment_pattern, put_pattern,
+                                         file_label = "") {
+  full_content <- lines[start_idx]
+
+  if (!grepl("\\\\\\s*$", full_content)) {
+    return(full_content)
+  }
+
+  putior_log("DEBUG", "Multiline annotation detected at line {start_idx} in {file_label}")
+  has_continuation <- TRUE
+  current_idx <- start_idx
+
+  while (has_continuation && current_idx < length(lines)) {
+    full_content <- sub("\\\\\\s*$", " ", full_content)
+    current_idx <- current_idx + 1
+
+    if (current_idx > length(lines)) break
+    if (grepl(put_pattern, lines[current_idx])) break
+
+    continuation_line <- lines[current_idx]
+    if (!grepl(comment_pattern, continuation_line)) break
+
+    continuation <- sub(sprintf("^\\s*%s\\s*", escaped_prefix), "", continuation_line)
+
+    if (nchar(trimws(continuation)) > 0) {
+      if (!grepl("^\\s*,", continuation)) {
+        full_content <- paste0(full_content, ", ", trimws(continuation))
+      } else {
+        full_content <- paste0(full_content, trimws(continuation))
+      }
+    }
+
+    if (nchar(trimws(continuation)) > 0 || grepl("\\\\\\s*$", continuation_line)) {
+      has_continuation <- grepl("\\\\\\s*$", continuation_line)
+    }
+  }
+
+  full_content
+}
+
 # put id:"process_file", label:"Process Single File", node_type:"process", input:"source_files", output:"annotations.rds"
 #' Process a single file for PUT annotations
 #' @param file Path to file
@@ -271,60 +328,11 @@ process_single_file <- function(file, include_line_numbers, validate) {
         line_idx <- put_line_indices[i]
         line_content <- lines[line_idx]
 
-        # Check if this is a multiline annotation (ends with backslash)
-        full_content <- line_content
-        current_idx <- line_idx
+        full_content <- collect_multiline_annotation(
+          lines, line_idx, escaped_prefix, comment_line_pattern, put_pattern,
+          basename(file)
+        )
 
-        # Collect continuation lines if this is a multiline annotation
-        if (grepl("\\\\\\s*$", full_content)) {
-          putior_log("DEBUG", "Multiline annotation detected at line {line_idx} in {basename(file)}")
-          has_continuation <- TRUE
-
-          while (has_continuation && current_idx < length(lines)) {
-            # Remove trailing backslash and whitespace from current content
-            full_content <- sub("\\\\\\s*$", " ", full_content)
-            current_idx <- current_idx + 1
-
-            # Break if we've reached the end of the file
-            if (current_idx > length(lines)) {
-              break
-            }
-
-            # Break if we've reached another PUT annotation line
-            if (grepl(put_pattern, lines[current_idx])) {
-              break
-            }
-
-            # Process continuation line (including empty comment lines)
-            continuation_line <- lines[current_idx]
-
-            # Break if line is not a comment (using the appropriate comment prefix)
-            if (!grepl(comment_line_pattern, continuation_line)) {
-              break
-            }
-
-            # Remove comment marker and leading whitespace (dynamically based on prefix)
-            continuation <- sub(sprintf("^\\s*%s\\s*", escaped_prefix), "", continuation_line)
-            
-            # Append continuation with proper spacing
-            # If continuation is not empty and doesn't start with a comma, add comma
-            if (nchar(trimws(continuation)) > 0) {
-              if (!grepl("^\\s*,", continuation)) {
-                full_content <- paste0(full_content, ", ", trimws(continuation))
-              } else {
-                full_content <- paste0(full_content, trimws(continuation))
-              }
-            }
-            # Note: Empty comment lines are skipped but we still check for continuation
-            
-            # Check if this line ends with backslash to continue
-            # If it's an empty comment line without backslash, keep the previous continuation state
-            if (nchar(trimws(continuation)) > 0 || grepl("\\\\\\s*$", continuation_line)) {
-              has_continuation <- grepl("\\\\\\s*$", continuation_line)
-            }
-          }
-        }
-        
         properties <- parse_put_annotation(full_content)
 
         if (!is.null(properties)) {
