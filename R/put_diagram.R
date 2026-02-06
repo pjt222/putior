@@ -166,12 +166,10 @@ put_diagram <- function(workflow,
   }
 
   # Validate theme
-  valid_themes <- c("light", "dark", "auto", "minimal", "github",
-                    "viridis", "magma", "plasma", "cividis")
-  if (!theme %in% valid_themes) {
+  if (!theme %in% .VALID_THEMES) {
     warning(
       "Invalid theme '", theme, "'. Using 'light'.\n",
-      "Valid themes: ", paste(valid_themes, collapse = ", "), "\n",
+      "Valid themes: ", paste(.VALID_THEMES, collapse = ", "), "\n",
       "See putior_help(\"themes\") or get_diagram_themes() for descriptions.",
       call. = FALSE
     )
@@ -599,7 +597,7 @@ get_node_shape <- function(node_type, show_workflow_boundaries = TRUE) {
 #' @return Character string of the resolved label text
 #' @keywords internal
 resolve_label <- function(node, node_labels) {
-  switch(node_labels,
+  raw_label <- switch(node_labels,
     "name" = node$id,
     "label" = if (!is.na(node$label) && node$label != "") node$label else node$id,
     "both" = if (!is.na(node$label) && node$label != "") {
@@ -610,6 +608,22 @@ resolve_label <- function(node, node_labels) {
     # Default to label
     if (!is.na(node$label) && node$label != "") node$label else node$id
   )
+  sanitize_mermaid_label(raw_label)
+}
+
+#' Sanitize a label string for safe embedding in Mermaid syntax
+#'
+#' Escapes characters that would break Mermaid flowchart parsing:
+#' quotes, brackets, braces, parentheses, pipes, and arrow syntax.
+#'
+#' @param label Character string to sanitize
+#' @return Sanitized character string safe for Mermaid labels
+#' @noRd
+sanitize_mermaid_label <- function(label) {
+  if (is.null(label) || is.na(label) || label == "") return(label)
+  # Wrap in quotes and escape internal quotes using Mermaid's #quot; entity
+  label <- gsub('"', "#quot;", label, fixed = TRUE)
+  paste0('"', label, '"')
 }
 
 #' Sanitize node ID for mermaid compatibility (IMPROVED VERSION)
@@ -846,8 +860,9 @@ generate_file_subgraphs <- function(workflow, node_labels = "label",
                         tools::file_path_sans_ext(basename(file_name)))
 
     # Start subgraph
+    safe_file_label <- sanitize_mermaid_label(file_name)
     subgraph_lines <- c(subgraph_lines,
-                       paste0("    subgraph ", subgraph_id, " [", file_name, "]"))
+                       paste0("    subgraph ", subgraph_id, " [", safe_file_label, "]"))
 
     # Add nodes within subgraph
     for (i in seq_len(nrow(file_nodes))) {
@@ -975,7 +990,8 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
 
                 # Create script-to-script connection
                 if (show_files && input_file != "") {
-                  connection <- paste0("    ", source_id, " -->|", input_file, "| ", target_id)
+                  safe_edge_label <- gsub("|", "/", input_file, fixed = TRUE)
+                  connection <- paste0("    ", source_id, " -->|", safe_edge_label, "| ", target_id)
                 } else {
                   connection <- paste0("    ", source_id, " --> ", target_id)
                 }
@@ -1068,7 +1084,8 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
 
                 # Create connection with optional file label
                 if (show_files && input_file != "") {
-                  connection <- paste0("    ", source_id, " -->|", input_file, "| ", target_id)
+                  safe_edge_label <- gsub("|", "/", input_file, fixed = TRUE)
+                  connection <- paste0("    ", source_id, " -->|", safe_edge_label, "| ", target_id)
                 } else {
                   connection <- paste0("    ", source_id, " --> ", target_id)
                 }

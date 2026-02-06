@@ -599,3 +599,42 @@ test_that("summary.putior_workflow returns structured list", {
   expect_equal(summ$n_files, 1)
   expect_true(!is.null(summ$node_types))
 })
+
+# Tests for sanitize_mermaid_label
+test_that("sanitize_mermaid_label wraps labels in quotes", {
+  result <- putior:::sanitize_mermaid_label("Simple Label")
+  expect_equal(result, '"Simple Label"')
+})
+
+test_that("sanitize_mermaid_label escapes internal quotes", {
+  result <- putior:::sanitize_mermaid_label('Say "hello"')
+  expect_equal(result, '"Say #quot;hello#quot;"')
+})
+
+test_that("sanitize_mermaid_label handles empty/NA/NULL", {
+  expect_equal(putior:::sanitize_mermaid_label(""), "")
+  expect_true(is.na(putior:::sanitize_mermaid_label(NA)))
+  expect_null(putior:::sanitize_mermaid_label(NULL))
+})
+
+test_that("sanitize_mermaid_label handles special Mermaid characters", {
+  # Brackets, braces, parens are safe inside quotes
+  result <- putior:::sanitize_mermaid_label("data [v2] (final)")
+  expect_equal(result, '"data [v2] (final)"')
+})
+
+test_that("put_diagram handles labels with special characters", {
+  temp_dir <- tempdir()
+  test_dir <- file.path(temp_dir, "putior_test_special_chars")
+  dir.create(test_dir, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE))
+
+  create_test_file(c(
+    '# put id:"node1", label:"Load [v2] Data", node_type:"process"'
+  ), "test.R", test_dir)
+  workflow <- put(test_dir)
+  diagram <- put_diagram(workflow, output = "raw")
+
+  # Should not error and should contain the label
+  expect_true(grepl("Load", diagram))
+})

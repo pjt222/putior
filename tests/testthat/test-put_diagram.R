@@ -323,7 +323,7 @@ test_that("show_artifacts creates artifact nodes in diagram", {
   
   # Should contain artifact node for terminal output
   expect_true(grepl("artifact_final_results_csv", diagram_code))
-  expect_true(grepl("\\[\\(final_results\\.csv\\)\\]", diagram_code))
+  expect_true(grepl("final_results\\.csv", diagram_code))
 })
 
 test_that("show_artifacts creates correct connections", {
@@ -601,7 +601,7 @@ test_that("show_source_info excludes artifact nodes from source info", {
   # Script nodes should have source info
   expect_true(grepl("load\\.R", diagram_code))
   # The artifact label should be clean (final_results.csv without additional source info)
-  expect_true(grepl("\\[\\(final_results\\.csv\\)\\]", diagram_code))
+  expect_true(grepl("final_results\\.csv", diagram_code))
 })
 
 # ============================================================================

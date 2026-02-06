@@ -8,6 +8,19 @@
 NULL
 
 # =============================================================================
+# Internal Constants
+# =============================================================================
+
+#' Valid diagram themes (single source of truth)
+#' @noRd
+.VALID_THEMES <- c("light", "dark", "auto", "minimal", "github",
+                    "viridis", "magma", "plasma", "cividis")
+
+#' Valid node types (single source of truth)
+#' @noRd
+.VALID_NODE_TYPES <- c("input", "process", "output", "decision", "start", "end")
+
+# =============================================================================
 # Internal Utilities
 # =============================================================================
 

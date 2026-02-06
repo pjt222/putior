@@ -315,7 +315,7 @@ make_tool_put_diagram <- function() {
       ),
       theme = ellmer::type_enum(
         description = "Color theme: light, dark, auto, minimal, github, viridis, magma, plasma, cividis (default: light)",
-        values = c("light", "dark", "auto", "minimal", "github", "viridis", "magma", "plasma", "cividis"),
+        values = .VALID_THEMES,
         required = FALSE
       ),
       show_source_info = ellmer::type_boolean(

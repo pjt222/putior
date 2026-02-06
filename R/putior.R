@@ -391,11 +391,10 @@ validate_annotation <- function(properties, line_content) {
   # Note: Duplicate ID checking is done at the put() function level
   # Check for valid node_type values
   if (!is.null(properties$node_type)) {
-    valid_types <- c("input", "process", "output", "decision", "start", "end")
-    if (!properties$node_type %in% valid_types) {
+    if (!properties$node_type %in% .VALID_NODE_TYPES) {
       issues <- c(issues, paste(
         "Unusual node_type:", properties$node_type,
-        "(expected one of:", paste(valid_types, collapse = ", "), ")"
+        "(expected one of:", paste(.VALID_NODE_TYPES, collapse = ", "), ")"
       ))
     }
   }

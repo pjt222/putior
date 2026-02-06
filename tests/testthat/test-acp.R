@@ -614,3 +614,41 @@ test_that("acp_get_run_handler returns run data for existing run", {
   expect_equal(result$id, run_id)
   expect_equal(result$status, "completed")
 })
+
+test_that("store_run evicts oldest entries when over capacity", {
+  # Save original max and set a small limit for testing
+  original_max <- putior:::.ACP_MAX_RUNS
+  on.exit({
+    # Clean up all test runs and restore constant
+    run_ids <- ls(envir = putior:::.acp_runs)
+    test_ids <- run_ids[grepl("^evict_test_", run_ids)]
+    if (length(test_ids) > 0) rm(list = test_ids, envir = putior:::.acp_runs)
+  })
+
+  # Use unlockBinding to temporarily change the constant
+  env <- asNamespace("putior")
+  unlockBinding(".ACP_MAX_RUNS", env)
+  assign(".ACP_MAX_RUNS", 5L, envir = env)
+
+  # Store 7 runs (should evict 2 oldest)
+  for (i in 1:7) {
+    putior:::store_run(
+      paste0("evict_test_", i),
+      list(status = "completed", result = i)
+    )
+    Sys.sleep(0.01)  # Ensure distinct timestamps
+  }
+
+  # Restore original max
+  assign(".ACP_MAX_RUNS", original_max, envir = env)
+  lockBinding(".ACP_MAX_RUNS", env)
+
+  # Oldest 2 should be evicted
+  expect_null(putior:::get_run_by_id("evict_test_1"))
+  expect_null(putior:::get_run_by_id("evict_test_2"))
+
+  # Newest 5 should remain
+  for (i in 3:7) {
+    expect_false(is.null(putior:::get_run_by_id(paste0("evict_test_", i))))
+  }
+})

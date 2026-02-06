@@ -15,6 +15,9 @@ NULL
 # Environment to store run results
 .acp_runs <- new.env(parent = emptyenv())
 
+# Maximum number of runs to retain (prevents unbounded memory growth)
+.ACP_MAX_RUNS <- 1000L
+
 #' Generate a unique run ID
 #' @noRd
 generate_run_id <- function() {
@@ -26,10 +29,23 @@ generate_run_id <- function() {
   }
 }
 
-#' Store a run result
+#' Store a run result, evicting oldest entries when at capacity
 #' @noRd
 store_run <- function(run_id, run_data) {
+  run_data$stored_at <- Sys.time()
   assign(run_id, run_data, envir = .acp_runs)
+
+  # Evict oldest runs when over capacity
+  run_ids <- ls(envir = .acp_runs)
+  if (length(run_ids) > .ACP_MAX_RUNS) {
+    timestamps <- vapply(run_ids, function(id) {
+      run <- get(id, envir = .acp_runs)
+      as.numeric(run$stored_at %||% 0)
+    }, numeric(1))
+    n_to_evict <- length(run_ids) - .ACP_MAX_RUNS
+    oldest_ids <- run_ids[order(timestamps)][seq_len(n_to_evict)]
+    rm(list = oldest_ids, envir = .acp_runs)
+  }
 }
 
 #' Retrieve a run by ID
