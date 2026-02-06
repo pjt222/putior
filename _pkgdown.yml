@@ -200,6 +200,8 @@ reference:
   contents:
   - put
   - put_diagram
+  - print.putior_workflow
+  - summary.putior_workflow
 
 - title: "Auto-Annotation"
   desc: "Automatic workflow detection and annotation generation"
