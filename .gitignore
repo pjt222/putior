@@ -74,7 +74,7 @@ temporary/
 inst/doc
 
 # Claude Code
-.claude/
+.claude/settings.local.json
 
 # renv (if not using renv for package development)
 # Uncomment if you don't want to track renv
