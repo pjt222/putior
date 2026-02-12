@@ -8,7 +8,8 @@ get_detection_patterns(language = "r", type = NULL)
 }
 \arguments{
 \item{language}{Character string specifying the language. Options:
-"r", "python", "sql", "shell", "julia"}
+"r", "python", "sql", "shell", "julia", "javascript", "typescript",
+"go", "rust", "java", "c", "cpp", "matlab", "ruby", "lua", "wgsl"}
 
 \item{type}{Optional character string to filter by detection type.
 Options: "input", "output", "dependency". If NULL (default), returns all.}

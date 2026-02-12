@@ -581,12 +581,122 @@ test_that("Lua output patterns include key functions", {
 })
 
 # ============================================================================
+# WGSL Tests
+# ============================================================================
+
+test_that("WGSL patterns exist and are valid", {
+  patterns <- get_detection_patterns("wgsl")
+
+  expect_type(patterns, "list")
+  expect_named(patterns, c("input", "output", "dependency"))
+
+  expect_gte(length(patterns$input), 8)
+  expect_gte(length(patterns$output), 3)
+  expect_gte(length(patterns$dependency), 2)
+})
+
+test_that("WGSL input patterns include key constructs", {
+  patterns <- get_detection_patterns("wgsl", type = "input")
+  funcs <- vapply(patterns, function(p) p$func, character(1))
+
+  expect_true("var<uniform>" %in% funcs)
+  expect_true("var<storage, read>" %in% funcs)
+  expect_true("texture_2d" %in% funcs)
+  expect_true("texture_cube" %in% funcs)
+  expect_true("sampler" %in% funcs)
+  expect_true("textureSample" %in% funcs)
+  expect_true("textureLoad" %in% funcs)
+  expect_true("@location (input)" %in% funcs)
+})
+
+test_that("WGSL output patterns include key constructs", {
+  patterns <- get_detection_patterns("wgsl", type = "output")
+  funcs <- vapply(patterns, function(p) p$func, character(1))
+
+  expect_true("var<storage, read_write>" %in% funcs)
+  expect_true("texture_storage (write)" %in% funcs)
+  expect_true("textureStore" %in% funcs)
+  expect_true("@location (output)" %in% funcs)
+})
+
+test_that("WGSL dependency patterns include import mechanisms", {
+  patterns <- get_detection_patterns("wgsl", type = "dependency")
+  funcs <- vapply(patterns, function(p) p$func, character(1))
+
+  expect_true("#import (naga-oil)" %in% funcs)
+  expect_true("@import" %in% funcs)
+})
+
+test_that("WGSL patterns match expected code snippets", {
+  input_patterns <- get_detection_patterns("wgsl", type = "input")
+  output_patterns <- get_detection_patterns("wgsl", type = "output")
+  dep_patterns <- get_detection_patterns("wgsl", type = "dependency")
+
+  # Test var<uniform>
+  uniform_pattern <- input_patterns[[which(
+    vapply(input_patterns, function(p) p$func, character(1)) == "var<uniform>"
+  )]]
+  expect_true(grepl(uniform_pattern$regex,
+    "@group(0) @binding(0) var<uniform> camera: CameraUniform;"))
+
+  # Test var<storage, read>
+  storage_r_pattern <- input_patterns[[which(
+    vapply(input_patterns, function(p) p$func, character(1)) == "var<storage, read>"
+  )]]
+  expect_true(grepl(storage_r_pattern$regex,
+    "@group(0) @binding(1) var<storage, read> particles: array<Particle>;"))
+
+  # Test var<storage, read_write>
+  storage_rw_pattern <- output_patterns[[which(
+    vapply(output_patterns, function(p) p$func, character(1)) == "var<storage, read_write>"
+  )]]
+  expect_true(grepl(storage_rw_pattern$regex,
+    "@group(0) @binding(2) var<storage, read_write> output_buf: array<f32>;"))
+
+  # Test textureStore
+  store_pattern <- output_patterns[[which(
+    vapply(output_patterns, function(p) p$func, character(1)) == "textureStore"
+  )]]
+  expect_true(grepl(store_pattern$regex,
+    "textureStore(output_texture, coords, color);"))
+
+  # Test @location (input)
+  loc_in_pattern <- input_patterns[[which(
+    vapply(input_patterns, function(p) p$func, character(1)) == "@location (input)"
+  )]]
+  expect_true(grepl(loc_in_pattern$regex,
+    "@location(0) position: vec3<f32>,"))
+
+  # Test @location (output)
+  loc_out_pattern <- output_patterns[[which(
+    vapply(output_patterns, function(p) p$func, character(1)) == "@location (output)"
+  )]]
+  expect_true(grepl(loc_out_pattern$regex,
+    "-> @location(0) vec4<f32>"))
+
+  # Test #import (naga-oil)
+  import_pattern <- dep_patterns[[which(
+    vapply(dep_patterns, function(p) p$func, character(1)) == "#import (naga-oil)"
+  )]]
+  expect_true(grepl(import_pattern$regex,
+    "#import bevy_pbr::mesh_functions"))
+
+  # Test textureSample
+  sample_pattern <- input_patterns[[which(
+    vapply(input_patterns, function(p) p$func, character(1)) == "textureSample"
+  )]]
+  expect_true(grepl(sample_pattern$regex,
+    "let color = textureSample(diffuse_texture, diffuse_sampler, uv);"))
+})
+
+# ============================================================================
 # Cross-language validation tests
 # ============================================================================
 
 test_that("All new languages have valid regex patterns", {
   new_languages <- c("javascript", "typescript", "go", "rust",
-                     "java", "c", "cpp", "matlab", "ruby", "lua")
+                     "java", "c", "cpp", "matlab", "ruby", "lua",
+                     "wgsl")
 
   for (lang in new_languages) {
     patterns <- get_detection_patterns(lang)
@@ -625,7 +735,8 @@ test_that("All new languages have valid regex patterns", {
 
 test_that("All patterns have required fields", {
   new_languages <- c("javascript", "typescript", "go", "rust",
-                     "java", "c", "cpp", "matlab", "ruby", "lua")
+                     "java", "c", "cpp", "matlab", "ruby", "lua",
+                     "wgsl")
 
   for (lang in new_languages) {
     patterns <- get_detection_patterns(lang)
@@ -673,6 +784,9 @@ test_that("Pattern counts are reasonable", {
 
   lua_count <- count_patterns("lua")
   expect_gt(lua_count["total"], 10, label = "Lua total patterns")
+
+  wgsl_count <- count_patterns("wgsl")
+  expect_gt(wgsl_count["total"], 10, label = "WGSL total patterns")
 })
 
 # ============================================================================
@@ -693,9 +807,10 @@ test_that("list_supported_languages includes new languages with detection_only=T
   expect_true("matlab" %in% langs_with_detection)
   expect_true("ruby" %in% langs_with_detection)
   expect_true("lua" %in% langs_with_detection)
+  expect_true("wgsl" %in% langs_with_detection)
 
-  # Should have 15 total languages with detection support
-  expect_equal(length(langs_with_detection), 15)
+  # Should have 16 total languages with detection support
+  expect_equal(length(langs_with_detection), 16)
 })
 
 test_that("build_file_pattern includes new extensions with detection_only=TRUE", {
@@ -710,6 +825,7 @@ test_that("build_file_pattern includes new extensions with detection_only=TRUE",
   expect_true(grepl("cpp", pattern))
   expect_true(grepl("rb", pattern))
   expect_true(grepl("lua", pattern))
+  expect_true(grepl("wgsl", pattern))
 })
 
 test_that("get_detection_patterns rejects invalid languages", {
@@ -721,7 +837,8 @@ test_that("get_detection_patterns rejects invalid languages", {
 test_that("get_detection_patterns accepts all valid languages", {
   all_languages <- c("r", "python", "sql", "shell", "julia",
                      "javascript", "typescript", "go", "rust",
-                     "java", "c", "cpp", "matlab", "ruby", "lua")
+                     "java", "c", "cpp", "matlab", "ruby", "lua",
+                     "wgsl")
 
   for (lang in all_languages) {
     result <- tryCatch(
@@ -740,7 +857,8 @@ test_that("get_detection_patterns accepts all valid languages", {
 test_that("Total pattern count is substantial", {
   all_languages <- c("r", "python", "sql", "shell", "julia",
                      "javascript", "typescript", "go", "rust",
-                     "java", "c", "cpp", "matlab", "ruby", "lua")
+                     "java", "c", "cpp", "matlab", "ruby", "lua",
+                     "wgsl")
 
   total <- 0
   for (lang in all_languages) {

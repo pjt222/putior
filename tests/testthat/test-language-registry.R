@@ -45,6 +45,7 @@ test_that("get_comment_prefix() returns correct prefix for slash group", {
   expect_equal(get_comment_prefix("cs"), "//")
   expect_equal(get_comment_prefix("php"), "//")
   expect_equal(get_comment_prefix("scala"), "//")
+  expect_equal(get_comment_prefix("wgsl"), "//")
 })
 
 test_that("get_comment_prefix() returns correct prefix for percent group", {
@@ -88,6 +89,7 @@ test_that("ext_to_language() returns correct language names", {
   expect_equal(ext_to_language("swift"), "swift")
   expect_equal(ext_to_language("kt"), "kotlin")
   expect_equal(ext_to_language("cs"), "csharp")
+  expect_equal(ext_to_language("wgsl"), "wgsl")
 
   # Percent group
   expect_equal(ext_to_language("m"), "matlab")
@@ -145,7 +147,7 @@ test_that("list_supported_languages(detection_only = TRUE) returns subset", {
   # Detection-only should be a subset
   expect_true(length(detection_langs) < length(all_langs))
 
-  # Should include languages with detection patterns (15 total)
+  # Should include languages with detection patterns (16 total)
   expect_true("r" %in% detection_langs)
   expect_true("python" %in% detection_langs)
   expect_true("sql" %in% detection_langs)
@@ -161,9 +163,10 @@ test_that("list_supported_languages(detection_only = TRUE) returns subset", {
   expect_true("matlab" %in% detection_langs)
   expect_true("ruby" %in% detection_langs)
   expect_true("lua" %in% detection_langs)
+  expect_true("wgsl" %in% detection_langs)
 
-  # Should have 15 languages with detection patterns
-  expect_equal(length(detection_langs), 15)
+  # Should have 16 languages with detection patterns
+  expect_equal(length(detection_langs), 16)
 })
 
 # ============================================================================
@@ -405,6 +408,56 @@ test_that("R files still work with #put annotations", {
   expect_equal(result$label[1], "R Processing")
 
   unlink(r_file)
+})
+
+test_that("put() processes WGSL files with //put annotations", {
+  tmp_dir <- tempdir()
+  wgsl_file <- file.path(tmp_dir, "test_shader.wgsl")
+
+  writeLines(c(
+    "// put id:\"vertex_main\", label:\"Vertex Shader\", node_type:\"process\", input:\"mesh_data\", output:\"clip_pos\"",
+    "@vertex",
+    "fn vs_main(@location(0) position: vec3<f32>) -> @builtin(position) vec4<f32> {",
+    "  return vec4<f32>(position, 1.0);",
+    "}"
+  ), wgsl_file)
+
+  result <- put(wgsl_file)
+
+  expect_equal(nrow(result), 1)
+  expect_equal(result$id[1], "vertex_main")
+  expect_equal(result$label[1], "Vertex Shader")
+  expect_equal(result$node_type[1], "process")
+  expect_equal(result$input[1], "mesh_data")
+  expect_equal(result$output[1], "clip_pos")
+
+  unlink(wgsl_file)
+})
+
+test_that("put() handles multiline WGSL annotations with //", {
+  tmp_dir <- tempdir()
+  wgsl_file <- file.path(tmp_dir, "test_multiline.wgsl")
+
+  writeLines(c(
+    "//put id:\"frag_shader\", \\",
+    "//    label:\"Fragment Shader\", \\",
+    "//    input:\"vertex_output\", \\",
+    "//    output:\"color\"",
+    "@fragment",
+    "fn fs_main() -> @location(0) vec4<f32> {",
+    "  return vec4<f32>(1.0, 0.0, 0.0, 1.0);",
+    "}"
+  ), wgsl_file)
+
+  result <- put(wgsl_file)
+
+  expect_equal(nrow(result), 1)
+  expect_equal(result$id[1], "frag_shader")
+  expect_equal(result$label[1], "Fragment Shader")
+  expect_equal(result$input[1], "vertex_output")
+  expect_equal(result$output[1], "color")
+
+  unlink(wgsl_file)
 })
 
 test_that("Python files still work with #put annotations", {

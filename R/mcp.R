@@ -553,7 +553,7 @@ make_tool_get_detection_patterns <- function() {
     description = paste0(
       "Get auto-detection patterns for a programming language. ",
       "Returns patterns used to detect file inputs, outputs, and dependencies. ",
-      "Supports 15 languages including R, Python, JavaScript, Go, Rust, etc."
+      "Supports 16 languages including R, Python, JavaScript, Go, Rust, WGSL, etc."
     ),
     name = "get_detection_patterns",
     annotations = list(

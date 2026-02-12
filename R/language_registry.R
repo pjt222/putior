@@ -36,9 +36,9 @@ LANGUAGE_GROUPS <- list(
   slash = list(
     prefix = "//",
     extensions = c("js", "ts", "jsx", "tsx", "c", "cpp", "h", "hpp", "java", "go",
-                   "rs", "swift", "kt", "cs", "php", "scala", "groovy", "d"),
+                   "rs", "swift", "kt", "cs", "php", "scala", "groovy", "d", "wgsl"),
     languages = c("javascript", "typescript", "c", "cpp", "java", "go", "rust",
-                  "swift", "kotlin", "csharp", "php", "scala", "groovy", "d")
+                  "swift", "kotlin", "csharp", "php", "scala", "groovy", "d", "wgsl")
   ),
   percent = list(
     prefix = "%",
@@ -102,7 +102,8 @@ get_supported_extensions <- function() {
 .LANGUAGES_WITH_DETECTION <- c(
   "r", "python", "sql", "shell", "julia",
   "javascript", "typescript", "go", "rust",
-  "java", "c", "cpp", "matlab", "ruby", "lua"
+  "java", "c", "cpp", "matlab", "ruby", "lua",
+  "wgsl"
 )
 
 # Package-level constant for extension to language mapping
@@ -144,6 +145,7 @@ get_supported_extensions <- function() {
   "scala" = "scala",
   "groovy" = "groovy",
   "d" = "d",
+  "wgsl" = "wgsl",
 
   # Percent group
   "m" = "matlab",
@@ -211,11 +213,11 @@ get_comment_group <- function(ext) {
 #' @keywords internal
 build_file_pattern <- function(detection_only = FALSE) {
   if (detection_only) {
-    # Only languages with detection pattern support (15 languages)
+    # Only languages with detection pattern support (16 languages)
     exts <- c("R", "r", "py", "sql", "sh", "jl",
               "js", "jsx", "ts", "tsx", "go", "rs",
               "java", "c", "cpp", "h", "hpp", "m",
-              "rb", "lua")
+              "rb", "lua", "wgsl")
   } else {
     # All supported extensions (annotation parsing only)
     exts <- get_supported_extensions()

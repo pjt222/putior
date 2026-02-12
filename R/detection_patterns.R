@@ -13,7 +13,8 @@ NULL
 #' dependencies in source code files for a specific programming language.
 #'
 #' @param language Character string specifying the language. Options:
-#'   "r", "python", "sql", "shell", "julia"
+#'   "r", "python", "sql", "shell", "julia", "javascript", "typescript",
+#'   "go", "rust", "java", "c", "cpp", "matlab", "ruby", "lua", "wgsl"
 #' @param type Optional character string to filter by detection type.
 #'   Options: "input", "output", "dependency". If NULL (default), returns all.
 #'
@@ -72,7 +73,8 @@ get_detection_patterns <- function(language = "r", type = NULL) {
     "cpp" = get_cpp_patterns(),
     "matlab" = get_matlab_patterns(),
     "ruby" = get_ruby_patterns(),
-    "lua" = get_lua_patterns()
+    "lua" = get_lua_patterns(),
+    "wgsl" = get_wgsl_patterns()
   )
 
   if (!is.null(type)) {
@@ -5923,6 +5925,154 @@ get_lua_patterns <- function() {
         arg_position = 1,
         arg_name = "filename",
         description = "Lua loadfile"
+      )
+    )
+  )
+}
+
+#' Get WGSL Detection Patterns
+#' @return List of WGSL detection patterns
+#' @keywords internal
+get_wgsl_patterns <- function() {
+  list(
+    input = list(
+      # Uniform bindings (read-only GPU data)
+      list(
+        regex = "@group\\s*\\(\\s*\\d+\\s*\\)\\s*@binding\\s*\\(\\s*\\d+\\s*\\)\\s*var\\s*<\\s*uniform\\s*>",
+        func = "var<uniform>",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "WGSL uniform binding (read-only buffer)"
+      ),
+      # Storage buffer (read)
+      list(
+        regex = "var\\s*<\\s*storage\\s*,\\s*read\\s*>",
+        func = "var<storage, read>",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "WGSL storage buffer (read-only)"
+      ),
+      # Sampled textures
+      list(
+        regex = ":\\s*texture_2d\\s*<",
+        func = "texture_2d",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "WGSL 2D sampled texture"
+      ),
+      list(
+        regex = ":\\s*texture_cube\\s*<",
+        func = "texture_cube",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "WGSL cube sampled texture"
+      ),
+      list(
+        regex = ":\\s*texture_3d\\s*<",
+        func = "texture_3d",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "WGSL 3D sampled texture"
+      ),
+      # Sampler
+      list(
+        regex = ":\\s*sampler\\b",
+        func = "sampler",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "WGSL texture sampler"
+      ),
+      # Read-only storage texture
+      list(
+        regex = ":\\s*texture_storage_\\w+\\s*<[^,>]+,\\s*read\\s*>",
+        func = "texture_storage (read)",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "WGSL storage texture (read)"
+      ),
+      # Vertex/fragment input via @location in function parameters
+      list(
+        regex = "@location\\s*\\(\\s*\\d+\\s*\\)\\s+\\w+\\s*:",
+        func = "@location (input)",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "WGSL shader stage input via @location"
+      ),
+      # textureSample reads from a texture
+      list(
+        regex = "textureSample\\s*\\(",
+        func = "textureSample",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "WGSL sample a texture"
+      ),
+      # textureLoad reads a single texel
+      list(
+        regex = "textureLoad\\s*\\(",
+        func = "textureLoad",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "WGSL load texel from texture"
+      )
+    ),
+    output = list(
+      # Storage buffer (read_write)
+      list(
+        regex = "var\\s*<\\s*storage\\s*,\\s*read_write\\s*>",
+        func = "var<storage, read_write>",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "WGSL storage buffer (read-write)"
+      ),
+      # Write-only storage texture
+      list(
+        regex = ":\\s*texture_storage_\\w+\\s*<[^,>]+,\\s*write\\s*>",
+        func = "texture_storage (write)",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "WGSL storage texture (write)"
+      ),
+      # textureStore writes to a storage texture
+      list(
+        regex = "textureStore\\s*\\(",
+        func = "textureStore",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "WGSL write texel to storage texture"
+      ),
+      # Fragment output via return with @location
+      list(
+        regex = "->\\s*@location\\s*\\(\\s*\\d+\\s*\\)",
+        func = "@location (output)",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "WGSL shader stage output via @location"
+      )
+    ),
+    dependency = list(
+      # WESL import (emerging standard)
+      list(
+        regex = "use\\s+['\"]",
+        func = "use (WESL)",
+        arg_position = 1,
+        arg_name = NULL,
+        description = "WESL module import"
+      ),
+      # naga-oil #import
+      list(
+        regex = "#import\\b",
+        func = "#import (naga-oil)",
+        arg_position = 1,
+        arg_name = NULL,
+        description = "naga-oil shader import"
+      ),
+      # @import directive
+      list(
+        regex = "@import\\b",
+        func = "@import",
+        arg_position = 1,
+        arg_name = NULL,
+        description = "WGSL import directive"
       )
     )
   )
