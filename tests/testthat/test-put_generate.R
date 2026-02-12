@@ -274,6 +274,99 @@ test_that("put_merge() handles empty directory", {
   expect_equal(nrow(result), 0)
 })
 
+test_that("put_merge() handles node ID collision across strategies", {
+  temp_dir <- tempdir()
+  test_dir <- file.path(temp_dir, "putior_test_merge_collision")
+  dir.create(test_dir, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE))
+
+  # File where manual annotation ID overlaps with auto-generated ID
+  r_content <- c(
+    '#put id:"test", label:"Manual Version", input:"manual.csv"',
+    "data <- read.csv('auto.csv')",
+    "write.csv(data, 'result.csv')"
+  )
+  create_test_file(r_content, "test.R", test_dir)
+
+  # manual_priority: manual annotation wins for the file
+  result_mp <- put_merge(test_dir, merge_strategy = "manual_priority")
+  test_rows <- result_mp[result_mp$file_name == "test.R", ]
+  expect_equal(nrow(test_rows), 1)
+  expect_equal(test_rows$id, "test")
+
+  # supplement: retains manual ID but may supplement I/O
+
+  result_sup <- put_merge(test_dir, merge_strategy = "supplement")
+  sup_rows <- result_sup[result_sup$id == "test", ]
+  expect_equal(nrow(sup_rows), 1)
+  expect_equal(sup_rows$label, "Manual Version")
+
+  # union: retains manual ID and unions I/O
+  result_un <- put_merge(test_dir, merge_strategy = "union")
+  union_rows <- result_un[result_un$id == "test", ]
+  expect_equal(nrow(union_rows), 1)
+})
+
+test_that("put_merge() result works with put_diagram()", {
+  temp_dir <- tempdir()
+  test_dir <- file.path(temp_dir, "putior_test_merge_diagram")
+  dir.create(test_dir, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE))
+
+  r_content <- c(
+    '#put id:"load", label:"Load Data", output:"data.csv"',
+    "data <- read.csv('input.csv')",
+    "write.csv(data, 'data.csv')"
+  )
+  create_test_file(r_content, "pipeline.R", test_dir)
+
+  merged <- put_merge(test_dir)
+  expect_s3_class(merged, "putior_workflow")
+
+  # Should produce valid Mermaid code
+  diagram <- put_diagram(merged, output = "raw")
+  expect_true(is.character(diagram))
+  expect_true(nchar(diagram) > 0)
+  expect_true(grepl("graph|flowchart", diagram))
+})
+
+test_that("put_merge() returns putior_workflow class for all strategies", {
+  temp_dir <- tempdir()
+  test_dir <- file.path(temp_dir, "putior_test_merge_class")
+  dir.create(test_dir, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE))
+
+  r_content <- c(
+    '#put id:"node1", label:"Step 1"',
+    "data <- read.csv('input.csv')"
+  )
+  create_test_file(r_content, "test.R", test_dir)
+
+  for (strategy in c("manual_priority", "supplement", "union")) {
+    result <- put_merge(test_dir, merge_strategy = strategy)
+    expect_s3_class(result, "putior_workflow")
+  }
+})
+
+test_that("put_merge() handles directory with no detectable I/O and no annotations", {
+  temp_dir <- tempdir()
+  test_dir <- file.path(temp_dir, "putior_test_merge_noio")
+  dir.create(test_dir, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE))
+
+  r_content <- c(
+    "x <- 1 + 2",
+    "y <- x * 3"
+  )
+  create_test_file(r_content, "empty.R", test_dir)
+
+  # put_auto() creates a node for every scanned file, even without I/O
+  result <- put_merge(test_dir)
+  expect_s3_class(result, "data.frame")
+  expect_equal(nrow(result), 1)
+  expect_true(result$auto_detected[1])
+})
+
 # Tests for get_detection_patterns()
 test_that("get_detection_patterns() returns patterns for R", {
   patterns <- get_detection_patterns("r")
@@ -284,7 +377,7 @@ test_that("get_detection_patterns() returns patterns for R", {
   expect_true("dependency" %in% names(patterns))
 
   # Check input patterns include common functions
-  input_funcs <- sapply(patterns$input, function(p) p$func)
+  input_funcs <- vapply(patterns$input, function(p) p$func, character(1))
   expect_true("read.csv" %in% input_funcs)
   expect_true("readRDS" %in% input_funcs)
 })
@@ -295,7 +388,7 @@ test_that("get_detection_patterns() returns patterns for Python", {
   expect_type(patterns, "list")
 
   # Check Python patterns include pandas
-  input_funcs <- sapply(patterns$input, function(p) p$func)
+  input_funcs <- vapply(patterns$input, function(p) p$func, character(1))
   expect_true(any(grepl("pd.read_csv|pandas", input_funcs)))
 })
 
@@ -305,7 +398,7 @@ test_that("get_detection_patterns() filters by type", {
   # Should return list of patterns, not a list with input/output/dependency
   expect_type(input_patterns, "list")
   # Each element should have regex and func
-  expect_true(all(sapply(input_patterns, function(p) "regex" %in% names(p))))
+  expect_true(all(vapply(input_patterns, function(p) "regex" %in% names(p), logical(1))))
 })
 
 test_that("get_detection_patterns() validates language", {

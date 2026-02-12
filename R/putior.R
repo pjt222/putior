@@ -124,27 +124,7 @@ put <- function(path,
   putior_log("DEBUG", "Scan parameters: path='{path}', pattern='{pattern}', recursive={recursive}")
 
   # Input validation
-  if (!is.character(path) || length(path) != 1) {
-    stop(
-      "'path' must be a single character string.\n",
-      "Received: ", class(path)[1],
-      if (length(path) > 1) paste0(" with ", length(path), " elements") else "",
-      ".\n",
-      "Example: put(\"./src/\") or put(\"script.R\")",
-      call. = FALSE
-    )
-  }
-
-  if (!file.exists(path)) {
-    stop(
-      "Path does not exist: '", path, "'\n",
-      "Please check:\n",
-      "- The path is spelled correctly\n",
-      "- The directory or file exists\n",
-      "- You have read permissions for this location",
-      call. = FALSE
-    )
-  }
+  validate_path_arg(path, "put")
 
   # Handle both files and directories
   if (dir.exists(path)) {

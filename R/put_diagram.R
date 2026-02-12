@@ -620,7 +620,7 @@ resolve_label <- function(node, node_labels) {
 #' @return Sanitized character string safe for Mermaid labels
 #' @noRd
 sanitize_mermaid_label <- function(label) {
-  if (is.null(label) || is.na(label) || label == "") return(label)
+  if (is_empty_string(label)) return(label)
   # Wrap in quotes and escape internal quotes using Mermaid's #quot; entity
   label <- gsub('"', "#quot;", label, fixed = TRUE)
   paste0('"', label, '"')
@@ -767,7 +767,7 @@ generate_click_directives <- function(workflow, protocol = "vscode") {
     }
 
     # Get file path
-    if (is.null(node$file_name) || is.na(node$file_name) || node$file_name == "") {
+    if (is_empty_string(node$file_name)) {
       next
     }
 
@@ -1013,7 +1013,7 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
 #' @return Character vector of non-empty file names
 #' @noRd
 parse_file_list <- function(file_string) {
-  if (is.null(file_string) || is.na(file_string) || file_string == "") {
+  if (is_empty_string(file_string)) {
     return(character())
   }
   files <- strsplit(trimws(file_string), ",")[[1]]
@@ -1084,20 +1084,11 @@ handle_output <- function(mermaid_code, output = "console", file = NULL, title =
       message("Diagram saved to: ", file)
     },
     "clipboard" = {
-      if (requireNamespace("clipr", quietly = TRUE)) {
-        clipr::write_clip(paste0("```mermaid\n", mermaid_code, "\n```"))
-        message("Diagram copied to clipboard")
-      } else {
-        warning(
-          "clipr package not available for clipboard access.\n",
-          "The diagram has been printed to console instead.\n",
-          "To enable clipboard support, install with: install.packages(\"clipr\")",
-          call. = FALSE
-        )
-        cat("```mermaid\n")
-        cat(mermaid_code)
-        cat("\n```\n")
-      }
+      copy_to_clipboard(
+        content = paste0("```mermaid\n", mermaid_code, "\n```"),
+        success_msg = "Diagram copied to clipboard",
+        fallback_content = paste0("```mermaid\n", mermaid_code, "\n```")
+      )
     },
     "raw" = {
       # Return just the raw mermaid code without any output

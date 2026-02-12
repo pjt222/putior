@@ -44,12 +44,10 @@ putior_skills <- function(topic = NULL,
     console = cat(content, sep = "\n"),
     raw = return(paste(content, collapse = "\n")),
     clipboard = {
-      if (requireNamespace("clipr", quietly = TRUE)) {
-        clipr::write_clip(paste(content, collapse = "\n"))
-        message("Skills copied to clipboard")
-      } else {
-        stop("Install 'clipr' package for clipboard support", call. = FALSE)
-      }
+      copy_to_clipboard(
+        content = paste(content, collapse = "\n"),
+        success_msg = "Skills copied to clipboard"
+      )
     }
   )
 

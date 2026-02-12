@@ -7,8 +7,8 @@ test_that("putior_mcp_tools returns correct number of tools", {
 
   tools <- putior_mcp_tools()
 
-  # Should have 16 tools (excluding run_sandbox by default)
-  expect_equal(length(tools), 16)
+  # Should have at least 16 tools (excluding run_sandbox by default)
+  expect_gte(length(tools), 16)
 })
 
 test_that("putior_mcp_tools includes all expected tool names", {

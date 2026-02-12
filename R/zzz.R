@@ -30,6 +30,86 @@ NULL
   if (is.null(x)) y else x
 }
 
+#' Validate a file/directory path argument
+#'
+#' Shared validation for path arguments across put(), put_auto(), put_generate().
+#' Checks type, existence, and rejects directory traversal.
+#'
+#' @param path The path argument to validate
+#' @param caller Name of the calling function (for error messages)
+#' @return The validated path (invisibly), or stops with an informative error
+#' @noRd
+validate_path_arg <- function(path, caller) {
+  if (!is.character(path) || length(path) != 1) {
+    stop(
+      "'path' must be a single character string.\n",
+      "Received: ", class(path)[1],
+      if (length(path) > 1) paste0(" with ", length(path), " elements") else "",
+      ".\n",
+      "Example: ", caller, "(\"./src/\") or ", caller, "(\"script.R\")",
+      call. = FALSE
+    )
+  }
+
+  # Reject directory traversal attempts (defense-in-depth)
+  normalized <- gsub("\\\\", "/", path)
+  if (grepl("(^|/)\\.\\.(/|$)", normalized)) {
+    stop(
+      "Path rejected: directory traversal ('..') not allowed: '", path, "'",
+      call. = FALSE
+    )
+  }
+
+  if (!file.exists(path)) {
+    stop(
+      "Path does not exist: '", path, "'\n",
+      "Please check:\n",
+      "- The path is spelled correctly\n",
+      "- The directory or file exists\n",
+      "- You have read permissions for this location",
+      call. = FALSE
+    )
+  }
+
+  invisible(path)
+}
+
+#' Copy content to clipboard with graceful fallback
+#'
+#' Attempts to use clipr for clipboard access. Falls back to console output
+#' with a warning if clipr is not available.
+#'
+#' @param content Character string to copy
+#' @param success_msg Message to display on successful copy
+#' @param fallback_content Optional alternative content to print on fallback
+#'   (e.g., with markdown fences). If NULL, prints \code{content} directly.
+#' @return Invisible NULL
+#' @noRd
+copy_to_clipboard <- function(content, success_msg, fallback_content = NULL) {
+  if (requireNamespace("clipr", quietly = TRUE)) {
+    clipr::write_clip(content)
+    message(success_msg)
+  } else {
+    warning(
+      "clipr package not available for clipboard access.\n",
+      "The content has been printed to console instead.\n",
+      "To enable clipboard support, install with: install.packages(\"clipr\")",
+      call. = FALSE
+    )
+    cat(fallback_content %||% content, "\n")
+  }
+  invisible(NULL)
+}
+
+#' Check if a value is empty (NULL, NA, or "")
+#'
+#' @param x Value to check
+#' @return TRUE if x is NULL, NA, or an empty string
+#' @noRd
+is_empty_string <- function(x) {
+  is.null(x) || is.na(x) || x == ""
+}
+
 .onLoad <- function(libname, pkgname) {
   # Set default package options
   op <- options()

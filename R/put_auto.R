@@ -79,27 +79,7 @@ put_auto <- function(path,
   putior_log("DEBUG", "Auto-detection parameters: path='{path}', detect_inputs={detect_inputs}, detect_outputs={detect_outputs}, detect_dependencies={detect_dependencies}")
 
   # Input validation
-  if (!is.character(path) || length(path) != 1) {
-    stop(
-      "'path' must be a single character string.\n",
-      "Received: ", class(path)[1],
-      if (length(path) > 1) paste0(" with ", length(path), " elements") else "",
-      ".\n",
-      "Example: put_auto(\"./src/\") or put_auto(\"script.R\")",
-      call. = FALSE
-    )
-  }
-
-  if (!file.exists(path)) {
-    stop(
-      "Path does not exist: '", path, "'\n",
-      "Please check:\n",
-      "- The path is spelled correctly\n",
-      "- The directory or file exists\n",
-      "- You have read permissions for this location",
-      call. = FALSE
-    )
-  }
+  validate_path_arg(path, "put_auto")
 
   # Handle both files and directories
   if (dir.exists(path)) {
@@ -215,27 +195,7 @@ put_generate <- function(path,
   if (is.null(pattern)) pattern <- build_file_pattern(detection_only = TRUE)
 
   # Input validation
-  if (!is.character(path) || length(path) != 1) {
-    stop(
-      "'path' must be a single character string.\n",
-      "Received: ", class(path)[1],
-      if (length(path) > 1) paste0(" with ", length(path), " elements") else "",
-      ".\n",
-      "Example: put_generate(\"./src/\") or put_generate(\"script.R\")",
-      call. = FALSE
-    )
-  }
-
-  if (!file.exists(path)) {
-    stop(
-      "Path does not exist: '", path, "'\n",
-      "Please check:\n",
-      "- The path is spelled correctly\n",
-      "- The directory or file exists\n",
-      "- You have read permissions for this location",
-      call. = FALSE
-    )
-  }
+  validate_path_arg(path, "put_generate")
 
   valid_outputs <- c("console", "clipboard", "file", "raw")
   if (!output %in% valid_outputs) {
@@ -309,18 +269,10 @@ put_generate <- function(path,
       # Return as string without printing
     },
     "clipboard" = {
-      if (requireNamespace("clipr", quietly = TRUE)) {
-        clipr::write_clip(combined)
-        message("Annotations copied to clipboard")
-      } else {
-        warning(
-          "clipr package not available for clipboard access.\n",
-          "The annotations have been printed to console instead.\n",
-          "To enable clipboard support, install with: install.packages(\"clipr\")",
-          call. = FALSE
-        )
-        cat(combined, "\n")
-      }
+      copy_to_clipboard(
+        content = combined,
+        success_msg = "Annotations copied to clipboard"
+      )
     },
     "file" = {
       # Write to a .put file alongside each source file

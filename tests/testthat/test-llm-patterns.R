@@ -4,7 +4,7 @@ test_that("R LLM patterns exist and are valid", {
   patterns <- get_detection_patterns("r", type = "input")
 
   # Check that we have ellmer patterns
-  ellmer_funcs <- sapply(patterns, function(p) p$func)
+  ellmer_funcs <- vapply(patterns, function(p) p$func, character(1))
   expect_true("chat_openai" %in% ellmer_funcs)
   expect_true("chat_claude" %in% ellmer_funcs)
   expect_true("chat_ollama" %in% ellmer_funcs)
@@ -27,7 +27,7 @@ test_that("Python LLM input patterns exist and are valid", {
   patterns <- get_detection_patterns("python", type = "input")
 
   # Check that we have LLM patterns
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # Ollama
   expect_true("ollama.chat" %in% funcs)
@@ -71,7 +71,7 @@ test_that("Python LLM output patterns exist and are valid", {
   patterns <- get_detection_patterns("python", type = "output")
 
   # Check that we have model save patterns
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # Transformers
   expect_true("model.save_pretrained" %in% funcs)
@@ -114,24 +114,24 @@ test_that("LLM patterns have valid regex", {
 test_that("LLM patterns match expected code snippets", {
   # Test OpenAI pattern
   py_patterns <- get_detection_patterns("python", type = "input")
-  openai_pattern <- py_patterns[[which(sapply(py_patterns, function(p) p$func == "OpenAI"))]]
+  openai_pattern <- py_patterns[[which(vapply(py_patterns, function(p) p$func == "OpenAI", logical(1)))]]
   expect_true(grepl(openai_pattern$regex, "client = OpenAI(api_key='sk-xxx')"))
 
   # Test Anthropic pattern
-  anthropic_pattern <- py_patterns[[which(sapply(py_patterns, function(p) p$func == "Anthropic"))]]
+  anthropic_pattern <- py_patterns[[which(vapply(py_patterns, function(p) p$func == "Anthropic", logical(1)))]]
   expect_true(grepl(anthropic_pattern$regex, "client = Anthropic(api_key='sk-xxx')"))
 
   # Test ollama pattern
-  ollama_pattern <- py_patterns[[which(sapply(py_patterns, function(p) p$func == "ollama.chat"))]]
+  ollama_pattern <- py_patterns[[which(vapply(py_patterns, function(p) p$func == "ollama.chat", logical(1)))]]
   expect_true(grepl(ollama_pattern$regex, "ollama.chat(model='llama2')"))
 
   # Test langchain patterns
-  langchain_pattern <- py_patterns[[which(sapply(py_patterns, function(p) p$func == "ChatOpenAI"))]]
+  langchain_pattern <- py_patterns[[which(vapply(py_patterns, function(p) p$func == "ChatOpenAI", logical(1)))]]
   expect_true(grepl(langchain_pattern$regex, "llm = ChatOpenAI(model='gpt-4')"))
 
   # Test R ellmer pattern
   r_patterns <- get_detection_patterns("r", type = "input")
-  chat_openai_pattern <- r_patterns[[which(sapply(r_patterns, function(p) p$func == "chat_openai"))]]
+  chat_openai_pattern <- r_patterns[[which(vapply(r_patterns, function(p) p$func == "chat_openai", logical(1)))]]
   expect_true(grepl(chat_openai_pattern$regex, "response <- chat_openai(prompt)"))
 })
 
@@ -139,14 +139,14 @@ test_that("Model save patterns match expected code snippets", {
   py_output <- get_detection_patterns("python", type = "output")
 
   # Test transformers save
-  save_pattern <- py_output[[which(sapply(py_output, function(p) p$func == "model.save_pretrained"))]]
+  save_pattern <- py_output[[which(vapply(py_output, function(p) p$func == "model.save_pretrained", logical(1)))]]
   expect_true(grepl(save_pattern$regex, "model.save_pretrained('./my_model')"))
 
   # Test torch save
-  torch_pattern <- py_output[[which(sapply(py_output, function(p) p$func == "torch.save"))]]
+  torch_pattern <- py_output[[which(vapply(py_output, function(p) p$func == "torch.save", logical(1)))]]
   expect_true(grepl(torch_pattern$regex, "torch.save(model.state_dict(), 'model.pt')"))
 
   # Test MLflow
-  mlflow_pattern <- py_output[[which(sapply(py_output, function(p) p$func == "mlflow.log_model"))]]
+  mlflow_pattern <- py_output[[which(vapply(py_output, function(p) p$func == "mlflow.log_model", logical(1)))]]
   expect_true(grepl(mlflow_pattern$regex, "mlflow.log_model(model, 'model')"))
 })

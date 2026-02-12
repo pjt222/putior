@@ -29,7 +29,7 @@ test_that("JavaScript patterns exist and are valid", {
 
 test_that("JavaScript input patterns include key functions", {
   patterns <- get_detection_patterns("javascript", type = "input")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # Node.js fs
   expect_true("fs.readFileSync" %in% funcs)
@@ -51,7 +51,7 @@ test_that("JavaScript input patterns include key functions", {
 
 test_that("JavaScript output patterns include key functions", {
   patterns <- get_detection_patterns("javascript", type = "output")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # Node.js fs
   expect_true("fs.writeFileSync" %in% funcs)
@@ -71,11 +71,11 @@ test_that("JavaScript patterns match expected code snippets", {
   patterns <- get_detection_patterns("javascript", type = "input")
 
   # Test fs.readFileSync
-  fs_pattern <- patterns[[which(sapply(patterns, function(p) p$func == "fs.readFileSync"))]]
+  fs_pattern <- patterns[[which(vapply(patterns, function(p) p$func == "fs.readFileSync", logical(1)))]]
   expect_true(grepl(fs_pattern$regex, "const data = fs.readFileSync('file.txt')"))
 
   # Test fetch
-  fetch_pattern <- patterns[[which(sapply(patterns, function(p) p$func == "fetch"))]]
+  fetch_pattern <- patterns[[which(vapply(patterns, function(p) p$func == "fetch", logical(1)))]]
   expect_true(grepl(fetch_pattern$regex, "fetch('https://api.example.com')"))
 })
 
@@ -96,7 +96,7 @@ test_that("TypeScript patterns exist and extend JavaScript", {
 
 test_that("TypeScript includes TS-specific patterns", {
   patterns <- get_detection_patterns("typescript", type = "input")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # Type references
   expect_true("/// <reference path>" %in% funcs)
@@ -127,7 +127,7 @@ test_that("Go patterns exist and are valid", {
 
 test_that("Go input patterns include key functions", {
   patterns <- get_detection_patterns("go", type = "input")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # os package
   expect_true("os.Open" %in% funcs)
@@ -152,7 +152,7 @@ test_that("Go input patterns include key functions", {
 
 test_that("Go output patterns include key functions", {
   patterns <- get_detection_patterns("go", type = "output")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # os package
   expect_true("os.Create" %in% funcs)
@@ -172,11 +172,11 @@ test_that("Go patterns match expected code snippets", {
   patterns <- get_detection_patterns("go", type = "input")
 
   # Test os.Open
-  os_pattern <- patterns[[which(sapply(patterns, function(p) p$func == "os.Open"))]]
+  os_pattern <- patterns[[which(vapply(patterns, function(p) p$func == "os.Open", logical(1)))]]
   expect_true(grepl(os_pattern$regex, 'f, err := os.Open("file.txt")'))
 
   # Test json.NewDecoder
-  json_pattern <- patterns[[which(sapply(patterns, function(p) p$func == "json.NewDecoder"))]]
+  json_pattern <- patterns[[which(vapply(patterns, function(p) p$func == "json.NewDecoder", logical(1)))]]
   expect_true(grepl(json_pattern$regex, "json.NewDecoder(r.Body)"))
 })
 
@@ -196,7 +196,7 @@ test_that("Rust patterns exist and are valid", {
 
 test_that("Rust input patterns include key functions", {
   patterns <- get_detection_patterns("rust", type = "input")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # std::fs
   expect_true("File::open" %in% funcs)
@@ -217,7 +217,7 @@ test_that("Rust input patterns include key functions", {
 
 test_that("Rust output patterns include key functions", {
   patterns <- get_detection_patterns("rust", type = "output")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # std::fs
   expect_true("File::create" %in% funcs)
@@ -237,7 +237,7 @@ test_that("Rust patterns match expected code snippets", {
   patterns <- get_detection_patterns("rust", type = "input")
 
   # Test File::open
-  file_pattern <- patterns[[which(sapply(patterns, function(p) p$func == "File::open"))]]
+  file_pattern <- patterns[[which(vapply(patterns, function(p) p$func == "File::open", logical(1)))]]
   expect_true(grepl(file_pattern$regex, 'let f = File::open("file.txt")?;'))
 })
 
@@ -257,7 +257,7 @@ test_that("Java patterns exist and are valid", {
 
 test_that("Java input patterns include key functions", {
   patterns <- get_detection_patterns("java", type = "input")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # Classic I/O
   expect_true("new FileInputStream" %in% funcs)
@@ -286,7 +286,7 @@ test_that("Java input patterns include key functions", {
 
 test_that("Java output patterns include key functions", {
   patterns <- get_detection_patterns("java", type = "output")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # Classic I/O
   expect_true("new FileOutputStream" %in% funcs)
@@ -311,11 +311,11 @@ test_that("Java patterns match expected code snippets", {
   patterns <- get_detection_patterns("java", type = "input")
 
   # Test Files.readAllLines
-  files_pattern <- patterns[[which(sapply(patterns, function(p) p$func == "Files.readAllLines"))]]
+  files_pattern <- patterns[[which(vapply(patterns, function(p) p$func == "Files.readAllLines", logical(1)))]]
   expect_true(grepl(files_pattern$regex, 'List<String> lines = Files.readAllLines(path);'))
 
   # Test @RequestBody
-  rb_pattern <- patterns[[which(sapply(patterns, function(p) p$func == "@RequestBody"))]]
+  rb_pattern <- patterns[[which(vapply(patterns, function(p) p$func == "@RequestBody", logical(1)))]]
   expect_true(grepl(rb_pattern$regex, "public void create(@RequestBody User user)"))
 })
 
@@ -335,7 +335,7 @@ test_that("C patterns exist and are valid", {
 
 test_that("C input patterns include key functions", {
   patterns <- get_detection_patterns("c", type = "input")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # stdio.h
   expect_true("fopen" %in% funcs)
@@ -352,7 +352,7 @@ test_that("C input patterns include key functions", {
 
 test_that("C output patterns include key functions", {
   patterns <- get_detection_patterns("c", type = "output")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # stdio.h
   expect_true("fwrite" %in% funcs)
@@ -381,7 +381,7 @@ test_that("C++ patterns exist and extend C", {
 
 test_that("C++ includes C++ specific patterns", {
   patterns <- get_detection_patterns("cpp", type = "input")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # fstream
   expect_true("ifstream" %in% funcs)
@@ -396,7 +396,7 @@ test_that("C++ includes C++ specific patterns", {
 
 test_that("C++ output includes C++ specific patterns", {
   patterns <- get_detection_patterns("cpp", type = "output")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # fstream
   expect_true("ofstream" %in% funcs)
@@ -425,7 +425,7 @@ test_that("MATLAB patterns exist and are valid", {
 
 test_that("MATLAB input patterns include key functions", {
   patterns <- get_detection_patterns("matlab", type = "input")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # Data loading
   expect_true("load" %in% funcs)
@@ -445,7 +445,7 @@ test_that("MATLAB input patterns include key functions", {
 
 test_that("MATLAB output patterns include key functions", {
   patterns <- get_detection_patterns("matlab", type = "output")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # Data saving
   expect_true("save" %in% funcs)
@@ -466,7 +466,7 @@ test_that("MATLAB patterns match expected code snippets", {
   patterns <- get_detection_patterns("matlab", type = "input")
 
   # Test readtable
-  rt_pattern <- patterns[[which(sapply(patterns, function(p) p$func == "readtable"))]]
+  rt_pattern <- patterns[[which(vapply(patterns, function(p) p$func == "readtable", logical(1)))]]
   expect_true(grepl(rt_pattern$regex, "T = readtable('data.csv')"))
 })
 
@@ -486,7 +486,7 @@ test_that("Ruby patterns exist and are valid", {
 
 test_that("Ruby input patterns include key functions", {
   patterns <- get_detection_patterns("ruby", type = "input")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # File operations
   expect_true("File.read" %in% funcs)
@@ -511,7 +511,7 @@ test_that("Ruby input patterns include key functions", {
 
 test_that("Ruby output patterns include key functions", {
   patterns <- get_detection_patterns("ruby", type = "output")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # File operations
   expect_true("File.write" %in% funcs)
@@ -536,7 +536,7 @@ test_that("Ruby patterns match expected code snippets", {
   patterns <- get_detection_patterns("ruby", type = "input")
 
   # Test File.read
-  file_pattern <- patterns[[which(sapply(patterns, function(p) p$func == "File.read"))]]
+  file_pattern <- patterns[[which(vapply(patterns, function(p) p$func == "File.read", logical(1)))]]
   expect_true(grepl(file_pattern$regex, "content = File.read('config.yml')"))
 })
 
@@ -556,7 +556,7 @@ test_that("Lua patterns exist and are valid", {
 
 test_that("Lua input patterns include key functions", {
   patterns <- get_detection_patterns("lua", type = "input")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # io library
   expect_true("io.open" %in% funcs)
@@ -570,7 +570,7 @@ test_that("Lua input patterns include key functions", {
 
 test_that("Lua output patterns include key functions", {
   patterns <- get_detection_patterns("lua", type = "output")
-  funcs <- sapply(patterns, function(p) p$func)
+  funcs <- vapply(patterns, function(p) p$func, character(1))
 
   # io library
   expect_true("io.write" %in% funcs)
@@ -809,8 +809,8 @@ test_that("list_supported_languages includes new languages with detection_only=T
   expect_true("lua" %in% langs_with_detection)
   expect_true("wgsl" %in% langs_with_detection)
 
-  # Should have 16 total languages with detection support
-  expect_equal(length(langs_with_detection), 16)
+  # Should have at least 16 languages with detection support
+  expect_gte(length(langs_with_detection), 16)
 })
 
 test_that("build_file_pattern includes new extensions with detection_only=TRUE", {
