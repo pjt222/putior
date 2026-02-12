@@ -3,7 +3,9 @@
   "external.libraries": [],
   "ignored.packages": [
     "acquaint",
-    "btw"
+    "btw",
+    "mcptools",
+    "rsyslog"
   ],
   "package.dependency.fields": [
     "Imports",
