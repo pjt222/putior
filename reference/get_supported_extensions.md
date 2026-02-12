@@ -20,6 +20,6 @@ get_supported_extensions()
 #>  [1] "r"      "py"     "sh"     "bash"   "jl"     "rb"     "pl"     "yaml"  
 #>  [9] "yml"    "toml"   "sql"    "lua"    "hs"     "js"     "ts"     "jsx"   
 #> [17] "tsx"    "c"      "cpp"    "h"      "hpp"    "java"   "go"     "rs"    
-#> [25] "swift"  "kt"     "cs"     "php"    "scala"  "groovy" "d"      "m"     
-#> [33] "tex"   
+#> [25] "swift"  "kt"     "cs"     "php"    "scala"  "groovy" "d"      "wgsl"  
+#> [33] "m"      "tex"   
 ```

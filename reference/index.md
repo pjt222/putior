@@ -155,6 +155,8 @@ Internal implementation details (not part of the public API)
   : Get color schemes for different themes (FIXED VERSION)
 - [`get_typescript_patterns()`](https://pjt222.github.io/putior/reference/get_typescript_patterns.md)
   : Get TypeScript Detection Patterns
+- [`get_wgsl_patterns()`](https://pjt222.github.io/putior/reference/get_wgsl_patterns.md)
+  : Get WGSL Detection Patterns
 - [`handle_output()`](https://pjt222.github.io/putior/reference/handle_output.md)
   : Handle diagram output to different destinations
 - [`has_logger()`](https://pjt222.github.io/putior/reference/has_logger.md)

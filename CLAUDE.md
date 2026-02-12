@@ -172,13 +172,16 @@ without explicit permission
     automatic comment prefix detection (`#`, `--`, `//`, `%`)
 18. **Full Language Detection Patterns** - Added auto-detection patterns
     for 10 new languages (JS, TS, Go, Rust, Java, C, C++, MATLAB, Ruby,
-    Lua), bringing total to 15 languages with 862 patterns
+    Lua), bringing total to 16 languages with 879 patterns
 19. **MCP Server Integration** - Expose putior functions as MCP tools
     for AI assistants (Claude Code, Claude Desktop)
 20. **ACP Server Integration** - Expose putior as an ACP agent for
     inter-agent communication via REST API
 21. **Colorblind-Safe Themes** - Added 4 viridis family themes (viridis,
     magma, plasma, cividis) for accessibility
+22. **WGSL Shader Language Support (Issue \#31)** - Register `.wgsl`
+    with `//` comments, 17 auto-detection patterns for GPU bindings,
+    textures, samplers, and naga-oil/WESL imports
 
 ## MCP Server Integration
 
@@ -362,12 +365,12 @@ print(manifest$metadata$operations)
 putior now automatically detects the correct comment prefix based on
 file extension:
 
-| Comment Style | Languages                                                                     | Extensions                                        |
-|---------------|-------------------------------------------------------------------------------|---------------------------------------------------|
-| `# put`       | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML                               | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`  |
-| `-- put`      | SQL, Lua, Haskell                                                             | `.sql`, `.lua`, `.hs`                             |
-| `// put`      | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs` |
-| `% put`       | MATLAB, LaTeX                                                                 | `.m`, `.tex`                                      |
+| Comment Style | Languages                                                                           | Extensions                                                 |
+|---------------|-------------------------------------------------------------------------------------|------------------------------------------------------------|
+| `# put`       | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML                                     | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`           |
+| `-- put`      | SQL, Lua, Haskell                                                                   | `.sql`, `.lua`, `.hs`                                      |
+| `// put`      | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala, WGSL | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs`, `.wgsl` |
+| `% put`       | MATLAB, LaTeX                                                                       | `.m`, `.tex`                                               |
 
 ### Key Functions
 
@@ -408,9 +411,9 @@ results = compute_statistics(data);
 ### Key Files
 
 - `R/language_registry.R` - Language groups and comment prefix detection
-- `R/detection_patterns.R` - Auto-detection patterns for 15 languages
+- `R/detection_patterns.R` - Auto-detection patterns for 16 languages
 - `tests/testthat/test-language-registry.R` - Tests for multi-language
-  support (147 tests)
+  support
 - `tests/testthat/test-new-language-patterns.R` - Tests for new language
   detection patterns
 
@@ -419,38 +422,40 @@ results = compute_statistics(data);
 ### Overview
 
 putior supports auto-detection of file inputs, outputs, and dependencies
-for 15 programming languages with **862 patterns total**.
+for 16 programming languages with **879 patterns total**.
 
-### Languages with Auto-Detection (15 languages)
+### Languages with Auto-Detection (16 languages)
 
-| Language   | Total | Key Libraries/Frameworks                           |
-|------------|-------|----------------------------------------------------|
-| R          | 124   | readr, data.table, DBI, arrow, ellmer, sparklyr    |
-| Python     | 159   | pandas, numpy, sqlalchemy, transformers, langchain |
-| JavaScript | 71    | Node.js fs, Express.js, mongoose, Prisma, axios    |
-| TypeScript | 88    | All JS + NestJS, TypeORM, decorators               |
-| Java       | 73    | NIO, JDBC, Jackson, Spring Boot, Hibernate         |
-| Ruby       | 64    | File, CSV, YAML, Rails, ActiveRecord, Sequel       |
-| Rust       | 60    | std::fs, serde, sqlx, diesel, reqwest              |
-| Go         | 44    | os, bufio, database/sql, gorm, net/http            |
-| C++        | 44    | All C + fstream, boost, std::filesystem            |
-| MATLAB     | 44    | readtable, imread, h5read, VideoReader             |
-| Julia      | 27    | CSV.jl, DataFrames, JLD2, Arrow.jl                 |
-| C          | 24    | stdio.h, POSIX, mmap                               |
-| Lua        | 20    | io library, loadfile, dofile                       |
-| Shell      | 12    | cat, redirects, source                             |
-| SQL        | 8     | FROM, JOIN, COPY                                   |
+| Language   | Total | Key Libraries/Frameworks                                       |
+|------------|-------|----------------------------------------------------------------|
+| R          | 124   | readr, data.table, DBI, arrow, ellmer, sparklyr                |
+| Python     | 159   | pandas, numpy, sqlalchemy, transformers, langchain             |
+| JavaScript | 71    | Node.js fs, Express.js, mongoose, Prisma, axios                |
+| TypeScript | 88    | All JS + NestJS, TypeORM, decorators                           |
+| Java       | 73    | NIO, JDBC, Jackson, Spring Boot, Hibernate                     |
+| Ruby       | 64    | File, CSV, YAML, Rails, ActiveRecord, Sequel                   |
+| Rust       | 60    | std::fs, serde, sqlx, diesel, reqwest                          |
+| Go         | 44    | os, bufio, database/sql, gorm, net/http                        |
+| C++        | 44    | All C + fstream, boost, std::filesystem                        |
+| MATLAB     | 44    | readtable, imread, h5read, VideoReader                         |
+| Julia      | 27    | CSV.jl, DataFrames, JLD2, Arrow.jl                             |
+| C          | 24    | stdio.h, POSIX, mmap                                           |
+| Lua        | 20    | io library, loadfile, dofile                                   |
+| WGSL       | 17    | uniform/storage bindings, textures, samplers, naga-oil imports |
+| Shell      | 12    | cat, redirects, source                                         |
+| SQL        | 8     | FROM, JOIN, COPY                                               |
 
 ### Usage
 
 ``` r
 # Get patterns for any supported language
-patterns <- get_detection_patterns("javascript")  # or "go", "rust", "java", etc.
+patterns <- get_detection_patterns("javascript")  # or "go", "rust", "wgsl", etc.
 
 # List languages with detection support
 list_supported_languages(detection_only = TRUE)
 #> [1] "r" "python" "sql" "shell" "julia" "javascript" "typescript"
 #> [8] "go" "rust" "java" "c" "cpp" "matlab" "ruby" "lua"
+#> [16] "wgsl"
 ```
 
 ### Key Implementation Insights
@@ -577,7 +582,8 @@ Dependencies: [`source()`](https://rdrr.io/r/base/source.html),
 `pickle.load`, `np.load`, etc. - Outputs: `.to_csv`, `.to_excel`,
 `json.dump`, `plt.savefig`, etc.
 
-**Also supported:** SQL, Shell, Julia
+**Also supported:** SQL, Shell, Julia, WGSL, and 10 more (see table
+above)
 
 ### Workflow Integration
 

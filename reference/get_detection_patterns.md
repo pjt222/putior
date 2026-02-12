@@ -14,7 +14,8 @@ get_detection_patterns(language = "r", type = NULL)
 - language:
 
   Character string specifying the language. Options: "r", "python",
-  "sql", "shell", "julia"
+  "sql", "shell", "julia", "javascript", "typescript", "go", "rust",
+  "java", "c", "cpp", "matlab", "ruby", "lua", "wgsl"
 
 - type:
 

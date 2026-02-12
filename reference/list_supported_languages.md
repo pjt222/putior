@@ -31,11 +31,12 @@ list_supported_languages()
 #> [11] "haskell"    "javascript" "typescript" "c"          "cpp"       
 #> [16] "java"       "go"         "rust"       "swift"      "kotlin"    
 #> [21] "csharp"     "php"        "scala"      "groovy"     "d"         
-#> [26] "matlab"     "latex"     
+#> [26] "wgsl"       "matlab"     "latex"     
 
 # Only languages with auto-detection patterns
 list_supported_languages(detection_only = TRUE)
 #>  [1] "r"          "python"     "sql"        "shell"      "julia"     
 #>  [6] "javascript" "typescript" "go"         "rust"       "java"      
 #> [11] "c"          "cpp"        "matlab"     "ruby"       "lua"       
+#> [16] "wgsl"      
 ```

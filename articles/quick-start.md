@@ -76,7 +76,7 @@ writeLines(c(
 
 # Scan and visualize
 workflow <- put(temp_file)
-#> Warning: Validation issues in file25c571509fe.R line 7:
+#> Warning: Validation issues in file25955e4beae0.R line 7:
 #> File reference missing extension: database
 ```
 
@@ -89,13 +89,13 @@ cat("```mermaid\n")
 cat(put_diagram(workflow, output = "raw"))
 ```
 
-flowchart TD node_7cc5988d_9f23_4f0a_98a7_3f6bfabb91d5\[“Extract”\]
-node_4c34e39f_b4ad_45fc_b30c_332ee1f90427\[“Transform”\]
-a1ecab97_2819_4a93_9e3e_c4c2d7e26823\[“Load”\]
+flowchart TD f131af57_a6ad_4def_a1c2_119e08f1d6f5\[“Extract”\]
+node_7d04719e_9981_45dc_b162_f00c19a80400\[“Transform”\]
+node_9a675722_14e2_498e_b538_ad47439ff2b3\[“Load”\]
 
     %% Connections
-    node_7cc5988d_9f23_4f0a_98a7_3f6bfabb91d5 --> node_4c34e39f_b4ad_45fc_b30c_332ee1f90427
-    node_4c34e39f_b4ad_45fc_b30c_332ee1f90427 --> a1ecab97_2819_4a93_9e3e_c4c2d7e26823
+    f131af57_a6ad_4def_a1c2_119e08f1d6f5 --> node_7d04719e_9981_45dc_b162_f00c19a80400
+    node_7d04719e_9981_45dc_b162_f00c19a80400 --> node_9a675722_14e2_498e_b538_ad47439ff2b3
 
 ``` r
 cat("\n```\n")
