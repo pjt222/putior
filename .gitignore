@@ -75,6 +75,8 @@ inst/doc
 
 # Claude Code
 .claude/settings.local.json
+.claude/agents
+.claude/skills
 
 # renv (if not using renv for package development)
 # Uncomment if you don't want to track renv
