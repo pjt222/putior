@@ -531,12 +531,12 @@ test_that("show_source_info adds file names inline", {
   # Without source info
   diagram_no_info <- put_diagram(workflow, show_source_info = FALSE, output = "none")
   expect_false(grepl("<br/>", diagram_no_info))
-  expect_false(grepl("<small>", diagram_no_info))
+  expect_false(grepl("01_load\\.R", diagram_no_info))
 
   # With source info inline
   diagram_with_info <- put_diagram(workflow, show_source_info = TRUE, output = "none")
   expect_true(grepl("<br/>", diagram_with_info))
-  expect_true(grepl("<small>", diagram_with_info))
+  expect_true(grepl("01_load\\.R", diagram_with_info))
   expect_true(grepl("01_load\\.R", diagram_with_info))
 })
 
@@ -779,7 +779,7 @@ test_that("show_source_info and enable_clicks work together", {
 
   # Should have both source info and click directives
   expect_true(grepl("<br/>", diagram_code))
-  expect_true(grepl("<small>", diagram_code))
+  expect_true(grepl("01_load\\.R", diagram_code))
   expect_true(grepl("click ", diagram_code))
   expect_true(grepl("vscode://file/", diagram_code))
 })

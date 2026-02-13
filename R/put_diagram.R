@@ -545,7 +545,7 @@ generate_node_definitions <- function(workflow, node_labels = "label",
         !is.na(node$file_name) && node$file_name != "" &&
         !is_artifact_node) {
       # Use HTML-style line break for Mermaid
-      label_text <- paste0(label_text, "<br/><small>(", node$file_name, ")</small>")
+      label_text <- paste0(label_text, "<br/>(", node$file_name, ")")
     }
 
     # Create node definition using character vector format
