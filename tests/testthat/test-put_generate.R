@@ -85,6 +85,23 @@ test_that("put_generate() handles empty directory", {
   expect_equal(length(result), 0)
 })
 
+test_that("put_generate() defaults to recursive scanning", {
+  temp_dir <- tempdir()
+  test_dir <- file.path(temp_dir, "putior_test_generate_default_recursive")
+  subdir <- file.path(test_dir, "subdir")
+  dir.create(subdir, recursive = TRUE, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE))
+
+  create_test_file(c("data <- read.csv('a.csv')"), "main.R", test_dir)
+  create_test_file(c("x <- readRDS('b.rds')"), "sub.R", subdir)
+
+  # Default (no explicit recursive arg) should find both files
+  result <- put_generate(test_dir, output = "raw")
+  combined <- paste(result, collapse = "\n")
+  expect_true(grepl("main", combined))
+  expect_true(grepl("sub", combined))
+})
+
 test_that("put_generate() handles non-existent path", {
   expect_error(put_generate("/path/that/does/not/exist"), "Path does not exist")
 })
@@ -272,6 +289,24 @@ test_that("put_merge() handles empty directory", {
   expect_warning(result <- put_merge(test_dir))
   expect_s3_class(result, "data.frame")
   expect_equal(nrow(result), 0)
+})
+
+test_that("put_merge() defaults to recursive scanning", {
+  temp_dir <- tempdir()
+  test_dir <- file.path(temp_dir, "putior_test_merge_default_recursive")
+  subdir <- file.path(test_dir, "subdir")
+  dir.create(subdir, recursive = TRUE, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE))
+
+  create_test_file(c(
+    '#put id:"top", label:"Top"',
+    "data <- read.csv('a.csv')"
+  ), "main.R", test_dir)
+  create_test_file(c("x <- readRDS('b.rds')"), "sub.R", subdir)
+
+  # Default (no explicit recursive arg) should find files in both dirs
+  result <- put_merge(test_dir)
+  expect_gte(nrow(result), 2)
 })
 
 test_that("put_merge() handles node ID collision across strategies", {

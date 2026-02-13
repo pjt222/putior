@@ -18,7 +18,7 @@ NULL
 #'   Default: all extensions with detection pattern support (see
 #'   \code{\link{list_supported_languages}(detection_only = TRUE)}).
 #' @param recursive Logical. Should subdirectories be searched recursively?
-#'   Default: FALSE
+#'   Default: TRUE
 #' @param detect_inputs Logical. Should file inputs be detected? Default: TRUE
 #' @param detect_outputs Logical. Should file outputs be detected? Default: TRUE
 #' @param detect_dependencies Logical. Should script dependencies (source calls)
@@ -62,7 +62,7 @@ NULL
 #'   \code{\link{put_merge}} for combining manual and auto-detected annotations
 put_auto <- function(path,
                      pattern = NULL,
-                     recursive = FALSE,
+                     recursive = TRUE,
                      detect_inputs = TRUE,
                      detect_outputs = TRUE,
                      detect_dependencies = TRUE,
@@ -146,7 +146,7 @@ put_auto <- function(path,
 #' @param pattern Character string specifying the file pattern to match.
 #'   Default: all extensions with detection pattern support.
 #' @param recursive Logical. Should subdirectories be searched recursively?
-#'   Default: FALSE
+#'   Default: TRUE
 #' @param output Character string specifying output destination:
 #'   \itemize{
 #'     \item "console" - Print to console (default)
@@ -187,7 +187,7 @@ put_auto <- function(path,
 #'   \code{\link{put}} for extracting existing annotations
 put_generate <- function(path,
                          pattern = NULL,
-                         recursive = FALSE,
+                         recursive = TRUE,
                          output = "console",
                          insert = FALSE,
                          style = "multiline") {
@@ -298,7 +298,7 @@ put_generate <- function(path,
 #' @param pattern Character string specifying the file pattern to match.
 #'   Default: all extensions with detection pattern support.
 #' @param recursive Logical. Should subdirectories be searched recursively?
-#'   Default: FALSE
+#'   Default: TRUE
 #' @param merge_strategy Character string specifying how to merge:
 #'   \itemize{
 #'     \item "manual_priority" - Manual annotations override auto-detected (default)
@@ -330,7 +330,7 @@ put_generate <- function(path,
 #'   \code{\link{put_auto}} for auto-detection
 put_merge <- function(path,
                       pattern = NULL,
-                      recursive = FALSE,
+                      recursive = TRUE,
                       merge_strategy = "manual_priority",
                       include_line_numbers = FALSE) {
   # Default pattern covers languages with detection support

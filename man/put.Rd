@@ -7,7 +7,7 @@
 put(
   path,
   pattern = NULL,
-  recursive = FALSE,
+  recursive = TRUE,
   include_line_numbers = FALSE,
   validate = TRUE,
   log_level = NULL
@@ -22,7 +22,7 @@ Default: all supported extensions (see \code{\link{get_supported_extensions}}).
 For a subset, specify a pattern (e.g., "\\.js$" for JavaScript only).}
 
 \item{recursive}{Logical. Should subdirectories be searched recursively?
-Default: FALSE}
+Default: TRUE}
 
 \item{include_line_numbers}{Logical. Should line numbers be included in output?
 Default: FALSE}
@@ -96,11 +96,11 @@ The comment prefix is determined automatically by file extension.
 
 \examples{
 \dontrun{
-# Scan a directory for workflow annotations
+# Scan a directory for workflow annotations (recursive by default)
 workflow <- put("./src/")
 
-# Scan recursively including subdirectories
-workflow <- put("./project/", recursive = TRUE)
+# Scan top-level only (opt out of recursion)
+workflow <- put("./project/", recursive = FALSE)
 
 # Scan a single file
 workflow <- put("./script.R")

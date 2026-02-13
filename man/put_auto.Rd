@@ -7,7 +7,7 @@
 put_auto(
   path,
   pattern = NULL,
-  recursive = FALSE,
+  recursive = TRUE,
   detect_inputs = TRUE,
   detect_outputs = TRUE,
   detect_dependencies = TRUE,
@@ -24,7 +24,7 @@ Default: all extensions with detection pattern support (see
 \code{\link{list_supported_languages}(detection_only = TRUE)}).}
 
 \item{recursive}{Logical. Should subdirectories be searched recursively?
-Default: FALSE}
+Default: TRUE}
 
 \item{detect_inputs}{Logical. Should file inputs be detected? Default: TRUE}
 

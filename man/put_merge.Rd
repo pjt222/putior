@@ -7,7 +7,7 @@
 put_merge(
   path,
   pattern = NULL,
-  recursive = FALSE,
+  recursive = TRUE,
   merge_strategy = "manual_priority",
   include_line_numbers = FALSE
 )
@@ -19,7 +19,7 @@ put_merge(
 Default: all extensions with detection pattern support.}
 
 \item{recursive}{Logical. Should subdirectories be searched recursively?
-Default: FALSE}
+Default: TRUE}
 
 \item{merge_strategy}{Character string specifying how to merge:
 \itemize{

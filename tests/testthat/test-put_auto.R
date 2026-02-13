@@ -278,6 +278,21 @@ test_that("put_auto() handles recursive scanning", {
   expect_equal(nrow(result_recursive), 2)
 })
 
+test_that("put_auto() defaults to recursive scanning", {
+  temp_dir <- tempdir()
+  test_dir <- file.path(temp_dir, "putior_test_auto_default_recursive")
+  subdir <- file.path(test_dir, "subdir")
+  dir.create(subdir, recursive = TRUE, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE))
+
+  create_test_file(c("x <- 1"), "main.R", test_dir)
+  create_test_file(c("y <- 2"), "sub.R", subdir)
+
+  # Default (no explicit recursive arg) should find both files
+  result <- put_auto(test_dir)
+  expect_equal(nrow(result), 2)
+})
+
 # Tests for infer_node_type
 test_that("infer_node_type() correctly identifies node types", {
   # Input node (no inputs, has outputs)

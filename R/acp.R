@@ -301,7 +301,7 @@ execute_acp_request <- function(input, session_id = NULL) {
         if (is.null(path)) path <- "."
         put(
           path = path,
-          recursive = isTRUE(parsed$params$recursive)
+          recursive = !isFALSE(parsed$params$recursive)
         )
       },
       "diagram" = {
@@ -309,7 +309,7 @@ execute_acp_request <- function(input, session_id = NULL) {
         # If path provided, scan first
         path <- parsed$params$path
         if (!is.null(path)) {
-          workflow <- put(path, recursive = isTRUE(parsed$params$recursive))
+          workflow <- put(path, recursive = !isFALSE(parsed$params$recursive))
         } else {
           # Return instructions
           return(paste0(
@@ -332,7 +332,7 @@ execute_acp_request <- function(input, session_id = NULL) {
         if (is.null(path)) path <- "."
         put_auto(
           path = path,
-          recursive = isTRUE(parsed$params$recursive)
+          recursive = !isFALSE(parsed$params$recursive)
         )
       },
       "generate" = {
@@ -341,7 +341,7 @@ execute_acp_request <- function(input, session_id = NULL) {
         annotations <- put_generate(
           path = path,
           output = "raw",
-          recursive = isTRUE(parsed$params$recursive)
+          recursive = !isFALSE(parsed$params$recursive)
         )
         paste(annotations, collapse = "\n")
       },
@@ -350,7 +350,7 @@ execute_acp_request <- function(input, session_id = NULL) {
         if (is.null(path)) path <- "."
         put_merge(
           path = path,
-          recursive = isTRUE(parsed$params$recursive)
+          recursive = !isFALSE(parsed$params$recursive)
         )
       },
       "help" = {

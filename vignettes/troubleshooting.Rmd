@@ -667,8 +667,8 @@ workflow <- put("./src/core/")  # Instead of ./
 # 2. Use specific file patterns
 workflow <- put("./src/", pattern = "\\.R$")  # Only R files
 
-# 3. Avoid recursive scanning unless needed
-workflow <- put("./src/", recursive = FALSE)  # Default
+# 3. Limit to top-level directory if subdirs not needed
+workflow <- put("./src/", recursive = FALSE)
 
 # 4. Disable validation for faster scanning
 workflow <- put("./src/", validate = FALSE)

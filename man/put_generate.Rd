@@ -7,7 +7,7 @@
 put_generate(
   path,
   pattern = NULL,
-  recursive = FALSE,
+  recursive = TRUE,
   output = "console",
   insert = FALSE,
   style = "multiline"
@@ -20,7 +20,7 @@ put_generate(
 Default: all extensions with detection pattern support.}
 
 \item{recursive}{Logical. Should subdirectories be searched recursively?
-Default: FALSE}
+Default: TRUE}
 
 \item{output}{Character string specifying output destination:
 \itemize{

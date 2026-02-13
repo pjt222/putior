@@ -237,7 +237,7 @@ make_tool_put <- function() {
         required = FALSE
       ),
       recursive = ellmer::type_boolean(
-        description = "Search subdirectories recursively (default: FALSE)",
+        description = "Search subdirectories recursively (default: TRUE)",
         required = FALSE
       ),
       include_line_numbers = ellmer::type_boolean(
@@ -371,7 +371,7 @@ make_tool_put_auto <- function() {
         required = FALSE
       ),
       recursive = ellmer::type_boolean(
-        description = "Search subdirectories recursively (default: FALSE)",
+        description = "Search subdirectories recursively (default: TRUE)",
         required = FALSE
       ),
       detect_inputs = ellmer::type_boolean(
@@ -424,7 +424,7 @@ make_tool_put_generate <- function() {
         required = FALSE
       ),
       recursive = ellmer::type_boolean(
-        description = "Search subdirectories recursively (default: FALSE)",
+        description = "Search subdirectories recursively (default: TRUE)",
         required = FALSE
       ),
       output = ellmer::type_enum(
@@ -470,7 +470,7 @@ make_tool_put_merge <- function() {
         required = FALSE
       ),
       recursive = ellmer::type_boolean(
-        description = "Search subdirectories recursively (default: FALSE)",
+        description = "Search subdirectories recursively (default: TRUE)",
         required = FALSE
       ),
       merge_strategy = ellmer::type_enum(
