@@ -498,8 +498,8 @@ Reference</a>)</em></p>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_source_info <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Output:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    load(["Load Data"&lt;br/&gt;&lt;small&gt;(01_load.R)&lt;/small&gt;])
-    process["Process"&lt;br/&gt;&lt;small&gt;(02_process.R)&lt;/small&gt;]
+    load(["Load Data"&lt;br/&gt;(01_load.R)])
+    process["Process"&lt;br/&gt;(02_process.R)]
 
     %% Connections
     load --&gt; process
@@ -1387,14 +1387,14 @@ scripts:</strong></p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Skip validation checks for faster processing</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, validate <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><strong>3. Use <code>recursive = FALSE</code> when
+<p><strong>3. Use <code>recursive = FALSE</code> to limit scope when
 appropriate:</strong></p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Only scan top-level directory</span></span>
+<code class="sourceCode R"><span><span class="co"># Only scan top-level directory (recursive is TRUE by default)</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, recursive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Then add specific subdirectories as needed</span></span>
-<span><span class="va">workflow2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/important_module/"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Or scan a specific subdirectory</span></span>
+<span><span class="va">workflow2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/important_module/"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>4. Consider splitting large directories:</strong></p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Process in chunks for very large projects</span></span>
@@ -1435,8 +1435,8 @@ appropriate:</strong></p>
 <strong>CI/CD pipelines</strong>: Use caching and specific
 patterns</li>
 <li>
-<strong>Interactive exploration</strong>: Start with
-<code>recursive = FALSE</code>, expand as needed</li>
+<strong>Interactive exploration</strong>: Use
+<code>recursive = FALSE</code> for quick top-level scans</li>
 <li>
 <strong>Documentation builds</strong>: Cache workflow results
 between builds</li>

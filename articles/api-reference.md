@@ -37,7 +37,7 @@ files.
 put(
   path = ".",
   pattern = "\\.(R|r|py|sql|sh|jl)$",
-  recursive = FALSE,
+  recursive = TRUE,
   include_line_numbers = FALSE,
   validate = TRUE,
   log_level = NULL
@@ -50,7 +50,7 @@ put(
 |------------------------|-----------|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
 | `path`                 | character | `"."`                      | File or directory path to scan                                                                                                       |
 | `pattern`              | character | `"\\.(R|r|py|sql|sh|jl)$"` | Regex pattern for file matching                                                                                                      |
-| `recursive`            | logical   | `FALSE`                    | Search subdirectories                                                                                                                |
+| `recursive`            | logical   | `TRUE`                     | Search subdirectories                                                                                                                |
 | `include_line_numbers` | logical   | `FALSE`                    | Include line numbers in output                                                                                                       |
 | `validate`             | logical   | `TRUE`                     | Show validation warnings                                                                                                             |
 | `log_level`            | character | `NULL`                     | Override log level. See [Debugging with Logging](https://pjt222.github.io/putior/articles/features-tour.html#debugging-with-logging) |
@@ -78,8 +78,8 @@ library(putior)
 # Scan a directory
 workflow <- put("./src/")
 
-# Scan recursively with line numbers
-workflow <- put("./project/", recursive = TRUE, include_line_numbers = TRUE)
+# Scan with line numbers (recursive by default)
+workflow <- put("./project/", include_line_numbers = TRUE)
 
 # Scan only R files
 workflow <- put("./analysis/", pattern = "\\.R$")
@@ -202,7 +202,7 @@ dependencies without requiring manual annotations.
 put_auto(
   path = ".",
   pattern = "\\.(R|r|py|sql|sh|jl)$",
-  recursive = FALSE,
+  recursive = TRUE,
   detect_inputs = TRUE,
   detect_outputs = TRUE,
   detect_dependencies = TRUE,
@@ -216,7 +216,7 @@ put_auto(
 |-----------------------|-----------|----------------------------|------------------------------|
 | `path`                | character | `"."`                      | File or directory to analyze |
 | `pattern`             | character | `"\\.(R|r|py|sql|sh|jl)$"` | File pattern                 |
-| `recursive`           | logical   | `FALSE`                    | Search subdirectories        |
+| `recursive`           | logical   | `TRUE`                     | Search subdirectories        |
 | `detect_inputs`       | logical   | `TRUE`                     | Detect file read operations  |
 | `detect_outputs`      | logical   | `TRUE`                     | Detect file write operations |
 | `detect_dependencies` | logical   | `TRUE`                     | Detect script dependencies   |
@@ -255,7 +255,7 @@ source files. Similar to how roxygen2 generates documentation skeletons.
 put_generate(
   path = ".",
   pattern = "\\.(R|r|py|sql|sh|jl)$",
-  recursive = FALSE,
+  recursive = TRUE,
   output = "console",
   style = "single",
   log_level = NULL
@@ -268,7 +268,7 @@ put_generate(
 |-------------|-----------|----------------------------|-------------------------------------------|
 | `path`      | character | `"."`                      | File or directory to analyze              |
 | `pattern`   | character | `"\\.(R|r|py|sql|sh|jl)$"` | File pattern                              |
-| `recursive` | logical   | `FALSE`                    | Search subdirectories                     |
+| `recursive` | logical   | `TRUE`                     | Search subdirectories                     |
 | `output`    | character | `"console"`                | Output: “console” or “clipboard”          |
 | `style`     | character | `"single"`                 | Annotation style: “single” or “multiline” |
 | `log_level` | character | `NULL`                     | Override log level                        |
@@ -303,7 +303,7 @@ configurable merge strategies.
 put_merge(
   path = ".",
   pattern = "\\.(R|r|py|sql|sh|jl)$",
-  recursive = FALSE,
+  recursive = TRUE,
   merge_strategy = "manual_priority",
   log_level = NULL
 )
@@ -315,7 +315,7 @@ put_merge(
 |------------------|-----------|----------------------------|------------------------------|
 | `path`           | character | `"."`                      | File or directory to process |
 | `pattern`        | character | `"\\.(R|r|py|sql|sh|jl)$"` | File pattern                 |
-| `recursive`      | logical   | `FALSE`                    | Search subdirectories        |
+| `recursive`      | logical   | `TRUE`                     | Search subdirectories        |
 | `merge_strategy` | character | `"manual_priority"`        | Merge strategy (see below)   |
 | `log_level`      | character | `NULL`                     | Override log level           |
 

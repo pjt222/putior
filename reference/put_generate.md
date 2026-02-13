@@ -10,7 +10,7 @@ similar to how roxygen2 generates documentation skeletons.
 put_generate(
   path,
   pattern = NULL,
-  recursive = FALSE,
+  recursive = TRUE,
   output = "console",
   insert = FALSE,
   style = "multiline"
@@ -30,7 +30,7 @@ put_generate(
 
 - recursive:
 
-  Logical. Should subdirectories be searched recursively? Default: FALSE
+  Logical. Should subdirectories be searched recursively? Default: TRUE
 
 - output:
 

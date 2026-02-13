@@ -289,7 +289,7 @@ files.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span></span>
 <span>  path <span class="op">=</span> <span class="st">"."</span>,</span>
 <span>  pattern <span class="op">=</span> <span class="st">"\\.(R|r|py|sql|sh|jl)$"</span>,</span>
-<span>  recursive <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_line_numbers <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  validate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  log_level <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -324,7 +324,7 @@ files.</p>
 <tr class="odd">
 <td><code>recursive</code></td>
 <td>logical</td>
-<td><code>FALSE</code></td>
+<td><code>TRUE</code></td>
 <td>Search subdirectories</td>
 </tr>
 <tr class="even">
@@ -398,8 +398,8 @@ Logging</a>
 <span><span class="co"># Scan a directory</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Scan recursively with line numbers</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./project/"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span>, include_line_numbers <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co"># Scan with line numbers (recursive by default)</span></span>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./project/"</span>, include_line_numbers <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Scan only R files</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./analysis/"</span>, pattern <span class="op">=</span> <span class="st">"\\.R$"</span><span class="op">)</span></span>
@@ -649,7 +649,7 @@ dependencies without requiring manual annotations.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put_auto.html">put_auto</a></span><span class="op">(</span></span>
 <span>  path <span class="op">=</span> <span class="st">"."</span>,</span>
 <span>  pattern <span class="op">=</span> <span class="st">"\\.(R|r|py|sql|sh|jl)$"</span>,</span>
-<span>  recursive <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  detect_inputs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  detect_outputs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  detect_dependencies <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -685,7 +685,7 @@ dependencies without requiring manual annotations.</p>
 <tr class="odd">
 <td><code>recursive</code></td>
 <td>logical</td>
-<td><code>FALSE</code></td>
+<td><code>TRUE</code></td>
 <td>Search subdirectories</td>
 </tr>
 <tr class="even">
@@ -742,7 +742,7 @@ skeletons.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put_generate.html">put_generate</a></span><span class="op">(</span></span>
 <span>  path <span class="op">=</span> <span class="st">"."</span>,</span>
 <span>  pattern <span class="op">=</span> <span class="st">"\\.(R|r|py|sql|sh|jl)$"</span>,</span>
-<span>  recursive <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  output <span class="op">=</span> <span class="st">"console"</span>,</span>
 <span>  style <span class="op">=</span> <span class="st">"single"</span>,</span>
 <span>  log_level <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -777,7 +777,7 @@ skeletons.</p>
 <tr class="odd">
 <td><code>recursive</code></td>
 <td>logical</td>
-<td><code>FALSE</code></td>
+<td><code>TRUE</code></td>
 <td>Search subdirectories</td>
 </tr>
 <tr class="even">
@@ -825,7 +825,7 @@ configurable merge strategies.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put_merge.html">put_merge</a></span><span class="op">(</span></span>
 <span>  path <span class="op">=</span> <span class="st">"."</span>,</span>
 <span>  pattern <span class="op">=</span> <span class="st">"\\.(R|r|py|sql|sh|jl)$"</span>,</span>
-<span>  recursive <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  merge_strategy <span class="op">=</span> <span class="st">"manual_priority"</span>,</span>
 <span>  log_level <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -859,7 +859,7 @@ configurable merge strategies.</p>
 <tr class="odd">
 <td><code>recursive</code></td>
 <td>logical</td>
-<td><code>FALSE</code></td>
+<td><code>TRUE</code></td>
 <td>Search subdirectories</td>
 </tr>
 <tr class="even">

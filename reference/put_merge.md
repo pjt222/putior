@@ -10,7 +10,7 @@ supplementing information.
 put_merge(
   path,
   pattern = NULL,
-  recursive = FALSE,
+  recursive = TRUE,
   merge_strategy = "manual_priority",
   include_line_numbers = FALSE
 )
@@ -29,7 +29,7 @@ put_merge(
 
 - recursive:
 
-  Logical. Should subdirectories be searched recursively? Default: FALSE
+  Logical. Should subdirectories be searched recursively? Default: TRUE
 
 - merge_strategy:
 

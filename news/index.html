@@ -149,6 +149,16 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0.9000" id="putior-0209000-development-version">putior 0.2.0.9000 (development version)<a class="anchor" aria-label="anchor" href="#putior-0209000-development-version"></a></h2>
 <div class="section level3">
+<h3 id="breaking-changes-0-2-0-9000">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-0-9000"></a></h3>
+<ul><li>
+<code><a href="../reference/put.html">put()</a></code>, <code><a href="../reference/put_auto.html">put_auto()</a></code>, <code><a href="../reference/put_generate.html">put_generate()</a></code>, and <code><a href="../reference/put_merge.html">put_merge()</a></code> now default to <code>recursive = TRUE</code> (previously <code>FALSE</code>). Directory scans now include subdirectories by default. Pass <code>recursive = FALSE</code> for the old behavior. (<a href="https://github.com/pjt222/putior/issues/34" class="external-link">#34</a>)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-2-0-9000">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-0-9000"></a></h3>
+<ul><li>Fixed <code>show_source_info = TRUE</code> using <code>&lt;small&gt;</code> HTML tags that are unsupported by GitHub’s Mermaid renderer. Source file names are now shown without HTML formatting tags. (<a href="https://github.com/pjt222/putior/issues/32" class="external-link">#32</a>)</li>
+<li>Fixed pipe characters (<code>|</code>) in node labels breaking Mermaid diagram parsing. Pipes are now escaped using the <code>#124;</code> entity. (<a href="https://github.com/pjt222/putior/issues/33" class="external-link">#33</a>)</li>
+</ul></div>
+<div class="section level3">
 <h3 id="new-features-0-2-0-9000">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-2-0-9000"></a></h3>
 <div class="section level4">
 <h4 id="mcp-server-integration-0-2-0-9000">MCP Server Integration<a class="anchor" aria-label="anchor" href="#mcp-server-integration-0-2-0-9000"></a></h4>
@@ -264,7 +274,7 @@
 </ul></div>
 </div>
 <div class="section level3">
-<h3 id="bug-fixes-0-2-0-9000">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-0-9000"></a></h3>
+<h3 id="bug-fixes-0-2-0-9000-1">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-0-9000-1"></a></h3>
 <ul><li>Fixed ACP <code><a href="../reference/put_generate.html">put_generate()</a></code> called with invalid <code>output = "raw"</code> (now supported)</li>
 <li>Fixed MCP theme enum missing viridis family themes</li>
 <li>Fixed documentation using deprecated <code>name</code> instead of <code>id</code> in examples</li>

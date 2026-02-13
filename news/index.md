@@ -2,6 +2,28 @@
 
 ## putior 0.2.0.9000 (development version)
 
+### Breaking Changes
+
+- [`put()`](https://pjt222.github.io/putior/reference/put.md),
+  [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md),
+  [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md),
+  and
+  [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md)
+  now default to `recursive = TRUE` (previously `FALSE`). Directory
+  scans now include subdirectories by default. Pass `recursive = FALSE`
+  for the old behavior.
+  ([\#34](https://github.com/pjt222/putior/issues/34))
+
+### Bug Fixes
+
+- Fixed `show_source_info = TRUE` using `<small>` HTML tags that are
+  unsupported by GitHub’s Mermaid renderer. Source file names are now
+  shown without HTML formatting tags.
+  ([\#32](https://github.com/pjt222/putior/issues/32))
+- Fixed pipe characters (`|`) in node labels breaking Mermaid diagram
+  parsing. Pipes are now escaped using the `#124;` entity.
+  ([\#33](https://github.com/pjt222/putior/issues/33))
+
 ### New Features
 
 #### MCP Server Integration

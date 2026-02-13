@@ -275,8 +275,8 @@ put_diagram(workflow, show_source_info = TRUE)
 
 ``` mermaid
 flowchart TD
-    load(["Load Data"<br/><small>(01_load.R)</small>])
-    process["Process"<br/><small>(02_process.R)</small>]
+    load(["Load Data"<br/>(01_load.R)])
+    process["Process"<br/>(02_process.R)]
 
     %% Connections
     load --> process
@@ -773,14 +773,14 @@ workflow <- put(c("./src/etl/", "./src/analysis/"))
 workflow <- put("./src/", validate = FALSE)
 ```
 
-**3. Use `recursive = FALSE` when appropriate:**
+**3. Use `recursive = FALSE` to limit scope when appropriate:**
 
 ``` r
-# Only scan top-level directory
+# Only scan top-level directory (recursive is TRUE by default)
 workflow <- put("./src/", recursive = FALSE)
 
-# Then add specific subdirectories as needed
-workflow2 <- put("./src/important_module/", recursive = TRUE)
+# Or scan a specific subdirectory
+workflow2 <- put("./src/important_module/")
 ```
 
 **4. Consider splitting large directories:**
@@ -826,8 +826,8 @@ if (requireNamespace("profvis", quietly = TRUE)) {
 ### When Performance Matters
 
 - **CI/CD pipelines**: Use caching and specific patterns
-- **Interactive exploration**: Start with `recursive = FALSE`, expand as
-  needed
+- **Interactive exploration**: Use `recursive = FALSE` for quick
+  top-level scans
 - **Documentation builds**: Cache workflow results between builds
 - **Large monorepos**: Split by logical boundaries (packages, services)
 

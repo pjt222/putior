@@ -15,7 +15,7 @@ documentation skeletons.
 put_auto(
   path,
   pattern = NULL,
-  recursive = FALSE,
+  recursive = TRUE,
   detect_inputs = TRUE,
   detect_outputs = TRUE,
   detect_dependencies = TRUE,
@@ -39,7 +39,7 @@ put_auto(
 
 - recursive:
 
-  Logical. Should subdirectories be searched recursively? Default: FALSE
+  Logical. Should subdirectories be searched recursively? Default: TRUE
 
 - detect_inputs:
 
