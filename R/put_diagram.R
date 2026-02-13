@@ -623,6 +623,8 @@ sanitize_mermaid_label <- function(label) {
   if (is_empty_string(label)) return(label)
   # Wrap in quotes and escape internal quotes using Mermaid's #quot; entity
   label <- gsub('"', "#quot;", label, fixed = TRUE)
+  # Escape pipe characters using Mermaid's #124; entity (pipes delimit edge labels)
+  label <- gsub("|", "#124;", label, fixed = TRUE)
   paste0('"', label, '"')
 }
 

@@ -82,6 +82,22 @@ test_that("put() handles recursive directory scanning", {
   expect_true(all(c("main", "sub") %in% result_recursive$id))
 })
 
+test_that("put() defaults to recursive scanning", {
+  temp_dir <- tempdir()
+  test_dir <- file.path(temp_dir, "putior_test_default_recursive")
+  subdir <- file.path(test_dir, "subdir")
+  dir.create(subdir, recursive = TRUE, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE))
+
+  create_test_file(c("#put id:\"top\", label:\"Top\""), "top.R", test_dir)
+  create_test_file(c("#put id:\"nested\", label:\"Nested\""), "nested.R", subdir)
+
+  # Default (no explicit recursive arg) should find both files
+  result <- put(test_dir)
+  expect_equal(nrow(result), 2)
+  expect_true(all(c("top", "nested") %in% result$id))
+})
+
 test_that("put() includes line numbers when requested", {
   temp_dir <- tempdir()
   test_dir <- file.path(temp_dir, "putior_test_lines")
@@ -621,6 +637,31 @@ test_that("sanitize_mermaid_label handles special Mermaid characters", {
   # Brackets, braces, parens are safe inside quotes
   result <- putior:::sanitize_mermaid_label("data [v2] (final)")
   expect_equal(result, '"data [v2] (final)"')
+})
+
+test_that("sanitize_mermaid_label escapes pipe characters", {
+  result <- putior:::sanitize_mermaid_label("Input | Output")
+  expect_equal(result, '"Input #124; Output"')
+  expect_false(grepl("\\|", result))
+})
+
+test_that("sanitize_mermaid_label escapes both quotes and pipes", {
+  result <- putior:::sanitize_mermaid_label('Say "hello" | world')
+  expect_equal(result, '"Say #quot;hello#quot; #124; world"')
+})
+
+test_that("put_diagram handles labels with pipe characters", {
+  temp_dir <- tempdir()
+  test_dir <- file.path(temp_dir, "putior_test_pipe_label")
+  dir.create(test_dir, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE))
+  create_test_file(c(
+    '# put id:"node1", label:"Parse TABLE|FAN|SPEED", node_type:"process"'
+  ), "test.R", test_dir)
+  workflow <- put(test_dir)
+  diagram <- put_diagram(workflow, output = "raw")
+  expect_true(grepl("#124;", diagram))
+  expect_false(grepl("\\|FAN\\|", diagram))
 })
 
 test_that("put_diagram handles labels with special characters", {
