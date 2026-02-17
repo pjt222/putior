@@ -74,7 +74,8 @@ get_detection_patterns <- function(language = "r", type = NULL) {
     "matlab" = get_matlab_patterns(),
     "ruby" = get_ruby_patterns(),
     "lua" = get_lua_patterns(),
-    "wgsl" = get_wgsl_patterns()
+    "wgsl" = get_wgsl_patterns(),
+    "dockerfile" = get_dockerfile_patterns()
   )
 
   if (!is.null(type)) {
@@ -6073,6 +6074,124 @@ get_wgsl_patterns <- function() {
         arg_position = 1,
         arg_name = NULL,
         description = "WGSL import directive"
+      )
+    )
+  )
+}
+
+#' Get Dockerfile Detection Patterns
+#' @return List of Dockerfile detection patterns
+#' @keywords internal
+get_dockerfile_patterns <- function() {
+  list(
+    input = list(
+      # FROM pulls a base image
+      list(
+        regex = "^\\s*FROM\\s+",
+        func = "FROM",
+        arg_position = 1,
+        arg_name = NULL,
+        description = "Dockerfile base image"
+      ),
+      # COPY brings files from build context
+      list(
+        regex = "^\\s*COPY\\s+",
+        func = "COPY",
+        arg_position = 1,
+        arg_name = NULL,
+        description = "Dockerfile copy files from build context"
+      ),
+      # ADD brings files or URLs
+      list(
+        regex = "^\\s*ADD\\s+",
+        func = "ADD",
+        arg_position = 1,
+        arg_name = NULL,
+        description = "Dockerfile add files, URLs, or archives"
+      ),
+      # COPY --from for multi-stage builds
+      list(
+        regex = "^\\s*COPY\\s+--from=",
+        func = "COPY --from",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Dockerfile multi-stage copy"
+      )
+    ),
+    output = list(
+      # EXPOSE declares network ports
+      list(
+        regex = "^\\s*EXPOSE\\s+",
+        func = "EXPOSE",
+        arg_position = 1,
+        arg_name = NULL,
+        description = "Dockerfile expose port"
+      ),
+      # VOLUME declares mount points
+      list(
+        regex = "^\\s*VOLUME\\s+",
+        func = "VOLUME",
+        arg_position = 1,
+        arg_name = NULL,
+        description = "Dockerfile volume mount point"
+      ),
+      # ENTRYPOINT sets the container executable
+      list(
+        regex = "^\\s*ENTRYPOINT\\s+",
+        func = "ENTRYPOINT",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Dockerfile container entrypoint"
+      ),
+      # CMD sets default command
+      list(
+        regex = "^\\s*CMD\\s+",
+        func = "CMD",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Dockerfile default command"
+      )
+    ),
+    dependency = list(
+      # RUN pip install
+      list(
+        regex = "^\\s*RUN\\s+.*pip\\s+install",
+        func = "RUN pip install",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Dockerfile Python package install"
+      ),
+      # RUN npm install
+      list(
+        regex = "^\\s*RUN\\s+.*npm\\s+install",
+        func = "RUN npm install",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Dockerfile Node.js package install"
+      ),
+      # RUN apt-get install
+      list(
+        regex = "^\\s*RUN\\s+.*apt-get\\s+install",
+        func = "RUN apt-get install",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Dockerfile apt package install"
+      ),
+      # RUN R -e (R package installs)
+      list(
+        regex = "^\\s*RUN\\s+.*R\\s+-e",
+        func = "RUN R -e",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Dockerfile R command execution"
+      ),
+      # General RUN command
+      list(
+        regex = "^\\s*RUN\\s+",
+        func = "RUN",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Dockerfile run command"
       )
     )
   )

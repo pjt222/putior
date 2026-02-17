@@ -135,8 +135,8 @@ put <- function(path,
       recursive = recursive
     )
   } else {
-    # Single file case
-    if (!grepl(pattern, path)) {
+    # Single file case — match basename like list.files() does
+    if (!grepl(pattern, basename(path))) {
       warning("File does not match pattern '", pattern, "': ", path, call. = FALSE)
       return(as_putior_workflow(empty_result_df(include_line_numbers)))
     }
@@ -279,9 +279,10 @@ process_single_file <- function(file, include_line_numbers, validate) {
       lines <- readLines(file, warn = FALSE, encoding = "UTF-8")
       putior_log("DEBUG", "Read {length(lines)} lines from {basename(file)}")
 
-      # Get comment prefix based on file extension
-      file_ext <- tolower(tools::file_ext(file))
-      comment_prefix <- get_comment_prefix(file_ext)
+      # Resolve language, extension, and comment prefix from file path
+      resolved <- resolve_language_from_file(file)
+      file_ext <- resolved$ext
+      comment_prefix <- resolved$comment_prefix
 
       # Escape special regex characters in the prefix (e.g., // -> \/\/)
       escaped_prefix <- gsub("([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1", comment_prefix)
@@ -393,8 +394,12 @@ validate_annotation <- function(properties, line_content) {
     files_mentioned <- files_mentioned[!is.na(files_mentioned)]
 
     for (file_ref in files_mentioned) {
-      if (!grepl("\\.", file_ref)) {
-        issues <- c(issues, paste("File reference missing extension:", file_ref))
+      individual_refs <- trimws(strsplit(file_ref, ",")[[1]])
+      for (single_ref in individual_refs) {
+        if (nchar(single_ref) > 0 && !grepl("\\.", single_ref) &&
+            !single_ref %in% names(.FILENAME_MAP)) {
+          issues <- c(issues, paste("File reference missing extension:", single_ref))
+        }
       }
     }
   }

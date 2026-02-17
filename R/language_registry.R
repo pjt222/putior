@@ -25,8 +25,8 @@ NULL
 LANGUAGE_GROUPS <- list(
   hash = list(
     prefix = "#",
-    extensions = c("r", "py", "sh", "bash", "jl", "rb", "pl", "yaml", "yml", "toml"),
-    languages = c("r", "python", "shell", "julia", "ruby", "perl", "yaml", "toml")
+    extensions = c("r", "py", "sh", "bash", "jl", "rb", "pl", "yaml", "yml", "toml", "dockerfile"),
+    languages = c("r", "python", "shell", "julia", "ruby", "perl", "yaml", "toml", "dockerfile")
   ),
   dash = list(
     prefix = "--",
@@ -103,7 +103,7 @@ get_supported_extensions <- function() {
   "r", "python", "sql", "shell", "julia",
   "javascript", "typescript", "go", "rust",
   "java", "c", "cpp", "matlab", "ruby", "lua",
-  "wgsl"
+  "wgsl", "dockerfile"
 )
 
 # Package-level constant for extension to language mapping
@@ -120,6 +120,7 @@ get_supported_extensions <- function() {
   "yaml" = "yaml",
   "yml" = "yaml",
   "toml" = "toml",
+  "dockerfile" = "dockerfile",
 
   # Dash group
   "sql" = "sql",
@@ -152,6 +153,11 @@ get_supported_extensions <- function() {
   "tex" = "latex"
 )
 
+# Exact filename to language mapping for extensionless files (e.g., Dockerfile)
+.FILENAME_MAP <- list(
+  "Dockerfile" = "dockerfile"
+)
+
 #' Get Language Name from File Extension
 #'
 #' Converts a file extension to a standardized language name used internally
@@ -176,6 +182,36 @@ ext_to_language <- function(ext) {
   }
 
   return(NULL)
+}
+
+#' Resolve Language from File Path
+#'
+#' Tries file extension first, then falls back to exact filename matching
+#' for extensionless files like Dockerfile.
+#'
+#' @param file_path Path to the file
+#' @return Named list with language, ext, and comment_prefix
+#' @noRd
+resolve_language_from_file <- function(file_path) {
+  file_ext <- tolower(tools::file_ext(file_path))
+  if (nchar(file_ext) > 0) {
+    return(list(
+      language = ext_to_language(file_ext),
+      ext = file_ext,
+      comment_prefix = get_comment_prefix(file_ext)
+    ))
+  }
+  # Extensionless: check .FILENAME_MAP
+  file_base <- basename(file_path)
+  if (file_base %in% names(.FILENAME_MAP)) {
+    lang <- .FILENAME_MAP[[file_base]]
+    return(list(
+      language = lang,
+      ext = lang,
+      comment_prefix = get_comment_prefix(lang)
+    ))
+  }
+  list(language = NULL, ext = "", comment_prefix = "#")
 }
 
 #' Get Comment Syntax Group for Extension
@@ -213,7 +249,7 @@ get_comment_group <- function(ext) {
 #' @keywords internal
 build_file_pattern <- function(detection_only = FALSE) {
   if (detection_only) {
-    # Only languages with detection pattern support (16 languages)
+    # Only languages with detection pattern support (17 languages)
     exts <- c("R", "r", "py", "sql", "sh", "jl",
               "js", "jsx", "ts", "tsx", "go", "rs",
               "java", "c", "cpp", "h", "hpp", "m",
@@ -225,7 +261,15 @@ build_file_pattern <- function(detection_only = FALSE) {
     exts <- unique(c(exts, "R"))
   }
 
-  paste0("\\.(", paste(exts, collapse = "|"), ")$")
+  ext_pattern <- paste0("\\.(", paste(exts, collapse = "|"), ")$")
+
+  # Add exact filename patterns for extensionless files
+  filenames <- names(.FILENAME_MAP)
+  if (length(filenames) > 0) {
+    fn_pattern <- paste0("(^", paste(filenames, collapse = "$|^"), "$)")
+    return(paste0("(", fn_pattern, "|", ext_pattern, ")"))
+  }
+  ext_pattern
 }
 
 #' List All Supported Languages

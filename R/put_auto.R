@@ -90,8 +90,8 @@ put_auto <- function(path,
       recursive = recursive
     )
   } else {
-    # Single file case
-    if (!grepl(pattern, path)) {
+    # Single file case — match basename like list.files() does
+    if (!grepl(pattern, basename(path))) {
       warning("File does not match pattern '", pattern, "': ", path, call. = FALSE)
       return(as_putior_workflow(empty_auto_result_df(include_line_numbers)))
     }
@@ -232,7 +232,8 @@ put_generate <- function(path,
       recursive = recursive
     )
   } else {
-    if (!grepl(pattern, path)) {
+    # Single file case — match basename like list.files() does
+    if (!grepl(pattern, basename(path))) {
       warning("File does not match pattern '", pattern, "': ", path, call. = FALSE)
       return(invisible(character(0)))
     }
@@ -406,9 +407,10 @@ detect_workflow_elements <- function(file,
     lines <- readLines(file, warn = FALSE, encoding = "UTF-8")
     content <- paste(lines, collapse = "\n")
 
-    # Determine language from file extension
-    file_ext <- tolower(tools::file_ext(file))
-    language <- ext_to_language(file_ext)
+    # Resolve language from file path (supports extensionless files like Dockerfile)
+    resolved <- resolve_language_from_file(file)
+    file_ext <- resolved$ext
+    language <- resolved$language
 
     if (is.null(language)) {
       putior_log("DEBUG", "Unsupported file extension '{file_ext}' for {basename(file)}")
@@ -600,7 +602,10 @@ is_likely_file_path <- function(str) {
   # Check for common non-file patterns to exclude
   not_excluded <- !grepl("^(TRUE|FALSE|NULL|NA|NaN|Inf)$", str, ignore.case = TRUE)
 
-  return((has_extension || has_path_sep) && reasonable_length && not_url && not_excluded)
+  # Check if it's a known extensionless filename (e.g., Dockerfile)
+  is_known_filename <- basename(str) %in% names(.FILENAME_MAP)
+
+  return((has_extension || has_path_sep || is_known_filename) && reasonable_length && not_url && not_excluded)
 }
 
 #' Infer node type from inputs and outputs
@@ -642,10 +647,8 @@ generate_annotation_for_file <- function(file, style = "multiline") {
 
   # Build annotation parts
   file_name <- basename(file)
-  file_ext <- tolower(tools::file_ext(file))
-
-  # Get the appropriate comment prefix for this file type
-  comment_prefix <- get_comment_prefix(file_ext)
+  resolved <- resolve_language_from_file(file)
+  comment_prefix <- resolved$comment_prefix
 
   parts <- list()
 
@@ -698,9 +701,9 @@ insert_annotation_into_file <- function(file, annotation) {
     # Read existing content
     content <- readLines(file, warn = FALSE, encoding = "UTF-8")
 
-    # Get the appropriate comment prefix for this file type
-    file_ext <- tolower(tools::file_ext(file))
-    comment_prefix <- get_comment_prefix(file_ext)
+    # Resolve comment prefix from file path (supports extensionless files)
+    resolved <- resolve_language_from_file(file)
+    comment_prefix <- resolved$comment_prefix
     escaped_prefix <- gsub("([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1", comment_prefix)
 
     # Check if file already has PUT annotation (using the appropriate prefix)

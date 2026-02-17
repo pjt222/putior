@@ -62,7 +62,7 @@ putior is an R package that extracts structured annotations from source code fil
 - **Win-builder R-release**: ✅ 1 NOTE (new submission only)
 - **R-hub**: ✅ 4/5 platforms PASS (linux, macos, windows, ubuntu-release; nosuggests expected fail)
 - All vignettes build successfully with Pandoc
-- All tests pass (1,140+ tests including multiline annotation, auto-detection, logging, LLM patterns, and multi-language support)
+- All tests pass (4,100+ tests including multiline annotation, auto-detection, logging, LLM patterns, and multi-language support)
 - Comprehensive multiline PUT annotation support implemented
 
 ### Documentation Quality
@@ -122,6 +122,9 @@ putior is an R package that extracts structured annotations from source code fil
 20. **ACP Server Integration** - Expose putior as an ACP agent for inter-agent communication via REST API
 21. **Colorblind-Safe Themes** - Added 4 viridis family themes (viridis, magma, plasma, cividis) for accessibility
 22. **WGSL Shader Language Support (Issue #31)** - Register `.wgsl` with `//` comments, 17 auto-detection patterns for GPU bindings, textures, samplers, and naga-oil/WESL imports
+23. **GitHub Mermaid Rendering Fix (Issue #32)** - Removed unsupported `<small>` HTML tags from `show_source_info` output
+24. **Pipe Character Escaping (Issue #33)** - Escape `|` in node labels using Mermaid `#124;` entity to prevent parsing errors
+25. **Recursive Scanning Default (Issue #34)** - `put()`, `put_auto()`, `put_generate()`, `put_merge()` now default to `recursive = TRUE` (breaking change)
 
 ## MCP Server Integration
 
