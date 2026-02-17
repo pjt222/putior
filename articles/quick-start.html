@@ -255,19 +255,19 @@
 <span></span>
 <span><span class="co"># Scan and visualize</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="va">temp_file</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Validation issues in file238f26299bb7.R line 7:</span></span>
+<span><span class="co">#&gt; Warning: Validation issues in file2345a264f6.R line 7:</span></span>
 <span><span class="co">#&gt; File reference missing extension: database</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"```mermaid\n"</span><span class="op">)</span></span></code></pre></div>
 <pre class="mermaid"><code>
 ``` r
 cat(put_diagram(workflow, output = "raw"))</code></pre>
-<p>flowchart TD node_423c4c79_b1e7_4a51_b84c_d954cdd48449[“Extract”]
-node_7d115a41_3952_4e0c_baa0_9bffd9c65f3c[“Transform”]
-fd2293d6_413e_4065_b04f_8cdbcca9bafe[“Load”]</p>
+<p>flowchart TD node_0c930bda_a231_4bc4_828e_c72a627aef94[“Extract”]
+node_4d755166_6dd2_48f7_93b1_d36a4c94de64[“Transform”]
+node_4020fa42_927f_478c_8156_03b895f104f1[“Load”]</p>
 <pre><code>%% Connections
-node_423c4c79_b1e7_4a51_b84c_d954cdd48449 --&gt; node_7d115a41_3952_4e0c_baa0_9bffd9c65f3c
-node_7d115a41_3952_4e0c_baa0_9bffd9c65f3c --&gt; fd2293d6_413e_4065_b04f_8cdbcca9bafe</code></pre>
+node_0c930bda_a231_4bc4_828e_c72a627aef94 --&gt; node_4d755166_6dd2_48f7_93b1_d36a4c94de64
+node_4d755166_6dd2_48f7_93b1_d36a4c94de64 --&gt; node_4020fa42_927f_478c_8156_03b895f104f1</code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n```\n"</span><span class="op">)</span></span></code></pre></div>
 </div>

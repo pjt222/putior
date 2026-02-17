@@ -1590,6 +1590,8 @@ Internal implementation details (not part of the public API)
   : Get Julia Detection Patterns
 - [`get_lua_patterns()`](https://pjt222.github.io/putior/reference/get_lua_patterns.md)
   : Get Lua Detection Patterns
+- [`get_makefile_patterns()`](https://pjt222.github.io/putior/reference/get_makefile_patterns.md)
+  : Get Makefile Detection Patterns
 - [`get_matlab_patterns()`](https://pjt222.github.io/putior/reference/get_matlab_patterns.md)
   : Get MATLAB Detection Patterns
 - [`get_node_shape()`](https://pjt222.github.io/putior/reference/get_node_shape.md)
