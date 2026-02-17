@@ -318,7 +318,7 @@
 <li>
 <strong>Multi-Language Comment Syntax</strong> - Support for 30+ languages with automatic comment prefix detection (<code>#</code>, <code>--</code>, <code>//</code>, <code>%</code>)</li>
 <li>
-<strong>Full Language Detection Patterns</strong> - Added auto-detection patterns for 10 new languages (JS, TS, Go, Rust, Java, C, C++, MATLAB, Ruby, Lua), bringing total to 16 languages with 879 patterns</li>
+<strong>Full Language Detection Patterns</strong> - Added auto-detection patterns for 10 new languages (JS, TS, Go, Rust, Java, C, C++, MATLAB, Ruby, Lua), bringing total to 17 languages with 892 patterns</li>
 <li>
 <strong>MCP Server Integration</strong> - Expose putior functions as MCP tools for AI assistants (Claude Code, Claude Desktop)</li>
 <li>
@@ -333,6 +333,8 @@
 <strong>Pipe Character Escaping (Issue #33)</strong> - Escape <code>|</code> in node labels using Mermaid <code>#124;</code> entity to prevent parsing errors</li>
 <li>
 <strong>Recursive Scanning Default (Issue #34)</strong> - <code><a href="reference/put.html">put()</a></code>, <code><a href="reference/put_auto.html">put_auto()</a></code>, <code><a href="reference/put_generate.html">put_generate()</a></code>, <code><a href="reference/put_merge.html">put_merge()</a></code> now default to <code>recursive = TRUE</code> (breaking change)</li>
+<li>
+<strong>Dockerfile Support (Issue #35)</strong> - Handle extensionless files via <code>.FILENAME_MAP</code>, 13 detection patterns for FROM/COPY/ADD/EXPOSE/VOLUME/CMD/RUN, <code>resolve_language_from_file()</code> helper</li>
 </ol></div>
 <div class="section level2">
 <h2 id="mcp-server-integration">MCP Server Integration<a class="anchor" aria-label="anchor" href="#mcp-server-integration"></a></h2>
@@ -499,9 +501,9 @@ Then use put_diagram to create a visualization</code></pre>
 <th>Languages</th>
 <th>Extensions</th>
 </tr></thead><tbody><tr class="odd"><td><code># put</code></td>
-<td>R, Python, Shell, Julia, Ruby, Perl, YAML, TOML</td>
+<td>R, Python, Shell, Julia, Ruby, Perl, YAML, TOML, Dockerfile</td>
 <td>
-<code>.R</code>, <code>.py</code>, <code>.sh</code>, <code>.jl</code>, <code>.rb</code>, <code>.pl</code>, <code>.yaml</code>
+<code>.R</code>, <code>.py</code>, <code>.sh</code>, <code>.jl</code>, <code>.rb</code>, <code>.pl</code>, <code>.yaml</code>, <code>Dockerfile</code>
 </td>
 </tr><tr class="even"><td><code>-- put</code></td>
 <td>SQL, Lua, Haskell</td>
@@ -551,7 +553,7 @@ Then use put_diagram to create a visualization</code></pre>
 <ul><li>
 <code>R/language_registry.R</code> - Language groups and comment prefix detection</li>
 <li>
-<code>R/detection_patterns.R</code> - Auto-detection patterns for 16 languages</li>
+<code>R/detection_patterns.R</code> - Auto-detection patterns for 17 languages</li>
 <li>
 <code>tests/testthat/test-language-registry.R</code> - Tests for multi-language support</li>
 <li>
@@ -562,10 +564,10 @@ Then use put_diagram to create a visualization</code></pre>
 <h2 id="auto-detection-pattern-coverage">Auto-Detection Pattern Coverage<a class="anchor" aria-label="anchor" href="#auto-detection-pattern-coverage"></a></h2>
 <div class="section level3">
 <h3 id="overview-3">Overview<a class="anchor" aria-label="anchor" href="#overview-3"></a></h3>
-<p>putior supports auto-detection of file inputs, outputs, and dependencies for 16 programming languages with <strong>879 patterns total</strong>.</p>
+<p>putior supports auto-detection of file inputs, outputs, and dependencies for 17 programming languages with <strong>892 patterns total</strong>.</p>
 </div>
 <div class="section level3">
-<h3 id="languages-with-auto-detection-16-languages">Languages with Auto-Detection (16 languages)<a class="anchor" aria-label="anchor" href="#languages-with-auto-detection-16-languages"></a></h3>
+<h3 id="languages-with-auto-detection-17-languages">Languages with Auto-Detection (17 languages)<a class="anchor" aria-label="anchor" href="#languages-with-auto-detection-17-languages"></a></h3>
 <table class="table"><colgroup><col width="23%"><col width="16%"><col width="60%"></colgroup><thead><tr class="header"><th>Language</th>
 <th>Total</th>
 <th>Key Libraries/Frameworks</th>
@@ -611,10 +613,13 @@ Then use put_diagram to create a visualization</code></pre>
 </tr><tr class="even"><td>WGSL</td>
 <td>17</td>
 <td>uniform/storage bindings, textures, samplers, naga-oil imports</td>
-</tr><tr class="odd"><td>Shell</td>
+</tr><tr class="odd"><td>Dockerfile</td>
+<td>13</td>
+<td>FROM, COPY, ADD, EXPOSE, VOLUME, CMD, RUN variants</td>
+</tr><tr class="even"><td>Shell</td>
 <td>12</td>
 <td>cat, redirects, source</td>
-</tr><tr class="even"><td>SQL</td>
+</tr><tr class="odd"><td>SQL</td>
 <td>8</td>
 <td>FROM, JOIN, COPY</td>
 </tr></tbody></table></div>
@@ -622,13 +627,13 @@ Then use put_diagram to create a visualization</code></pre>
 <h3 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h3>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get patterns for any supported language</span></span>
-<span><span class="va">patterns</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_detection_patterns.html">get_detection_patterns</a></span><span class="op">(</span><span class="st">"javascript"</span><span class="op">)</span>  <span class="co"># or "go", "rust", "wgsl", etc.</span></span>
+<span><span class="va">patterns</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_detection_patterns.html">get_detection_patterns</a></span><span class="op">(</span><span class="st">"javascript"</span><span class="op">)</span>  <span class="co"># or "go", "rust", "wgsl", "dockerfile", etc.</span></span>
 <span></span>
 <span><span class="co"># List languages with detection support</span></span>
 <span><span class="fu"><a href="reference/list_supported_languages.html">list_supported_languages</a></span><span class="op">(</span>detection_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "r" "python" "sql" "shell" "julia" "javascript" "typescript"</span></span>
 <span><span class="co">#&gt; [8] "go" "rust" "java" "c" "cpp" "matlab" "ruby" "lua"</span></span>
-<span><span class="co">#&gt; [16] "wgsl"</span></span></code></pre></div>
+<span><span class="co">#&gt; [16] "wgsl" "dockerfile"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="key-implementation-insights">Key Implementation Insights<a class="anchor" aria-label="anchor" href="#key-implementation-insights"></a></h3>
