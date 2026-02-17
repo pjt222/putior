@@ -226,7 +226,7 @@
 <li>
 <strong>R-hub</strong>: ✅ 4/5 platforms PASS (linux, macos, windows, ubuntu-release; nosuggests expected fail)</li>
 <li>All vignettes build successfully with Pandoc</li>
-<li>All tests pass (1,140+ tests including multiline annotation, auto-detection, logging, LLM patterns, and multi-language support)</li>
+<li>All tests pass (4,100+ tests including multiline annotation, auto-detection, logging, LLM patterns, and multi-language support)</li>
 <li>Comprehensive multiline PUT annotation support implemented</li>
 </ul></div>
 <div class="section level3">
@@ -327,6 +327,12 @@
 <strong>Colorblind-Safe Themes</strong> - Added 4 viridis family themes (viridis, magma, plasma, cividis) for accessibility</li>
 <li>
 <strong>WGSL Shader Language Support (Issue #31)</strong> - Register <code>.wgsl</code> with <code>//</code> comments, 17 auto-detection patterns for GPU bindings, textures, samplers, and naga-oil/WESL imports</li>
+<li>
+<strong>GitHub Mermaid Rendering Fix (Issue #32)</strong> - Removed unsupported <code>&lt;small&gt;</code> HTML tags from <code>show_source_info</code> output</li>
+<li>
+<strong>Pipe Character Escaping (Issue #33)</strong> - Escape <code>|</code> in node labels using Mermaid <code>#124;</code> entity to prevent parsing errors</li>
+<li>
+<strong>Recursive Scanning Default (Issue #34)</strong> - <code><a href="reference/put.html">put()</a></code>, <code><a href="reference/put_auto.html">put_auto()</a></code>, <code><a href="reference/put_generate.html">put_generate()</a></code>, <code><a href="reference/put_merge.html">put_merge()</a></code> now default to <code>recursive = TRUE</code> (breaking change)</li>
 </ol></div>
 <div class="section level2">
 <h2 id="mcp-server-integration">MCP Server Integration<a class="anchor" aria-label="anchor" href="#mcp-server-integration"></a></h2>

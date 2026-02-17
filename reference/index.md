@@ -125,6 +125,8 @@ Internal implementation details (not part of the public API)
   : Get Comment Syntax Group for Extension
 - [`get_cpp_patterns()`](https://pjt222.github.io/putior/reference/get_cpp_patterns.md)
   : Get C++ Detection Patterns
+- [`get_dockerfile_patterns()`](https://pjt222.github.io/putior/reference/get_dockerfile_patterns.md)
+  : Get Dockerfile Detection Patterns
 - [`get_go_patterns()`](https://pjt222.github.io/putior/reference/get_go_patterns.md)
   : Get Go Detection Patterns
 - [`get_java_patterns()`](https://pjt222.github.io/putior/reference/get_java_patterns.md)

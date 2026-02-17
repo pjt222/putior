@@ -174,7 +174,7 @@ putior_help("patterns")
 #> putior can automatically detect inputs and outputs from code analysis.
 #> 
 #> LANGUAGES WITH AUTO-DETECTION:
-#>    r, python, sql, shell, julia, javascript, typescript, go, rust, java, c, cpp, matlab, ruby, lua, wgsl 
+#>    r, python, sql, shell, julia, javascript, typescript, go, rust, java, c, cpp, matlab, ruby, lua, wgsl, dockerfile 
 #> 
 #> PATTERN TYPES:
 #>   input      - Functions that read data (read_csv, pd.read_excel, etc.)

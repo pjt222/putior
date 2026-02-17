@@ -84,7 +84,7 @@ without explicit permission
 - **R-hub**: ✅ 4/5 platforms PASS (linux, macos, windows,
   ubuntu-release; nosuggests expected fail)
 - All vignettes build successfully with Pandoc
-- All tests pass (1,140+ tests including multiline annotation,
+- All tests pass (4,100+ tests including multiline annotation,
   auto-detection, logging, LLM patterns, and multi-language support)
 - Comprehensive multiline PUT annotation support implemented
 
@@ -182,6 +182,16 @@ without explicit permission
 22. **WGSL Shader Language Support (Issue \#31)** - Register `.wgsl`
     with `//` comments, 17 auto-detection patterns for GPU bindings,
     textures, samplers, and naga-oil/WESL imports
+23. **GitHub Mermaid Rendering Fix (Issue \#32)** - Removed unsupported
+    `<small>` HTML tags from `show_source_info` output
+24. **Pipe Character Escaping (Issue \#33)** - Escape `|` in node labels
+    using Mermaid `#124;` entity to prevent parsing errors
+25. **Recursive Scanning Default (Issue \#34)** -
+    [`put()`](https://pjt222.github.io/putior/reference/put.md),
+    [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md),
+    [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md),
+    [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md)
+    now default to `recursive = TRUE` (breaking change)
 
 ## MCP Server Integration
 

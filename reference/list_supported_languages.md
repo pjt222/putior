@@ -27,16 +27,16 @@ Character vector of supported language names
 # All languages with annotation parsing support
 list_supported_languages()
 #>  [1] "r"          "python"     "shell"      "julia"      "ruby"      
-#>  [6] "perl"       "yaml"       "toml"       "sql"        "lua"       
-#> [11] "haskell"    "javascript" "typescript" "c"          "cpp"       
-#> [16] "java"       "go"         "rust"       "swift"      "kotlin"    
-#> [21] "csharp"     "php"        "scala"      "groovy"     "d"         
-#> [26] "wgsl"       "matlab"     "latex"     
+#>  [6] "perl"       "yaml"       "toml"       "dockerfile" "sql"       
+#> [11] "lua"        "haskell"    "javascript" "typescript" "c"         
+#> [16] "cpp"        "java"       "go"         "rust"       "swift"     
+#> [21] "kotlin"     "csharp"     "php"        "scala"      "groovy"    
+#> [26] "d"          "wgsl"       "matlab"     "latex"     
 
 # Only languages with auto-detection patterns
 list_supported_languages(detection_only = TRUE)
 #>  [1] "r"          "python"     "sql"        "shell"      "julia"     
 #>  [6] "javascript" "typescript" "go"         "rust"       "java"      
 #> [11] "c"          "cpp"        "matlab"     "ruby"       "lua"       
-#> [16] "wgsl"      
+#> [16] "wgsl"       "dockerfile"
 ```
