@@ -75,7 +75,8 @@ get_detection_patterns <- function(language = "r", type = NULL) {
     "ruby" = get_ruby_patterns(),
     "lua" = get_lua_patterns(),
     "wgsl" = get_wgsl_patterns(),
-    "dockerfile" = get_dockerfile_patterns()
+    "dockerfile" = get_dockerfile_patterns(),
+    "makefile" = get_makefile_patterns()
   )
 
   if (!is.null(type)) {
@@ -6192,6 +6193,100 @@ get_dockerfile_patterns <- function() {
         arg_position = NA,
         arg_name = NULL,
         description = "Dockerfile run command"
+      )
+    )
+  )
+}
+
+#' Get Makefile Detection Patterns
+#' @return List of Makefile detection patterns
+#' @keywords internal
+get_makefile_patterns <- function() {
+  list(
+    input = list(
+      # include directive
+      list(
+        regex = "^\\s*-?include\\s+",
+        func = "include",
+        arg_position = 1,
+        arg_name = NULL,
+        description = "Makefile include directive"
+      ),
+      # wildcard function (source file discovery)
+      list(
+        regex = "\\$\\(wildcard\\s+",
+        func = "$(wildcard)",
+        arg_position = 1,
+        arg_name = NULL,
+        description = "Makefile wildcard file discovery"
+      ),
+      # shell cat/read commands in recipes
+      list(
+        regex = "\\$\\(shell\\s+cat\\s+",
+        func = "$(shell cat)",
+        arg_position = 1,
+        arg_name = NULL,
+        description = "Makefile shell cat command"
+      ),
+      # Reading a file via redirect
+      list(
+        regex = "<\\s*[a-zA-Z_][a-zA-Z0-9_./-]*",
+        func = "< (input redirect)",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Makefile input redirect"
+      )
+    ),
+    output = list(
+      # Target rule (target: dependencies)
+      list(
+        regex = "^[a-zA-Z_][a-zA-Z0-9_./%-]*\\s*:",
+        func = "target rule",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Makefile build target"
+      ),
+      # Output redirect in recipe
+      list(
+        regex = ">\\s*[a-zA-Z_][a-zA-Z0-9_./-]*",
+        func = "> (output redirect)",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Makefile output redirect"
+      ),
+      # install command in recipe
+      list(
+        regex = "\\binstall\\s+-",
+        func = "install",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Makefile install command"
+      )
+    ),
+    dependency = list(
+      # include (other Makefiles)
+      list(
+        regex = "^\\s*-?include\\s+",
+        func = "include",
+        arg_position = 1,
+        arg_name = NULL,
+        description = "Makefile include dependency"
+      ),
+      # $(shell ...) general
+      list(
+        regex = "\\$\\(shell\\s+",
+        func = "$(shell)",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Makefile shell command execution"
+      ),
+      # Backtick command substitution
+      list(
+        regex = "`[^`]+`",
+        func = "backtick command",
+        arg_position = NA,
+        arg_name = NULL,
+        description = "Makefile backtick command substitution"
       )
     )
   )

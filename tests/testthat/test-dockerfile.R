@@ -55,7 +55,7 @@ test_that("resolve_language_from_file still works for normal extensions", {
 })
 
 test_that("resolve_language_from_file returns NULL language for unknown extensionless files", {
-  resolved <- resolve_language_from_file("/path/to/Makefile")
+  resolved <- resolve_language_from_file("/path/to/README")
   expect_null(resolved$language)
   expect_equal(resolved$ext, "")
   expect_equal(resolved$comment_prefix, "#")
@@ -84,8 +84,8 @@ test_that("build_file_pattern detection_only matches Dockerfile", {
 
 test_that("build_file_pattern does not match random extensionless files", {
   pattern <- build_file_pattern()
-  expect_false(grepl(pattern, "Makefile"))
   expect_false(grepl(pattern, "README"))
+  expect_false(grepl(pattern, "LICENSE"))
 })
 
 # --- Annotation parsing tests ---

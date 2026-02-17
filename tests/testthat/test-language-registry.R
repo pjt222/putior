@@ -166,9 +166,10 @@ test_that("list_supported_languages(detection_only = TRUE) returns subset", {
   expect_true("wgsl" %in% detection_langs)
 
   expect_true("dockerfile" %in% detection_langs)
+  expect_true("makefile" %in% detection_langs)
 
-  # Should have 17 languages with detection patterns
-  expect_equal(length(detection_langs), 17)
+  # Should have 18 languages with detection patterns
+  expect_equal(length(detection_langs), 18)
 })
 
 # ============================================================================

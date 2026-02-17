@@ -25,8 +25,8 @@ NULL
 LANGUAGE_GROUPS <- list(
   hash = list(
     prefix = "#",
-    extensions = c("r", "py", "sh", "bash", "jl", "rb", "pl", "yaml", "yml", "toml", "dockerfile"),
-    languages = c("r", "python", "shell", "julia", "ruby", "perl", "yaml", "toml", "dockerfile")
+    extensions = c("r", "py", "sh", "bash", "jl", "rb", "pl", "yaml", "yml", "toml", "dockerfile", "makefile"),
+    languages = c("r", "python", "shell", "julia", "ruby", "perl", "yaml", "toml", "dockerfile", "makefile")
   ),
   dash = list(
     prefix = "--",
@@ -103,7 +103,7 @@ get_supported_extensions <- function() {
   "r", "python", "sql", "shell", "julia",
   "javascript", "typescript", "go", "rust",
   "java", "c", "cpp", "matlab", "ruby", "lua",
-  "wgsl", "dockerfile"
+  "wgsl", "dockerfile", "makefile"
 )
 
 # Package-level constant for extension to language mapping
@@ -121,6 +121,7 @@ get_supported_extensions <- function() {
   "yml" = "yaml",
   "toml" = "toml",
   "dockerfile" = "dockerfile",
+  "makefile" = "makefile",
 
   # Dash group
   "sql" = "sql",
@@ -155,7 +156,9 @@ get_supported_extensions <- function() {
 
 # Exact filename to language mapping for extensionless files (e.g., Dockerfile)
 .FILENAME_MAP <- list(
-  "Dockerfile" = "dockerfile"
+  "Dockerfile" = "dockerfile",
+  "Makefile" = "makefile",
+  "GNUmakefile" = "makefile"
 )
 
 #' Get Language Name from File Extension
@@ -249,7 +252,7 @@ get_comment_group <- function(ext) {
 #' @keywords internal
 build_file_pattern <- function(detection_only = FALSE) {
   if (detection_only) {
-    # Only languages with detection pattern support (17 languages)
+    # Only languages with detection pattern support (18 languages)
     exts <- c("R", "r", "py", "sql", "sh", "jl",
               "js", "jsx", "ts", "tsx", "go", "rs",
               "java", "c", "cpp", "h", "hpp", "m",

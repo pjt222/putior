@@ -208,7 +208,7 @@ test_that("list_supported_languages works correctly for MCP integration", {
 
   # Detection only
   detection_langs <- list_supported_languages(detection_only = TRUE)
-  expect_true(length(detection_langs) == 17)
+  expect_true(length(detection_langs) == 18)
   expect_true("r" %in% detection_langs)
   expect_true("javascript" %in% detection_langs)
 })
