@@ -60,7 +60,7 @@ results <- analyze(clean)
 | `label` | No | Display text (defaults to id) | `label:"Load CSV"` |
 | `input` | No | Input files/data (comma-separated) | `input:"a.csv, b.csv"` |
 | `output` | No | Output files/data | `output:"result.rds"` |
-| `node_type` | No | Shape: default, decision, database, io, subprocess | `node_type:"database"` |
+| `node_type` | No | Shape: input, process (default), output, decision, start, end | `node_type:"decision"` |
 
 ### Multiline Annotations
 
@@ -283,20 +283,31 @@ mermaid_code <- put_diagram(workflow, output = "raw")
 
 ## Node Types
 
-| Type | Shape | Use For |
-|------|-------|---------|
-| `default` | Rectangle | Standard processing steps |
-| `decision` | Diamond | Conditional logic, branching |
-| `database` | Cylinder | Database operations |
-| `io` | Parallelogram | File I/O operations |
-| `subprocess` | Double-bordered | Nested workflows, function calls |
+| Type | Mermaid Shape | Use For |
+|------|---------------|---------|
+| `input` | Stadium `([...])` | Data sources, file loading, API inputs |
+| `process` | Rectangle `[...]` (default) | Data processing, transformations |
+| `output` | Subroutine `[[...]]` | Report generation, exports, final outputs |
+| `decision` | Diamond `{...}` | Conditional logic, branching workflows |
+| `start` | Stadium `([...])` | Workflow entry point (special boundary styling) |
+| `end` | Stadium `([...])` | Workflow exit point (special boundary styling) |
+| `artifact` | Cylinder `[(...)]` | Data files (auto-created with `show_artifacts = TRUE`) |
+
+> **Note**: `artifact` nodes are automatically created by `put_diagram()` when `show_artifacts = TRUE`. They are not set manually via `node_type`.
 
 ## Diagram Themes
 
-- `default` - Standard Mermaid styling
-- `forest` - Green color scheme
-- `dark` - Dark mode friendly
-- `neutral` - Minimal, grayscale
+| Theme | Use Case |
+|-------|----------|
+| `light` | Bright colors (default) |
+| `dark` | Dark mode environments |
+| `auto` | GitHub-adaptive with solid colors |
+| `minimal` | Print-friendly, grayscale |
+| `github` | Optimized for README files |
+| `viridis` | Colorblind-safe (purple-blue-green-yellow) |
+| `magma` | Colorblind-safe (purple-red-yellow) |
+| `plasma` | Colorblind-safe (purple-pink-yellow) |
+| `cividis` | Maximum accessibility (blue-yellow) |
 
 ## Interactive Sandbox
 

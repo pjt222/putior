@@ -87,9 +87,12 @@ put("./", log_level = "DEBUG")
 | Type | Shape | Use For |
 |------|-------|---------|
 | `input` | Stadium | Data loading |
-| `process` | Rectangle | Transformations |
-| `output` | Stadium | Reports, exports |
+| `process` | Rectangle | Transformations (default) |
+| `output` | Subroutine | Reports, exports |
 | `decision` | Diamond | Conditional logic |
+| `start` | Stadium | Workflow entry point |
+| `end` | Stadium | Workflow exit point |
+| `artifact` | Cylinder | Data files (auto-created) |
 
 ```{r node-shapes, echo=FALSE, results='asis', eval=TRUE}
 library(putior)

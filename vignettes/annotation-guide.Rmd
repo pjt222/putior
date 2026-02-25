@@ -249,12 +249,18 @@ While putior accepts any properties you define, these are commonly used:
 
 ### Standard Node Types
 
-For consistency across projects, consider using these standard node types:
+For consistency across projects, use these standard node types:
 
-- **`input`**: Data collection, file loading, API calls
-- **`process`**: Data transformation, analysis, computation
-- **`output`**: Report generation, data export, visualization
-- **`decision`**: Conditional logic, branching workflows
+| Type | Mermaid Shape | Use For |
+|------|---------------|---------|
+| `input` | Stadium `([...])` | Data sources, file loading, API inputs |
+| `process` | Rectangle `[...]` | Data transformation, analysis, computation (default) |
+| `output` | Subroutine `[[...]]` | Report generation, data export, visualization |
+| `decision` | Diamond `{...}` | Conditional logic, branching workflows |
+| `start` | Stadium `([...])` | Workflow entry point (gets boundary styling) |
+| `end` | Stadium `([...])` | Workflow exit point (gets boundary styling) |
+
+> **`artifact`** nodes (cylinder shape) are automatically created by `put_diagram(show_artifacts = TRUE)` for data files referenced in `input`/`output` fields. You don't set `node_type:"artifact"` manually.
 
 **Visual representation of node types:**
 

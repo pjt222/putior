@@ -23,6 +23,10 @@
 #' @return A data frame containing file names and all properties found in annotations.
 #'   Always includes columns: file_name, file_type, and any properties found in
 #'   PUT annotations (typically: id, label, node_type, input, output).
+#'   Valid \code{node_type} values: \code{"input"}, \code{"process"} (default),
+#'   \code{"output"}, \code{"decision"}, \code{"start"}, \code{"end"}.
+#'   An additional type \code{"artifact"} is used internally by \code{put_diagram()}
+#'   for data file nodes and should not be set manually.
 #'   If include_line_numbers is TRUE, also includes line_number.
 #'   Note: If output is not specified in an annotation, it defaults to the file name.
 #'

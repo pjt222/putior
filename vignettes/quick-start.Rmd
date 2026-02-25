@@ -107,7 +107,7 @@ unlink(temp_file)
 | `input` | Files/data consumed | No |
 | `output` | Files/data produced | No |
 | `id` | Unique identifier | No (auto-generated) |
-| `node_type` | `input`, `process`, `output` | No (defaults to `process`) |
+| `node_type` | `input`, `process`, `output`, `decision`, `start`, `end` | No (defaults to `process`) |
 
 **Multiple inputs/outputs:** Use commas: `input:"a.csv, b.csv"`
 
