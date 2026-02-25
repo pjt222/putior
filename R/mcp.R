@@ -248,6 +248,10 @@ make_tool_put <- function() {
         description = "Validate annotations for common issues (default: TRUE)",
         required = FALSE
       ),
+      exclude = ellmer::type_string(
+        description = "Comma-separated regex patterns to exclude files (default: none)",
+        required = FALSE
+      ),
       log_level = ellmer::type_enum(
         description = "Log level: DEBUG, INFO, WARN, or ERROR (default: from options)",
         values = c("DEBUG", "INFO", "WARN", "ERROR"),
@@ -390,6 +394,10 @@ make_tool_put_auto <- function() {
         description = "Include line numbers (default: FALSE)",
         required = FALSE
       ),
+      exclude = ellmer::type_string(
+        description = "Comma-separated regex patterns to exclude files (default: none)",
+        required = FALSE
+      ),
       log_level = ellmer::type_enum(
         description = "Log level: DEBUG, INFO, WARN, or ERROR (default: from options)",
         values = c("DEBUG", "INFO", "WARN", "ERROR"),
@@ -440,6 +448,10 @@ make_tool_put_generate <- function() {
         description = "Annotation style: single or multiline (default: multiline)",
         values = c("single", "multiline"),
         required = FALSE
+      ),
+      exclude = ellmer::type_string(
+        description = "Comma-separated regex patterns to exclude files (default: none)",
+        required = FALSE
       )
     )
   )
@@ -480,6 +492,10 @@ make_tool_put_merge <- function() {
       ),
       include_line_numbers = ellmer::type_boolean(
         description = "Include line numbers (default: FALSE)",
+        required = FALSE
+      ),
+      exclude = ellmer::type_string(
+        description = "Comma-separated regex patterns to exclude files (default: none)",
         required = FALSE
       )
     )

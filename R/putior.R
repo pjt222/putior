@@ -16,6 +16,9 @@
 #'   Default: FALSE
 #' @param validate Logical. Should annotations be validated for common issues?
 #'   Default: TRUE
+#' @param exclude Character vector of regex patterns. Files whose full path
+#'   matches any pattern are excluded from scanning. Default: NULL (no exclusion).
+#'   Example: \code{exclude = c("_meta\\.R$", "deprecated/")}
 #' @param log_level Character string specifying log verbosity for this call.
 #'   Overrides the global option \code{putior.log_level} when specified.
 #'   Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.
@@ -116,6 +119,7 @@ put <- function(path,
                 recursive = TRUE,
                 include_line_numbers = FALSE,
                 validate = TRUE,
+                exclude = NULL,
                 log_level = NULL) {
   # Set log level for this call if specified
   restore_log_level <- with_log_level(log_level)
@@ -146,6 +150,9 @@ put <- function(path,
     }
     files <- path
   }
+
+  # Apply exclusion patterns
+  files <- filter_excluded_files(files, exclude)
 
   if (length(files) == 0) {
     putior_log("WARN", "No files matching pattern '{pattern}' found in: {path}")

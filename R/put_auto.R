@@ -25,6 +25,8 @@ NULL
 #'   be detected? Default: TRUE
 #' @param include_line_numbers Logical. Should line numbers be included?
 #'   Default: FALSE
+#' @param exclude Character vector of regex patterns. Files whose full path
+#'   matches any pattern are excluded from scanning. Default: NULL (no exclusion).
 #' @param log_level Character string specifying log verbosity for this call.
 #'   Overrides the global option \code{putior.log_level} when specified.
 #'   Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.
@@ -67,6 +69,7 @@ put_auto <- function(path,
                      detect_outputs = TRUE,
                      detect_dependencies = TRUE,
                      include_line_numbers = FALSE,
+                     exclude = NULL,
                      log_level = NULL) {
   # Set log level for this call if specified
   restore_log_level <- with_log_level(log_level)
@@ -97,6 +100,9 @@ put_auto <- function(path,
     }
     files <- path
   }
+
+  # Apply exclusion patterns
+  files <- filter_excluded_files(files, exclude)
 
   if (length(files) == 0) {
     putior_log("WARN", "No files matching pattern '{pattern}' found in: {path}")
@@ -162,6 +168,8 @@ put_auto <- function(path,
 #'     \item "multiline" - Multiline annotations with backslash continuation
 #'   }
 #'   Default: "multiline"
+#' @param exclude Character vector of regex patterns. Files whose full path
+#'   matches any pattern are excluded. Default: NULL (no exclusion).
 #'
 #' @return Invisibly returns a character vector of generated annotations.
 #'   Side effects depend on the \code{output} parameter.
@@ -190,7 +198,8 @@ put_generate <- function(path,
                          recursive = TRUE,
                          output = "console",
                          insert = FALSE,
-                         style = "multiline") {
+                         style = "multiline",
+                         exclude = NULL) {
   # Default pattern covers languages with detection support
   if (is.null(pattern)) pattern <- build_file_pattern(detection_only = TRUE)
 
@@ -239,6 +248,9 @@ put_generate <- function(path,
     }
     files <- path
   }
+
+  # Apply exclusion patterns
+  files <- filter_excluded_files(files, exclude)
 
   if (length(files) == 0) {
     warning("No files matching pattern '", pattern, "' found in: ", path, call. = FALSE)
@@ -308,6 +320,8 @@ put_generate <- function(path,
 #'   }
 #' @param include_line_numbers Logical. Should line numbers be included?
 #'   Default: FALSE
+#' @param exclude Character vector of regex patterns. Files whose full path
+#'   matches any pattern are excluded. Default: NULL (no exclusion).
 #'
 #' @return A data frame in the same format as \code{\link{put}()}, containing
 #'   merged workflow information from both manual and auto-detected sources.
@@ -333,7 +347,8 @@ put_merge <- function(path,
                       pattern = NULL,
                       recursive = TRUE,
                       merge_strategy = "manual_priority",
-                      include_line_numbers = FALSE) {
+                      include_line_numbers = FALSE,
+                      exclude = NULL) {
   # Default pattern covers languages with detection support
   if (is.null(pattern)) pattern <- build_file_pattern(detection_only = TRUE)
 
@@ -356,7 +371,8 @@ put_merge <- function(path,
     pattern = pattern,
     recursive = recursive,
     include_line_numbers = include_line_numbers,
-    validate = FALSE
+    validate = FALSE,
+    exclude = exclude
   )
 
   # Get auto-detected annotations
@@ -364,7 +380,8 @@ put_merge <- function(path,
     path = path,
     pattern = pattern,
     recursive = recursive,
-    include_line_numbers = include_line_numbers
+    include_line_numbers = include_line_numbers,
+    exclude = exclude
   )
 
   # If one is empty, return the other

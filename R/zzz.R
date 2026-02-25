@@ -110,6 +110,34 @@ is_empty_string <- function(x) {
   is.null(x) || is.na(x) || x == ""
 }
 
+#' Filter files by exclusion patterns
+#'
+#' Removes files whose full path matches any of the given regex patterns.
+#'
+#' @param files Character vector of file paths
+#' @param exclude Character vector of regex patterns to exclude, or NULL
+#' @return Filtered character vector of file paths
+#' @noRd
+filter_excluded_files <- function(files, exclude) {
+  if (is.null(exclude) || length(files) == 0) {
+    return(files)
+  }
+  if (!is.character(exclude)) {
+    stop("'exclude' must be a character vector of regex patterns", call. = FALSE)
+  }
+  # Support comma-separated string (e.g. from MCP)
+  if (length(exclude) == 1 && grepl(",", exclude)) {
+    exclude <- trimws(strsplit(exclude, ",")[[1]])
+  }
+  exclude <- exclude[nchar(exclude) > 0]
+  if (length(exclude) == 0) return(files)
+  keep <- rep(TRUE, length(files))
+  for (pattern in exclude) {
+    keep <- keep & !grepl(pattern, files)
+  }
+  files[keep]
+}
+
 .onLoad <- function(libname, pkgname) {
   # Set default package options
   op <- options()
