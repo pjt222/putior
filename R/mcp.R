@@ -322,6 +322,7 @@ make_tool_put_diagram <- function() {
         values = .VALID_THEMES,
         required = FALSE
       ),
+      palette = ellmer::type_ignore(),
       show_source_info = ellmer::type_boolean(
         description = "Display source file info in nodes (default: FALSE)",
         required = FALSE

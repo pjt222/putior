@@ -16,6 +16,7 @@ put_diagram(
   show_workflow_boundaries = TRUE,
   style_nodes = TRUE,
   theme = "light",
+  palette = NULL,
   show_source_info = FALSE,
   source_info_style = "inline",
   enable_clicks = FALSE,
@@ -69,6 +70,10 @@ workflow boundary styling (icons, colors). When FALSE, they render as regular no
 \item "cividis" - Colorblind-safe for deuteranopia/protanopia (blue-yellow)
 }
 The viridis family themes are perceptually uniform and tested for accessibility.}
+
+\item{palette}{Optional \code{putior_theme} object created by
+\code{\link{put_theme}()} for custom node colors. When provided, this
+overrides the \code{theme} parameter. Default is NULL (use \code{theme}).}
 
 \item{show_source_info}{Logical indicating whether to display source file
 information in diagram nodes. When TRUE, each node shows its originating
@@ -141,5 +146,10 @@ put_diagram(workflow, enable_clicks = TRUE)
 
 # Enable clickable nodes with RStudio protocol
 put_diagram(workflow, enable_clicks = TRUE, click_protocol = "rstudio")
+
+# Use a custom color palette
+my_theme <- put_theme(base = "dark",
+  input = c(fill = "#1a5276", stroke = "#2e86c1", color = "#ffffff"))
+put_diagram(workflow, palette = my_theme)
 }
 }

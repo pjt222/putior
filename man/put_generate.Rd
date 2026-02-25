@@ -10,7 +10,8 @@ put_generate(
   recursive = TRUE,
   output = "console",
   insert = FALSE,
-  style = "multiline"
+  style = "multiline",
+  exclude = NULL
 )
 }
 \arguments{
@@ -39,6 +40,9 @@ at the top. Use with caution. Default: FALSE}
 \item "multiline" - Multiline annotations with backslash continuation
 }
 Default: "multiline"}
+
+\item{exclude}{Character vector of regex patterns. Files whose full path
+matches any pattern are excluded. Default: NULL (no exclusion).}
 }
 \value{
 Invisibly returns a character vector of generated annotations.

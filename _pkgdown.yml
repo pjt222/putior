@@ -200,6 +200,8 @@ reference:
   contents:
   - put
   - put_diagram
+  - put_theme
+  - print.putior_theme
   - print.putior_workflow
   - summary.putior_workflow
 

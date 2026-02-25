@@ -12,6 +12,7 @@ put_auto(
   detect_outputs = TRUE,
   detect_dependencies = TRUE,
   include_line_numbers = FALSE,
+  exclude = NULL,
   log_level = NULL
 )
 }
@@ -35,6 +36,9 @@ be detected? Default: TRUE}
 
 \item{include_line_numbers}{Logical. Should line numbers be included?
 Default: FALSE}
+
+\item{exclude}{Character vector of regex patterns. Files whose full path
+matches any pattern are excluded from scanning. Default: NULL (no exclusion).}
 
 \item{log_level}{Character string specifying log verbosity for this call.
 Overrides the global option \code{putior.log_level} when specified.

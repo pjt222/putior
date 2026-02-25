@@ -9,7 +9,8 @@ put_merge(
   pattern = NULL,
   recursive = TRUE,
   merge_strategy = "manual_priority",
-  include_line_numbers = FALSE
+  include_line_numbers = FALSE,
+  exclude = NULL
 )
 }
 \arguments{
@@ -30,6 +31,9 @@ Default: TRUE}
 
 \item{include_line_numbers}{Logical. Should line numbers be included?
 Default: FALSE}
+
+\item{exclude}{Character vector of regex patterns. Files whose full path
+matches any pattern are excluded. Default: NULL (no exclusion).}
 }
 \value{
 A data frame in the same format as \code{\link{put}()}, containing

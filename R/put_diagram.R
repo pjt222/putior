@@ -39,6 +39,9 @@
 #'     \item "cividis" - Colorblind-safe for deuteranopia/protanopia (blue-yellow)
 #'   }
 #'   The viridis family themes are perceptually uniform and tested for accessibility.
+#' @param palette Optional \code{putior_theme} object created by
+#'   \code{\link{put_theme}()} for custom node colors. When provided, this
+#'   overrides the \code{theme} parameter. Default is NULL (use \code{theme}).
 #' @param show_source_info Logical indicating whether to display source file
 #'   information in diagram nodes. When TRUE, each node shows its originating
 #'   file name. Default is FALSE for backward compatibility.
@@ -102,6 +105,11 @@
 #'
 #' # Enable clickable nodes with RStudio protocol
 #' put_diagram(workflow, enable_clicks = TRUE, click_protocol = "rstudio")
+#'
+#' # Use a custom color palette
+#' my_theme <- put_theme(base = "dark",
+#'   input = c(fill = "#1a5276", stroke = "#2e86c1", color = "#ffffff"))
+#' put_diagram(workflow, palette = my_theme)
 #' }
 put_diagram <- function(workflow,
                         output = "console",
@@ -114,6 +122,7 @@ put_diagram <- function(workflow,
                         show_workflow_boundaries = TRUE,
                         style_nodes = TRUE,
                         theme = "light",
+                        palette = NULL,
                         show_source_info = FALSE,
                         source_info_style = "inline",
                         enable_clicks = FALSE,
@@ -174,6 +183,20 @@ put_diagram <- function(workflow,
       call. = FALSE
     )
     theme <- "light"
+  }
+
+  # Validate palette
+  if (!is.null(palette)) {
+    if (!inherits(palette, "putior_theme")) {
+      stop(
+        "'palette' must be a putior_theme object created by put_theme().\n",
+        "Example:\n",
+        "  my_palette <- put_theme(base = \"dark\",\n",
+        "    input = c(fill = \"#1a5276\", stroke = \"#2e86c1\", color = \"#ffffff\"))\n",
+        "  put_diagram(workflow, palette = my_palette)",
+        call. = FALSE
+      )
+    }
   }
 
   # Validate source_info_style
@@ -296,10 +319,10 @@ put_diagram <- function(workflow,
     putior_log("DEBUG", "Created {length(connections)} connection(s)")
   }
 
-  # Add styling based on theme
+  # Add styling based on theme (palette overrides theme when provided)
   if (style_nodes && "node_type" %in% names(combined_workflow)) {
     putior_log("DEBUG", "Applying '{theme}' theme styling")
-    styling <- generate_node_styling(combined_workflow, theme, show_workflow_boundaries)
+    styling <- generate_node_styling(combined_workflow, theme, show_workflow_boundaries, palette)
     if (length(styling) > 0) {
       mermaid_lines <- c(mermaid_lines, "", "    %% Styling", styling)
     }
@@ -329,13 +352,19 @@ put_diagram <- function(workflow,
 #' Generate node styling based on node types and theme
 #' @param workflow Workflow data frame
 #' @param theme Color theme ("light", "dark", "auto", "minimal", "github")
+#' @param show_workflow_boundaries Whether to style start/end nodes
+#' @param palette Optional putior_theme object that overrides theme
 #' @return Character vector of styling definitions
 #' @keywords internal
-generate_node_styling <- function(workflow, theme = "light", show_workflow_boundaries = TRUE) {
+generate_node_styling <- function(workflow, theme = "light", show_workflow_boundaries = TRUE, palette = NULL) {
   styling <- character()
 
-  # Define color schemes for different themes
-  color_schemes <- get_theme_colors(theme)
+  # Use palette if provided, otherwise use theme
+  if (!is.null(palette) && inherits(palette, "putior_theme")) {
+    color_schemes <- unclass(palette)
+  } else {
+    color_schemes <- get_theme_colors(theme)
+  }
 
   # Group nodes by type and create styling
   for (node_type in names(color_schemes)) {

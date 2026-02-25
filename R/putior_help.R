@@ -149,6 +149,11 @@ show_themes_help <- function() {
   cat("  workflow <- put(\"./src/\")\n")
   cat("  put_diagram(workflow, theme = \"github\")\n")
   cat("\n")
+  cat("Custom Palette:\n")
+  cat("  my_theme <- put_theme(base = \"dark\",\n")
+  cat("    input = c(fill = \"#1a5276\", stroke = \"#2e86c1\", color = \"#ffffff\"))\n")
+  cat("  put_diagram(workflow, palette = my_theme)\n")
+  cat("\n")
 }
 
 #' Show languages help

@@ -138,6 +138,15 @@ filter_excluded_files <- function(files, exclude) {
   files[keep]
 }
 
+#' Validate a hex color string
+#'
+#' @param x Character string to check
+#' @return TRUE if x is a valid hex color (#RGB, #RRGGBB, or #RRGGBBAA)
+#' @noRd
+is_valid_hex_color <- function(x) {
+  is.character(x) && length(x) == 1 && grepl("^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$", x)
+}
+
 .onLoad <- function(libname, pkgname) {
   # Set default package options
   op <- options()
