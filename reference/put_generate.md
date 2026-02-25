@@ -13,7 +13,8 @@ put_generate(
   recursive = TRUE,
   output = "console",
   insert = FALSE,
-  style = "multiline"
+  style = "multiline",
+  exclude = NULL
 )
 ```
 
@@ -58,6 +59,11 @@ put_generate(
   - "multiline" - Multiline annotations with backslash continuation
 
   Default: "multiline"
+
+- exclude:
+
+  Character vector of regex patterns. Files whose full path matches any
+  pattern are excluded. Default: NULL (no exclusion).
 
 ## Value
 

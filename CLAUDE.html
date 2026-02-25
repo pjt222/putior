@@ -522,7 +522,15 @@ Then use put_diagram to create a visualization</code></pre>
 <td>
 <code>.m</code>, <code>.tex</code>
 </td>
+</tr><tr class="odd"><td>
+<code>* put</code> (block)</td>
+<td>All <code>//</code>-prefix languages inside <code>/* */</code> or <code>/** */</code> blocks</td>
+<td>Same as <code>//</code> group</td>
 </tr></tbody></table></div>
+<div class="section level3">
+<h3 id="block-comment-support">Block Comment Support<a class="anchor" aria-label="anchor" href="#block-comment-support"></a></h3>
+<p>Languages in the <code>//</code> group also support PUT annotations inside block comments (<code>/* */</code> and <code>/** */</code>). Use <code>* put</code> as the line prefix inside the block body. Single-line block comments (<code>/* put ... */</code>) and annotations on the opening line (<code>/** put ... */</code>) are also supported. This enables JSDoc-style documentation patterns.</p>
+</div>
 <div class="section level3">
 <h3 id="key-functions">Key Functions<a class="anchor" aria-label="anchor" href="#key-functions"></a></h3>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">

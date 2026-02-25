@@ -239,6 +239,43 @@ extension:
     %put id:"compute", label:"Statistical Analysis", input:"data.mat", output:"results.mat"
     results = compute_statistics(data);
 
+### Block Comments
+
+For languages with block comment support (JavaScript, TypeScript, C,
+C++, Java, Go, Rust, and other `//`-prefix languages), PUT annotations
+can also appear inside `/* ... */` and `/** ... */` block comments. Use
+a `*` line prefix:
+
+**JSDoc-style (recommended for JS/TS):**
+
+    /**
+     * put id:"load", label:"Load Data", node_type:"input"
+     */
+    function loadData() { return fetch('/api/data'); }
+
+**C-style block comment:**
+
+    /*
+     * put id:"init", label:"Initialize System"
+     */
+    void init() {}
+
+**Single-line block comment:**
+
+    /* put id:"quick", label:"Quick Operation" */
+    const x = transform(data);
+
+Multiple annotations can appear in one block:
+
+    /**
+     * put id:"step_a", label:"Step A"
+     * put id:"step_b", label:"Step B"
+     */
+
+Both single-line (`//`) and block (`/* */`) annotations can coexist in
+the same file. Languages without block comment syntax (R, Python, SQL,
+etc.) continue to use their single-line prefix only.
+
 ### Core Properties
 
 While putior accepts any properties you define, these are commonly used:
@@ -253,13 +290,21 @@ While putior accepts any properties you define, these are commonly used:
 
 ### Standard Node Types
 
-For consistency across projects, consider using these standard node
-types:
+For consistency across projects, use these standard node types:
 
-- **`input`**: Data collection, file loading, API calls
-- **`process`**: Data transformation, analysis, computation
-- **`output`**: Report generation, data export, visualization
-- **`decision`**: Conditional logic, branching workflows
+| Type       | Mermaid Shape        | Use For                                              |
+|------------|----------------------|------------------------------------------------------|
+| `input`    | Stadium `([...])`    | Data sources, file loading, API inputs               |
+| `process`  | Rectangle `[...]`    | Data transformation, analysis, computation (default) |
+| `output`   | Subroutine `[[...]]` | Report generation, data export, visualization        |
+| `decision` | Diamond `{...}`      | Conditional logic, branching workflows               |
+| `start`    | Stadium `([...])`    | Workflow entry point (gets boundary styling)         |
+| `end`      | Stadium `([...])`    | Workflow exit point (gets boundary styling)          |
+
+> **`artifact`** nodes (cylinder shape) are automatically created by
+> `put_diagram(show_artifacts = TRUE)` for data files referenced in
+> `input`/`output` fields. You don’t set `node_type:"artifact"`
+> manually.
 
 **Visual representation of node types:**
 

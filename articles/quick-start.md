@@ -76,7 +76,7 @@ writeLines(c(
 
 # Scan and visualize
 workflow <- put(temp_file)
-#> Warning: Validation issues in file2345a264f6.R line 7:
+#> Warning: Validation issues in file240b6114731f.R line 7:
 #> File reference missing extension: database
 ```
 
@@ -89,13 +89,13 @@ cat("```mermaid\n")
 cat(put_diagram(workflow, output = "raw"))
 ```
 
-flowchart TD node_0c930bda_a231_4bc4_828e_c72a627aef94\[“Extract”\]
-node_4d755166_6dd2_48f7_93b1_d36a4c94de64\[“Transform”\]
-node_4020fa42_927f_478c_8156_03b895f104f1\[“Load”\]
+flowchart TD node_3507eec3_c974_4f20_ab61_6e1abaf07003\[“Extract”\]
+node_88886e54_16a4_4b2d_b699_43d73e539590\[“Transform”\]
+node_934664ad_b196_4b4b_bfe6_ed2b82aabd0c\[“Load”\]
 
     %% Connections
-    node_0c930bda_a231_4bc4_828e_c72a627aef94 --> node_4d755166_6dd2_48f7_93b1_d36a4c94de64
-    node_4d755166_6dd2_48f7_93b1_d36a4c94de64 --> node_4020fa42_927f_478c_8156_03b895f104f1
+    node_3507eec3_c974_4f20_ab61_6e1abaf07003 --> node_88886e54_16a4_4b2d_b699_43d73e539590
+    node_88886e54_16a4_4b2d_b699_43d73e539590 --> node_934664ad_b196_4b4b_bfe6_ed2b82aabd0c
 
 ``` r
 cat("\n```\n")
@@ -116,7 +116,7 @@ unlink(temp_file)
     | `input` | Files/data consumed | No |
     | `output` | Files/data produced | No |
     | `id` | Unique identifier | No (auto-generated) |
-    | `node_type` | `input`, `process`, `output` | No (defaults to `process`) |
+    | `node_type` | `input`, `process`, `output`, `decision`, `start`, `end` | No (defaults to `process`) |
 
     **Multiple inputs/outputs:** Use commas: `input:"a.csv, b.csv"`
 

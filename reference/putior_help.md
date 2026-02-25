@@ -138,6 +138,11 @@ putior_help("themes")
 #>   workflow <- put("./src/")
 #>   put_diagram(workflow, theme = "github")
 #> 
+#> Custom Palette:
+#>   my_theme <- put_theme(base = "dark",
+#>     input = c(fill = "#1a5276", stroke = "#2e86c1", color = "#ffffff"))
+#>   put_diagram(workflow, palette = my_theme)
+#> 
 
 # Show node types
 putior_help("node_types")

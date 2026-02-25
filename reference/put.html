@@ -165,6 +165,7 @@ with their native comment syntax, including single-line and multiline formats.</
 <span>  recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_line_numbers <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  validate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  log_level <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -199,6 +200,12 @@ Default: FALSE</p></dd>
 Default: TRUE</p></dd>
 
 
+<dt id="arg-exclude">exclude<a class="anchor" aria-label="anchor" href="#arg-exclude"></a></dt>
+<dd><p>Character vector of regex patterns. Files whose full path
+matches any pattern are excluded from scanning. Default: NULL (no exclusion).
+Example: <code>exclude = c("_meta\.R$", "deprecated/")</code></p></dd>
+
+
 <dt id="arg-log-level">log_level<a class="anchor" aria-label="anchor" href="#arg-log-level"></a></dt>
 <dd><p>Character string specifying log verbosity for this call.
 Overrides the global option <code>putior.log_level</code> when specified.
@@ -210,6 +217,10 @@ Options: "DEBUG", "INFO", "WARN", "ERROR". See <code><a href="set_putior_log_lev
     <p>A data frame containing file names and all properties found in annotations.
 Always includes columns: file_name, file_type, and any properties found in
 PUT annotations (typically: id, label, node_type, input, output).
+Valid <code>node_type</code> values: <code>"input"</code>, <code>"process"</code> (default),
+<code>"output"</code>, <code>"decision"</code>, <code>"start"</code>, <code>"end"</code>.
+An additional type <code>"artifact"</code> is used internally by <code><a href="put_diagram.html">put_diagram()</a></code>
+for data file nodes and should not be set manually.
 If include_line_numbers is TRUE, also includes line_number.
 Note: If output is not specified in an annotation, it defaults to the file name.</p>
     </div>

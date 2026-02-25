@@ -168,6 +168,7 @@ the flow of data through your analysis pipeline.</p>
 <span>  show_workflow_boundaries <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  style_nodes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  theme <span class="op">=</span> <span class="st">"light"</span>,</span>
+<span>  palette <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  show_source_info <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  source_info_style <span class="op">=</span> <span class="st">"inline"</span>,</span>
 <span>  enable_clicks <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -241,6 +242,12 @@ workflow boundary styling (icons, colors). When FALSE, they render as regular no
 <li><p>"plasma" - Colorblind-safe vibrant (purple-pink-yellow)</p></li>
 <li><p>"cividis" - Colorblind-safe for deuteranopia/protanopia (blue-yellow)</p></li>
 </ul><p>The viridis family themes are perceptually uniform and tested for accessibility.</p></dd>
+
+
+<dt id="arg-palette">palette<a class="anchor" aria-label="anchor" href="#arg-palette"></a></dt>
+<dd><p>Optional <code>putior_theme</code> object created by
+<code><a href="put_theme.html">put_theme()</a></code> for custom node colors. When provided, this
+overrides the <code>theme</code> parameter. Default is NULL (use <code>theme</code>).</p></dd>
 
 
 <dt id="arg-show-source-info">show_source_info<a class="anchor" aria-label="anchor" href="#arg-show-source-info"></a></dt>
@@ -319,6 +326,11 @@ Options: "DEBUG", "INFO", "WARN", "ERROR". See <code><a href="set_putior_log_lev
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Enable clickable nodes with RStudio protocol</span></span></span>
 <span class="r-in"><span><span class="fu">put_diagram</span><span class="op">(</span><span class="va">workflow</span>, enable_clicks <span class="op">=</span> <span class="cn">TRUE</span>, click_protocol <span class="op">=</span> <span class="st">"rstudio"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Use a custom color palette</span></span></span>
+<span class="r-in"><span><span class="va">my_theme</span> <span class="op">&lt;-</span> <span class="fu"><a href="put_theme.html">put_theme</a></span><span class="op">(</span>base <span class="op">=</span> <span class="st">"dark"</span>,</span></span>
+<span class="r-in"><span>  input <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#1a5276"</span>, stroke <span class="op">=</span> <span class="st">"#2e86c1"</span>, color <span class="op">=</span> <span class="st">"#ffffff"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">put_diagram</span><span class="op">(</span><span class="va">workflow</span>, palette <span class="op">=</span> <span class="va">my_theme</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

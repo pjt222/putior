@@ -8,7 +8,8 @@ Generate node styling based on node types and theme
 generate_node_styling(
   workflow,
   theme = "light",
-  show_workflow_boundaries = TRUE
+  show_workflow_boundaries = TRUE,
+  palette = NULL
 )
 ```
 
@@ -21,6 +22,14 @@ generate_node_styling(
 - theme:
 
   Color theme ("light", "dark", "auto", "minimal", "github")
+
+- show_workflow_boundaries:
+
+  Whether to style start/end nodes
+
+- palette:
+
+  Optional putior_theme object that overrides theme
 
 ## Value
 

@@ -282,6 +282,11 @@ Call without arguments to see available topics.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   workflow &lt;- put("./src/")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   put_diagram(workflow, theme = "github")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Custom Palette:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   my_theme &lt;- put_theme(base = "dark",</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     input = c(fill = "#1a5276", stroke = "#2e86c1", color = "#ffffff"))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   put_diagram(workflow, palette = my_theme)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Show node types</span></span></span>
 <span class="r-in"><span><span class="fu">putior_help</span><span class="op">(</span><span class="st">"node_types"</span><span class="op">)</span></span></span>

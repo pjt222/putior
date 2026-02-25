@@ -245,7 +245,7 @@ With output="raw", returns as single string.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | `label` | No | Display text (defaults to id) | `label:"Load CSV"` |</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | `input` | No | Input files/data (comma-separated) | `input:"a.csv, b.csv"` |</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | `output` | No | Output files/data | `output:"result.rds"` |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> | `node_type` | No | Shape: default, decision, database, io, subprocess | `node_type:"database"` |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `node_type` | No | Shape: input, process (default), output, decision, start, end | `node_type:"decision"` |</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ### Multiline Annotations</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -468,20 +468,31 @@ With output="raw", returns as single string.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ## Node Types</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> | Type | Shape | Use For |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |------|-------|---------|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> | `default` | Rectangle | Standard processing steps |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> | `decision` | Diamond | Conditional logic, branching |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> | `database` | Cylinder | Database operations |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> | `io` | Parallelogram | File I/O operations |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> | `subprocess` | Double-bordered | Nested workflows, function calls |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | Type | Mermaid Shape | Use For |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |------|---------------|---------|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `input` | Stadium `([...])` | Data sources, file loading, API inputs |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `process` | Rectangle `[...]` (default) | Data processing, transformations |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `output` | Subroutine `[[...]]` | Report generation, exports, final outputs |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `decision` | Diamond `{...}` | Conditional logic, branching workflows |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `start` | Stadium `([...])` | Workflow entry point (special boundary styling) |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `end` | Stadium `([...])` | Workflow exit point (special boundary styling) |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `artifact` | Cylinder `[(...)]` | Data files (auto-created with `show_artifacts = TRUE`) |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &gt; **Note**: `artifact` nodes are automatically created by `put_diagram()` when `show_artifacts = TRUE`. They are not set manually via `node_type`.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ## Diagram Themes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> - `default` - Standard Mermaid styling</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> - `forest` - Green color scheme</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> - `dark` - Dark mode friendly</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> - `neutral` - Minimal, grayscale</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | Theme | Use Case |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-------|----------|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `light` | Bright colors (default) |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `dark` | Dark mode environments |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `auto` | GitHub-adaptive with solid colors |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `minimal` | Print-friendly, grayscale |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `github` | Optimized for README files |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `viridis` | Colorblind-safe (purple-blue-green-yellow) |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `magma` | Colorblind-safe (purple-red-yellow) |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `plasma` | Colorblind-safe (purple-pink-yellow) |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | `cividis` | Maximum accessibility (blue-yellow) |</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ## Interactive Sandbox</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>

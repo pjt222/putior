@@ -12,7 +12,8 @@ put_merge(
   pattern = NULL,
   recursive = TRUE,
   merge_strategy = "manual_priority",
-  include_line_numbers = FALSE
+  include_line_numbers = FALSE,
+  exclude = NULL
 )
 ```
 
@@ -45,6 +46,11 @@ put_merge(
 - include_line_numbers:
 
   Logical. Should line numbers be included? Default: FALSE
+
+- exclude:
+
+  Character vector of regex patterns. Files whose full path matches any
+  pattern are excluded. Default: NULL (no exclusion).
 
 ## Value
 

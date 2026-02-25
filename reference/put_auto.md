@@ -20,6 +20,7 @@ put_auto(
   detect_outputs = TRUE,
   detect_dependencies = TRUE,
   include_line_numbers = FALSE,
+  exclude = NULL,
   log_level = NULL
 )
 ```
@@ -57,6 +58,11 @@ put_auto(
 - include_line_numbers:
 
   Logical. Should line numbers be included? Default: FALSE
+
+- exclude:
+
+  Character vector of regex patterns. Files whose full path matches any
+  pattern are excluded from scanning. Default: NULL (no exclusion).
 
 - log_level:
 

@@ -394,8 +394,8 @@ nodes:</p>
 <tr class="odd">
 <td><code>node_type</code></td>
 <td>No</td>
-<td>Shape: default, decision, database, io, subprocess</td>
-<td><code>node_type:"database"</code></td>
+<td>Shape: input, process (default), output, decision, start, end</td>
+<td><code>node_type:"decision"</code></td>
 </tr>
 </tbody>
 </table>
@@ -733,53 +733,115 @@ transformers, litellm, vllm, groq</p>
 <h3 id="node-types">Node Types<a class="anchor" aria-label="anchor" href="#node-types"></a>
 </h3>
 <table class="table">
+<colgroup>
+<col width="20%">
+<col width="50%">
+<col width="30%">
+</colgroup>
 <thead><tr class="header">
 <th>Type</th>
-<th>Shape</th>
+<th>Mermaid Shape</th>
 <th>Use For</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td><code>default</code></td>
-<td>Rectangle</td>
-<td>Standard processing steps</td>
+<td><code>input</code></td>
+<td>Stadium <code>([...])</code>
+</td>
+<td>Data sources, file loading, API inputs</td>
+</tr>
+<tr class="even">
+<td><code>process</code></td>
+<td>Rectangle <code>[...]</code> (default)</td>
+<td>Data processing, transformations</td>
+</tr>
+<tr class="odd">
+<td><code>output</code></td>
+<td>Subroutine <code>[[...]]</code>
+</td>
+<td>Report generation, exports, final outputs</td>
 </tr>
 <tr class="even">
 <td><code>decision</code></td>
-<td>Diamond</td>
-<td>Conditional logic, branching</td>
+<td>Diamond <code>{...}</code>
+</td>
+<td>Conditional logic, branching workflows</td>
 </tr>
 <tr class="odd">
-<td><code>database</code></td>
-<td>Cylinder</td>
-<td>Database operations</td>
+<td><code>start</code></td>
+<td>Stadium <code>([...])</code>
+</td>
+<td>Workflow entry point (special boundary styling)</td>
 </tr>
 <tr class="even">
-<td><code>io</code></td>
-<td>Parallelogram</td>
-<td>File I/O operations</td>
+<td><code>end</code></td>
+<td>Stadium <code>([...])</code>
+</td>
+<td>Workflow exit point (special boundary styling)</td>
 </tr>
 <tr class="odd">
-<td><code>subprocess</code></td>
-<td>Double-bordered</td>
-<td>Nested workflows, function calls</td>
+<td><code>artifact</code></td>
+<td>Cylinder <code>[(...)]</code>
+</td>
+<td>Data files (auto-created with
+<code>show_artifacts = TRUE</code>)</td>
 </tr>
 </tbody>
 </table>
+<blockquote>
+<p><strong>Note</strong>: <code>artifact</code> nodes are automatically
+created by <code><a href="../reference/put_diagram.html">put_diagram()</a></code> when
+<code>show_artifacts = TRUE</code>. They are not set manually via
+<code>node_type</code>.</p>
+</blockquote>
 </div>
 <div class="section level3">
 <h3 id="diagram-themes">Diagram Themes<a class="anchor" aria-label="anchor" href="#diagram-themes"></a>
 </h3>
-<ul>
-<li>
-<code>default</code> - Standard Mermaid styling</li>
-<li>
-<code>forest</code> - Green color scheme</li>
-<li>
-<code>dark</code> - Dark mode friendly</li>
-<li>
-<code>neutral</code> - Minimal, grayscale</li>
-</ul>
+<table class="table">
+<thead><tr class="header">
+<th>Theme</th>
+<th>Use Case</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>light</code></td>
+<td>Bright colors (default)</td>
+</tr>
+<tr class="even">
+<td><code>dark</code></td>
+<td>Dark mode environments</td>
+</tr>
+<tr class="odd">
+<td><code>auto</code></td>
+<td>GitHub-adaptive with solid colors</td>
+</tr>
+<tr class="even">
+<td><code>minimal</code></td>
+<td>Print-friendly, grayscale</td>
+</tr>
+<tr class="odd">
+<td><code>github</code></td>
+<td>Optimized for README files</td>
+</tr>
+<tr class="even">
+<td><code>viridis</code></td>
+<td>Colorblind-safe (purple-blue-green-yellow)</td>
+</tr>
+<tr class="odd">
+<td><code>magma</code></td>
+<td>Colorblind-safe (purple-red-yellow)</td>
+</tr>
+<tr class="even">
+<td><code>plasma</code></td>
+<td>Colorblind-safe (purple-pink-yellow)</td>
+</tr>
+<tr class="odd">
+<td><code>cividis</code></td>
+<td>Maximum accessibility (blue-yellow)</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level3">
 <h3 id="interactive-sandbox">Interactive Sandbox<a class="anchor" aria-label="anchor" href="#interactive-sandbox"></a>

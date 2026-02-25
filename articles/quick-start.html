@@ -255,19 +255,19 @@
 <span></span>
 <span><span class="co"># Scan and visualize</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="va">temp_file</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Validation issues in file2345a264f6.R line 7:</span></span>
+<span><span class="co">#&gt; Warning: Validation issues in file240b6114731f.R line 7:</span></span>
 <span><span class="co">#&gt; File reference missing extension: database</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"```mermaid\n"</span><span class="op">)</span></span></code></pre></div>
 <pre class="mermaid"><code>
 ``` r
 cat(put_diagram(workflow, output = "raw"))</code></pre>
-<p>flowchart TD node_0c930bda_a231_4bc4_828e_c72a627aef94[“Extract”]
-node_4d755166_6dd2_48f7_93b1_d36a4c94de64[“Transform”]
-node_4020fa42_927f_478c_8156_03b895f104f1[“Load”]</p>
+<p>flowchart TD node_3507eec3_c974_4f20_ab61_6e1abaf07003[“Extract”]
+node_88886e54_16a4_4b2d_b699_43d73e539590[“Transform”]
+node_934664ad_b196_4b4b_bfe6_ed2b82aabd0c[“Load”]</p>
 <pre><code>%% Connections
-node_0c930bda_a231_4bc4_828e_c72a627aef94 --&gt; node_4d755166_6dd2_48f7_93b1_d36a4c94de64
-node_4d755166_6dd2_48f7_93b1_d36a4c94de64 --&gt; node_4020fa42_927f_478c_8156_03b895f104f1</code></pre>
+node_3507eec3_c974_4f20_ab61_6e1abaf07003 --&gt; node_88886e54_16a4_4b2d_b699_43d73e539590
+node_88886e54_16a4_4b2d_b699_43d73e539590 --&gt; node_934664ad_b196_4b4b_bfe6_ed2b82aabd0c</code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n```\n"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -290,7 +290,7 @@ node_4d755166_6dd2_48f7_93b1_d36a4c94de64 --&gt; node_4020fa42_927f_478c_8156_03
 | `input` | Files/data consumed | No |
 | `output` | Files/data produced | No |
 | `id` | Unique identifier | No (auto-generated) |
-| `node_type` | `input`, `process`, `output` | No (defaults to `process`) |
+| `node_type` | `input`, `process`, `output`, `decision`, `start`, `end` | No (defaults to `process`) |
 
 **Multiple inputs/outputs:** Use commas: `input:"a.csv, b.csv"`
 

@@ -1461,6 +1461,10 @@ Main functions for extracting annotations and creating diagrams
   Source Files for PUT Annotations
 - [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
   : Create Mermaid Diagram from PUT Workflow
+- [`put_theme()`](https://pjt222.github.io/putior/reference/put_theme.md)
+  : Create a Custom Theme Palette for Workflow Diagrams
+- [`print(`*`<putior_theme>`*`)`](https://pjt222.github.io/putior/reference/print.putior_theme.md)
+  : Print a putior_theme Object
 - [`print(`*`<putior_workflow>`*`)`](https://pjt222.github.io/putior/reference/print.putior_workflow.md)
   : Print a putior workflow
 - [`summary(`*`<putior_workflow>`*`)`](https://pjt222.github.io/putior/reference/summary.putior_workflow.md)
@@ -1558,6 +1562,8 @@ Internal implementation details (not part of the public API)
   : Extract file path from a matched string (legacy function)
 - [`extract_file_path_from_line()`](https://pjt222.github.io/putior/reference/extract_file_path_from_line.md)
   : Extract file path from a line containing a matched function call
+- [`find_block_comment_annotations()`](https://pjt222.github.io/putior/reference/find_block_comment_annotations.md)
+  : Find PUT annotations inside block comments
 - [`generate_annotation_for_file()`](https://pjt222.github.io/putior/reference/generate_annotation_for_file.md)
   : Generate annotation text for a single file
 - [`generate_click_directives()`](https://pjt222.github.io/putior/reference/generate_click_directives.md)
@@ -1572,6 +1578,8 @@ Internal implementation details (not part of the public API)
   : Generate node definitions for mermaid diagram
 - [`generate_node_styling()`](https://pjt222.github.io/putior/reference/generate_node_styling.md)
   : Generate node styling based on node types and theme
+- [`get_block_comment_syntax()`](https://pjt222.github.io/putior/reference/get_block_comment_syntax.md)
+  : Get Block Comment Syntax for File Extension
 - [`get_c_patterns()`](https://pjt222.github.io/putior/reference/get_c_patterns.md)
   : Get C Detection Patterns
 - [`get_comment_group()`](https://pjt222.github.io/putior/reference/get_comment_group.md)

@@ -18,6 +18,7 @@ put_diagram(
   show_workflow_boundaries = TRUE,
   style_nodes = TRUE,
   theme = "light",
+  palette = NULL,
   show_source_info = FALSE,
   source_info_style = "inline",
   enable_clicks = FALSE,
@@ -114,6 +115,13 @@ put_diagram(
   The viridis family themes are perceptually uniform and tested for
   accessibility.
 
+- palette:
+
+  Optional `putior_theme` object created by
+  [`put_theme()`](https://pjt222.github.io/putior/reference/put_theme.md)
+  for custom node colors. When provided, this overrides the `theme`
+  parameter. Default is NULL (use `theme`).
+
 - show_source_info:
 
   Logical indicating whether to display source file information in
@@ -196,5 +204,10 @@ put_diagram(workflow, enable_clicks = TRUE)
 
 # Enable clickable nodes with RStudio protocol
 put_diagram(workflow, enable_clicks = TRUE, click_protocol = "rstudio")
+
+# Use a custom color palette
+my_theme <- put_theme(base = "dark",
+  input = c(fill = "#1a5276", stroke = "#2e86c1", color = "#ffffff"))
+put_diagram(workflow, palette = my_theme)
 } # }
 ```

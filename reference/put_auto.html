@@ -173,6 +173,7 @@ This is similar to how roxygen2 auto-generates documentation skeletons.</p>
 <span>  detect_outputs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  detect_dependencies <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_line_numbers <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  exclude <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  log_level <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -213,6 +214,11 @@ be detected? Default: TRUE</p></dd>
 <dt id="arg-include-line-numbers">include_line_numbers<a class="anchor" aria-label="anchor" href="#arg-include-line-numbers"></a></dt>
 <dd><p>Logical. Should line numbers be included?
 Default: FALSE</p></dd>
+
+
+<dt id="arg-exclude">exclude<a class="anchor" aria-label="anchor" href="#arg-exclude"></a></dt>
+<dd><p>Character vector of regex patterns. Files whose full path
+matches any pattern are excluded from scanning. Default: NULL (no exclusion).</p></dd>
 
 
 <dt id="arg-log-level">log_level<a class="anchor" aria-label="anchor" href="#arg-log-level"></a></dt>

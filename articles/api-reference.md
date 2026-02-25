@@ -59,16 +59,16 @@ put(
 
 A data frame with columns:
 
-| Column        | Description                                        |
-|---------------|----------------------------------------------------|
-| `file_name`   | Source file containing the annotation              |
-| `file_type`   | Programming language (r, py, sql, etc.)            |
-| `id`          | Unique node identifier (auto-generated if omitted) |
-| `label`       | Human-readable description                         |
-| `node_type`   | Type: input, process, output, decision, start, end |
-| `input`       | Comma-separated input files                        |
-| `output`      | Comma-separated output files                       |
-| `line_number` | Line number (if `include_line_numbers = TRUE`)     |
+| Column        | Description                                                                                                                                                     |
+|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `file_name`   | Source file containing the annotation                                                                                                                           |
+| `file_type`   | Programming language (r, py, sql, etc.)                                                                                                                         |
+| `id`          | Unique node identifier (auto-generated if omitted)                                                                                                              |
+| `label`       | Human-readable description                                                                                                                                      |
+| `node_type`   | Type: input, process, output, decision, start, end. (`artifact` is auto-created by [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)) |
+| `input`       | Comma-separated input files                                                                                                                                     |
+| `output`      | Comma-separated output files                                                                                                                                    |
+| `line_number` | Line number (if `include_line_numbers = TRUE`)                                                                                                                  |
 
 **Examples:**
 

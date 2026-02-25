@@ -31,6 +31,7 @@
 <url><loc>https://pjt222.github.io/putior/reference/ext_to_language.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/extract_file_path.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/extract_file_path_from_line.html</loc></url>
+<url><loc>https://pjt222.github.io/putior/reference/find_block_comment_annotations.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/generate_annotation_for_file.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/generate_click_directives.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/generate_click_url.html</loc></url>
@@ -38,6 +39,7 @@
 <url><loc>https://pjt222.github.io/putior/reference/generate_file_subgraphs.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/generate_node_definitions.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/generate_node_styling.html</loc></url>
+<url><loc>https://pjt222.github.io/putior/reference/get_block_comment_syntax.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/get_c_patterns.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/get_comment_group.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/get_comment_prefix.html</loc></url>
@@ -76,6 +78,7 @@
 <url><loc>https://pjt222.github.io/putior/reference/normalize_path_for_url.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/parse_comma_separated_pairs.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/parse_put_annotation.html</loc></url>
+<url><loc>https://pjt222.github.io/putior/reference/print.putior_theme.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/print.putior_workflow.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/process_single_file.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/put.html</loc></url>
@@ -83,6 +86,7 @@
 <url><loc>https://pjt222.github.io/putior/reference/put_diagram.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/put_generate.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/put_merge.html</loc></url>
+<url><loc>https://pjt222.github.io/putior/reference/put_theme.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/putior-package.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/putior_acp.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/putior_acp_manifest.html</loc></url>

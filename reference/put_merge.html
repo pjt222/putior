@@ -161,7 +161,8 @@ allowing flexible strategies for handling conflicts and supplementing informatio
 <span>  pattern <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  merge_strategy <span class="op">=</span> <span class="st">"manual_priority"</span>,</span>
-<span>  include_line_numbers <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  include_line_numbers <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  exclude <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -193,6 +194,11 @@ Default: TRUE</p></dd>
 <dt id="arg-include-line-numbers">include_line_numbers<a class="anchor" aria-label="anchor" href="#arg-include-line-numbers"></a></dt>
 <dd><p>Logical. Should line numbers be included?
 Default: FALSE</p></dd>
+
+
+<dt id="arg-exclude">exclude<a class="anchor" aria-label="anchor" href="#arg-exclude"></a></dt>
+<dd><p>Character vector of regex patterns. Files whose full path
+matches any pattern are excluded. Default: NULL (no exclusion).</p></dd>
 
 </dl></div>
     <div class="section level2">

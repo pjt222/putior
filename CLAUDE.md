@@ -382,12 +382,21 @@ print(manifest$metadata$operations)
 putior now automatically detects the correct comment prefix based on
 file extension:
 
-| Comment Style | Languages                                                                           | Extensions                                                                 |
-|---------------|-------------------------------------------------------------------------------------|----------------------------------------------------------------------------|
-| `# put`       | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML, Dockerfile, Makefile               | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`, `Dockerfile`, `Makefile` |
-| `-- put`      | SQL, Lua, Haskell                                                                   | `.sql`, `.lua`, `.hs`                                                      |
-| `// put`      | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala, WGSL | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs`, `.wgsl`                 |
-| `% put`       | MATLAB, LaTeX                                                                       | `.m`, `.tex`                                                               |
+| Comment Style   | Languages                                                                           | Extensions                                                                 |
+|-----------------|-------------------------------------------------------------------------------------|----------------------------------------------------------------------------|
+| `# put`         | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML, Dockerfile, Makefile               | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`, `Dockerfile`, `Makefile` |
+| `-- put`        | SQL, Lua, Haskell                                                                   | `.sql`, `.lua`, `.hs`                                                      |
+| `// put`        | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala, WGSL | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs`, `.wgsl`                 |
+| `% put`         | MATLAB, LaTeX                                                                       | `.m`, `.tex`                                                               |
+| `* put` (block) | All `//`-prefix languages inside `/* */` or `/** */` blocks                         | Same as `//` group                                                         |
+
+### Block Comment Support
+
+Languages in the `//` group also support PUT annotations inside block
+comments (`/* */` and `/** */`). Use `* put` as the line prefix inside
+the block body. Single-line block comments (`/* put ... */`) and
+annotations on the opening line (`/** put ... */`) are also supported.
+This enables JSDoc-style documentation patterns.
 
 ### Key Functions
 

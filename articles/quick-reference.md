@@ -80,12 +80,15 @@ put("./", log_level = "DEBUG")
 
 ## Node Types
 
-| Type       | Shape     | Use For           |
-|------------|-----------|-------------------|
-| `input`    | Stadium   | Data loading      |
-| `process`  | Rectangle | Transformations   |
-| `output`   | Stadium   | Reports, exports  |
-| `decision` | Diamond   | Conditional logic |
+| Type       | Shape      | Use For                   |
+|------------|------------|---------------------------|
+| `input`    | Stadium    | Data loading              |
+| `process`  | Rectangle  | Transformations (default) |
+| `output`   | Subroutine | Reports, exports          |
+| `decision` | Diamond    | Conditional logic         |
+| `start`    | Stadium    | Workflow entry point      |
+| `end`      | Stadium    | Workflow exit point       |
+| `artifact` | Cylinder   | Data files (auto-created) |
 
 ``` mermaid
 flowchart TD
