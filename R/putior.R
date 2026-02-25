@@ -276,6 +276,73 @@ collect_multiline_annotation <- function(lines, start_idx, escaped_prefix,
   full_content
 }
 
+#' Find PUT annotations inside block comments
+#'
+#' Scans lines for PUT annotations that appear inside block comment regions
+#' (e.g., \code{/* ... */} or \code{/** ... */}). Returns line indices of
+#' annotation lines found inside blocks. Existing single-line annotations
+#' (found by Pass 1) should be deduplicated by the caller.
+#'
+#' @param lines Character vector of file lines
+#' @param block_syntax Named list from \code{get_block_comment_syntax()}
+#' @return Integer vector of line indices containing block PUT annotations
+#' @keywords internal
+find_block_comment_annotations <- function(lines, block_syntax) {
+  block_open <- block_syntax$block_open
+  block_close <- block_syntax$block_close
+  block_prefix <- block_syntax$block_line_prefix
+
+  # Build the pattern for a PUT annotation inside a block comment
+  if (!is.null(block_prefix)) {
+    escaped_bp <- gsub("([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1", block_prefix)
+    block_put_pattern <- sprintf("^\\s*%s\\s*put(\\||\\s+|:)", escaped_bp)
+  } else {
+    block_put_pattern <- "^\\s*put(\\||\\s+|:)"
+  }
+
+  # Also match annotations on a block-open line: /** put ... */ or /* put ... */
+  open_put_pattern <- sprintf(
+    "^\\s*%s\\**\\s*put(\\||\\s+|:)",
+    gsub("([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1", block_open)
+  )
+
+  escaped_open <- gsub("([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1", block_open)
+  escaped_close <- gsub("([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1", block_close)
+
+  in_block <- FALSE
+  indices <- integer()
+
+  for (i in seq_along(lines)) {
+    line <- lines[i]
+
+    if (!in_block) {
+      # Check if this line opens a block comment
+      if (grepl(escaped_open, line)) {
+        in_block <- TRUE
+        # Check same-line close (e.g., /* ... */)
+        if (grepl(escaped_close, line)) {
+          in_block <- FALSE
+        }
+        # Check for annotation on the opening line
+        if (grepl(open_put_pattern, line)) {
+          indices <- c(indices, i)
+        }
+      }
+    } else {
+      # Inside block: check for close
+      if (grepl(escaped_close, line)) {
+        in_block <- FALSE
+      }
+      # Check for annotation
+      if (grepl(block_put_pattern, line)) {
+        indices <- c(indices, i)
+      }
+    }
+  }
+
+  indices
+}
+
 # put id:"process_file", label:"Process Single File", node_type:"process", input:"source_files", output:"annotations.rds"
 #' Process a single file for PUT annotations
 #' @param file Path to file
@@ -301,8 +368,17 @@ process_single_file <- function(file, include_line_numbers, validate) {
       # Build regex pattern dynamically: <prefix>put or <prefix> put or <prefix>put| or <prefix>put:
       put_pattern <- sprintf("^\\s*%s\\s*put(\\||\\s+|:)", escaped_prefix)
 
-      # Find PUT annotation lines
+      # Pass 1: Find PUT annotation lines in single-line comments
       put_line_indices <- grep(put_pattern, lines)
+
+      # Pass 2: Find PUT annotations inside block comments (if supported)
+      block_syntax <- get_block_comment_syntax(file_ext)
+      block_indices <- integer()
+      if (!is.null(block_syntax)) {
+        block_indices <- find_block_comment_annotations(lines, block_syntax)
+        # Merge, dedup, sort — avoid double-counting lines already found by Pass 1
+        put_line_indices <- sort(unique(c(put_line_indices, block_indices)))
+      }
 
       if (length(put_line_indices) == 0) {
         putior_log("DEBUG", "No PUT annotations found in {basename(file)}")
@@ -313,6 +389,9 @@ process_single_file <- function(file, include_line_numbers, validate) {
 
       file_results <- list()
 
+      # Track block-originated indices (skip backslash continuation for these)
+      block_index_set <- block_indices
+
       # Build comment line pattern for continuation lines (matches the comment prefix)
       comment_line_pattern <- sprintf("^\\s*%s", escaped_prefix)
 
@@ -320,10 +399,16 @@ process_single_file <- function(file, include_line_numbers, validate) {
         line_idx <- put_line_indices[i]
         line_content <- lines[line_idx]
 
-        full_content <- collect_multiline_annotation(
-          lines, line_idx, escaped_prefix, comment_line_pattern, put_pattern,
-          basename(file)
-        )
+        # Block-originated annotations: skip backslash continuation,
+        # parse the single line directly
+        if (line_idx %in% block_index_set) {
+          full_content <- line_content
+        } else {
+          full_content <- collect_multiline_annotation(
+            lines, line_idx, escaped_prefix, comment_line_pattern, put_pattern,
+            basename(file)
+          )
+        }
 
         properties <- parse_put_annotation(full_content)
 
@@ -443,7 +528,9 @@ parse_put_annotation <- function(line) {
   # - Dash: --put, -- put, --put|, --put:
   # - Slash: //put, // put, //put|, //put:
   # - Percent: %put, % put, %put|, %put:
-  cleaned <- sub("^\\s*(#|--|//|%)\\s*put(\\||\\s+|:)\\s*", "", line, ignore.case = FALSE)
+  # - Block open: /** put, /* put (on opening line of block comment)
+  # - Block line: * put (inside block comment body)
+  cleaned <- sub("^\\s*(/\\*\\*?\\s*|\\*\\s*|#|--|//|%)\\s*put(\\||\\s+|:)\\s*", "", line, ignore.case = FALSE)
 
   # Handle edge case of empty annotation
   if (is.null(cleaned) || length(cleaned) == 0 || nchar(trimws(cleaned)) == 0) {

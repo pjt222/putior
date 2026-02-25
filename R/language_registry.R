@@ -26,24 +26,36 @@ LANGUAGE_GROUPS <- list(
   hash = list(
     prefix = "#",
     extensions = c("r", "py", "sh", "bash", "jl", "rb", "pl", "yaml", "yml", "toml", "dockerfile", "makefile"),
-    languages = c("r", "python", "shell", "julia", "ruby", "perl", "yaml", "toml", "dockerfile", "makefile")
+    languages = c("r", "python", "shell", "julia", "ruby", "perl", "yaml", "toml", "dockerfile", "makefile"),
+    block_open = NULL,
+    block_close = NULL,
+    block_line_prefix = NULL
   ),
   dash = list(
     prefix = "--",
     extensions = c("sql", "lua", "hs"),
-    languages = c("sql", "lua", "haskell")
+    languages = c("sql", "lua", "haskell"),
+    block_open = NULL,
+    block_close = NULL,
+    block_line_prefix = NULL
   ),
   slash = list(
     prefix = "//",
     extensions = c("js", "ts", "jsx", "tsx", "c", "cpp", "h", "hpp", "java", "go",
                    "rs", "swift", "kt", "cs", "php", "scala", "groovy", "d", "wgsl"),
     languages = c("javascript", "typescript", "c", "cpp", "java", "go", "rust",
-                  "swift", "kotlin", "csharp", "php", "scala", "groovy", "d", "wgsl")
+                  "swift", "kotlin", "csharp", "php", "scala", "groovy", "d", "wgsl"),
+    block_open = "/*",
+    block_close = "*/",
+    block_line_prefix = "*"
   ),
   percent = list(
     prefix = "%",
     extensions = c("m", "tex"),
-    languages = c("matlab", "latex")
+    languages = c("matlab", "latex"),
+    block_open = NULL,
+    block_close = NULL,
+    block_line_prefix = NULL
   )
 )
 
@@ -74,6 +86,29 @@ get_comment_prefix <- function(ext) {
 
   # Default fallback to hash for unknown extensions
   return("#")
+}
+
+#' Get Block Comment Syntax for File Extension
+#'
+#' Returns the block comment delimiters for languages that support them.
+#' Returns NULL for languages without block comment support.
+#'
+#' @param ext Character string of the file extension (without dot)
+#' @return Named list with \code{block_open}, \code{block_close}, and
+#'   \code{block_line_prefix}, or NULL if the language has no block comments.
+#' @keywords internal
+get_block_comment_syntax <- function(ext) {
+  ext <- tolower(ext)
+  for (group in LANGUAGE_GROUPS) {
+    if (ext %in% group$extensions && !is.null(group$block_open)) {
+      return(list(
+        block_open = group$block_open,
+        block_close = group$block_close,
+        block_line_prefix = group$block_line_prefix
+      ))
+    }
+  }
+  NULL
 }
 
 #' Get All Supported File Extensions
