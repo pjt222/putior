@@ -6,6 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![Cheatsheet](https://img.shields.io/badge/cheatsheet-PDF-blue.svg)](https://github.com/pjt222/putior/blob/main/inst/cheatsheet/putior-cheatsheet.pdf)
+[![Sponsor](https://img.shields.io/github/sponsors/pjt222?style=flat&logo=GitHub-Sponsors&logoColor=%23EA4AAA&label=Sponsor)](https://github.com/sponsors/pjt222)
 
 > **Extract beautiful workflow diagrams from your code annotations**
 
