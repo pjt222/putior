@@ -255,19 +255,19 @@
 <span></span>
 <span><span class="co"># Scan and visualize</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="va">temp_file</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Validation issues in file240850cea5e9.R line 7:</span></span>
+<span><span class="co">#&gt; Warning: Validation issues in file23f262bc7354.R line 7:</span></span>
 <span><span class="co">#&gt; File reference missing extension: database</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"```mermaid\n"</span><span class="op">)</span></span></code></pre></div>
 <pre class="mermaid"><code>
 ``` r
 cat(put_diagram(workflow, output = "raw"))</code></pre>
-<p>flowchart TD e28401d9_e3f1_48dd_885a_ce38260a982f[“Extract”]
-node_850fe1eb_d2af_4b63_8c80_9c3c8744d815[“Transform”]
-d431cce2_038f_4994_a857_b1128b6d2324[“Load”]</p>
+<p>flowchart TD aecf4ce1_93bb_48cb_91e7_a04a3cdf97c4[“Extract”]
+c55b7048_25ff_489c_b854_7f6638d36a76[“Transform”]
+node_2da9c10f_5f4c_4efb_852d_5214339d69c9[“Load”]</p>
 <pre><code>%% Connections
-e28401d9_e3f1_48dd_885a_ce38260a982f --&gt; node_850fe1eb_d2af_4b63_8c80_9c3c8744d815
-node_850fe1eb_d2af_4b63_8c80_9c3c8744d815 --&gt; d431cce2_038f_4994_a857_b1128b6d2324</code></pre>
+aecf4ce1_93bb_48cb_91e7_a04a3cdf97c4 --&gt; c55b7048_25ff_489c_b854_7f6638d36a76
+c55b7048_25ff_489c_b854_7f6638d36a76 --&gt; node_2da9c10f_5f4c_4efb_852d_5214339d69c9</code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n```\n"</span><span class="op">)</span></span></code></pre></div>
 </div>

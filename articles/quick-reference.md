@@ -10,13 +10,13 @@ put("./src/") |> put_diagram()
 
     # put id:"node_id", label:"Description", node_type:"process", input:"in.csv", output:"out.csv"
 
-| Field       | Required | Default   | Description                              |
-|-------------|----------|-----------|------------------------------------------|
-| `label`     | **Yes**  | \-        | Human-readable name                      |
-| `id`        | No       | UUID      | Unique identifier                        |
-| `node_type` | No       | `process` | `input`, `process`, `output`, `decision` |
-| `input`     | No       | \-        | Comma-separated input files              |
-| `output`    | No       | filename  | Comma-separated output files             |
+| Field       | Required | Default   | Description                                              |
+|-------------|----------|-----------|----------------------------------------------------------|
+| `label`     | **Yes**  | \-        | Human-readable name                                      |
+| `id`        | No       | UUID      | Unique identifier                                        |
+| `node_type` | No       | `process` | `input`, `process`, `output`, `decision`, `start`, `end` |
+| `input`     | No       | \-        | Comma-separated input files                              |
+| `output`    | No       | filename  | Comma-separated output files                             |
 
 **Multiline**: End lines with `\` for continuation.
 
@@ -24,10 +24,11 @@ put("./src/") |> put_diagram()
 
 Find your language:
 
-    # put  →  R, Python, Shell, Julia, Ruby, YAML, Perl, TOML
-    -- put →  SQL, Lua
-    // put →  JavaScript, TypeScript, Go, Rust, Java, C, C++, Swift
+    # put  →  R, Python, Shell, Julia, Ruby, YAML, Perl, TOML, Dockerfile, Makefile
+    -- put →  SQL, Lua, Haskell
+    // put →  JavaScript, TypeScript, Go, Rust, Java, C, C++, Swift, Kotlin, C#, PHP, Scala, WGSL
     % put  →  MATLAB, LaTeX
+    * put  →  Block comments (/* */ and /** */) in all // languages
 
 ## Core Functions
 

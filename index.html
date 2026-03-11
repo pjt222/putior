@@ -907,6 +907,10 @@ See result
 <span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"viridis"</span><span class="op">)</span>     <span class="co"># General accessibility</span></span>
 <span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"cividis"</span><span class="op">)</span>     <span class="co"># Red-green colorblindness</span></span>
 <span></span>
+<span><span class="co"># Custom palette (override individual node type colors)</span></span>
+<span><span class="va">my_theme</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put_theme.html">put_theme</a></span><span class="op">(</span>base <span class="op">=</span> <span class="st">"dark"</span>, input <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#1a1a2e"</span>, stroke <span class="op">=</span> <span class="st">"#00ff88"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, palette <span class="op">=</span> <span class="va">my_theme</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># Save all themes for comparison</span></span>
 <span><span class="va">themes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"light"</span>, <span class="st">"dark"</span>, <span class="st">"auto"</span>, <span class="st">"github"</span>, <span class="st">"minimal"</span>,</span>
 <span>            <span class="st">"viridis"</span>, <span class="st">"magma"</span>, <span class="st">"plasma"</span>, <span class="st">"cividis"</span><span class="op">)</span></span>
@@ -1245,9 +1249,9 @@ See result
 <tbody>
 <tr class="odd">
 <td><code># put</code></td>
-<td>R, Python, Shell, Julia, Ruby, Perl, YAML, TOML</td>
+<td>R, Python, Shell, Julia, Ruby, Perl, YAML, TOML, Dockerfile, Makefile</td>
 <td>
-<code>.R</code>, <code>.py</code>, <code>.sh</code>, <code>.jl</code>, <code>.rb</code>, <code>.pl</code>, <code>.yaml</code>, <code>.yml</code>, <code>.toml</code>
+<code>.R</code>, <code>.py</code>, <code>.sh</code>, <code>.jl</code>, <code>.rb</code>, <code>.pl</code>, <code>.yaml</code>, <code>.yml</code>, <code>.toml</code>, <code>Dockerfile</code>, <code>Makefile</code>
 </td>
 </tr>
 <tr class="even">
@@ -1259,9 +1263,9 @@ See result
 </tr>
 <tr class="odd">
 <td><code>// put</code></td>
-<td>JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala</td>
+<td>JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala, WGSL</td>
 <td>
-<code>.js</code>, <code>.ts</code>, <code>.jsx</code>, <code>.tsx</code>, <code>.c</code>, <code>.cpp</code>, <code>.java</code>, <code>.go</code>, <code>.rs</code>, <code>.swift</code>, <code>.kt</code>, <code>.cs</code>, <code>.php</code>, <code>.scala</code>
+<code>.js</code>, <code>.ts</code>, <code>.jsx</code>, <code>.tsx</code>, <code>.c</code>, <code>.cpp</code>, <code>.java</code>, <code>.go</code>, <code>.rs</code>, <code>.swift</code>, <code>.kt</code>, <code>.cs</code>, <code>.php</code>, <code>.scala</code>, <code>.wgsl</code>
 </td>
 </tr>
 <tr class="even">
@@ -1273,6 +1277,7 @@ See result
 </tr>
 </tbody>
 </table>
+<p>Languages using <code>//</code> also support PUT annotations inside block comments (<code>/* */</code> and <code>/** */</code>), using <code>* put</code> as the line prefix.</p>
 <p><strong>Unknown extensions default to <code>#</code> prefix.</strong></p>
 </div>
 </div>
@@ -1294,6 +1299,10 @@ See result
 <span></span>
 <span><span class="co"># Custom file patterns</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./analysis/"</span>, pattern <span class="op">=</span> <span class="st">"\\.(R|py)$"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Exclude files matching regex patterns</span></span>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"test"</span>, <span class="st">"deprecated"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./"</span>, exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"vendor"</span>, <span class="st">"fixture"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Single file</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./script.R"</span><span class="op">)</span></span></code></pre></div>
@@ -1453,6 +1462,7 @@ See result
 <h2 id="id_-api-reference">📚 API Reference<a class="anchor" aria-label="anchor" href="#id_-api-reference"></a>
 </h2>
 <p>Quick reference for all exported functions:</p>
+<p><strong>Core Workflow:</strong></p>
 <table class="table">
 <colgroup>
 <col width="35%">
@@ -1491,10 +1501,30 @@ See result
 <td><code>put_merge("./src/")</code></td>
 </tr>
 <tr class="even">
+<td><code><a href="reference/put_theme.html">put_theme()</a></code></td>
+<td>Create custom color palette</td>
+<td><code>put_theme(base = "dark", input = c(fill = "#1a1a2e"))</code></td>
+</tr>
+<tr class="odd">
 <td><code><a href="reference/run_sandbox.html">run_sandbox()</a></code></td>
 <td>Launch interactive Shiny app</td>
 <td><code><a href="reference/run_sandbox.html">run_sandbox()</a></code></td>
 </tr>
+</tbody>
+</table>
+<p><strong>Reference and Utilities:</strong></p>
+<table class="table">
+<colgroup>
+<col width="35%">
+<col width="32%">
+<col width="32%">
+</colgroup>
+<thead><tr class="header">
+<th>Function</th>
+<th>Purpose</th>
+<th>Example</th>
+</tr></thead>
+<tbody>
 <tr class="odd">
 <td><code><a href="reference/get_detection_patterns.html">get_detection_patterns()</a></code></td>
 <td>View/customize detection patterns</td>
@@ -1518,6 +1548,18 @@ See result
 <td><code><a href="reference/get_supported_extensions.html">get_supported_extensions()</a></code></td>
 </tr>
 <tr class="odd">
+<td><code><a href="reference/get_diagram_themes.html">get_diagram_themes()</a></code></td>
+<td>List available themes</td>
+<td><code><a href="reference/get_diagram_themes.html">get_diagram_themes()</a></code></td>
+</tr>
+<tr class="even">
+<td><code><a href="reference/ext_to_language.html">ext_to_language()</a></code></td>
+<td>Extension to language name</td>
+<td>
+<code>ext_to_language("rs")</code> → <code>"rust"</code>
+</td>
+</tr>
+<tr class="odd">
 <td><code><a href="reference/set_putior_log_level.html">set_putior_log_level()</a></code></td>
 <td>Configure logging verbosity</td>
 <td><code>set_putior_log_level("DEBUG")</code></td>
@@ -1528,14 +1570,54 @@ See result
 <td><code>is_valid_put_annotation("# put ...")</code></td>
 </tr>
 <tr class="odd">
-<td><code><a href="reference/get_diagram_themes.html">get_diagram_themes()</a></code></td>
-<td>List available themes</td>
-<td><code><a href="reference/get_diagram_themes.html">get_diagram_themes()</a></code></td>
-</tr>
-<tr class="even">
 <td><code><a href="reference/split_file_list.html">split_file_list()</a></code></td>
 <td>Parse comma-separated files</td>
 <td><code>split_file_list("a.csv, b.csv")</code></td>
+</tr>
+<tr class="even">
+<td><code><a href="reference/putior_help.html">putior_help()</a></code></td>
+<td>Quick reference help</td>
+<td><code><a href="reference/putior_help.html">putior_help()</a></code></td>
+</tr>
+<tr class="odd">
+<td><code><a href="reference/putior_skills.html">putior_skills()</a></code></td>
+<td>AI assistant documentation</td>
+<td><code><a href="reference/putior_skills.html">putior_skills()</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Integration (MCP/ACP):</strong></p>
+<table class="table">
+<colgroup>
+<col width="35%">
+<col width="32%">
+<col width="32%">
+</colgroup>
+<thead><tr class="header">
+<th>Function</th>
+<th>Purpose</th>
+<th>Example</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code><a href="reference/putior_mcp_server.html">putior_mcp_server()</a></code></td>
+<td>Start MCP server for AI assistants</td>
+<td><code><a href="reference/putior_mcp_server.html">putior_mcp_server()</a></code></td>
+</tr>
+<tr class="even">
+<td><code><a href="reference/putior_mcp_tools.html">putior_mcp_tools()</a></code></td>
+<td>Get MCP tool definitions</td>
+<td><code><a href="reference/putior_mcp_tools.html">putior_mcp_tools()</a></code></td>
+</tr>
+<tr class="odd">
+<td><code><a href="reference/putior_acp_server.html">putior_acp_server()</a></code></td>
+<td>Start ACP server for agent-to-agent</td>
+<td><code><a href="reference/putior_acp_server.html">putior_acp_server()</a></code></td>
+</tr>
+<tr class="even">
+<td><code><a href="reference/putior_acp_manifest.html">putior_acp_manifest()</a></code></td>
+<td>Get ACP agent manifest</td>
+<td><code><a href="reference/putior_acp_manifest.html">putior_acp_manifest()</a></code></td>
 </tr>
 </tbody>
 </table>
@@ -1548,43 +1630,51 @@ See result
 <div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Extract putior's own workflow</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./R/"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"github"</span>, title <span class="op">=</span> <span class="st">"putior Package Internals"</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Result:</strong></p>
+<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"github"</span>, title <span class="op">=</span> <span class="st">"putior Package Internals"</span>,</span>
+<span>            show_workflow_boundaries <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><strong>putior’s Own Workflow:</strong></p>
 <pre class="mermaid"><code>---
 title: putior Package Internals
 ---
 flowchart TD
-    put_entry([Entry Point - Scan Files])
-    process_file[Process Single File]
-    parser[Parse Annotation Syntax]
-    convert_df[Convert to Data Frame]
     diagram_gen[Generate Mermaid Diagram]
+    styling[Apply Theme Styling]
     node_defs[Create Node Definitions]
     connections[Generate Node Connections]
     output_handler([Output Final Diagram])
+    put_entry([Entry Point - Scan Files])
+    process_file[Process Single File]
+    validate[Validate Annotations]
+    parser[Parse Annotation Syntax]
+    convert_df[Convert to Data Frame]
 
     %% Connections
-    put_entry --&gt; process_file
+    put_entry --&gt; diagram_gen
+    convert_df --&gt; diagram_gen
+    node_defs --&gt; styling
+    put_entry --&gt; node_defs
+    convert_df --&gt; node_defs
+    node_defs --&gt; connections
+    diagram_gen --&gt; output_handler
+    process_file --&gt; validate
     process_file --&gt; parser
     parser --&gt; convert_df
-    convert_df --&gt; diagram_gen
-    diagram_gen --&gt; node_defs
-    node_defs --&gt; connections
-    connections --&gt; output_handler
 
     %% Styling
     classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class process_file processStyle
-    class parser processStyle
-    class convert_df processStyle
     class diagram_gen processStyle
+    class styling processStyle
     class node_defs processStyle
     class connections processStyle
+    class process_file processStyle
+    class validate processStyle
+    class parser processStyle
+    class convert_df processStyle
     classDef startStyle fill:#fef3c7,stroke:#d97706,stroke-width:3px,color:#92400e
     class put_entry startStyle
     classDef endStyle fill:#dcfce7,stroke:#16a34a,stroke-width:3px,color:#15803d
     class output_handler endStyle</code></pre>
-<p>This self-documentation shows the two main phases of putior: 1. <strong>Parsing Phase</strong>: Scanning files → extracting annotations → converting to workflow data 2. <strong>Diagram Generation Phase</strong>: Taking workflow data → creating nodes/connections → outputting diagram</p>
+<p>This diagram is <strong>auto-generated</strong> by running <code>put("./R/")</code> on putior’s own annotated source code — a real demonstration of the package in action.</p>
 <p>To see the complete data flow with intermediate files, run:</p>
 <div class="sourceCode" id="cb74"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_artifacts <span class="op">=</span> <span class="cn">TRUE</span>, theme <span class="op">=</span> <span class="st">"github"</span><span class="op">)</span></span></code></pre></div>
