@@ -157,8 +157,8 @@ put_diagram(workflow)
 **Result:**
 ```mermaid
 flowchart TD
-    fetch_sales([Fetch Sales Data])
-    clean_data[Clean and Process]
+    fetch_sales(["Fetch Sales Data"])
+    clean_data["Clean and Process"]
 
     %% Connections
     fetch_sales --> clean_data
@@ -218,9 +218,9 @@ write.csv(results, "results.csv")
 **Generated Workflow (Simple):**
 ```mermaid
 flowchart TD
-    utils([Data Utilities])
-    analysis[Statistical Analysis]
-    main[Main Analysis Pipeline]
+    utils(["Data Utilities"])
+    analysis["Statistical Analysis"]
+    main["Main Analysis Pipeline"]
 
     %% Connections
     utils --> analysis
@@ -243,10 +243,10 @@ put_diagram(workflow, show_artifacts = TRUE)
 
 ```mermaid
 flowchart TD
-    utils([Data Utilities])
-    analysis[Statistical Analysis]
-    main[Main Analysis Pipeline]
-    artifact_results_csv[(results.csv)]
+    utils(["Data Utilities"])
+    analysis["Statistical Analysis"]
+    main["Main Analysis Pipeline"]
+    artifact_results_csv[("results.csv")]
 
     %% Connections
     utils --> analysis
@@ -298,12 +298,12 @@ data_pipeline/
 **Generated Workflow:**
 ```mermaid
 flowchart TD
-    fetch_sales([Fetch Sales Data])
-    fetch_customers([Fetch Customer Data])
-    clean_sales[Clean Sales Data]
-    merge_data[Merge Datasets]
-    analyze[Statistical Analysis]
-    report[[Generate Final Report]]
+    fetch_sales(["Fetch Sales Data"])
+    fetch_customers(["Fetch Customer Data"])
+    clean_sales["Clean Sales Data"]
+    merge_data["Merge Datasets"]
+    analyze["Statistical Analysis"]
+    report[["Generate Final Report"]]
 
     %% Connections
     fetch_sales --> clean_sales
@@ -368,10 +368,10 @@ put_diagram(workflow, show_workflow_boundaries = TRUE)
 
 ```mermaid
 flowchart TD
-    pipeline_start([Data Pipeline Start])
-    extract_data[Extract Raw Data]
-    transform_data[Transform Data]
-    pipeline_end([Pipeline Complete])
+    pipeline_start(["Data Pipeline Start"])
+    extract_data["Extract Raw Data"]
+    transform_data["Transform Data"]
+    pipeline_end(["Pipeline Complete"])
 
     %% Connections
     pipeline_start --> extract_data
@@ -396,10 +396,10 @@ put_diagram(workflow, show_workflow_boundaries = FALSE)
 
 ```mermaid
 flowchart TD
-    pipeline_start([Data Pipeline Start])
-    extract_data[Extract Raw Data]
-    transform_data[Transform Data]
-    pipeline_end([Pipeline Complete])
+    pipeline_start(["Data Pipeline Start"])
+    extract_data["Extract Raw Data"]
+    transform_data["Transform Data"]
+    pipeline_end(["Pipeline Complete"])
 
     %% Connections
     pipeline_start --> extract_data
@@ -516,9 +516,9 @@ put_diagram(workflow, theme = "light")
 ```
 ```mermaid
 flowchart TD
-    fetch_data([Fetch API Data])
-    clean_data[Clean and Validate]
-    generate_report[[Generate Final Report]]
+    fetch_data(["Fetch API Data"])
+    clean_data["Clean and Validate"]
+    generate_report[["Generate Final Report"]]
 
     %% Connections
     fetch_data --> clean_data
@@ -539,9 +539,9 @@ put_diagram(workflow, theme = "dark")
 ```
 ```mermaid
 flowchart TD
-    fetch_data([Fetch API Data])
-    clean_data[Clean and Validate]
-    generate_report[[Generate Final Report]]
+    fetch_data(["Fetch API Data"])
+    clean_data["Clean and Validate"]
+    generate_report[["Generate Final Report"]]
 
     %% Connections
     fetch_data --> clean_data
@@ -562,9 +562,9 @@ put_diagram(workflow, theme = "auto")  # Recommended for GitHub!
 ```
 ```mermaid
 flowchart TD
-    fetch_data([Fetch API Data])
-    clean_data[Clean and Validate]
-    generate_report[[Generate Final Report]]
+    fetch_data(["Fetch API Data"])
+    clean_data["Clean and Validate"]
+    generate_report[["Generate Final Report"]]
 
     %% Connections
     fetch_data --> clean_data
@@ -585,9 +585,9 @@ put_diagram(workflow, theme = "github")  # Best for GitHub README
 ```
 ```mermaid
 flowchart TD
-    fetch_data([Fetch API Data])
-    clean_data[Clean and Validate]
-    generate_report[[Generate Final Report]]
+    fetch_data(["Fetch API Data"])
+    clean_data["Clean and Validate"]
+    generate_report[["Generate Final Report"]]
 
     %% Connections
     fetch_data --> clean_data
@@ -608,9 +608,9 @@ put_diagram(workflow, theme = "minimal")  # Professional documents
 ```
 ```mermaid
 flowchart TD
-    fetch_data([Fetch API Data])
-    clean_data[Clean and Validate]
-    generate_report[[Generate Final Report]]
+    fetch_data(["Fetch API Data"])
+    clean_data["Clean and Validate"]
+    generate_report[["Generate Final Report"]]
 
     %% Connections
     fetch_data --> clean_data
@@ -1217,16 +1217,16 @@ put_diagram(workflow, theme = "github", title = "putior Package Internals",
 title: putior Package Internals
 ---
 flowchart TD
-    diagram_gen[Generate Mermaid Diagram]
-    styling[Apply Theme Styling]
-    node_defs[Create Node Definitions]
-    connections[Generate Node Connections]
-    output_handler([Output Final Diagram])
-    put_entry([Entry Point - Scan Files])
-    process_file[Process Single File]
-    validate[Validate Annotations]
-    parser[Parse Annotation Syntax]
-    convert_df[Convert to Data Frame]
+    diagram_gen["Generate Mermaid Diagram"]
+    styling["Apply Theme Styling"]
+    node_defs["Create Node Definitions"]
+    connections["Generate Node Connections"]
+    output_handler(["Output Final Diagram"])
+    put_entry(["Entry Point - Scan Files"])
+    process_file["Process Single File"]
+    validate["Validate Annotations"]
+    parser["Parse Annotation Syntax"]
+    convert_df["Convert to Data Frame"]
 
     %% Connections
     put_entry --> diagram_gen
