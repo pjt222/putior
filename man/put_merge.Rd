@@ -10,7 +10,8 @@ put_merge(
   recursive = TRUE,
   merge_strategy = "manual_priority",
   include_line_numbers = FALSE,
-  exclude = NULL
+  exclude = NULL,
+  log_level = NULL
 )
 }
 \arguments{
@@ -34,6 +35,10 @@ Default: FALSE}
 
 \item{exclude}{Character vector of regex patterns. Files whose full path
 matches any pattern are excluded. Default: NULL (no exclusion).}
+
+\item{log_level}{Character string specifying log verbosity for this call.
+Overrides the global option \code{putior.log_level} when specified.
+Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.}
 }
 \value{
 A data frame in the same format as \code{\link{put}()}, containing

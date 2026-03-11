@@ -147,7 +147,7 @@ test_that("list_supported_languages(detection_only = TRUE) returns subset", {
   # Detection-only should be a subset
   expect_true(length(detection_langs) < length(all_langs))
 
-  # Should include languages with detection patterns (16 total)
+  # Should include languages with detection patterns (18 total)
   expect_true("r" %in% detection_langs)
   expect_true("python" %in% detection_langs)
   expect_true("sql" %in% detection_langs)

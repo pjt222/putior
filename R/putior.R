@@ -740,10 +740,14 @@ summary.putior_workflow <- function(object, ...) {
     }
 
     # Count connections (nodes with both input and output)
-    has_input <- !is.na(object$input) & object$input != ""
-    has_output <- !is.na(object$output) & object$output != ""
-    cat("  Nodes with inputs:", sum(has_input), "\n")
-    cat("  Nodes with outputs:", sum(has_output), "\n")
+    if ("input" %in% names(object)) {
+      has_input <- !is.na(object$input) & object$input != ""
+      cat("  Nodes with inputs:", sum(has_input), "\n")
+    }
+    if ("output" %in% names(object)) {
+      has_output <- !is.na(object$output) & object$output != ""
+      cat("  Nodes with outputs:", sum(has_output), "\n")
+    }
   }
 
   invisible(list(

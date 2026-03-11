@@ -13,5 +13,10 @@ split_file_list(file_string)
 Character vector of individual file names
 }
 \description{
-Split comma-separated file list
+Parses a comma-separated string of file names into a character vector,
+trimming whitespace from each entry.
+}
+\examples{
+split_file_list("data.csv, results.rds, plot.png")
+split_file_list("")
 }

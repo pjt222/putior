@@ -1,4 +1,4 @@
-# putior 0.2.0.9000 (development version)
+# putior 0.2.0
 
 ## Breaking Changes
 
@@ -40,9 +40,9 @@
 * Added `get_comment_prefix()`, `get_supported_extensions()`, `ext_to_language()`
 * Added `list_supported_languages()` to enumerate all supported languages
 
-### Auto-Detection Patterns (15 Languages, 862 Patterns)
+### Auto-Detection Patterns (18 Languages, 902 Patterns)
 * Full auto-detection for: R, Python, SQL, Shell, Julia, JavaScript, TypeScript,
-  Go, Rust, Java, C, C++, MATLAB, Ruby, Lua
+  Go, Rust, Java, C, C++, MATLAB, Ruby, Lua, WGSL, Dockerfile, Makefile
 * Pattern inheritance: TypeScript extends JavaScript, C++ extends C
 * Single authoritative language registry (`R/language_registry.R`)
 
@@ -66,6 +66,33 @@
   - `plasma`: Purple-pink-orange-yellow (presentations)
   - `cividis`: Blue-gray-yellow (deuteranopia/protanopia optimized)
 * All themes perceptually uniform and tested for color vision deficiencies
+
+### Custom Theme API
+* Added `put_theme()` for creating custom color palettes (#39)
+* New `palette` parameter on `put_diagram()` accepts `putior_theme` objects
+* Override individual node types (input, process, output, decision, artifact, start, end)
+* Base theme inheritance — customize only what you need
+
+### Block Comment Annotations
+* Added PUT annotation support inside `/* */` and `/** */` block comments (#37)
+* Use `* put` as line prefix inside block bodies for all `//`-prefix languages
+* Supports single-line block comments and JSDoc-style patterns
+
+### File Exclusion
+* Added `exclude` parameter to `put()`, `put_auto()`, `put_generate()`, and
+  `put_merge()` for regex-based file exclusion (#38)
+
+### WGSL Shader Language Support
+* Registered `.wgsl` with `//` comment prefix (#31)
+* 17 auto-detection patterns for GPU bindings, textures, samplers, and naga-oil imports
+
+### Dockerfile Support
+* Handle extensionless Dockerfile via `.FILENAME_MAP` (#35)
+* 13 detection patterns for FROM, COPY, ADD, EXPOSE, VOLUME, CMD, RUN
+
+### Makefile Support
+* Handle Makefile and GNUmakefile via `.FILENAME_MAP` (#36)
+* 10 detection patterns for include, wildcard, target rules, install, shell commands
 
 ### Metadata Display
 * Added `show_source_info` parameter to `put_diagram()` for displaying source file
@@ -93,6 +120,7 @@
 * Added optional shinyAce syntax highlighting (graceful degradation)
 
 ### Documentation
+* Documented all valid `node_type` values across vignettes and reference (#40)
 * 8 comprehensive vignettes including quick-start, annotation guide, features tour,
   API reference, showcase, troubleshooting, quick-reference, and skills reference
 * Professional cheat sheet (`inst/cheatsheet/putior-cheatsheet.qmd`)

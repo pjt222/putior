@@ -4,49 +4,40 @@
 
 * checking CRAN incoming feasibility ... NOTE
   Maintainer: 'Philipp Thoss <ph.thoss@gmx.de>'
-  New submission
 
-This NOTE is expected for first submissions and does not affect package functionality.
+  Found the following (possibly) invalid URLs:
+    URL: https://pjt222.github.io/putior/
+      From: DESCRIPTION
+      Status: (to be verified)
 
 ## Test environments
 
-* local: Windows 11, R 4.5.0 - Status: ✅ OK
-* win-builder: R-devel (2025-06-15 r88316) - Status: ✅ 1 NOTE (new submission only) 
-* win-builder: R-release (R 4.5.0) - Status: ✅ 1 NOTE (new submission only)
-* GitHub Actions (all passing): 
+* local: Windows 11, R 4.5.2 - Status: (to be run)
+* win-builder: R-devel - Status: (to be run)
+* win-builder: R-release - Status: (to be run)
+* GitHub Actions:
   - macOS-latest (release)
-  - windows-latest (release)  
+  - windows-latest (release)
   - ubuntu-latest (release)
-* R-hub v2 checks (completed):
-  - linux (R-devel): ✅ PASS
-  - macos (R-devel): ✅ PASS  
-  - windows (R-devel): ✅ PASS
-  - ubuntu-release: ✅ PASS
-  - nosuggests: ❌ EXPECTED FAIL (vignettes require rmarkdown from Suggests)
+* R-hub v2: (to be run)
 
-## R-hub nosuggests check
+## Update notes
 
-The nosuggests check fails as expected because the package vignettes require rmarkdown (listed in Suggests). The package functions correctly without suggested packages installed - only vignette building is affected. This is standard behavior for packages with vignettes and does not impact package functionality.
+This is an update from version 0.1.0 to 0.2.0.
 
-## Resubmission
+### Major changes since 0.1.0
 
-This is a resubmission addressing reviewer feedback:
-
-### Reviewer comments addressed:
-
-1. **Title formatting**: Already correct with Title Case in quotes
-2. **Package names**: All software names ('R', 'Python', 'PUT', 'Mermaid') properly formatted in single quotes
-3. **References**: Academic references already included with proper DOI formatting
-4. **Unexported function examples**: Removed examples from internal function `parse_put_annotation()` by regenerating documentation
-
-### Changes made:
-- Regenerated package documentation to remove examples from unexported functions
-- Verified all CRAN policy requirements are met
-
-## Package purpose
-
-putior helps users document and visualize workflows by extracting structured annotations from source code files and generating Mermaid diagrams. It supports multiple programming languages and is particularly useful for documenting data science pipelines.
+* **Breaking change**: `recursive` parameter now defaults to `TRUE` (was `FALSE`)
+* Added support for 30+ programming languages with automatic comment syntax detection
+* Added auto-annotation feature (`put_auto()`, `put_generate()`, `put_merge()`)
+* Added 9 diagram themes including 4 colorblind-safe viridis themes
+* Added custom theme API (`put_theme()`)
+* Added block comment annotation support (`/* */`, `/** */`)
+* Added MCP server integration for AI assistant tool exposure
+* Added ACP server integration for inter-agent communication
+* Added WGSL, Dockerfile, and Makefile language support
 
 ## Dependencies
 
-This package has minimal dependencies, requiring only base R and the tools package.
+This package has minimal dependencies, requiring only base R and the `tools` package.
+All packages listed in Suggests are used conditionally with `requireNamespace()`.

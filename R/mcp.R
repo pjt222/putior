@@ -453,6 +453,11 @@ make_tool_put_generate <- function() {
       exclude = ellmer::type_string(
         description = "Comma-separated regex patterns to exclude files (default: none)",
         required = FALSE
+      ),
+      log_level = ellmer::type_enum(
+        description = "Log verbosity: DEBUG, INFO, WARN, or ERROR (default: global setting)",
+        values = c("DEBUG", "INFO", "WARN", "ERROR"),
+        required = FALSE
       )
     )
   )
@@ -497,6 +502,11 @@ make_tool_put_merge <- function() {
       ),
       exclude = ellmer::type_string(
         description = "Comma-separated regex patterns to exclude files (default: none)",
+        required = FALSE
+      ),
+      log_level = ellmer::type_enum(
+        description = "Log verbosity: DEBUG, INFO, WARN, or ERROR (default: global setting)",
+        values = c("DEBUG", "INFO", "WARN", "ERROR"),
         required = FALSE
       )
     )
@@ -570,7 +580,7 @@ make_tool_get_detection_patterns <- function() {
     description = paste0(
       "Get auto-detection patterns for a programming language. ",
       "Returns patterns used to detect file inputs, outputs, and dependencies. ",
-      "Supports 16 languages including R, Python, JavaScript, Go, Rust, WGSL, etc."
+      "Supports 18 languages including R, Python, JavaScript, Go, Rust, WGSL, Dockerfile, Makefile, etc."
     ),
     name = "get_detection_patterns",
     annotations = list(
@@ -582,8 +592,8 @@ make_tool_get_detection_patterns <- function() {
         description = "Language name (e.g., 'r', 'python', 'javascript')"
       ),
       type = ellmer::type_enum(
-        description = "Pattern type: all, input, output, or dependency (default: all)",
-        values = c("all", "input", "output", "dependency"),
+        description = "Pattern type: input, output, or dependency. Omit to get all types.",
+        values = c("input", "output", "dependency"),
         required = FALSE
       )
     )

@@ -78,17 +78,10 @@ putior_log <- function(level, ..., .envir = parent.frame()) {
 #' @export
 #'
 #' @examples
-#' # Set to DEBUG for maximum verbosity
-#' set_putior_log_level("DEBUG")
-#'
-#' # Set to INFO for progress updates
-#' set_putior_log_level("INFO")
-#'
-#' # Set to WARN (default) for minimal output
-#' set_putior_log_level("WARN")
-#'
-#' # Check current log level
+#' # Save current level, change, then restore
+#' old_level <- set_putior_log_level("DEBUG")
 #' getOption("putior.log_level")
+#' set_putior_log_level(old_level)
 set_putior_log_level <- function(level = "WARN") {
   valid_levels <- c("DEBUG", "INFO", "WARN", "ERROR")
   level <- toupper(level)

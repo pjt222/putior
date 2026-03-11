@@ -170,6 +170,9 @@ put_auto <- function(path,
 #'   Default: "multiline"
 #' @param exclude Character vector of regex patterns. Files whose full path
 #'   matches any pattern are excluded. Default: NULL (no exclusion).
+#' @param log_level Character string specifying log verbosity for this call.
+#'   Overrides the global option \code{putior.log_level} when specified.
+#'   Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.
 #'
 #' @return Invisibly returns a character vector of generated annotations.
 #'   Side effects depend on the \code{output} parameter.
@@ -199,9 +202,14 @@ put_generate <- function(path,
                          output = "console",
                          insert = FALSE,
                          style = "multiline",
-                         exclude = NULL) {
+                         exclude = NULL,
+                         log_level = NULL) {
   # Default pattern covers languages with detection support
   if (is.null(pattern)) pattern <- build_file_pattern(detection_only = TRUE)
+
+  # Set log level for this call
+  restore_log_level <- with_log_level(log_level)
+  on.exit(restore_log_level(), add = TRUE)
 
   # Input validation
   validate_path_arg(path, "put_generate")
@@ -322,6 +330,9 @@ put_generate <- function(path,
 #'   Default: FALSE
 #' @param exclude Character vector of regex patterns. Files whose full path
 #'   matches any pattern are excluded. Default: NULL (no exclusion).
+#' @param log_level Character string specifying log verbosity for this call.
+#'   Overrides the global option \code{putior.log_level} when specified.
+#'   Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.
 #'
 #' @return A data frame in the same format as \code{\link{put}()}, containing
 #'   merged workflow information from both manual and auto-detected sources.
@@ -348,9 +359,14 @@ put_merge <- function(path,
                       recursive = TRUE,
                       merge_strategy = "manual_priority",
                       include_line_numbers = FALSE,
-                      exclude = NULL) {
+                      exclude = NULL,
+                      log_level = NULL) {
   # Default pattern covers languages with detection support
   if (is.null(pattern)) pattern <- build_file_pattern(detection_only = TRUE)
+
+  # Set log level for this call
+  restore_log_level <- with_log_level(log_level)
+  on.exit(restore_log_level(), add = TRUE)
 
   # Input validation
   valid_strategies <- c("manual_priority", "supplement", "union")
@@ -564,35 +580,6 @@ extract_file_path_from_line <- function(line, pattern_def) {
   }
 
   return(files)
-}
-
-#' Extract file path from a matched string (legacy function)
-#' @param match_str The matched string containing the function call
-#' @param pattern_def The pattern definition
-#' @return Extracted file path or NULL
-#' @keywords internal
-extract_file_path <- function(match_str, pattern_def) {
-  # Try to extract quoted string (file path)
-  # Match both single and double quotes
-  quoted_pattern <- '["\']([^"\']+)["\']'
-  quoted_match <- regmatches(match_str, regexpr(quoted_pattern, match_str, perl = TRUE))
-
-  if (length(quoted_match) > 0 && nchar(quoted_match) > 0) {
-    # Remove quotes
-    file_path <- gsub('^["\']|["\']$', '', quoted_match)
-    return(file_path)
-  }
-
-  # Try to extract variable/path without quotes (for some patterns)
-  # This handles cases like: from table_name
-  unquoted_pattern <- "\\s+([a-zA-Z_][a-zA-Z0-9_./\\-]*)"
-  unquoted_match <- regmatches(match_str, regexpr(unquoted_pattern, match_str, perl = TRUE))
-
-  if (length(unquoted_match) > 0 && nchar(unquoted_match) > 0) {
-    return(trimws(unquoted_match))
-  }
-
-  return(NULL)
 }
 
 #' Check if a string looks like a file path

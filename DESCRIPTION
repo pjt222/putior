@@ -1,11 +1,9 @@
 Package: putior
 Title: Generate Workflow Diagrams from Code Annotations
-Version: 0.2.0.9000
+Version: 0.2.0
 Authors@R: 
     person("Philipp", "Thoss", , "ph.thoss@gmx.de", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4672-2792"))
-Author: Philipp Thoss [aut, cre] (0000-0002-4672-2792)
-Maintainer: Philipp Thoss <ph.thoss@gmx.de>
 Description: Provides tools for extracting and processing structured annotations from
     source files in 30+ programming languages to facilitate workflow visualization.
     The package scans source files for special 'PUT' annotations that define nodes,
@@ -23,7 +21,7 @@ License: MIT + file LICENSE
 URL: https://pjt222.github.io/putior/, https://github.com/pjt222/putior
 BugReports: https://github.com/pjt222/putior/issues
 Depends:
-    R (>= 3.5.0)
+    R (>= 4.1.0)
 Imports:
     tools
 Suggests:

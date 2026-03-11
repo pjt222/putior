@@ -408,8 +408,8 @@ format_result_as_text <- function(result) {
       if (!is.na(row$label) && nchar(row$label) > 0) {
         lines <- c(lines, paste0("  Label: ", row$label))
       }
-      if ("source_file" %in% names(row) && !is.na(row$source_file)) {
-        lines <- c(lines, paste0("  Source: ", row$source_file))
+      if ("file_name" %in% names(row) && !is.na(row$file_name)) {
+        lines <- c(lines, paste0("  Source: ", row$file_name))
       }
       if (!is.na(row$input) && nchar(row$input) > 0) {
         lines <- c(lines, paste0("  Input: ", row$input))

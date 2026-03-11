@@ -2,7 +2,7 @@
 % Please edit documentation in R/put_diagram.R
 \name{get_theme_colors}
 \alias{get_theme_colors}
-\title{Get color schemes for different themes (FIXED VERSION)}
+\title{Get color schemes for different themes}
 \usage{
 get_theme_colors(theme)
 }
@@ -13,6 +13,6 @@ get_theme_colors(theme)
 Named list of color definitions for each node type
 }
 \description{
-Get color schemes for different themes (FIXED VERSION)
+Get color schemes for different themes
 }
 \keyword{internal}

@@ -49,8 +49,7 @@ put_theme <- function(base = "light",
                       start = NULL,
                       end = NULL) {
   # Validate base theme
-
-if (!base %in% .VALID_THEMES) {
+  if (!base %in% .VALID_THEMES) {
     stop(
       "Invalid base theme '", base, "'.\n",
       "Valid themes: ", paste(.VALID_THEMES, collapse = ", "),

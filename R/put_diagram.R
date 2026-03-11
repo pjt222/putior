@@ -133,8 +133,11 @@ put_diagram <- function(workflow,
   on.exit(restore_log_level(), add = TRUE)
 
   putior_log("INFO", "Starting diagram generation")
-  putior_log("DEBUG", "Diagram parameters: direction='{direction}', theme='{theme}', show_artifacts={show_artifacts}")
 
+  # Validate direction parameter
+  direction <- match.arg(direction, c("TD", "LR", "BT", "RL"))
+
+  putior_log("DEBUG", "Diagram parameters: direction='{direction}', theme='{theme}', show_artifacts={show_artifacts}")
 
   # Input validation
   if (!is.data.frame(workflow)) {
@@ -394,7 +397,7 @@ generate_node_styling <- function(workflow, theme = "light", show_workflow_bound
   return(styling)
 }
 
-#' Get color schemes for different themes (FIXED VERSION)
+#' Get color schemes for different themes
 #' @param theme Theme name
 #' @return Named list of color definitions for each node type
 #' @keywords internal
@@ -650,6 +653,8 @@ resolve_label <- function(node, node_labels) {
 #' @noRd
 sanitize_mermaid_label <- function(label) {
   if (is_empty_string(label)) return(label)
+  # Strip newlines/carriage returns that would break Mermaid line structure
+  label <- gsub("[\r\n]", " ", label)
   # Wrap in quotes and escape internal quotes using Mermaid's #quot; entity
   label <- gsub('"', "#quot;", label, fixed = TRUE)
   # Escape pipe characters using Mermaid's #124; entity (pipes delimit edge labels)
@@ -1142,9 +1147,17 @@ handle_output <- function(mermaid_code, output = "console", file = NULL, title =
 }
 
 #' Split comma-separated file list
+#'
+#' Parses a comma-separated string of file names into a character vector,
+#' trimming whitespace from each entry.
+#'
 #' @param file_string Comma-separated file names
 #' @return Character vector of individual file names
 #' @export
+#'
+#' @examples
+#' split_file_list("data.csv, results.rds, plot.png")
+#' split_file_list("")
 split_file_list <- function(file_string) {
   if (is.na(file_string) || file_string == "" || is.null(file_string)) {
     return(character(0))

@@ -1,0 +1,6 @@
+# Enforce LF line endings for R source files
+*.R text eol=lf
+*.Rmd text eol=lf
+*.Rd text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
