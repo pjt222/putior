@@ -14,7 +14,9 @@ interactive diagrams, customize detection patterns, and more.
 | Interactive Sandbox  | Experiment without writing files             | [`run_sandbox()`](https://pjt222.github.io/putior/reference/run_sandbox.md)                                                                                                                                                   |
 | Structured Logging   | Debug annotation parsing                     | [`set_putior_log_level()`](https://pjt222.github.io/putior/reference/set_putior_log_level.md)                                                                                                                                 |
 | Themes & Styling     | Customize diagram appearance                 | `theme`, `style_nodes`                                                                                                                                                                                                        |
-| Performance          | Optimize for large codebases                 | `pattern`, `recursive`, `validate`                                                                                                                                                                                            |
+| File Exclusion       | Skip files by regex pattern                  | `exclude` parameter                                                                                                                                                                                                           |
+| Custom Themes        | Create your own color palettes               | [`put_theme()`](https://pjt222.github.io/putior/reference/put_theme.md), `palette` parameter                                                                                                                                  |
+| Performance          | Optimize for large codebases                 | `pattern`, `recursive`, `validate`, `exclude`                                                                                                                                                                                 |
 
 ------------------------------------------------------------------------
 
@@ -402,11 +404,12 @@ list_supported_languages()
 #> [16] "java"      "go"         "rust"       "swift"      "kotlin"
 #> [21] "csharp"    "php"        "scala"      "matlab"     "latex"
 
-# Languages with auto-detection patterns (15 languages, 860+ patterns)
+# Languages with auto-detection patterns (18 languages, 900+ patterns)
 list_supported_languages(detection_only = TRUE)
 #> [1] "r"          "python"     "sql"        "shell"      "julia"
 #> [6] "javascript" "typescript" "go"         "rust"       "java"
 #> [11] "c"         "cpp"        "matlab"     "ruby"       "lua"
+#> [16] "wgsl"      "dockerfile" "makefile"
 
 # Get comment prefix for any extension
 get_comment_prefix("sql")
@@ -639,6 +642,28 @@ put_diagram(workflow, theme = "viridis")
 put_diagram(workflow, theme = "cividis")
 ```
 
+### Custom Palettes with `put_theme()`
+
+Create your own color palette by overriding specific node types from any
+base theme:
+
+``` r
+# Create a custom palette
+my_palette <- put_theme(
+  base = "dark",
+  input   = c(fill = "#1a5276", stroke = "#2e86c1", color = "#ffffff"),
+  process = c(fill = "#1e8449", stroke = "#27ae60", color = "#ffffff"),
+  output  = c(fill = "#922b21", stroke = "#e74c3c", color = "#ffffff")
+)
+
+# Apply with the palette parameter (overrides theme)
+workflow <- put("./src/")
+put_diagram(workflow, palette = my_palette)
+```
+
+Only specify the node types you want to change — the rest inherit from
+the base theme.
+
 ### Theme Examples
 
 ``` r
@@ -766,14 +791,28 @@ workflow <- put("./src/", pattern = "\\.R$")
 workflow <- put(c("./src/etl/", "./src/analysis/"))
 ```
 
-**2. Disable validation for performance-critical scripts:**
+**2. Exclude files with regex patterns:**
+
+``` r
+# Skip test files
+workflow <- put("./src/", exclude = "test")
+
+# Skip multiple patterns
+workflow <- put_auto("./project/", exclude = c("test", "vendor", "\\.min\\.js$"))
+
+# All four scan functions support exclude
+put_generate("./src/", exclude = "fixture")
+put_merge("./src/", exclude = c("mock", "snapshot"))
+```
+
+**3. Disable validation for performance-critical scripts:**
 
 ``` r
 # Skip validation checks for faster processing
 workflow <- put("./src/", validate = FALSE)
 ```
 
-**3. Use `recursive = FALSE` to limit scope when appropriate:**
+**4. Use `recursive = FALSE` to limit scope when appropriate:**
 
 ``` r
 # Only scan top-level directory (recursive is TRUE by default)
@@ -783,7 +822,7 @@ workflow <- put("./src/", recursive = FALSE)
 workflow2 <- put("./src/important_module/")
 ```
 
-**4. Consider splitting large directories:**
+**5. Consider splitting large directories:**
 
 ``` r
 # Process in chunks for very large projects
@@ -795,7 +834,7 @@ reporting_workflow <- put("./src/reporting/")
 # all_workflows <- rbind(etl_workflow, analysis_workflow, reporting_workflow)
 ```
 
-**5. Cache results for repeated use:**
+**6. Cache results for repeated use:**
 
 ``` r
 # Save workflow for reuse
@@ -807,7 +846,7 @@ workflow <- readRDS("workflow_cache.rds")
 put_diagram(workflow)
 ```
 
-**6. Profile before optimizing:**
+**7. Profile before optimizing:**
 
 ``` r
 # Measure actual time

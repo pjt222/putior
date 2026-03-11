@@ -153,6 +153,9 @@ putior_skills()
 #> 
 #> # Enable debug logging
 #> workflow <- put("./R/", log_level = "DEBUG")
+#> 
+#> # Exclude test files
+#> workflow <- put("./R/", exclude = "test")
 #> ```
 #> 
 #> ### `put_diagram()` - Generate Diagrams
@@ -204,6 +207,9 @@ putior_skills()
 #> 
 #> # Combine with manual annotations
 #> workflow <- put_merge("./src/", merge_strategy = "supplement")
+#> 
+#> # Exclude vendor/test directories
+#> workflow <- put_auto("./src/", exclude = c("vendor", "test"))
 #> ```
 #> 
 #> ### `put_generate()` - Generate Annotation Templates
@@ -221,7 +227,7 @@ putior_skills()
 #> 
 #> ## Auto-Detection Patterns
 #> 
-#> Languages with pattern-based detection (862 patterns total):
+#> Languages with pattern-based detection (902 patterns total):
 #> 
 #> | Language | Patterns | Key Libraries |
 #> |----------|----------|---------------|
@@ -238,7 +244,10 @@ putior_skills()
 #> | Julia | 27 | CSV.jl, DataFrames, JLD2 |
 #> | C | 24 | stdio.h, POSIX, mmap |
 #> | Lua | 20 | io library, loadfile |
+#> | WGSL | 17 | GPU bindings, textures, samplers, naga-oil |
+#> | Dockerfile | 13 | FROM, COPY, ADD, EXPOSE, VOLUME, CMD, RUN |
 #> | Shell | 12 | cat, redirects, source |
+#> | Makefile | 10 | include, wildcard, target rules, install |
 #> | SQL | 8 | FROM, JOIN, COPY |
 #> 
 #> ### LLM Library Detection
@@ -261,14 +270,14 @@ putior_skills()
 #> 
 #> # List supported languages
 #> list_supported_languages()                    # All 30+ languages
-#> list_supported_languages(detection_only = TRUE)  # 15 with auto-detection
+#> list_supported_languages(detection_only = TRUE)  # 18 with auto-detection
 #> 
 #> # Get detection patterns
 #> patterns <- get_detection_patterns("python")
 #> patterns <- get_detection_patterns("r", type = "input")
 #> 
 #> # Available themes
-#> list_themes()
+#> get_diagram_themes()
 #> 
 #> # Interactive help
 #> putior_help()

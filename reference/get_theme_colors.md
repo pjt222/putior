@@ -1,6 +1,6 @@
-# Get color schemes for different themes (FIXED VERSION)
+# Get color schemes for different themes
 
-Get color schemes for different themes (FIXED VERSION)
+Get color schemes for different themes
 
 ## Usage
 

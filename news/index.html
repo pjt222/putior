@@ -109,7 +109,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">putior</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -147,21 +147,21 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.0.9000" id="putior-0209000-development-version">putior 0.2.0.9000 (development version)<a class="anchor" aria-label="anchor" href="#putior-0209000-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.0" id="putior-020">putior 0.2.0<a class="anchor" aria-label="anchor" href="#putior-020"></a></h2>
 <div class="section level3">
-<h3 id="breaking-changes-0-2-0-9000">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-0-9000"></a></h3>
+<h3 id="breaking-changes-0-2-0">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-0"></a></h3>
 <ul><li>
 <code><a href="../reference/put.html">put()</a></code>, <code><a href="../reference/put_auto.html">put_auto()</a></code>, <code><a href="../reference/put_generate.html">put_generate()</a></code>, and <code><a href="../reference/put_merge.html">put_merge()</a></code> now default to <code>recursive = TRUE</code> (previously <code>FALSE</code>). Directory scans now include subdirectories by default. Pass <code>recursive = FALSE</code> for the old behavior. (<a href="https://github.com/pjt222/putior/issues/34" class="external-link">#34</a>)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="bug-fixes-0-2-0-9000">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-0-9000"></a></h3>
+<h3 id="bug-fixes-0-2-0">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-0"></a></h3>
 <ul><li>Fixed <code>show_source_info = TRUE</code> using <code>&lt;small&gt;</code> HTML tags that are unsupported by GitHub’s Mermaid renderer. Source file names are now shown without HTML formatting tags. (<a href="https://github.com/pjt222/putior/issues/32" class="external-link">#32</a>)</li>
 <li>Fixed pipe characters (<code>|</code>) in node labels breaking Mermaid diagram parsing. Pipes are now escaped using the <code>#124;</code> entity. (<a href="https://github.com/pjt222/putior/issues/33" class="external-link">#33</a>)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="new-features-0-2-0-9000">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-2-0-9000"></a></h3>
+<h3 id="new-features-0-2-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-2-0"></a></h3>
 <div class="section level4">
-<h4 id="mcp-server-integration-0-2-0-9000">MCP Server Integration<a class="anchor" aria-label="anchor" href="#mcp-server-integration-0-2-0-9000"></a></h4>
+<h4 id="mcp-server-integration-0-2-0">MCP Server Integration<a class="anchor" aria-label="anchor" href="#mcp-server-integration-0-2-0"></a></h4>
 <ul><li>Added <code><a href="../reference/putior_mcp_server.html">putior_mcp_server()</a></code> to expose putior functions as MCP tools for AI assistants</li>
 <li>Added <code><a href="../reference/putior_mcp_tools.html">putior_mcp_tools()</a></code> to get/filter tool definitions for custom MCP integrations</li>
 <li>16 tools available: <code>put</code>, <code>put_diagram</code>, <code>put_auto</code>, <code>put_generate</code>, <code>put_merge</code>, <code>get_comment_prefix</code>, <code>get_supported_extensions</code>, <code>list_supported_languages</code>, <code>get_detection_patterns</code>, <code>get_diagram_themes</code>, <code>putior_skills</code>, <code>putior_help</code>, <code>set_putior_log_level</code>, <code>is_valid_put_annotation</code>, <code>split_file_list</code>, <code>ext_to_language</code>
@@ -169,14 +169,14 @@
 <li>Supports Claude Code, Claude Desktop, and other MCP-compatible clients</li>
 </ul></div>
 <div class="section level4">
-<h4 id="acp-server-integration-0-2-0-9000">ACP Server Integration<a class="anchor" aria-label="anchor" href="#acp-server-integration-0-2-0-9000"></a></h4>
+<h4 id="acp-server-integration-0-2-0">ACP Server Integration<a class="anchor" aria-label="anchor" href="#acp-server-integration-0-2-0"></a></h4>
 <ul><li>Added <code><a href="../reference/putior_acp_server.html">putior_acp_server()</a></code> to expose putior as an ACP agent for inter-agent communication via REST API</li>
 <li>Added <code><a href="../reference/putior_acp_manifest.html">putior_acp_manifest()</a></code> for agent discovery</li>
 <li>Supports natural language requests for all core operations</li>
 <li>Input path sanitization to prevent directory traversal attacks</li>
 </ul></div>
 <div class="section level4">
-<h4 id="multi-language-comment-syntax-languages-0-2-0-9000">Multi-Language Comment Syntax (30+ Languages)<a class="anchor" aria-label="anchor" href="#multi-language-comment-syntax-languages-0-2-0-9000"></a></h4>
+<h4 id="multi-language-comment-syntax-languages-0-2-0">Multi-Language Comment Syntax (30+ Languages)<a class="anchor" aria-label="anchor" href="#multi-language-comment-syntax-languages-0-2-0"></a></h4>
 <ul><li>Added support for 30+ programming languages with automatic comment prefix detection</li>
 <li>Comment styles: <code>#</code> (R, Python, Shell, etc.), <code>--</code> (SQL, Lua, Haskell), <code>//</code> (JavaScript, TypeScript, C/C++, Go, Rust, Java, etc.), <code>%</code> (MATLAB, LaTeX)</li>
 <li>Added <code><a href="../reference/get_comment_prefix.html">get_comment_prefix()</a></code>, <code><a href="../reference/get_supported_extensions.html">get_supported_extensions()</a></code>, <code><a href="../reference/ext_to_language.html">ext_to_language()</a></code>
@@ -184,19 +184,19 @@
 <li>Added <code><a href="../reference/list_supported_languages.html">list_supported_languages()</a></code> to enumerate all supported languages</li>
 </ul></div>
 <div class="section level4">
-<h4 id="auto-detection-patterns-languages-patterns-0-2-0-9000">Auto-Detection Patterns (15 Languages, 862 Patterns)<a class="anchor" aria-label="anchor" href="#auto-detection-patterns-languages-patterns-0-2-0-9000"></a></h4>
-<ul><li>Full auto-detection for: R, Python, SQL, Shell, Julia, JavaScript, TypeScript, Go, Rust, Java, C, C++, MATLAB, Ruby, Lua</li>
+<h4 id="auto-detection-patterns-languages-patterns-0-2-0">Auto-Detection Patterns (18 Languages, 902 Patterns)<a class="anchor" aria-label="anchor" href="#auto-detection-patterns-languages-patterns-0-2-0"></a></h4>
+<ul><li>Full auto-detection for: R, Python, SQL, Shell, Julia, JavaScript, TypeScript, Go, Rust, Java, C, C++, MATLAB, Ruby, Lua, WGSL, Dockerfile, Makefile</li>
 <li>Pattern inheritance: TypeScript extends JavaScript, C++ extends C</li>
 <li>Single authoritative language registry (<code>R/language_registry.R</code>)</li>
 </ul></div>
 <div class="section level4">
-<h4 id="llm-detection-patterns-0-2-0-9000">LLM Detection Patterns<a class="anchor" aria-label="anchor" href="#llm-detection-patterns-0-2-0-9000"></a></h4>
+<h4 id="llm-detection-patterns-0-2-0">LLM Detection Patterns<a class="anchor" aria-label="anchor" href="#llm-detection-patterns-0-2-0"></a></h4>
 <ul><li>54 patterns for modern AI/ML libraries across R and Python</li>
 <li>R: ellmer, tidyllm, httr2 (API requests)</li>
 <li>Python: ollama, openai, anthropic, langchain, transformers, litellm, vllm, google generative AI, groq</li>
 </ul></div>
 <div class="section level4">
-<h4 id="auto-annotation-feature-0-2-0-9000">Auto-Annotation Feature<a class="anchor" aria-label="anchor" href="#auto-annotation-feature-0-2-0-9000"></a></h4>
+<h4 id="auto-annotation-feature-0-2-0">Auto-Annotation Feature<a class="anchor" aria-label="anchor" href="#auto-annotation-feature-0-2-0"></a></h4>
 <ul><li>Added <code><a href="../reference/put_auto.html">put_auto()</a></code> for automatic workflow detection from code analysis</li>
 <li>Added <code><a href="../reference/put_generate.html">put_generate()</a></code> for generating PUT annotation comments (roxygen2-style)
 <ul><li>Now supports <code>output = "raw"</code> for programmatic access</li>
@@ -206,7 +206,7 @@
 </ul></li>
 </ul></div>
 <div class="section level4">
-<h4 id="colorblind-safe-themes-0-2-0-9000">Colorblind-Safe Themes<a class="anchor" aria-label="anchor" href="#colorblind-safe-themes-0-2-0-9000"></a></h4>
+<h4 id="colorblind-safe-themes-0-2-0">Colorblind-Safe Themes<a class="anchor" aria-label="anchor" href="#colorblind-safe-themes-0-2-0"></a></h4>
 <ul><li>Added 4 viridis family themes for accessibility:
 <ul><li>
 <code>viridis</code>: Purple-blue-green-yellow (general accessibility)</li>
@@ -220,37 +220,70 @@
 <li>All themes perceptually uniform and tested for color vision deficiencies</li>
 </ul></div>
 <div class="section level4">
-<h4 id="metadata-display-0-2-0-9000">Metadata Display<a class="anchor" aria-label="anchor" href="#metadata-display-0-2-0-9000"></a></h4>
+<h4 id="custom-theme-api-0-2-0">Custom Theme API<a class="anchor" aria-label="anchor" href="#custom-theme-api-0-2-0"></a></h4>
+<ul><li>Added <code><a href="../reference/put_theme.html">put_theme()</a></code> for creating custom color palettes (<a href="https://github.com/pjt222/putior/issues/39" class="external-link">#39</a>)</li>
+<li>New <code>palette</code> parameter on <code><a href="../reference/put_diagram.html">put_diagram()</a></code> accepts <code>putior_theme</code> objects</li>
+<li>Override individual node types (input, process, output, decision, artifact, start, end)</li>
+<li>Base theme inheritance — customize only what you need</li>
+</ul></div>
+<div class="section level4">
+<h4 id="block-comment-annotations-0-2-0">Block Comment Annotations<a class="anchor" aria-label="anchor" href="#block-comment-annotations-0-2-0"></a></h4>
+<ul><li>Added PUT annotation support inside <code>/* */</code> and <code>/** */</code> block comments (<a href="https://github.com/pjt222/putior/issues/37" class="external-link">#37</a>)</li>
+<li>Use <code>* put</code> as line prefix inside block bodies for all <code>//</code>-prefix languages</li>
+<li>Supports single-line block comments and JSDoc-style patterns</li>
+</ul></div>
+<div class="section level4">
+<h4 id="file-exclusion-0-2-0">File Exclusion<a class="anchor" aria-label="anchor" href="#file-exclusion-0-2-0"></a></h4>
+<ul><li>Added <code>exclude</code> parameter to <code><a href="../reference/put.html">put()</a></code>, <code><a href="../reference/put_auto.html">put_auto()</a></code>, <code><a href="../reference/put_generate.html">put_generate()</a></code>, and <code><a href="../reference/put_merge.html">put_merge()</a></code> for regex-based file exclusion (<a href="https://github.com/pjt222/putior/issues/38" class="external-link">#38</a>)</li>
+</ul></div>
+<div class="section level4">
+<h4 id="wgsl-shader-language-support-0-2-0">WGSL Shader Language Support<a class="anchor" aria-label="anchor" href="#wgsl-shader-language-support-0-2-0"></a></h4>
+<ul><li>Registered <code>.wgsl</code> with <code>//</code> comment prefix (<a href="https://github.com/pjt222/putior/issues/31" class="external-link">#31</a>)</li>
+<li>17 auto-detection patterns for GPU bindings, textures, samplers, and naga-oil imports</li>
+</ul></div>
+<div class="section level4">
+<h4 id="dockerfile-support-0-2-0">Dockerfile Support<a class="anchor" aria-label="anchor" href="#dockerfile-support-0-2-0"></a></h4>
+<ul><li>Handle extensionless Dockerfile via <code>.FILENAME_MAP</code> (<a href="https://github.com/pjt222/putior/issues/35" class="external-link">#35</a>)</li>
+<li>13 detection patterns for FROM, COPY, ADD, EXPOSE, VOLUME, CMD, RUN</li>
+</ul></div>
+<div class="section level4">
+<h4 id="makefile-support-0-2-0">Makefile Support<a class="anchor" aria-label="anchor" href="#makefile-support-0-2-0"></a></h4>
+<ul><li>Handle Makefile and GNUmakefile via <code>.FILENAME_MAP</code> (<a href="https://github.com/pjt222/putior/issues/36" class="external-link">#36</a>)</li>
+<li>10 detection patterns for include, wildcard, target rules, install, shell commands</li>
+</ul></div>
+<div class="section level4">
+<h4 id="metadata-display-0-2-0">Metadata Display<a class="anchor" aria-label="anchor" href="#metadata-display-0-2-0"></a></h4>
 <ul><li>Added <code>show_source_info</code> parameter to <code><a href="../reference/put_diagram.html">put_diagram()</a></code> for displaying source file information in diagram nodes</li>
 <li>Added <code>source_info_style</code> parameter with “inline” and “subgraph” display options</li>
 </ul></div>
 <div class="section level4">
-<h4 id="clickable-hyperlinks-0-2-0-9000">Clickable Hyperlinks<a class="anchor" aria-label="anchor" href="#clickable-hyperlinks-0-2-0-9000"></a></h4>
+<h4 id="clickable-hyperlinks-0-2-0">Clickable Hyperlinks<a class="anchor" aria-label="anchor" href="#clickable-hyperlinks-0-2-0"></a></h4>
 <ul><li>Added <code>enable_clicks</code> parameter to <code><a href="../reference/put_diagram.html">put_diagram()</a></code> for making nodes clickable</li>
 <li>Added <code>click_protocol</code> parameter: “vscode”, “file”, “rstudio”</li>
 <li>Click directives include line numbers when available</li>
 </ul></div>
 <div class="section level4">
-<h4 id="structured-logging-0-2-0-9000">Structured Logging<a class="anchor" aria-label="anchor" href="#structured-logging-0-2-0-9000"></a></h4>
+<h4 id="structured-logging-0-2-0">Structured Logging<a class="anchor" aria-label="anchor" href="#structured-logging-0-2-0"></a></h4>
 <ul><li>Optional <code>logger</code> package integration for debugging annotation parsing</li>
 <li>Log levels: DEBUG, INFO, WARN (default), ERROR</li>
 <li>Added <code><a href="../reference/set_putior_log_level.html">set_putior_log_level()</a></code> for configuration</li>
 <li>Per-call override via <code>log_level</code> parameter on core functions</li>
 </ul></div>
 <div class="section level4">
-<h4 id="s3-workflow-class-0-2-0-9000">S3 Workflow Class<a class="anchor" aria-label="anchor" href="#s3-workflow-class-0-2-0-9000"></a></h4>
+<h4 id="s3-workflow-class-0-2-0">S3 Workflow Class<a class="anchor" aria-label="anchor" href="#s3-workflow-class-0-2-0"></a></h4>
 <ul><li>Workflow data frames now have <code>putior_workflow</code> S3 class</li>
 <li>Added <code><a href="../reference/print.putior_workflow.html">print.putior_workflow()</a></code> for concise workflow summaries</li>
 <li>Added <code><a href="../reference/summary.putior_workflow.html">summary.putior_workflow()</a></code> for structured summary information</li>
 </ul></div>
 <div class="section level4">
-<h4 id="interactive-sandbox-enhancements-0-2-0-9000">Interactive Sandbox Enhancements<a class="anchor" aria-label="anchor" href="#interactive-sandbox-enhancements-0-2-0-9000"></a></h4>
+<h4 id="interactive-sandbox-enhancements-0-2-0">Interactive Sandbox Enhancements<a class="anchor" aria-label="anchor" href="#interactive-sandbox-enhancements-0-2-0"></a></h4>
 <ul><li>Added copy-to-clipboard button for quick Mermaid code export</li>
 <li>Added optional shinyAce syntax highlighting (graceful degradation)</li>
 </ul></div>
 <div class="section level4">
-<h4 id="documentation-0-2-0-9000">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-0-9000"></a></h4>
-<ul><li>8 comprehensive vignettes including quick-start, annotation guide, features tour, API reference, showcase, troubleshooting, quick-reference, and skills reference</li>
+<h4 id="documentation-0-2-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-0"></a></h4>
+<ul><li>Documented all valid <code>node_type</code> values across vignettes and reference (<a href="https://github.com/pjt222/putior/issues/40" class="external-link">#40</a>)</li>
+<li>8 comprehensive vignettes including quick-start, annotation guide, features tour, API reference, showcase, troubleshooting, quick-reference, and skills reference</li>
 <li>Professional cheat sheet (<code>inst/cheatsheet/putior-cheatsheet.qmd</code>)</li>
 <li>20 example files in <code>inst/examples/</code>
 </li>
@@ -258,7 +291,7 @@
 <code><a href="../reference/putior_skills.html">putior_skills()</a></code> and <code><a href="../reference/putior_help.html">putior_help()</a></code> for in-session reference</li>
 </ul></div>
 <div class="section level4">
-<h4 id="new-helper-functions-0-2-0-9000">New Helper Functions<a class="anchor" aria-label="anchor" href="#new-helper-functions-0-2-0-9000"></a></h4>
+<h4 id="new-helper-functions-0-2-0">New Helper Functions<a class="anchor" aria-label="anchor" href="#new-helper-functions-0-2-0"></a></h4>
 <ul><li>
 <code><a href="../reference/resolve_label.html">resolve_label()</a></code> internal helper to reduce code duplication in diagram generation</li>
 <li>
@@ -274,7 +307,7 @@
 </ul></div>
 </div>
 <div class="section level3">
-<h3 id="bug-fixes-0-2-0-9000-1">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-0-9000-1"></a></h3>
+<h3 id="bug-fixes-0-2-0-1">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-0-1"></a></h3>
 <ul><li>Fixed ACP <code><a href="../reference/put_generate.html">put_generate()</a></code> called with invalid <code>output = "raw"</code> (now supported)</li>
 <li>Fixed MCP theme enum missing viridis family themes</li>
 <li>Fixed documentation using deprecated <code>name</code> instead of <code>id</code> in examples</li>
@@ -283,14 +316,14 @@
 <li>Moved <code>%||%</code> operator from <code>acp.R</code> to <code>zzz.R</code> for shared access</li>
 </ul></div>
 <div class="section level3">
-<h3 id="improvements-0-2-0-9000">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-2-0-9000"></a></h3>
+<h3 id="improvements-0-2-0">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-2-0"></a></h3>
 <ul><li>Consolidated language detection list into single authoritative registry (<code>.LANGUAGES_WITH_DETECTION</code> in <code>language_registry.R</code>)</li>
 <li>Standardized <code>output</code> parameter across <code><a href="../reference/put_diagram.html">put_diagram()</a></code>, <code><a href="../reference/put_generate.html">put_generate()</a></code>, and <code><a href="../reference/putior_skills.html">putior_skills()</a></code> – all now support “raw”</li>
 <li>Extracted duplicated label resolution into <code><a href="../reference/resolve_label.html">resolve_label()</a></code> helper</li>
 <li>Added input path sanitization to ACP server endpoints</li>
 </ul></div>
 <div class="section level3">
-<h3 id="backward-compatibility-0-2-0-9000">Backward Compatibility<a class="anchor" aria-label="anchor" href="#backward-compatibility-0-2-0-9000"></a></h3>
+<h3 id="backward-compatibility-0-2-0">Backward Compatibility<a class="anchor" aria-label="anchor" href="#backward-compatibility-0-2-0"></a></h3>
 <ul><li>All new parameters default to FALSE/previous behavior</li>
 <li>Existing code continues to work unchanged</li>
 <li>

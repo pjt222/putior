@@ -17,6 +17,7 @@ functions in the putior package.
 | [`get_comment_prefix()`](https://pjt222.github.io/putior/reference/get_comment_prefix.md)             | Configuration   | Get comment prefix for file extension   |
 | [`get_supported_extensions()`](https://pjt222.github.io/putior/reference/get_supported_extensions.md) | Configuration   | List all supported file extensions      |
 | [`get_diagram_themes()`](https://pjt222.github.io/putior/reference/get_diagram_themes.md)             | Configuration   | List available diagram themes           |
+| [`put_theme()`](https://pjt222.github.io/putior/reference/put_theme.md)                               | Configuration   | Create custom color palette             |
 | [`set_putior_log_level()`](https://pjt222.github.io/putior/reference/set_putior_log_level.md)         | Configuration   | Configure logging verbosity             |
 | [`is_valid_put_annotation()`](https://pjt222.github.io/putior/reference/is_valid_put_annotation.md)   | Utilities       | Validate annotation syntax              |
 | [`split_file_list()`](https://pjt222.github.io/putior/reference/split_file_list.md)                   | Utilities       | Parse comma-separated file lists        |
@@ -40,6 +41,7 @@ put(
   recursive = TRUE,
   include_line_numbers = FALSE,
   validate = TRUE,
+  exclude = NULL,
   log_level = NULL
 )
 ```
@@ -53,6 +55,7 @@ put(
 | `recursive`            | logical   | `TRUE`                     | Search subdirectories                                                                                                                |
 | `include_line_numbers` | logical   | `FALSE`                    | Include line numbers in output                                                                                                       |
 | `validate`             | logical   | `TRUE`                     | Show validation warnings                                                                                                             |
+| `exclude`              | character | `NULL`                     | Regex patterns to exclude files (e.g., `"test"` skips test files)                                                                    |
 | `log_level`            | character | `NULL`                     | Override log level. See [Debugging with Logging](https://pjt222.github.io/putior/articles/features-tour.html#debugging-with-logging) |
 
 **Returns:**
@@ -179,13 +182,17 @@ mermaid_code <- put_diagram(workflow, output = "raw")
 
 **Theme Comparison:**
 
-| Theme     | Best For          | Description                    |
-|-----------|-------------------|--------------------------------|
-| `github`  | GitHub README     | Optimized for GitHub rendering |
-| `light`   | Light backgrounds | Bright, colorful nodes         |
-| `dark`    | Dark backgrounds  | Muted colors on dark           |
-| `auto`    | Adaptive          | Works in both light/dark modes |
-| `minimal` | Reports           | Professional grayscale         |
+| Theme     | Best For          | Description                                  |
+|-----------|-------------------|----------------------------------------------|
+| `github`  | GitHub README     | Optimized for GitHub rendering               |
+| `light`   | Light backgrounds | Bright, colorful nodes                       |
+| `dark`    | Dark backgrounds  | Muted colors on dark                         |
+| `auto`    | Adaptive          | Works in both light/dark modes               |
+| `minimal` | Reports           | Professional grayscale                       |
+| `viridis` | Accessibility     | Colorblind-safe (purple-blue-green-yellow)   |
+| `magma`   | Print             | Colorblind-safe warm (purple-red-yellow)     |
+| `plasma`  | Presentations     | Colorblind-safe vibrant (purple-pink-yellow) |
+| `cividis` | Max accessibility | Blue-yellow only (red-green safe)            |
 
 ------------------------------------------------------------------------
 
@@ -206,21 +213,23 @@ put_auto(
   detect_inputs = TRUE,
   detect_outputs = TRUE,
   detect_dependencies = TRUE,
+  exclude = NULL,
   log_level = NULL
 )
 ```
 
 **Parameters:**
 
-| Parameter             | Type      | Default                    | Description                  |
-|-----------------------|-----------|----------------------------|------------------------------|
-| `path`                | character | `"."`                      | File or directory to analyze |
-| `pattern`             | character | `"\\.(R|r|py|sql|sh|jl)$"` | File pattern                 |
-| `recursive`           | logical   | `TRUE`                     | Search subdirectories        |
-| `detect_inputs`       | logical   | `TRUE`                     | Detect file read operations  |
-| `detect_outputs`      | logical   | `TRUE`                     | Detect file write operations |
-| `detect_dependencies` | logical   | `TRUE`                     | Detect script dependencies   |
-| `log_level`           | character | `NULL`                     | Override log level           |
+| Parameter             | Type      | Default                    | Description                     |
+|-----------------------|-----------|----------------------------|---------------------------------|
+| `path`                | character | `"."`                      | File or directory to analyze    |
+| `pattern`             | character | `"\\.(R|r|py|sql|sh|jl)$"` | File pattern                    |
+| `recursive`           | logical   | `TRUE`                     | Search subdirectories           |
+| `detect_inputs`       | logical   | `TRUE`                     | Detect file read operations     |
+| `detect_outputs`      | logical   | `TRUE`                     | Detect file write operations    |
+| `detect_dependencies` | logical   | `TRUE`                     | Detect script dependencies      |
+| `exclude`             | character | `NULL`                     | Regex patterns to exclude files |
+| `log_level`           | character | `NULL`                     | Override log level              |
 
 **Returns:**
 
@@ -258,6 +267,7 @@ put_generate(
   recursive = TRUE,
   output = "console",
   style = "single",
+  exclude = NULL,
   log_level = NULL
 )
 ```
@@ -271,6 +281,7 @@ put_generate(
 | `recursive` | logical   | `TRUE`                     | Search subdirectories                     |
 | `output`    | character | `"console"`                | Output: “console” or “clipboard”          |
 | `style`     | character | `"single"`                 | Annotation style: “single” or “multiline” |
+| `exclude`   | character | `NULL`                     | Regex patterns to exclude files           |
 | `log_level` | character | `NULL`                     | Override log level                        |
 
 **Returns:**
@@ -305,19 +316,21 @@ put_merge(
   pattern = "\\.(R|r|py|sql|sh|jl)$",
   recursive = TRUE,
   merge_strategy = "manual_priority",
+  exclude = NULL,
   log_level = NULL
 )
 ```
 
 **Parameters:**
 
-| Parameter        | Type      | Default                    | Description                  |
-|------------------|-----------|----------------------------|------------------------------|
-| `path`           | character | `"."`                      | File or directory to process |
-| `pattern`        | character | `"\\.(R|r|py|sql|sh|jl)$"` | File pattern                 |
-| `recursive`      | logical   | `TRUE`                     | Search subdirectories        |
-| `merge_strategy` | character | `"manual_priority"`        | Merge strategy (see below)   |
-| `log_level`      | character | `NULL`                     | Override log level           |
+| Parameter        | Type      | Default                    | Description                     |
+|------------------|-----------|----------------------------|---------------------------------|
+| `path`           | character | `"."`                      | File or directory to process    |
+| `pattern`        | character | `"\\.(R|r|py|sql|sh|jl)$"` | File pattern                    |
+| `recursive`      | logical   | `TRUE`                     | Search subdirectories           |
+| `merge_strategy` | character | `"manual_priority"`        | Merge strategy (see below)      |
+| `exclude`        | character | `NULL`                     | Regex patterns to exclude files |
+| `log_level`      | character | `NULL`                     | Override log level              |
 
 **Merge Strategies:**
 
@@ -553,6 +566,60 @@ get_diagram_themes()
 
 # Use with put_diagram
 put_diagram(workflow, theme = "viridis")
+```
+
+------------------------------------------------------------------------
+
+### `put_theme()` - Create Custom Theme
+
+Creates a custom color palette by overriding specific node types from a
+base theme.
+
+**Usage:**
+
+``` r
+put_theme(
+  base = "light",
+  input = NULL,
+  process = NULL,
+  output = NULL,
+  decision = NULL,
+  artifact = NULL,
+  start = NULL,
+  end = NULL
+)
+```
+
+**Parameters:**
+
+| Parameter  | Type            | Default   | Description                                                       |
+|------------|-----------------|-----------|-------------------------------------------------------------------|
+| `base`     | character       | `"light"` | Base theme to override                                            |
+| `input`    | named character | `NULL`    | Named vector: `c(fill = "#hex", stroke = "#hex", color = "#hex")` |
+| `process`  | named character | `NULL`    | Same format as `input`                                            |
+| `output`   | named character | `NULL`    | Same format as `input`                                            |
+| `decision` | named character | `NULL`    | Same format as `input`                                            |
+| `artifact` | named character | `NULL`    | Same format as `input`                                            |
+| `start`    | named character | `NULL`    | Same format as `input`                                            |
+| `end`      | named character | `NULL`    | Same format as `input`                                            |
+
+**Returns:**
+
+A `putior_theme` object for use with `put_diagram(palette = ...)`.
+
+**Examples:**
+
+``` r
+# Create a custom palette based on the dark theme
+my_theme <- put_theme(
+  base = "dark",
+  input = c(fill = "#1a5276", stroke = "#2e86c1", color = "#ffffff"),
+  process = c(fill = "#1e8449", stroke = "#27ae60", color = "#ffffff")
+)
+
+# Apply to diagram
+workflow <- put("./src/")
+put_diagram(workflow, palette = my_theme)
 ```
 
 ------------------------------------------------------------------------

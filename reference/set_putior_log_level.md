@@ -35,16 +35,9 @@ Invisibly returns the previous log level
 ## Examples
 
 ``` r
-# Set to DEBUG for maximum verbosity
-set_putior_log_level("DEBUG")
-
-# Set to INFO for progress updates
-set_putior_log_level("INFO")
-
-# Set to WARN (default) for minimal output
-set_putior_log_level("WARN")
-
-# Check current log level
+# Save current level, change, then restore
+old_level <- set_putior_log_level("DEBUG")
 getOption("putior.log_level")
-#> [1] "WARN"
+#> [1] "DEBUG"
+set_putior_log_level(old_level)
 ```

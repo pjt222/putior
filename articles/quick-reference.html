@@ -131,7 +131,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">putior</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -307,8 +307,12 @@ continuation.</p>
 <p><strong>Save</strong></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">wf</span>, output <span class="op">=</span> <span class="st">"workflow.md"</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Debug</strong></p>
+<p><strong>Exclude files</strong></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, exclude <span class="op">=</span> <span class="st">"test"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./"</span>, exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"vendor"</span>, <span class="st">"fixture"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Debug</strong></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./"</span>, log_level <span class="op">=</span> <span class="st">"DEBUG"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -336,9 +340,25 @@ continuation.</p>
 <td><code>github</code></td>
 <td>README files</td>
 </tr>
+<tr class="odd">
+<td><code>viridis</code></td>
+<td>Colorblind-safe (purple-blue-green-yellow)</td>
+</tr>
+<tr class="even">
+<td><code>magma</code></td>
+<td>Colorblind-safe warm (purple-red-yellow)</td>
+</tr>
+<tr class="odd">
+<td><code>plasma</code></td>
+<td>Colorblind-safe vibrant (purple-pink-yellow)</td>
+</tr>
+<tr class="even">
+<td><code>cividis</code></td>
+<td>Maximum accessibility (blue-yellow only)</td>
+</tr>
 </tbody>
 </table>
-<p><strong>Directions</strong>: <code>TB</code> (default),
+<p><strong>Directions</strong>: <code>TD</code> (default),
 <code>LR</code>, <code>BT</code>, <code>RL</code></p>
 </div>
 <div class="section level2">

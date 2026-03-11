@@ -14,7 +14,8 @@ put_generate(
   output = "console",
   insert = FALSE,
   style = "multiline",
-  exclude = NULL
+  exclude = NULL,
+  log_level = NULL
 )
 ```
 
@@ -64,6 +65,13 @@ put_generate(
 
   Character vector of regex patterns. Files whose full path matches any
   pattern are excluded. Default: NULL (no exclusion).
+
+- log_level:
+
+  Character string specifying log verbosity for this call. Overrides the
+  global option `putior.log_level` when specified. Options: "DEBUG",
+  "INFO", "WARN", "ERROR". See
+  [`set_putior_log_level`](https://pjt222.github.io/putior/reference/set_putior_log_level.md).
 
 ## Value
 

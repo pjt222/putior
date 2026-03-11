@@ -111,7 +111,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">putior</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -305,6 +305,9 @@ With output="raw", returns as single string.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # Enable debug logging</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> workflow &lt;- put("./R/", log_level = "DEBUG")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # Exclude test files</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> workflow &lt;- put("./R/", exclude = "test")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ### `put_diagram()` - Generate Diagrams</span>
@@ -356,6 +359,9 @@ With output="raw", returns as single string.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # Combine with manual annotations</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> workflow &lt;- put_merge("./src/", merge_strategy = "supplement")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # Exclude vendor/test directories</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> workflow &lt;- put_auto("./src/", exclude = c("vendor", "test"))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ### `put_generate()` - Generate Annotation Templates</span>
@@ -373,7 +379,7 @@ With output="raw", returns as single string.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ## Auto-Detection Patterns</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Languages with pattern-based detection (862 patterns total):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Languages with pattern-based detection (902 patterns total):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | Language | Patterns | Key Libraries |</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |----------|----------|---------------|</span>
@@ -390,7 +396,10 @@ With output="raw", returns as single string.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | Julia | 27 | CSV.jl, DataFrames, JLD2 |</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | C | 24 | stdio.h, POSIX, mmap |</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | Lua | 20 | io library, loadfile |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | WGSL | 17 | GPU bindings, textures, samplers, naga-oil |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | Dockerfile | 13 | FROM, COPY, ADD, EXPOSE, VOLUME, CMD, RUN |</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | Shell | 12 | cat, redirects, source |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> | Makefile | 10 | include, wildcard, target rules, install |</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | SQL | 8 | FROM, JOIN, COPY |</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ### LLM Library Detection</span>
@@ -413,14 +422,14 @@ With output="raw", returns as single string.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # List supported languages</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> list_supported_languages()                    # All 30+ languages</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> list_supported_languages(detection_only = TRUE)  # 15 with auto-detection</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> list_supported_languages(detection_only = TRUE)  # 18 with auto-detection</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # Get detection patterns</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> patterns &lt;- get_detection_patterns("python")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> patterns &lt;- get_detection_patterns("r", type = "input")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # Available themes</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> list_themes()</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> get_diagram_themes()</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # Interactive help</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> putior_help()</span>

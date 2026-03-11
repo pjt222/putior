@@ -111,7 +111,7 @@ allowing flexible strategies for handling conflicts and supplementing informatio
 
     <a class="navbar-brand me-2" href="../index.html">putior</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -162,7 +162,8 @@ allowing flexible strategies for handling conflicts and supplementing informatio
 <span>  recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  merge_strategy <span class="op">=</span> <span class="st">"manual_priority"</span>,</span>
 <span>  include_line_numbers <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  exclude <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  exclude <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  log_level <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -199,6 +200,12 @@ Default: FALSE</p></dd>
 <dt id="arg-exclude">exclude<a class="anchor" aria-label="anchor" href="#arg-exclude"></a></dt>
 <dd><p>Character vector of regex patterns. Files whose full path
 matches any pattern are excluded. Default: NULL (no exclusion).</p></dd>
+
+
+<dt id="arg-log-level">log_level<a class="anchor" aria-label="anchor" href="#arg-log-level"></a></dt>
+<dd><p>Character string specifying log verbosity for this call.
+Overrides the global option <code>putior.log_level</code> when specified.
+Options: "DEBUG", "INFO", "WARN", "ERROR". See <code><a href="set_putior_log_level.html">set_putior_log_level</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

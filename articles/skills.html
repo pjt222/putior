@@ -131,7 +131,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">putior</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -494,7 +494,10 @@ PHP</td>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, pattern <span class="op">=</span> <span class="st">"\\.py$"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Enable debug logging</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./R/"</span>, log_level <span class="op">=</span> <span class="st">"DEBUG"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./R/"</span>, log_level <span class="op">=</span> <span class="st">"DEBUG"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Exclude test files</span></span>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./R/"</span>, exclude <span class="op">=</span> <span class="st">"test"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="put_diagram---generate-diagrams">
@@ -546,7 +549,10 @@ PHP</td>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Combine with manual annotations</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_merge.html">put_merge</a></span><span class="op">(</span><span class="st">"./src/"</span>, merge_strategy <span class="op">=</span> <span class="st">"supplement"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_merge.html">put_merge</a></span><span class="op">(</span><span class="st">"./src/"</span>, merge_strategy <span class="op">=</span> <span class="st">"supplement"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Exclude vendor/test directories</span></span>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./src/"</span>, exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"vendor"</span>, <span class="st">"test"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="put_generate---generate-annotation-templates">
@@ -566,7 +572,7 @@ PHP</td>
 <div class="section level3">
 <h3 id="auto-detection-patterns">Auto-Detection Patterns<a class="anchor" aria-label="anchor" href="#auto-detection-patterns"></a>
 </h3>
-<p>Languages with pattern-based detection (862 patterns total):</p>
+<p>Languages with pattern-based detection (902 patterns total):</p>
 <table class="table">
 <thead><tr class="header">
 <th>Language</th>
@@ -640,11 +646,26 @@ PHP</td>
 <td>io library, loadfile</td>
 </tr>
 <tr class="even">
+<td>WGSL</td>
+<td>17</td>
+<td>GPU bindings, textures, samplers, naga-oil</td>
+</tr>
+<tr class="odd">
+<td>Dockerfile</td>
+<td>13</td>
+<td>FROM, COPY, ADD, EXPOSE, VOLUME, CMD, RUN</td>
+</tr>
+<tr class="even">
 <td>Shell</td>
 <td>12</td>
 <td>cat, redirects, source</td>
 </tr>
 <tr class="odd">
+<td>Makefile</td>
+<td>10</td>
+<td>include, wildcard, target rules, install</td>
+</tr>
+<tr class="even">
 <td>SQL</td>
 <td>8</td>
 <td>FROM, JOIN, COPY</td>
@@ -675,14 +696,14 @@ transformers, litellm, vllm, groq</p>
 <span></span>
 <span><span class="co"># List supported languages</span></span>
 <span><span class="fu"><a href="../reference/list_supported_languages.html">list_supported_languages</a></span><span class="op">(</span><span class="op">)</span>                    <span class="co"># All 30+ languages</span></span>
-<span><span class="fu"><a href="../reference/list_supported_languages.html">list_supported_languages</a></span><span class="op">(</span>detection_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>  <span class="co"># 15 with auto-detection</span></span>
+<span><span class="fu"><a href="../reference/list_supported_languages.html">list_supported_languages</a></span><span class="op">(</span>detection_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>  <span class="co"># 18 with auto-detection</span></span>
 <span></span>
 <span><span class="co"># Get detection patterns</span></span>
 <span><span class="va">patterns</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_detection_patterns.html">get_detection_patterns</a></span><span class="op">(</span><span class="st">"python"</span><span class="op">)</span></span>
 <span><span class="va">patterns</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_detection_patterns.html">get_detection_patterns</a></span><span class="op">(</span><span class="st">"r"</span>, type <span class="op">=</span> <span class="st">"input"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Available themes</span></span>
-<span><span class="fu">list_themes</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/get_diagram_themes.html">get_diagram_themes</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Interactive help</span></span>
 <span><span class="fu"><a href="../reference/putior_help.html">putior_help</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>

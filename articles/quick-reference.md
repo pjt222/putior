@@ -61,6 +61,13 @@ put_diagram(wf, show_source_info = TRUE)      # Show file info
 put_diagram(wf, output = "workflow.md")
 ```
 
+**Exclude files**
+
+``` r
+put("./src/", exclude = "test")
+put_auto("./", exclude = c("vendor", "fixture"))
+```
+
 **Debug**
 
 ``` r
@@ -69,14 +76,18 @@ put("./", log_level = "DEBUG")
 
 ## Themes and Direction
 
-| Theme     | Use Case                  |
-|-----------|---------------------------|
-| `light`   | Bright colors (default)   |
-| `dark`    | Dark mode UIs             |
-| `minimal` | Print-friendly, grayscale |
-| `github`  | README files              |
+| Theme     | Use Case                                     |
+|-----------|----------------------------------------------|
+| `light`   | Bright colors (default)                      |
+| `dark`    | Dark mode UIs                                |
+| `minimal` | Print-friendly, grayscale                    |
+| `github`  | README files                                 |
+| `viridis` | Colorblind-safe (purple-blue-green-yellow)   |
+| `magma`   | Colorblind-safe warm (purple-red-yellow)     |
+| `plasma`  | Colorblind-safe vibrant (purple-pink-yellow) |
+| `cividis` | Maximum accessibility (blue-yellow only)     |
 
-**Directions**: `TB` (default), `LR`, `BT`, `RL`
+**Directions**: `TD` (default), `LR`, `BT`, `RL`
 
 ## Node Types
 

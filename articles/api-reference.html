@@ -131,7 +131,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">putior</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -252,21 +252,26 @@ functions in the putior package.</p>
 <td>List available diagram themes</td>
 </tr>
 <tr class="odd">
+<td><code><a href="../reference/put_theme.html">put_theme()</a></code></td>
+<td>Configuration</td>
+<td>Create custom color palette</td>
+</tr>
+<tr class="even">
 <td><code><a href="../reference/set_putior_log_level.html">set_putior_log_level()</a></code></td>
 <td>Configuration</td>
 <td>Configure logging verbosity</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation()</a></code></td>
 <td>Utilities</td>
 <td>Validate annotation syntax</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code><a href="../reference/split_file_list.html">split_file_list()</a></code></td>
 <td>Utilities</td>
 <td>Parse comma-separated file lists</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code><a href="../reference/run_sandbox.html">run_sandbox()</a></code></td>
 <td>Interactive</td>
 <td>Launch Shiny sandbox app</td>
@@ -292,6 +297,7 @@ files.</p>
 <span>  recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_line_numbers <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  validate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  log_level <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><strong>Parameters:</strong></p>
@@ -340,6 +346,13 @@ files.</p>
 <td>Show validation warnings</td>
 </tr>
 <tr class="even">
+<td><code>exclude</code></td>
+<td>character</td>
+<td><code>NULL</code></td>
+<td>Regex patterns to exclude files (e.g., <code>"test"</code> skips
+test files)</td>
+</tr>
+<tr class="odd">
 <td><code>log_level</code></td>
 <td>character</td>
 <td><code>NULL</code></td>
@@ -605,6 +618,11 @@ Tour</a>
 <span><span class="va">mermaid_code</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Theme Comparison:</strong></p>
 <table class="table">
+<colgroup>
+<col width="23%">
+<col width="33%">
+<col width="43%">
+</colgroup>
 <thead><tr class="header">
 <th>Theme</th>
 <th>Best For</th>
@@ -636,6 +654,26 @@ Tour</a>
 <td>Reports</td>
 <td>Professional grayscale</td>
 </tr>
+<tr class="even">
+<td><code>viridis</code></td>
+<td>Accessibility</td>
+<td>Colorblind-safe (purple-blue-green-yellow)</td>
+</tr>
+<tr class="odd">
+<td><code>magma</code></td>
+<td>Print</td>
+<td>Colorblind-safe warm (purple-red-yellow)</td>
+</tr>
+<tr class="even">
+<td><code>plasma</code></td>
+<td>Presentations</td>
+<td>Colorblind-safe vibrant (purple-pink-yellow)</td>
+</tr>
+<tr class="odd">
+<td><code>cividis</code></td>
+<td>Max accessibility</td>
+<td>Blue-yellow only (red-green safe)</td>
+</tr>
 </tbody>
 </table>
 <hr>
@@ -659,6 +697,7 @@ dependencies without requiring manual annotations.</p>
 <span>  detect_inputs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  detect_outputs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  detect_dependencies <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  log_level <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><strong>Parameters:</strong></p>
@@ -713,6 +752,12 @@ dependencies without requiring manual annotations.</p>
 <td>Detect script dependencies</td>
 </tr>
 <tr class="odd">
+<td><code>exclude</code></td>
+<td>character</td>
+<td><code>NULL</code></td>
+<td>Regex patterns to exclude files</td>
+</tr>
+<tr class="even">
 <td><code>log_level</code></td>
 <td>character</td>
 <td><code>NULL</code></td>
@@ -751,6 +796,7 @@ skeletons.</p>
 <span>  recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  output <span class="op">=</span> <span class="st">"console"</span>,</span>
 <span>  style <span class="op">=</span> <span class="st">"single"</span>,</span>
+<span>  exclude <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  log_level <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><strong>Parameters:</strong></p>
@@ -799,6 +845,12 @@ skeletons.</p>
 <td>Annotation style: “single” or “multiline”</td>
 </tr>
 <tr class="even">
+<td><code>exclude</code></td>
+<td>character</td>
+<td><code>NULL</code></td>
+<td>Regex patterns to exclude files</td>
+</tr>
+<tr class="odd">
 <td><code>log_level</code></td>
 <td>character</td>
 <td><code>NULL</code></td>
@@ -833,6 +885,7 @@ configurable merge strategies.</p>
 <span>  pattern <span class="op">=</span> <span class="st">"\\.(R|r|py|sql|sh|jl)$"</span>,</span>
 <span>  recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  merge_strategy <span class="op">=</span> <span class="st">"manual_priority"</span>,</span>
+<span>  exclude <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  log_level <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><strong>Parameters:</strong></p>
@@ -875,6 +928,12 @@ configurable merge strategies.</p>
 <td>Merge strategy (see below)</td>
 </tr>
 <tr class="odd">
+<td><code>exclude</code></td>
+<td>character</td>
+<td><code>NULL</code></td>
+<td>Regex patterns to exclude files</td>
+</tr>
+<tr class="even">
 <td><code>log_level</code></td>
 <td>character</td>
 <td><code>NULL</code></td>
@@ -1172,13 +1231,121 @@ Extensions<a class="anchor" aria-label="anchor" href="#get_supported_extensions-
 <hr>
 </div>
 <div class="section level3">
+<h3 id="put_theme---create-custom-theme">
+<code>put_theme()</code> - Create Custom Theme<a class="anchor" aria-label="anchor" href="#put_theme---create-custom-theme"></a>
+</h3>
+<p>Creates a custom color palette by overriding specific node types from
+a base theme.</p>
+<p><strong>Usage:</strong></p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/put_theme.html">put_theme</a></span><span class="op">(</span></span>
+<span>  base <span class="op">=</span> <span class="st">"light"</span>,</span>
+<span>  input <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  process <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  output <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  decision <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  artifact <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  start <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  end <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><strong>Parameters:</strong></p>
+<table class="table">
+<colgroup>
+<col width="28%">
+<col width="15%">
+<col width="23%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>base</code></td>
+<td>character</td>
+<td><code>"light"</code></td>
+<td>Base theme to override</td>
+</tr>
+<tr class="even">
+<td><code>input</code></td>
+<td>named character</td>
+<td><code>NULL</code></td>
+<td>Named vector:
+<code>c(fill = "#hex", stroke = "#hex", color = "#hex")</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>process</code></td>
+<td>named character</td>
+<td><code>NULL</code></td>
+<td>Same format as <code>input</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>output</code></td>
+<td>named character</td>
+<td><code>NULL</code></td>
+<td>Same format as <code>input</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>decision</code></td>
+<td>named character</td>
+<td><code>NULL</code></td>
+<td>Same format as <code>input</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>artifact</code></td>
+<td>named character</td>
+<td><code>NULL</code></td>
+<td>Same format as <code>input</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>start</code></td>
+<td>named character</td>
+<td><code>NULL</code></td>
+<td>Same format as <code>input</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>end</code></td>
+<td>named character</td>
+<td><code>NULL</code></td>
+<td>Same format as <code>input</code>
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<p>A <code>putior_theme</code> object for use with
+<code>put_diagram(palette = ...)</code>.</p>
+<p><strong>Examples:</strong></p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create a custom palette based on the dark theme</span></span>
+<span><span class="va">my_theme</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_theme.html">put_theme</a></span><span class="op">(</span></span>
+<span>  base <span class="op">=</span> <span class="st">"dark"</span>,</span>
+<span>  input <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#1a5276"</span>, stroke <span class="op">=</span> <span class="st">"#2e86c1"</span>, color <span class="op">=</span> <span class="st">"#ffffff"</span><span class="op">)</span>,</span>
+<span>  process <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#1e8449"</span>, stroke <span class="op">=</span> <span class="st">"#27ae60"</span>, color <span class="op">=</span> <span class="st">"#ffffff"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Apply to diagram</span></span>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, palette <span class="op">=</span> <span class="va">my_theme</span><span class="op">)</span></span></code></pre></div>
+<hr>
+</div>
+<div class="section level3">
 <h3 id="set_putior_log_level---configure-logging">
 <code>set_putior_log_level()</code> - Configure Logging<a class="anchor" aria-label="anchor" href="#set_putior_log_level---configure-logging"></a>
 </h3>
 <p>Sets the logging verbosity for putior functions. Requires the
 optional <code>logger</code> package.</p>
 <p><strong>Usage:</strong></p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/set_putior_log_level.html">set_putior_log_level</a></span><span class="op">(</span>level <span class="op">=</span> <span class="st">"WARN"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Parameters:</strong></p>
 <table class="table">
@@ -1227,7 +1394,7 @@ optional <code>logger</code> package.</p>
 </tbody>
 </table>
 <p><strong>Examples:</strong></p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Enable debug logging for troubleshooting</span></span>
 <span><span class="fu"><a href="../reference/set_putior_log_level.html">set_putior_log_level</a></span><span class="op">(</span><span class="st">"DEBUG"</span><span class="op">)</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
@@ -1250,7 +1417,7 @@ Syntax<a class="anchor" aria-label="anchor" href="#is_valid_put_annotation---val
 </h3>
 <p>Tests whether a string is a valid PUT annotation.</p>
 <p><strong>Usage:</strong></p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="va">line</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Parameters:</strong></p>
 <table class="table">
@@ -1269,7 +1436,7 @@ Syntax<a class="anchor" aria-label="anchor" href="#is_valid_put_annotation---val
 <p>Logical: <code>TRUE</code> if valid PUT annotation,
 <code>FALSE</code> otherwise.</p>
 <p><strong>Examples:</strong></p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Valid annotations - hash style (R, Python)</span></span>
 <span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'# put label:"My Step"'</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
@@ -1307,7 +1474,7 @@ Syntax<a class="anchor" aria-label="anchor" href="#is_valid_put_annotation---val
 <p>Splits a comma-separated file list string into a character
 vector.</p>
 <p><strong>Usage:</strong></p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/split_file_list.html">split_file_list</a></span><span class="op">(</span><span class="va">file_string</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Parameters:</strong></p>
 <table class="table">
@@ -1325,7 +1492,7 @@ vector.</p>
 <p><strong>Returns:</strong></p>
 <p>Character vector of trimmed file names.</p>
 <p><strong>Examples:</strong></p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/split_file_list.html">split_file_list</a></span><span class="op">(</span><span class="st">"data.csv, results.json, report.html"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "data.csv"     "results.json" "report.html"</span></span>
 <span></span>
@@ -1343,7 +1510,7 @@ vector.</p>
 <p>Launches an interactive Shiny app for experimenting with PUT
 annotations.</p>
 <p><strong>Usage:</strong></p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/run_sandbox.html">run_sandbox</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Requirements:</strong></p>
 <ul>
@@ -1364,7 +1531,7 @@ highlighting)</li>
 <li>Copy to clipboard</li>
 </ul>
 <p><strong>Examples:</strong></p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Launch the sandbox</span></span>
 <span><span class="fu"><a href="../reference/run_sandbox.html">run_sandbox</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <hr>
@@ -1376,7 +1543,7 @@ highlighting)</li>
 <div class="section level3">
 <h3 id="basic-workflow">Basic Workflow<a class="anchor" aria-label="anchor" href="#basic-workflow"></a>
 </h3>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pjt222.github.io/putior/">putior</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Extract and visualize</span></span>
@@ -1386,7 +1553,7 @@ highlighting)</li>
 <div class="section level3">
 <h3 id="auto-detection-pipeline">Auto-Detection Pipeline<a class="anchor" aria-label="anchor" href="#auto-detection-pipeline"></a>
 </h3>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Analyze code automatically</span></span>
 <span><span class="va">auto_workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
 <span></span>
@@ -1400,7 +1567,7 @@ highlighting)</li>
 <div class="section level3">
 <h3 id="interactive-documentation">Interactive Documentation<a class="anchor" aria-label="anchor" href="#interactive-documentation"></a>
 </h3>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, include_line_numbers <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>,</span>
@@ -1416,7 +1583,7 @@ highlighting)</li>
 <div class="section level3">
 <h3 id="debugging">Debugging<a class="anchor" aria-label="anchor" href="#debugging"></a>
 </h3>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Enable verbose logging</span></span>
 <span><span class="fu"><a href="../reference/set_putior_log_level.html">set_putior_log_level</a></span><span class="op">(</span><span class="st">"DEBUG"</span><span class="op">)</span></span>
 <span></span>

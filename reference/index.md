@@ -105,8 +105,6 @@ Internal implementation details (not part of the public API)
   : Create empty result data frame for put_auto
 - [`empty_result_df()`](https://pjt222.github.io/putior/reference/empty_result_df.md)
   : Create empty result data frame
-- [`extract_file_path()`](https://pjt222.github.io/putior/reference/extract_file_path.md)
-  : Extract file path from a matched string (legacy function)
 - [`extract_file_path_from_line()`](https://pjt222.github.io/putior/reference/extract_file_path_from_line.md)
   : Extract file path from a line containing a matched function call
 - [`find_block_comment_annotations()`](https://pjt222.github.io/putior/reference/find_block_comment_annotations.md)
@@ -164,7 +162,7 @@ Internal implementation details (not part of the public API)
 - [`get_sql_patterns()`](https://pjt222.github.io/putior/reference/get_sql_patterns.md)
   : Get SQL Detection Patterns
 - [`get_theme_colors()`](https://pjt222.github.io/putior/reference/get_theme_colors.md)
-  : Get color schemes for different themes (FIXED VERSION)
+  : Get color schemes for different themes
 - [`get_typescript_patterns()`](https://pjt222.github.io/putior/reference/get_typescript_patterns.md)
   : Get TypeScript Detection Patterns
 - [`get_wgsl_patterns()`](https://pjt222.github.io/putior/reference/get_wgsl_patterns.md)
