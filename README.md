@@ -664,6 +664,10 @@ put_diagram(workflow, theme = "minimal", output = "file", file = "report.md")
 put_diagram(workflow, theme = "viridis")     # General accessibility
 put_diagram(workflow, theme = "cividis")     # Red-green colorblindness
 
+# Custom palette (override individual node type colors)
+my_theme <- put_theme(base = "dark", input = c(fill = "#1a1a2e", stroke = "#00ff88"))
+put_diagram(workflow, palette = my_theme)
+
 # Save all themes for comparison
 themes <- c("light", "dark", "auto", "github", "minimal",
             "viridis", "magma", "plasma", "cividis")
@@ -936,10 +940,12 @@ putior automatically detects and processes 30+ file types, with language-specifi
 
 | Comment Style | Languages | Extensions |
 |---------------|-----------|------------|
-| `# put` | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`, `.yml`, `.toml` |
+| `# put` | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML, Dockerfile, Makefile | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`, `.yml`, `.toml`, `Dockerfile`, `Makefile` |
 | `-- put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |
-| `// put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala | `.js`, `.ts`, `.jsx`, `.tsx`, `.c`, `.cpp`, `.java`, `.go`, `.rs`, `.swift`, `.kt`, `.cs`, `.php`, `.scala` |
+| `// put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala, WGSL | `.js`, `.ts`, `.jsx`, `.tsx`, `.c`, `.cpp`, `.java`, `.go`, `.rs`, `.swift`, `.kt`, `.cs`, `.php`, `.scala`, `.wgsl` |
 | `% put` | MATLAB, LaTeX | `.m`, `.tex` |
+
+Languages using `//` also support PUT annotations inside block comments (`/* */` and `/** */`), using `* put` as the line prefix.
 
 **Unknown extensions default to `#` prefix.**
 
@@ -959,6 +965,10 @@ workflow <- put("./project/", recursive = TRUE)
 
 # Custom file patterns
 workflow <- put("./analysis/", pattern = "\\.(R|py)$")
+
+# Exclude files matching regex patterns
+workflow <- put("./src/", exclude = c("test", "deprecated"))
+workflow <- put_auto("./", exclude = c("vendor", "fixture"))
 
 # Single file
 workflow <- put("./script.R")
@@ -1147,6 +1157,8 @@ The sandbox lets you:
 
 Quick reference for all exported functions:
 
+**Core Workflow:**
+
 | Function | Purpose | Example |
 |----------|---------|---------|
 | `put()` | Extract annotations from files | `workflow <- put("./src/")` |
@@ -1154,15 +1166,33 @@ Quick reference for all exported functions:
 | `put_auto()` | Auto-detect workflow from code | `put_auto("./src/")` |
 | `put_generate()` | Generate annotation comments | `put_generate("./src/")` |
 | `put_merge()` | Combine manual + auto annotations | `put_merge("./src/")` |
+| `put_theme()` | Create custom color palette | `put_theme(base = "dark", input = c(fill = "#1a1a2e"))` |
 | `run_sandbox()` | Launch interactive Shiny app | `run_sandbox()` |
+
+**Reference and Utilities:**
+
+| Function | Purpose | Example |
+|----------|---------|---------|
 | `get_detection_patterns()` | View/customize detection patterns | `get_detection_patterns("r")` |
 | `list_supported_languages()` | List supported languages | `list_supported_languages()` |
 | `get_comment_prefix()` | Get comment prefix for extension | `get_comment_prefix("sql")` → `"--"` |
 | `get_supported_extensions()` | List all supported extensions | `get_supported_extensions()` |
+| `get_diagram_themes()` | List available themes | `get_diagram_themes()` |
+| `ext_to_language()` | Extension to language name | `ext_to_language("rs")` → `"rust"` |
 | `set_putior_log_level()` | Configure logging verbosity | `set_putior_log_level("DEBUG")` |
 | `is_valid_put_annotation()` | Validate annotation syntax | `is_valid_put_annotation("# put ...")` |
-| `get_diagram_themes()` | List available themes | `get_diagram_themes()` |
 | `split_file_list()` | Parse comma-separated files | `split_file_list("a.csv, b.csv")` |
+| `putior_help()` | Quick reference help | `putior_help()` |
+| `putior_skills()` | AI assistant documentation | `putior_skills()` |
+
+**Integration (MCP/ACP):**
+
+| Function | Purpose | Example |
+|----------|---------|---------|
+| `putior_mcp_server()` | Start MCP server for AI assistants | `putior_mcp_server()` |
+| `putior_mcp_tools()` | Get MCP tool definitions | `putior_mcp_tools()` |
+| `putior_acp_server()` | Start ACP server for agent-to-agent | `putior_acp_server()` |
+| `putior_acp_manifest()` | Get ACP agent manifest | `putior_acp_manifest()` |
 
 For detailed documentation, see:
 - Function help: `?put`, `?put_diagram`, `?put_auto`
@@ -1177,50 +1207,56 @@ As a demonstration of putior's capabilities, we've added PUT annotations to puti
 ```r
 # Extract putior's own workflow
 workflow <- put("./R/")
-put_diagram(workflow, theme = "github", title = "putior Package Internals")
+put_diagram(workflow, theme = "github", title = "putior Package Internals",
+            show_workflow_boundaries = TRUE)
 ```
 
-**Result:**
+**putior's Own Workflow:**
 ```mermaid
 ---
 title: putior Package Internals
 ---
 flowchart TD
-    put_entry([Entry Point - Scan Files])
-    process_file[Process Single File]
-    parser[Parse Annotation Syntax]
-    convert_df[Convert to Data Frame]
     diagram_gen[Generate Mermaid Diagram]
+    styling[Apply Theme Styling]
     node_defs[Create Node Definitions]
     connections[Generate Node Connections]
     output_handler([Output Final Diagram])
+    put_entry([Entry Point - Scan Files])
+    process_file[Process Single File]
+    validate[Validate Annotations]
+    parser[Parse Annotation Syntax]
+    convert_df[Convert to Data Frame]
 
     %% Connections
-    put_entry --> process_file
+    put_entry --> diagram_gen
+    convert_df --> diagram_gen
+    node_defs --> styling
+    put_entry --> node_defs
+    convert_df --> node_defs
+    node_defs --> connections
+    diagram_gen --> output_handler
+    process_file --> validate
     process_file --> parser
     parser --> convert_df
-    convert_df --> diagram_gen
-    diagram_gen --> node_defs
-    node_defs --> connections
-    connections --> output_handler
 
     %% Styling
     classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class process_file processStyle
-    class parser processStyle
-    class convert_df processStyle
     class diagram_gen processStyle
+    class styling processStyle
     class node_defs processStyle
     class connections processStyle
+    class process_file processStyle
+    class validate processStyle
+    class parser processStyle
+    class convert_df processStyle
     classDef startStyle fill:#fef3c7,stroke:#d97706,stroke-width:3px,color:#92400e
     class put_entry startStyle
     classDef endStyle fill:#dcfce7,stroke:#16a34a,stroke-width:3px,color:#15803d
     class output_handler endStyle
 ```
 
-This self-documentation shows the two main phases of putior:
-1. **Parsing Phase**: Scanning files → extracting annotations → converting to workflow data
-2. **Diagram Generation Phase**: Taking workflow data → creating nodes/connections → outputting diagram
+This diagram is **auto-generated** by running `put("./R/")` on putior's own annotated source code — a real demonstration of the package in action.
 
 To see the complete data flow with intermediate files, run:
 ```r

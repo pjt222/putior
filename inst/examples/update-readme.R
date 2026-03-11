@@ -186,6 +186,17 @@ minimal_mermaid <- put_diagram(theme_workflow, theme = "minimal", output = "none
 readme_lines <- replace_mermaid_block(readme_lines, "**Minimal Theme**", 
                                     minimal_mermaid, "Minimal theme example")
 
+# 6. Self-Documentation (putior documents itself)
+cat("🔄 Updating self-documentation example...\n")
+self_workflow <- put("./R/")
+self_mermaid <- put_diagram(self_workflow,
+                            theme = "github",
+                            title = "putior Package Internals",
+                            show_workflow_boundaries = TRUE,
+                            output = "none")
+readme_lines <- replace_mermaid_block(readme_lines, "**putior's Own Workflow:**",
+                                      self_mermaid, "Self-documentation")
+
 # =============================================================================
 # Write updated README
 # =============================================================================

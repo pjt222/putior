@@ -4,22 +4,22 @@
 
 * checking CRAN incoming feasibility ... NOTE
   Maintainer: 'Philipp Thoss <ph.thoss@gmx.de>'
-
-  Found the following (possibly) invalid URLs:
-    URL: https://pjt222.github.io/putior/
-      From: DESCRIPTION
-      Status: (to be verified)
+  New submission.
 
 ## Test environments
 
-* local: Windows 11, R 4.5.2 - Status: (to be run)
-* win-builder: R-devel - Status: (to be run)
-* win-builder: R-release - Status: (to be run)
-* GitHub Actions:
-  - macOS-latest (release)
-  - windows-latest (release)
-  - ubuntu-latest (release)
-* R-hub v2: (to be run)
+* local: Windows 11, R 4.5.2 — 0 errors, 0 warnings, 1 note
+* win-builder: R-devel (2026-03-10 r89593 ucrt) — 0 errors, 0 warnings, 1 note (new submission)
+* win-builder: R-release (4.5.2 Patched, 2026-02-13 r89426 ucrt) — 0 errors, 0 warnings, 1 note (new submission)
+* R-hub v2:
+  - linux (R-devel) — Status: OK
+  - windows (R-devel) — Status: OK
+  - ubuntu-release (R 4.5.2) — Status: OK
+  - macos (R-devel) — cancelled (runner unavailability, not a package issue)
+* GitHub Actions (R-CMD-check):
+  - macOS-latest (release) — PASS
+  - windows-latest (release) — PASS
+  - ubuntu-latest (release) — PASS
 
 ## Update notes
 
