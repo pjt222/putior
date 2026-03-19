@@ -59,9 +59,13 @@ putior_guide()
 #> # putior Quick Reference
 #> 
 #> > For step-by-step procedures, see the
-#> > [agent-almanac putior skills](https://github.com/pjt222/agent-almanac):
-#> > install-putior, analyze-codebase-workflow, annotate-source-files,
-#> > generate-workflow-diagram, configure-putior-mcp, setup-putior-ci
+#> > [agent-almanac](https://github.com/pjt222/agent-almanac) putior skills:
+#> > [install-putior](https://github.com/pjt222/agent-almanac/blob/main/skills/install-putior/SKILL.md),
+#> > [analyze-codebase-workflow](https://github.com/pjt222/agent-almanac/blob/main/skills/analyze-codebase-workflow/SKILL.md),
+#> > [annotate-source-files](https://github.com/pjt222/agent-almanac/blob/main/skills/annotate-source-files/SKILL.md),
+#> > [generate-workflow-diagram](https://github.com/pjt222/agent-almanac/blob/main/skills/generate-workflow-diagram/SKILL.md),
+#> > [configure-putior-mcp](https://github.com/pjt222/agent-almanac/blob/main/skills/configure-putior-mcp/SKILL.md),
+#> > [setup-putior-ci](https://github.com/pjt222/agent-almanac/blob/main/skills/setup-putior-ci/SKILL.md)
 #> 
 #> ## Direct Access (Non-R Environments)
 #> 
