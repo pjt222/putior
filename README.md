@@ -102,19 +102,17 @@ put_diagram(workflow, theme = "github")
 **Result:**
 ```mermaid
 flowchart TD
-    fetch([Fetch Sales Data])
-    clean[Clean and Validate]
-    report[[Generate Summary]]
+    fetch_sales(["Fetch Sales Data"])
+    clean_data["Clean and Process"]
 
-    fetch --> clean
-    clean --> report
+    %% Connections
+    fetch_sales --> clean_data
 
+    %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    class fetch inputStyle
+    class fetch_sales inputStyle
     classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class clean processStyle
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class report outputStyle
+    class clean_data processStyle
 ```
 
 ## Learn More
