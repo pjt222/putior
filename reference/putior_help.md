@@ -29,7 +29,7 @@ putior_help(topic = NULL)
 
   - "examples" - Show quick examples
 
-  - "skills" - Show AI assistant skills reference
+  - "guide" - Show AI assistant guide reference
 
 ## Value
 
@@ -40,9 +40,9 @@ Invisibly returns NULL. Prints help content to the console.
 Other integration:
 [`putior_acp_manifest()`](https://pjt222.github.io/putior/reference/putior_acp_manifest.md),
 [`putior_acp_server()`](https://pjt222.github.io/putior/reference/putior_acp_server.md),
+[`putior_guide()`](https://pjt222.github.io/putior/reference/putior_guide.md),
 [`putior_mcp_server()`](https://pjt222.github.io/putior/reference/putior_mcp_server.md),
-[`putior_mcp_tools()`](https://pjt222.github.io/putior/reference/putior_mcp_tools.md),
-[`putior_skills()`](https://pjt222.github.io/putior/reference/putior_skills.md)
+[`putior_mcp_tools()`](https://pjt222.github.io/putior/reference/putior_mcp_tools.md)
 
 ## Examples
 
@@ -60,7 +60,7 @@ putior_help()
 #>   putior_help("node_types")   - Available node types for styling
 #>   putior_help("patterns")     - Auto-detection patterns
 #>   putior_help("examples")     - Quick usage examples
-#>   putior_help("skills")       - AI assistant skills reference
+#>   putior_help("guide")        - AI assistant guide reference
 #> 
 #> For full documentation, see: ?put, ?put_diagram, ?put_auto
 #> 
@@ -259,18 +259,18 @@ putior_help("examples")
 #>   workflow <- put("./src/")
 #> 
 
-# Show AI assistant skills reference
-putior_help("skills")
+# Show AI assistant guide reference
+putior_help("guide")
 #> 
-#> === AI Assistant Skills Reference ===
+#> === AI Assistant Guide Reference ===
 #> 
-#> putior includes comprehensive skills documentation for AI coding assistants.
+#> putior includes comprehensive reference documentation for AI coding assistants.
 #> 
 #> ACCESS METHODS:
-#>   putior_skills()                    # Show full skills reference
-#>   putior_skills("quick-start")       # Show quick start section
-#>   putior_skills(output = "raw")      # Get raw markdown
-#>   putior_skills(output = "clipboard") # Copy to clipboard
+#>   putior_guide()                    # Show full guide reference
+#>   putior_guide("quick-start")       # Show quick start section
+#>   putior_guide(output = "raw")      # Get raw markdown
+#>   putior_guide(output = "clipboard") # Copy to clipboard
 #> 
 #> AVAILABLE TOPICS:
 #>   quick-start  - Essential 3 commands
@@ -281,6 +281,10 @@ putior_help("skills")
 #>   examples     - Common usage patterns
 #> 
 #> RAW FILE ACCESS:
-#>   system.file("SKILLS.md", package = "putior")
+#>   system.file("GUIDE.md", package = "putior")
+#> 
+#> PROCEDURAL SKILLS:
+#>   For step-by-step procedures, see the agent-almanac repository:
+#>   https://github.com/pjt222/agent-almanac
 #> 
 ```

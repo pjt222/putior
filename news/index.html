@@ -136,7 +136,7 @@
     <li><a class="dropdown-item" href="../articles/quick-reference.html">Quick Reference</a></li>
     <li><a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting Guide</a></li>
   </ul></li>
-<li class="nav-item"><a class="nav-link" href="../articles/skills.html"><span class="fa fa-robot"></span> AI Skills</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/ai-integration.html"><span class="fa fa-robot"></span> AI Integration</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/quick-reference.html"><span class="fa fa-file-alt"></span> Quick Ref</a></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -157,8 +157,8 @@
 <h2 class="pkg-version" data-toc-text="0.2.0" id="putior-020">putior 0.2.0<a class="anchor" aria-label="anchor" href="#putior-020"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-0-2-0">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-0"></a></h3>
-<ul><li>
-<code><a href="../reference/put.html">put()</a></code>, <code><a href="../reference/put_auto.html">put_auto()</a></code>, <code><a href="../reference/put_generate.html">put_generate()</a></code>, and <code><a href="../reference/put_merge.html">put_merge()</a></code> now default to <code>recursive = TRUE</code> (previously <code>FALSE</code>). Directory scans now include subdirectories by default. Pass <code>recursive = FALSE</code> for the old behavior. (<a href="https://github.com/pjt222/putior/issues/34" class="external-link">#34</a>)</li>
+<ul><li><p>Renamed <code>putior_skills()</code> to <code><a href="../reference/putior_guide.html">putior_guide()</a></code>. The function, its MCP tool (<code>putior_guide</code>), and its ACP operation (<code>guide</code>) all use the new name. <code>putior_help("skills")</code> still works as an alias for backward compatibility. The inst file was renamed from <code>SKILLS.md</code> to <code>GUIDE.md</code>, and the vignette from <code>skills.Rmd</code> to <code>ai-integration.Rmd</code>. (<a href="https://github.com/pjt222/putior/issues/41" class="external-link">#41</a>)</p></li>
+<li><p><code><a href="../reference/put.html">put()</a></code>, <code><a href="../reference/put_auto.html">put_auto()</a></code>, <code><a href="../reference/put_generate.html">put_generate()</a></code>, and <code><a href="../reference/put_merge.html">put_merge()</a></code> now default to <code>recursive = TRUE</code> (previously <code>FALSE</code>). Directory scans now include subdirectories by default. Pass <code>recursive = FALSE</code> for the old behavior. (<a href="https://github.com/pjt222/putior/issues/34" class="external-link">#34</a>)</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-2-0">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-0"></a></h3>
@@ -171,7 +171,7 @@
 <h4 id="mcp-server-integration-0-2-0">MCP Server Integration<a class="anchor" aria-label="anchor" href="#mcp-server-integration-0-2-0"></a></h4>
 <ul><li>Added <code><a href="../reference/putior_mcp_server.html">putior_mcp_server()</a></code> to expose putior functions as MCP tools for AI assistants</li>
 <li>Added <code><a href="../reference/putior_mcp_tools.html">putior_mcp_tools()</a></code> to get/filter tool definitions for custom MCP integrations</li>
-<li>16 tools available: <code>put</code>, <code>put_diagram</code>, <code>put_auto</code>, <code>put_generate</code>, <code>put_merge</code>, <code>get_comment_prefix</code>, <code>get_supported_extensions</code>, <code>list_supported_languages</code>, <code>get_detection_patterns</code>, <code>get_diagram_themes</code>, <code>putior_skills</code>, <code>putior_help</code>, <code>set_putior_log_level</code>, <code>is_valid_put_annotation</code>, <code>split_file_list</code>, <code>ext_to_language</code>
+<li>16 tools available: <code>put</code>, <code>put_diagram</code>, <code>put_auto</code>, <code>put_generate</code>, <code>put_merge</code>, <code>get_comment_prefix</code>, <code>get_supported_extensions</code>, <code>list_supported_languages</code>, <code>get_detection_patterns</code>, <code>get_diagram_themes</code>, <code>putior_guide</code>, <code>putior_help</code>, <code>set_putior_log_level</code>, <code>is_valid_put_annotation</code>, <code>split_file_list</code>, <code>ext_to_language</code>
 </li>
 <li>Supports Claude Code, Claude Desktop, and other MCP-compatible clients</li>
 </ul></div>
@@ -295,7 +295,7 @@
 <li>20 example files in <code>inst/examples/</code>
 </li>
 <li>
-<code><a href="../reference/putior_skills.html">putior_skills()</a></code> and <code><a href="../reference/putior_help.html">putior_help()</a></code> for in-session reference</li>
+<code><a href="../reference/putior_guide.html">putior_guide()</a></code> and <code><a href="../reference/putior_help.html">putior_help()</a></code> for in-session reference</li>
 </ul></div>
 <div class="section level4">
 <h4 id="new-helper-functions-0-2-0">New Helper Functions<a class="anchor" aria-label="anchor" href="#new-helper-functions-0-2-0"></a></h4>
@@ -325,7 +325,7 @@
 <div class="section level3">
 <h3 id="improvements-0-2-0">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-2-0"></a></h3>
 <ul><li>Consolidated language detection list into single authoritative registry (<code>.LANGUAGES_WITH_DETECTION</code> in <code>language_registry.R</code>)</li>
-<li>Standardized <code>output</code> parameter across <code><a href="../reference/put_diagram.html">put_diagram()</a></code>, <code><a href="../reference/put_generate.html">put_generate()</a></code>, and <code><a href="../reference/putior_skills.html">putior_skills()</a></code> – all now support “raw”</li>
+<li>Standardized <code>output</code> parameter across <code><a href="../reference/put_diagram.html">put_diagram()</a></code>, <code><a href="../reference/put_generate.html">put_generate()</a></code>, and <code><a href="../reference/putior_guide.html">putior_guide()</a></code> – all now support “raw”</li>
 <li>Extracted duplicated label resolution into <code><a href="../reference/resolve_label.html">resolve_label()</a></code> helper</li>
 <li>Added input path sanitization to ACP server endpoints</li>
 </ul></div>

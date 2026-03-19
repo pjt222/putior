@@ -178,4 +178,4 @@ flowchart TD
 | [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)       | Function documentation          |
 | [Showcase](https://pjt222.github.io/putior/articles/showcase.md)                 | Real-world examples             |
 | [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md)   | Common issues and solutions     |
-| [AI Skills](https://pjt222.github.io/putior/articles/skills.md)                  | MCP/ACP integration guide       |
+| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md)     | MCP/ACP integration guide       |

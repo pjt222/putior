@@ -161,7 +161,7 @@
     <li><a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting Guide</a></li>
   </ul>
 </li>
-<li class="nav-item"><a class="nav-link" href="../articles/skills.html"><span class="fa fa-robot"></span> AI Skills</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/ai-integration.html"><span class="fa fa-robot"></span> AI Integration</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/quick-reference.html"><span class="fa fa-file-alt"></span> Quick Ref</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
@@ -262,19 +262,19 @@
 <span></span>
 <span><span class="co"># Scan and visualize</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="va">temp_file</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Validation issues in file26c150411f59.R line 7:</span></span>
+<span><span class="co">#&gt; Warning: Validation issues in file270a616d88e9.R line 7:</span></span>
 <span><span class="co">#&gt; File reference missing extension: database</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"```mermaid\n"</span><span class="op">)</span></span></code></pre></div>
 <pre class="mermaid"><code>
 ``` r
 cat(put_diagram(workflow, output = "raw"))</code></pre>
-<p>flowchart TD a824c0be_9743_472a_a187_944f203a85d5[“Extract”]
-d5483cc1_6fee_4b57_92d8_0e1180fa5eea[“Transform”]
-e6f64815_4260_48cd_840f_26ce90e22ae7[“Load”]</p>
+<p>flowchart TD f3af6f48_4d50_468a_93b7_52c39387b338[“Extract”]
+node_47660fc3_836f_4fda_8b83_aafe740a49f5[“Transform”]
+d071326d_4b60_4d04_ab09_6f84e368e970[“Load”]</p>
 <pre><code>%% Connections
-a824c0be_9743_472a_a187_944f203a85d5 --&gt; d5483cc1_6fee_4b57_92d8_0e1180fa5eea
-d5483cc1_6fee_4b57_92d8_0e1180fa5eea --&gt; e6f64815_4260_48cd_840f_26ce90e22ae7</code></pre>
+f3af6f48_4d50_468a_93b7_52c39387b338 --&gt; node_47660fc3_836f_4fda_8b83_aafe740a49f5
+node_47660fc3_836f_4fda_8b83_aafe740a49f5 --&gt; d071326d_4b60_4d04_ab09_6f84e368e970</code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n```\n"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -414,7 +414,7 @@ put_diagram(workflow)</code></pre>
 <td>Common issues and solutions</td>
 </tr>
 <tr class="odd">
-<td><a href="skills.html">AI Skills</a></td>
+<td><a href="ai-integration.html">AI Integration</a></td>
 <td>MCP/ACP integration guide</td>
 </tr>
 </tbody>

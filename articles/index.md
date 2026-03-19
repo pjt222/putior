@@ -25,5 +25,5 @@
 
 ### AI Integration
 
-- [AI Skills
-  Reference](https://pjt222.github.io/putior/articles/skills.md):
+- [AI Integration
+  Guide](https://pjt222.github.io/putior/articles/ai-integration.md):

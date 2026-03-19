@@ -243,9 +243,9 @@ Merge manual + auto annotations \|
 `get_supported_extensions` \| List supported extensions \| \|
 `list_supported_languages` \| List supported languages \| \|
 `get_detection_patterns` \| Get auto-detection patterns \| \|
-`get_diagram_themes` \| List available themes \| \| `putior_skills` \|
-AI assistant documentation \| \| `putior_help` \| Quick reference help
-\| \| `set_putior_log_level` \| Configure logging \|
+`get_diagram_themes` \| List available themes \| \| `putior_guide` \| AI
+assistant documentation \| \| `putior_help` \| Quick reference help \|
+\| `set_putior_log_level` \| Configure logging \|
 
 **Utilities:** \| Tool \| Description \| \|——\|————-\| \|
 `is_valid_put_annotation` \| Validate annotation syntax \| \|
@@ -352,7 +352,7 @@ The ACP agent understands natural language requests:
 | generate  | “generate annotation suggestions”, “suggest annotations”       |
 | merge     | “merge annotations”, “combine manual and auto”                 |
 | help      | “help with syntax”, “how to use putior”                        |
-| skills    | “what are your capabilities”, “what can you do”                |
+| guide     | “what are your capabilities”, “what can you do”                |
 
 ### Agent Manifest
 

@@ -1,4 +1,4 @@
-# AI Skills Reference
+# AI Integration Guide
 
 ### About This Vignette
 
@@ -22,7 +22,7 @@ If you’re a human reader, you probably want one of these instead:
 
 This content is automatically available via:
 
-- **[`putior_skills()`](https://pjt222.github.io/putior/reference/putior_skills.md)** -
+- **[`putior_guide()`](https://pjt222.github.io/putior/reference/putior_guide.md)** -
   Returns this documentation as a string
 - **MCP server** - Exposed as a tool via
   [`putior_mcp_server()`](https://pjt222.github.io/putior/reference/putior_mcp_server.md)
@@ -32,11 +32,11 @@ This content is automatically available via:
 #### Programmatic Access
 
 ``` r
-# Get skills documentation as a string
-skills_text <- putior_skills()
+# Get guide documentation as a string
+guide_text <- putior_guide()
 
 # Use in prompt engineering
-prompt <- paste("You have access to putior:", skills_text)
+prompt <- paste("You have access to putior:", guide_text)
 
 # Or access via MCP tools
 tools <- putior_mcp_tools()
@@ -46,7 +46,7 @@ tools <- putior_mcp_tools()
 
 When running as an MCP or ACP server, AI assistants can:
 
-1.  **Discover capabilities** via `putior_skills` tool
+1.  **Discover capabilities** via `putior_guide` tool
 2.  **Extract annotations** via `put` tool
 3.  **Generate diagrams** via `put_diagram` tool
 4.  **Auto-detect workflows** via `put_auto` tool
@@ -55,29 +55,46 @@ See the [MCP Server section in
 CLAUDE.md](https://github.com/pjt222/putior/blob/main/CLAUDE.md#mcp-server-integration)
 for setup instructions.
 
+### Agent-Almanac Integration
+
+putior’s procedural documentation lives in the
+[agent-almanac](https://github.com/pjt222/agent-almanac) repository,
+which provides 6 skills for the complete putior workflow:
+
+| Skill                     | Purpose                                       |
+|---------------------------|-----------------------------------------------|
+| install-putior            | Installation and dependency setup             |
+| analyze-codebase-workflow | Auto-detect workflows in arbitrary codebases  |
+| annotate-source-files     | Add PUT annotations to source files           |
+| generate-workflow-diagram | Generate themed Mermaid diagrams              |
+| configure-putior-mcp      | Set up MCP/ACP server for AI assistants       |
+| setup-putior-ci           | GitHub Actions CI/CD for diagram auto-refresh |
+
 ------------------------------------------------------------------------
 
-### Skills Documentation
+### Guide Documentation
 
 The content below is the same as returned by
-[`putior_skills()`](https://pjt222.github.io/putior/reference/putior_skills.md):
+[`putior_guide()`](https://pjt222.github.io/putior/reference/putior_guide.md):
 
-## putior Skills
+## putior Quick Reference
 
-Skills for AI coding assistants to help users document and visualize
-code workflows.
+> For step-by-step procedures, see the [agent-almanac putior
+> skills](https://github.com/pjt222/agent-almanac): install-putior,
+> analyze-codebase-workflow, annotate-source-files,
+> generate-workflow-diagram, configure-putior-mcp, setup-putior-ci
 
 ### Direct Access (Non-R Environments)
 
-Access these skills without running R:
+Access this guide without running R:
 
-| Method       | URL                                                                   |
-|--------------|-----------------------------------------------------------------------|
-| Web Page     | <https://pjt222.github.io/putior/articles/skills.html>                |
-| Raw Markdown | <https://raw.githubusercontent.com/pjt222/putior/main/inst/SKILLS.md> |
-| GitHub View  | <https://github.com/pjt222/putior/blob/main/inst/SKILLS.md>           |
+| Method       | URL                                                                  |
+|--------------|----------------------------------------------------------------------|
+| Web Page     | <https://pjt222.github.io/putior/articles/ai-integration.html>       |
+| Raw Markdown | <https://raw.githubusercontent.com/pjt222/putior/main/inst/GUIDE.md> |
+| GitHub View  | <https://github.com/pjt222/putior/blob/main/inst/GUIDE.md>           |
 
-For R users: `putior_skills(output = "raw")` returns this content as a
+For R users: `putior_guide(output = "raw")` returns this content as a
 string.
 
 ### Quick Start
@@ -129,16 +146,32 @@ Use backslash for continuation:
 #     output:"combined.rds"
 ```
 
+#### Block Comment Annotations
+
+Languages using `//` comments also support PUT annotations inside
+`/* */` and `/** */` blocks:
+
+``` javascript
+/**
+ * put id:"handler", label:"Request Handler", \
+ *     input:"request.json", output:"response.json"
+ */
+function handleRequest(req, res) { ... }
+```
+
+Use `* put` as the line prefix inside block comment bodies.
+
 ### Multi-Language Comment Syntax
 
-putior automatically detects comment style by file extension:
+putior automatically detects comment style by file extension (18
+languages with auto-detection, 30+ total):
 
-| Prefix   | Languages                                                              | Extensions                                        |
-|----------|------------------------------------------------------------------------|---------------------------------------------------|
-| `# put`  | R, Python, Shell, Julia, Ruby, Perl, YAML                              | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`  |
-| `-- put` | SQL, Lua, Haskell                                                      | `.sql`, `.lua`, `.hs`                             |
-| `// put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs` |
-| `% put`  | MATLAB, LaTeX                                                          | `.m`, `.tex`                                      |
+| Prefix   | Languages                                                                    | Extensions                                                                 |
+|----------|------------------------------------------------------------------------------|----------------------------------------------------------------------------|
+| `# put`  | R, Python, Shell, Julia, Ruby, Perl, YAML, Dockerfile, Makefile              | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`, `Dockerfile`, `Makefile` |
+| `-- put` | SQL, Lua, Haskell                                                            | `.sql`, `.lua`, `.hs`                                                      |
+| `// put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, WGSL | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs`, `.wgsl`                 |
+| `% put`  | MATLAB, LaTeX                                                                | `.m`, `.tex`                                                               |
 
 #### Examples by Language
 

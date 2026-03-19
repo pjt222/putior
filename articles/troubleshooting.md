@@ -968,4 +968,4 @@ get_supported_extensions()
 | [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)       | Function documentation          |
 | [Showcase](https://pjt222.github.io/putior/articles/showcase.md)                 | Real-world examples             |
 | [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md)   | At-a-glance reference card      |
-| [AI Skills](https://pjt222.github.io/putior/articles/skills.md)                  | MCP/ACP integration guide       |
+| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md)     | MCP/ACP integration guide       |

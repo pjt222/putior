@@ -76,7 +76,7 @@ writeLines(c(
 
 # Scan and visualize
 workflow <- put(temp_file)
-#> Warning: Validation issues in file26c150411f59.R line 7:
+#> Warning: Validation issues in file270a616d88e9.R line 7:
 #> File reference missing extension: database
 ```
 
@@ -89,13 +89,13 @@ cat("```mermaid\n")
 cat(put_diagram(workflow, output = "raw"))
 ```
 
-flowchart TD a824c0be_9743_472a_a187_944f203a85d5\[“Extract”\]
-d5483cc1_6fee_4b57_92d8_0e1180fa5eea\[“Transform”\]
-e6f64815_4260_48cd_840f_26ce90e22ae7\[“Load”\]
+flowchart TD f3af6f48_4d50_468a_93b7_52c39387b338\[“Extract”\]
+node_47660fc3_836f_4fda_8b83_aafe740a49f5\[“Transform”\]
+d071326d_4b60_4d04_ab09_6f84e368e970\[“Load”\]
 
     %% Connections
-    a824c0be_9743_472a_a187_944f203a85d5 --> d5483cc1_6fee_4b57_92d8_0e1180fa5eea
-    d5483cc1_6fee_4b57_92d8_0e1180fa5eea --> e6f64815_4260_48cd_840f_26ce90e22ae7
+    f3af6f48_4d50_468a_93b7_52c39387b338 --> node_47660fc3_836f_4fda_8b83_aafe740a49f5
+    node_47660fc3_836f_4fda_8b83_aafe740a49f5 --> d071326d_4b60_4d04_ab09_6f84e368e970
 
 ``` r
 cat("\n```\n")
@@ -213,4 +213,4 @@ for full documentation.
 | [Showcase](https://pjt222.github.io/putior/articles/showcase.md)                 | Real-world examples             |
 | [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md)   | At-a-glance reference card      |
 | [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md)   | Common issues and solutions     |
-| [AI Skills](https://pjt222.github.io/putior/articles/skills.md)                  | MCP/ACP integration guide       |
+| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md)     | MCP/ACP integration guide       |

@@ -4,6 +4,15 @@
 
 ### Breaking Changes
 
+- Renamed `putior_skills()` to
+  [`putior_guide()`](https://pjt222.github.io/putior/reference/putior_guide.md).
+  The function, its MCP tool (`putior_guide`), and its ACP operation
+  (`guide`) all use the new name. `putior_help("skills")` still works as
+  an alias for backward compatibility. The inst file was renamed from
+  `SKILLS.md` to `GUIDE.md`, and the vignette from `skills.Rmd` to
+  `ai-integration.Rmd`.
+  ([\#41](https://github.com/pjt222/putior/issues/41))
+
 - [`put()`](https://pjt222.github.io/putior/reference/put.md),
   [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md),
   [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md),
@@ -37,7 +46,7 @@
 - 16 tools available: `put`, `put_diagram`, `put_auto`, `put_generate`,
   `put_merge`, `get_comment_prefix`, `get_supported_extensions`,
   `list_supported_languages`, `get_detection_patterns`,
-  `get_diagram_themes`, `putior_skills`, `putior_help`,
+  `get_diagram_themes`, `putior_guide`, `putior_help`,
   `set_putior_log_level`, `is_valid_put_annotation`, `split_file_list`,
   `ext_to_language`
 - Supports Claude Code, Claude Desktop, and other MCP-compatible clients
@@ -209,7 +218,7 @@
   quick-reference, and skills reference
 - Professional cheat sheet (`inst/cheatsheet/putior-cheatsheet.qmd`)
 - 20 example files in `inst/examples/`
-- [`putior_skills()`](https://pjt222.github.io/putior/reference/putior_skills.md)
+- [`putior_guide()`](https://pjt222.github.io/putior/reference/putior_guide.md)
   and
   [`putior_help()`](https://pjt222.github.io/putior/reference/putior_help.md)
   for in-session reference
@@ -249,7 +258,7 @@
   [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md),
   [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md),
   and
-  [`putior_skills()`](https://pjt222.github.io/putior/reference/putior_skills.md)
+  [`putior_guide()`](https://pjt222.github.io/putior/reference/putior_guide.md)
   – all now support “raw”
 - Extracted duplicated label resolution into
   [`resolve_label()`](https://pjt222.github.io/putior/reference/resolve_label.md)

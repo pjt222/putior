@@ -8,6 +8,7 @@
 <url><loc>https://pjt222.github.io/putior/IMPLEMENTATION_SUMMARY.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/LICENSE-text.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/LICENSE.html</loc></url>
+<url><loc>https://pjt222.github.io/putior/articles/ai-integration.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/articles/annotation-guide.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/articles/api-reference.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/articles/features-tour.html</loc></url>
@@ -15,7 +16,6 @@
 <url><loc>https://pjt222.github.io/putior/articles/quick-reference.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/articles/quick-start.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/articles/showcase.html</loc></url>
-<url><loc>https://pjt222.github.io/putior/articles/skills.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/articles/troubleshooting.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/authors.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/index.html</loc></url>
@@ -92,13 +92,13 @@
 <url><loc>https://pjt222.github.io/putior/reference/putior_acp.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/putior_acp_manifest.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/putior_acp_server.html</loc></url>
+<url><loc>https://pjt222.github.io/putior/reference/putior_guide.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/putior_help.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/putior_log.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/putior_logging.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/putior_mcp.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/putior_mcp_server.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/putior_mcp_tools.html</loc></url>
-<url><loc>https://pjt222.github.io/putior/reference/putior_skills.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/resolve_label.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/run_sandbox.html</loc></url>
 <url><loc>https://pjt222.github.io/putior/reference/sanitize_node_id.html</loc></url>

@@ -166,7 +166,7 @@
     <li><a class="dropdown-item" href="articles/troubleshooting.html">Troubleshooting Guide</a></li>
   </ul>
 </li>
-<li class="nav-item"><a class="nav-link" href="articles/skills.html"><span class="fa fa-robot"></span> AI Skills</a></li>
+<li class="nav-item"><a class="nav-link" href="articles/ai-integration.html"><span class="fa fa-robot"></span> AI Integration</a></li>
 <li class="nav-item"><a class="nav-link" href="articles/quick-reference.html"><span class="fa fa-file-alt"></span> Quick Ref</a></li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
@@ -275,19 +275,17 @@ See result
 <span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"github"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Result:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    fetch([Fetch Sales Data])
-    clean[Clean and Validate]
-    report[[Generate Summary]]
+    fetch_sales(["Fetch Sales Data"])
+    clean_data["Clean and Process"]
 
-    fetch --&gt; clean
-    clean --&gt; report
+    %% Connections
+    fetch_sales --&gt; clean_data
 
+    %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    class fetch inputStyle
+    class fetch_sales inputStyle
     classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class clean processStyle
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class report outputStyle</code></pre>
+    class clean_data processStyle</code></pre>
 </div>
 <div class="section level2">
 <h2 id="learn-more">Learn More<a class="anchor" aria-label="anchor" href="#learn-more"></a>
@@ -367,7 +365,7 @@ See result
 <td>Common issues and solutions</td>
 </tr>
 <tr class="even">
-<td><a href="https://pjt222.github.io/putior/articles/skills.html">AI Skills</a></td>
+<td><a href="https://pjt222.github.io/putior/articles/ai-integration.html">AI Integration</a></td>
 <td>MCP/ACP integration for AI assistants</td>
 </tr>
 </tbody>

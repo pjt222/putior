@@ -56,8 +56,8 @@ Communication Protocol
   : Start putior ACP Server
 - [`putior_acp_manifest()`](https://pjt222.github.io/putior/reference/putior_acp_manifest.md)
   : Get putior ACP Agent Manifest
-- [`putior_skills()`](https://pjt222.github.io/putior/reference/putior_skills.md)
-  : Access putior Skills for AI Assistants
+- [`putior_guide()`](https://pjt222.github.io/putior/reference/putior_guide.md)
+  : Access putior Guide for AI Assistants
 - [`putior_help()`](https://pjt222.github.io/putior/reference/putior_help.md)
   : Quick Reference Help for putior
 

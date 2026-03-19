@@ -125,19 +125,17 @@ put_diagram(workflow, theme = "github")
 
 ``` mermaid
 flowchart TD
-    fetch([Fetch Sales Data])
-    clean[Clean and Validate]
-    report[[Generate Summary]]
+    fetch_sales(["Fetch Sales Data"])
+    clean_data["Clean and Process"]
 
-    fetch --> clean
-    clean --> report
+    %% Connections
+    fetch_sales --> clean_data
 
+    %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    class fetch inputStyle
+    class fetch_sales inputStyle
     classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class clean processStyle
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class report outputStyle
+    class clean_data processStyle
 ```
 
 ## Learn More
@@ -166,7 +164,7 @@ site](https://pjt222.github.io/putior/).
 | [API Reference](https://pjt222.github.io/putior/articles/api-reference.html)     | Complete function documentation       |
 | [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.html) | At-a-glance reference card            |
 | [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.html) | Common issues and solutions           |
-| [AI Skills](https://pjt222.github.io/putior/articles/skills.html)                | MCP/ACP integration for AI assistants |
+| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.html)   | MCP/ACP integration for AI assistants |
 
 ## How putior Compares
 
@@ -365,8 +363,8 @@ Communication Protocol
   : Start putior ACP Server
 - [`putior_acp_manifest()`](https://pjt222.github.io/putior/reference/putior_acp_manifest.md)
   : Get putior ACP Agent Manifest
-- [`putior_skills()`](https://pjt222.github.io/putior/reference/putior_skills.md)
-  : Access putior Skills for AI Assistants
+- [`putior_guide()`](https://pjt222.github.io/putior/reference/putior_guide.md)
+  : Access putior Guide for AI Assistants
 - [`putior_help()`](https://pjt222.github.io/putior/reference/putior_help.md)
   : Quick Reference Help for putior
 
@@ -544,5 +542,5 @@ Internal implementation details (not part of the public API)
 
 ### AI Integration
 
-- [AI Skills
-  Reference](https://pjt222.github.io/putior/articles/skills.md):
+- [AI Integration
+  Guide](https://pjt222.github.io/putior/articles/ai-integration.md):
