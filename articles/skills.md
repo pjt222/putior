@@ -429,3 +429,17 @@ Levels: `DEBUG`, `INFO`, `WARN` (default), `ERROR`
 5.  **Enable `show_artifacts = TRUE`** to visualize data file
     dependencies
 6.  **Use `enable_clicks = TRUE`** for navigable documentation
+
+------------------------------------------------------------------------
+
+### See Also
+
+| Guide                                                                            | Description                     |
+|----------------------------------------------------------------------------------|---------------------------------|
+| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)           | First diagram in 2 minutes      |
+| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference       |
+| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md)       | Auto-detection, themes, logging |
+| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)       | Function documentation          |
+| [Showcase](https://pjt222.github.io/putior/articles/showcase.md)                 | Real-world examples             |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md)   | At-a-glance reference card      |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md)   | Common issues and solutions     |

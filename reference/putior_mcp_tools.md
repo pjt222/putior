@@ -34,6 +34,13 @@ A list of ellmer tool definitions suitable for use with
 [`putior_mcp_server`](https://pjt222.github.io/putior/reference/putior_mcp_server.md)
 for starting the MCP server
 
+Other integration:
+[`putior_acp_manifest()`](https://pjt222.github.io/putior/reference/putior_acp_manifest.md),
+[`putior_acp_server()`](https://pjt222.github.io/putior/reference/putior_acp_server.md),
+[`putior_help()`](https://pjt222.github.io/putior/reference/putior_help.md),
+[`putior_mcp_server()`](https://pjt222.github.io/putior/reference/putior_mcp_server.md),
+[`putior_skills()`](https://pjt222.github.io/putior/reference/putior_skills.md)
+
 ## Examples
 
 ``` r

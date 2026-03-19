@@ -934,28 +934,12 @@ source(system.file("examples", "self-documentation.R", package = "putior"))
 
 ## See Also
 
-**Functions used in these examples:**
-
-| Function                                                                    | Purpose               | Documentation                                                                                                         |
-|-----------------------------------------------------------------------------|-----------------------|-----------------------------------------------------------------------------------------------------------------------|
-| [`put()`](https://pjt222.github.io/putior/reference/put.md)                 | Extract annotations   | [API Reference](https://pjt222.github.io/putior/articles/api-reference.html#put)                                      |
-| [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md) | Generate diagrams     | [API Reference](https://pjt222.github.io/putior/articles/api-reference.html#put_diagram)                              |
-| [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md)       | Auto-detect workflows | [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#put_auto---detect-workflow-automatically) |
-| [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md)     | Combine manual + auto | [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#put_merge---combine-manual--auto)         |
-
-**Related guides:**
-
-- [Quick
-  Start](https://pjt222.github.io/putior/articles/quick-start.md) -
-  Create your first diagram
-- [Quick
-  Reference](https://pjt222.github.io/putior/articles/quick-reference.md) -
-  Cheat sheet for daily use
-- [Annotation
-  Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) -
-  Complete syntax reference
-- [Features
-  Tour](https://pjt222.github.io/putior/articles/features-tour.md) -
-  Interactive diagrams, themes, logging
-- [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md) -
-  Common issues and solutions
+| Guide                                                                            | Description                     |
+|----------------------------------------------------------------------------------|---------------------------------|
+| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)           | First diagram in 2 minutes      |
+| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference       |
+| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md)       | Auto-detection, themes, logging |
+| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)       | Function documentation          |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md)   | At-a-glance reference card      |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md)   | Common issues and solutions     |
+| [AI Skills](https://pjt222.github.io/putior/articles/skills.md)                  | MCP/ACP integration guide       |

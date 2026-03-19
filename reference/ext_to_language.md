@@ -19,6 +19,14 @@ ext_to_language(ext)
 
 Character string of the language name, or NULL if not supported
 
+## See also
+
+Other language-support:
+[`get_comment_prefix()`](https://pjt222.github.io/putior/reference/get_comment_prefix.md),
+[`get_detection_patterns()`](https://pjt222.github.io/putior/reference/get_detection_patterns.md),
+[`get_supported_extensions()`](https://pjt222.github.io/putior/reference/get_supported_extensions.md),
+[`list_supported_languages()`](https://pjt222.github.io/putior/reference/list_supported_languages.md)
+
 ## Examples
 
 ``` r

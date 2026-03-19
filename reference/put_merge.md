@@ -26,8 +26,7 @@ put_merge(
 
 - pattern:
 
-  Character string specifying the file pattern to match. Default: all
-  extensions with detection pattern support.
+  Regex pattern for filtering files (e.g., `\\.R$` for R files only).
 
 - recursive:
 
@@ -72,6 +71,10 @@ merged workflow information from both manual and auto-detected sources.
 annotation extraction,
 [`put_auto`](https://pjt222.github.io/putior/reference/put_auto.md) for
 auto-detection
+
+Other auto-annotation:
+[`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md),
+[`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md)
 
 ## Examples
 

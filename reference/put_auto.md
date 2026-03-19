@@ -34,9 +34,7 @@ put_auto(
 
 - pattern:
 
-  Character string specifying the file pattern to match. Default: all
-  extensions with detection pattern support (see
-  [`list_supported_languages`](https://pjt222.github.io/putior/reference/list_supported_languages.md)`(detection_only = TRUE)`).
+  Regex pattern for filtering files (e.g., `\\.R$` for R files only).
 
 - recursive:
 
@@ -103,6 +101,10 @@ annotation extraction,
 for generating annotation comments,
 [`put_merge`](https://pjt222.github.io/putior/reference/put_merge.md)
 for combining manual and auto-detected annotations
+
+Other auto-annotation:
+[`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md),
+[`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md)
 
 ## Examples
 

@@ -27,8 +27,7 @@ put_generate(
 
 - pattern:
 
-  Character string specifying the file pattern to match. Default: all
-  extensions with detection pattern support.
+  Regex pattern for filtering files (e.g., `\\.R$` for R files only).
 
 - recursive:
 
@@ -84,6 +83,10 @@ effects depend on the `output` parameter.
 direct workflow detection,
 [`put`](https://pjt222.github.io/putior/reference/put.md) for extracting
 existing annotations
+
+Other auto-annotation:
+[`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md),
+[`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md)
 
 ## Examples
 

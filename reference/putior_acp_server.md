@@ -96,6 +96,13 @@ for the agent definition,
 [`putior_mcp_server`](https://pjt222.github.io/putior/reference/putior_mcp_server.md)
 for MCP (Model-to-tool) integration
 
+Other integration:
+[`putior_acp_manifest()`](https://pjt222.github.io/putior/reference/putior_acp_manifest.md),
+[`putior_help()`](https://pjt222.github.io/putior/reference/putior_help.md),
+[`putior_mcp_server()`](https://pjt222.github.io/putior/reference/putior_mcp_server.md),
+[`putior_mcp_tools()`](https://pjt222.github.io/putior/reference/putior_mcp_tools.md),
+[`putior_skills()`](https://pjt222.github.io/putior/reference/putior_skills.md)
+
 ## Examples
 
 ``` r

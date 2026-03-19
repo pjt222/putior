@@ -26,6 +26,15 @@ putior_skills(topic = NULL, output = c("console", "raw", "clipboard"))
 Invisibly returns content as character vector. With output="raw",
 returns as single string.
 
+## See also
+
+Other integration:
+[`putior_acp_manifest()`](https://pjt222.github.io/putior/reference/putior_acp_manifest.md),
+[`putior_acp_server()`](https://pjt222.github.io/putior/reference/putior_acp_server.md),
+[`putior_help()`](https://pjt222.github.io/putior/reference/putior_help.md),
+[`putior_mcp_server()`](https://pjt222.github.io/putior/reference/putior_mcp_server.md),
+[`putior_mcp_tools()`](https://pjt222.github.io/putior/reference/putior_mcp_tools.md)
+
 ## Examples
 
 ``` r

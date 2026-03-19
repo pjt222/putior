@@ -25,12 +25,12 @@
     startOnLoad: false,
     theme: 'default',
     themeVariables: {
-      primaryColor: '#fff4e6',
-      primaryTextColor: '#333',
-      primaryBorderColor: '#d97706',
-      lineColor: '#5a5a5a',
-      secondaryColor: '#f3f4f6',
-      tertiaryColor: '#e5e7eb'
+      primaryColor: '#f0f4ff',
+      primaryTextColor: '#1e293b',
+      primaryBorderColor: '#2563eb',
+      lineColor: '#64748b',
+      secondaryColor: '#f8fafc',
+      tertiaryColor: '#f1f5f9'
     },
     flowchart: {
       htmlLabels: true,
@@ -58,6 +58,8 @@
           // Create container div
           const container = document.createElement('div');
           container.className = 'mermaid-container';
+          container.setAttribute('role', 'img');
+          container.setAttribute('aria-label', 'Workflow diagram');
 
           // Create mermaid div
           const mermaidDiv = document.createElement('div');
@@ -89,6 +91,8 @@
           // Create container div
           const container = document.createElement('div');
           container.className = 'mermaid-container';
+          container.setAttribute('role', 'img');
+          container.setAttribute('aria-label', 'Workflow diagram');
 
           // Create mermaid div with just the text content
           const mermaidDiv = document.createElement('div');
@@ -145,17 +149,20 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/quick-start.html">Quick Start</a></li>
+<li><h6 class="dropdown-header" data-toc-skip>---Getting Started---</h6></li>
+    <li><a class="dropdown-item" href="../articles/quick-start.html">Quick Start</a></li>
     <li><a class="dropdown-item" href="../articles/annotation-guide.html">Annotation Guide</a></li>
-    <li><a class="dropdown-item" href="../articles/quick-reference.html">Quick Reference</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>---Going Deeper---</h6></li>
     <li><a class="dropdown-item" href="../articles/features-tour.html">Features Tour</a></li>
-    <li><a class="dropdown-item" href="../articles/api-reference.html">API Reference</a></li>
     <li><a class="dropdown-item" href="../articles/showcase.html">Showcase: Real-World Examples</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>---Reference---</h6></li>
+    <li><a class="dropdown-item" href="../articles/api-reference.html">API Reference</a></li>
+    <li><a class="dropdown-item" href="../articles/quick-reference.html">Quick Reference</a></li>
     <li><a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting Guide</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../articles/skills.html"><span class="fa fa-robot"></span> AI Skills</a></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/pjt222/putior/raw/main/inst/cheatsheet/putior-cheatsheet.pdf"><span class="fa fa-file-pdf"></span> Cheatsheet</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/quick-reference.html"><span class="fa fa-file-alt"></span> Quick Ref</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -295,26 +302,108 @@ continuation.</p>
 </table>
 </div>
 <div class="section level2">
+<h2 id="key-parameters">Key Parameters<a class="anchor" aria-label="anchor" href="#key-parameters"></a>
+</h2>
+<p><strong><code><a href="../reference/put.html">put()</a></code></strong> and scan functions:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="va">path</span>, <span class="va">pattern</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span>, include_line_numbers <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    validate <span class="op">=</span> <span class="cn">TRUE</span>, exclude <span class="op">=</span> <span class="cn">NULL</span>, log_level <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<p><strong><code><a href="../reference/put_diagram.html">put_diagram()</a></code></strong>:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"console"</span>, file <span class="op">=</span> <span class="cn">NULL</span>, direction <span class="op">=</span> <span class="st">"TD"</span>,</span>
+<span>    theme <span class="op">=</span> <span class="st">"github"</span>, show_artifacts <span class="op">=</span> <span class="cn">FALSE</span>, show_source_info <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    enable_clicks <span class="op">=</span> <span class="cn">FALSE</span>, click_protocol <span class="op">=</span> <span class="st">"vscode"</span>, palette <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    style_nodes <span class="op">=</span> <span class="cn">TRUE</span>, node_labels <span class="op">=</span> <span class="st">"label"</span>, title <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<p><strong><code><a href="../reference/put_theme.html">put_theme()</a></code></strong>:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/put_theme.html">put_theme</a></span><span class="op">(</span>base <span class="op">=</span> <span class="st">"light"</span>, input <span class="op">=</span> <span class="cn">NULL</span>, process <span class="op">=</span> <span class="cn">NULL</span>, output <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    decision <span class="op">=</span> <span class="cn">NULL</span>, artifact <span class="op">=</span> <span class="cn">NULL</span>, start <span class="op">=</span> <span class="cn">NULL</span>, end <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="co"># Each node type: c(fill = "#hex", stroke = "#hex", color = "#hex")</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="common-patterns">Common Patterns<a class="anchor" aria-label="anchor" href="#common-patterns"></a>
 </h2>
 <p><strong>Basic</strong></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Customize</strong></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">wf</span>, theme <span class="op">=</span> <span class="st">"dark"</span>, direction <span class="op">=</span> <span class="st">"LR"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">wf</span>, show_artifacts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>       <span class="co"># Hide data files</span></span>
-<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">wf</span>, show_source_info <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>      <span class="co"># Show file info</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">wf</span>, show_source_info <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>      <span class="co"># Show file info</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">wf</span>, palette <span class="op">=</span> <span class="fu"><a href="../reference/put_theme.html">put_theme</a></span><span class="op">(</span>base <span class="op">=</span> <span class="st">"dark"</span>, input <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#1a5276"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Save</strong></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">wf</span>, output <span class="op">=</span> <span class="st">"workflow.md"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">wf</span>, output <span class="op">=</span> <span class="st">"file"</span>, file <span class="op">=</span> <span class="st">"workflow.md"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">wf</span>, output <span class="op">=</span> <span class="st">"clipboard"</span><span class="op">)</span></span>
+<span><span class="va">mermaid_code</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">wf</span>, output <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Exclude files</strong></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, exclude <span class="op">=</span> <span class="st">"test"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./"</span>, exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"vendor"</span>, <span class="st">"fixture"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Debug</strong></p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./"</span>, log_level <span class="op">=</span> <span class="st">"DEBUG"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="configuration-utilities">Configuration &amp; Utilities<a class="anchor" aria-label="anchor" href="#configuration-utilities"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="35%">
+<col width="32%">
+<col width="32%">
+</colgroup>
+<thead><tr class="header">
+<th>Function</th>
+<th>Purpose</th>
+<th>Example</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code><a href="../reference/get_comment_prefix.html">get_comment_prefix()</a></code></td>
+<td>Comment prefix for extension</td>
+<td>
+<code>get_comment_prefix("sql")</code> → <code>"--"</code>
+</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/get_supported_extensions.html">get_supported_extensions()</a></code></td>
+<td>All supported extensions</td>
+<td><code><a href="../reference/get_supported_extensions.html">get_supported_extensions()</a></code></td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/list_supported_languages.html">list_supported_languages()</a></code></td>
+<td>Supported languages</td>
+<td><code>list_supported_languages(detection_only = TRUE)</code></td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/get_detection_patterns.html">get_detection_patterns()</a></code></td>
+<td>Auto-detection patterns</td>
+<td><code>get_detection_patterns("r", type = "input")</code></td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/get_diagram_themes.html">get_diagram_themes()</a></code></td>
+<td>Available themes</td>
+<td><code><a href="../reference/get_diagram_themes.html">get_diagram_themes()</a></code></td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation()</a></code></td>
+<td>Validate syntax</td>
+<td><code>is_valid_put_annotation('# put label:"X"')</code></td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/set_putior_log_level.html">set_putior_log_level()</a></code></td>
+<td>Set logging level</td>
+<td><code>set_putior_log_level("DEBUG")</code></td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/run_sandbox.html">run_sandbox()</a></code></td>
+<td>Launch Shiny sandbox</td>
+<td><code><a href="../reference/run_sandbox.html">run_sandbox()</a></code></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level2">
 <h2 id="themes-and-direction">Themes and Direction<a class="anchor" aria-label="anchor" href="#themes-and-direction"></a>
@@ -433,7 +522,46 @@ continuation.</p>
 <div class="section level2">
 <h2 id="see-also">See Also<a class="anchor" aria-label="anchor" href="#see-also"></a>
 </h2>
-<p><a href="quick-start.html">Quick Start</a> | <a href="annotation-guide.html">Annotation Guide</a> | <a href="api-reference.html">API Reference</a></p>
+<table class="table">
+<colgroup>
+<col width="35%">
+<col width="65%">
+</colgroup>
+<thead><tr class="header">
+<th>Guide</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><a href="quick-start.html">Quick Start</a></td>
+<td>First diagram in 2 minutes</td>
+</tr>
+<tr class="even">
+<td><a href="annotation-guide.html">Annotation Guide</a></td>
+<td>Complete syntax reference</td>
+</tr>
+<tr class="odd">
+<td><a href="features-tour.html">Features Tour</a></td>
+<td>Auto-detection, themes, logging</td>
+</tr>
+<tr class="even">
+<td><a href="api-reference.html">API Reference</a></td>
+<td>Function documentation</td>
+</tr>
+<tr class="odd">
+<td><a href="showcase.html">Showcase</a></td>
+<td>Real-world examples</td>
+</tr>
+<tr class="even">
+<td><a href="troubleshooting.html">Troubleshooting</a></td>
+<td>Common issues and solutions</td>
+</tr>
+<tr class="odd">
+<td><a href="skills.html">AI Skills</a></td>
+<td>MCP/ACP integration guide</td>
+</tr>
+</tbody>
+</table>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -76,7 +76,7 @@ writeLines(c(
 
 # Scan and visualize
 workflow <- put(temp_file)
-#> Warning: Validation issues in file23f262bc7354.R line 7:
+#> Warning: Validation issues in file26c150411f59.R line 7:
 #> File reference missing extension: database
 ```
 
@@ -89,13 +89,13 @@ cat("```mermaid\n")
 cat(put_diagram(workflow, output = "raw"))
 ```
 
-flowchart TD aecf4ce1_93bb_48cb_91e7_a04a3cdf97c4\[“Extract”\]
-c55b7048_25ff_489c_b854_7f6638d36a76\[“Transform”\]
-node_2da9c10f_5f4c_4efb_852d_5214339d69c9\[“Load”\]
+flowchart TD a824c0be_9743_472a_a187_944f203a85d5\[“Extract”\]
+d5483cc1_6fee_4b57_92d8_0e1180fa5eea\[“Transform”\]
+e6f64815_4260_48cd_840f_26ce90e22ae7\[“Load”\]
 
     %% Connections
-    aecf4ce1_93bb_48cb_91e7_a04a3cdf97c4 --> c55b7048_25ff_489c_b854_7f6638d36a76
-    c55b7048_25ff_489c_b854_7f6638d36a76 --> node_2da9c10f_5f4c_4efb_852d_5214339d69c9
+    a824c0be_9743_472a_a187_944f203a85d5 --> d5483cc1_6fee_4b57_92d8_0e1180fa5eea
+    d5483cc1_6fee_4b57_92d8_0e1180fa5eea --> e6f64815_4260_48cd_840f_26ce90e22ae7
 
 ``` r
 cat("\n```\n")
@@ -181,19 +181,6 @@ run_sandbox()  # Opens Shiny app
 
 ------------------------------------------------------------------------
 
-### What’s Next?
-
-| Guide                                                                            | When to Read                                                     |
-|----------------------------------------------------------------------------------|------------------------------------------------------------------|
-| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference, multiline annotations, best practices |
-| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md)   | Printable cheat sheet for daily use                              |
-| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md)       | Auto-detection, logging, interactive diagrams, metadata display  |
-| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)       | All functions and parameters                                     |
-| [Showcase](https://pjt222.github.io/putior/articles/showcase.md)                 | Real-world examples (ETL, ML pipelines, bioinformatics)          |
-| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md)   | Common issues and solutions                                      |
-
-------------------------------------------------------------------------
-
 ### Quick Reference
 
 ``` r
@@ -213,3 +200,17 @@ put_diagram(wf, show_artifacts = FALSE)  # Hide data files
 [`?put`](https://pjt222.github.io/putior/reference/put.md) or
 [`?put_diagram`](https://pjt222.github.io/putior/reference/put_diagram.md)
 for full documentation.
+
+------------------------------------------------------------------------
+
+### See Also
+
+| Guide                                                                            | Description                     |
+|----------------------------------------------------------------------------------|---------------------------------|
+| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference       |
+| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md)       | Auto-detection, themes, logging |
+| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)       | Function documentation          |
+| [Showcase](https://pjt222.github.io/putior/articles/showcase.md)                 | Real-world examples             |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md)   | At-a-glance reference card      |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md)   | Common issues and solutions     |
+| [AI Skills](https://pjt222.github.io/putior/articles/skills.md)                  | MCP/ACP integration guide       |

@@ -163,6 +163,15 @@ put_diagram(
 
 Character string containing the mermaid diagram code
 
+## See also
+
+Other core-workflow:
+[`print.putior_theme()`](https://pjt222.github.io/putior/reference/print.putior_theme.md),
+[`print.putior_workflow()`](https://pjt222.github.io/putior/reference/print.putior_workflow.md),
+[`put()`](https://pjt222.github.io/putior/reference/put.md),
+[`put_theme()`](https://pjt222.github.io/putior/reference/put_theme.md),
+[`summary.putior_workflow()`](https://pjt222.github.io/putior/reference/summary.putior_workflow.md)
+
 ## Examples
 
 ``` r

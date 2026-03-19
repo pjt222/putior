@@ -32,6 +32,11 @@ set_putior_log_level(level = "WARN")
 
 Invisibly returns the previous log level
 
+## See also
+
+Other interactive:
+[`run_sandbox()`](https://pjt222.github.io/putior/reference/run_sandbox.md)
+
 ## Examples
 
 ``` r

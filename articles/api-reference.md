@@ -854,17 +854,12 @@ set_putior_log_level("WARN")
 
 ## See Also
 
-- [Quick
-  Start](https://pjt222.github.io/putior/articles/quick-start.md) -
-  First diagram in 2 minutes
-- [Annotation
-  Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) -
-  Complete syntax reference
-- [Quick
-  Reference](https://pjt222.github.io/putior/articles/quick-reference.md) -
-  Cheat sheet for daily use
-- [Features
-  Tour](https://pjt222.github.io/putior/articles/features-tour.md) -
-  Overview of advanced features
-- [Showcase](https://pjt222.github.io/putior/articles/showcase.md) -
-  Real-world examples
+| Guide                                                                            | Description                     |
+|----------------------------------------------------------------------------------|---------------------------------|
+| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)           | First diagram in 2 minutes      |
+| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference       |
+| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md)       | Auto-detection, themes, logging |
+| [Showcase](https://pjt222.github.io/putior/articles/showcase.md)                 | Real-world examples             |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md)   | At-a-glance reference card      |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md)   | Common issues and solutions     |
+| [AI Skills](https://pjt222.github.io/putior/articles/skills.md)                  | MCP/ACP integration guide       |

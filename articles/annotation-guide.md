@@ -660,14 +660,15 @@ is_valid_put_annotation('# put id:"test", label:"Test Node"')  # Should be TRUE
 
 ## See Also
 
-| Guide                                                                          | Description                                   |
-|--------------------------------------------------------------------------------|-----------------------------------------------|
-| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)         | Create your first diagram in 2 minutes        |
-| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md) | Cheat sheet for daily use                     |
-| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md)     | Auto-detection, logging, interactive diagrams |
-| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)     | Complete function documentation               |
-| [Showcase](https://pjt222.github.io/putior/articles/showcase.md)               | Real-world examples (ETL, ML, bioinformatics) |
-| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md) | Common issues and solutions                   |
+| Guide                                                                          | Description                     |
+|--------------------------------------------------------------------------------|---------------------------------|
+| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)         | First diagram in 2 minutes      |
+| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md)     | Auto-detection, themes, logging |
+| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)     | Function documentation          |
+| [Showcase](https://pjt222.github.io/putior/articles/showcase.md)               | Real-world examples             |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md) | At-a-glance reference card      |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md) | Common issues and solutions     |
+| [AI Skills](https://pjt222.github.io/putior/articles/skills.md)                | MCP/ACP integration guide       |
 
 **Built-in examples:**
 

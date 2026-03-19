@@ -30,12 +30,12 @@
     startOnLoad: false,
     theme: 'default',
     themeVariables: {
-      primaryColor: '#fff4e6',
-      primaryTextColor: '#333',
-      primaryBorderColor: '#d97706',
-      lineColor: '#5a5a5a',
-      secondaryColor: '#f3f4f6',
-      tertiaryColor: '#e5e7eb'
+      primaryColor: '#f0f4ff',
+      primaryTextColor: '#1e293b',
+      primaryBorderColor: '#2563eb',
+      lineColor: '#64748b',
+      secondaryColor: '#f8fafc',
+      tertiaryColor: '#f1f5f9'
     },
     flowchart: {
       htmlLabels: true,
@@ -63,6 +63,8 @@
           // Create container div
           const container = document.createElement('div');
           container.className = 'mermaid-container';
+          container.setAttribute('role', 'img');
+          container.setAttribute('aria-label', 'Workflow diagram');
 
           // Create mermaid div
           const mermaidDiv = document.createElement('div');
@@ -94,6 +96,8 @@
           // Create container div
           const container = document.createElement('div');
           container.className = 'mermaid-container';
+          container.setAttribute('role', 'img');
+          container.setAttribute('aria-label', 'Workflow diagram');
 
           // Create mermaid div with just the text content
           const mermaidDiv = document.createElement('div');
@@ -150,17 +154,20 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/quick-start.html">Quick Start</a></li>
+<li><h6 class="dropdown-header" data-toc-skip>---Getting Started---</h6></li>
+    <li><a class="dropdown-item" href="articles/quick-start.html">Quick Start</a></li>
     <li><a class="dropdown-item" href="articles/annotation-guide.html">Annotation Guide</a></li>
-    <li><a class="dropdown-item" href="articles/quick-reference.html">Quick Reference</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>---Going Deeper---</h6></li>
     <li><a class="dropdown-item" href="articles/features-tour.html">Features Tour</a></li>
-    <li><a class="dropdown-item" href="articles/api-reference.html">API Reference</a></li>
     <li><a class="dropdown-item" href="articles/showcase.html">Showcase: Real-World Examples</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>---Reference---</h6></li>
+    <li><a class="dropdown-item" href="articles/api-reference.html">API Reference</a></li>
+    <li><a class="dropdown-item" href="articles/quick-reference.html">Quick Reference</a></li>
     <li><a class="dropdown-item" href="articles/troubleshooting.html">Troubleshooting Guide</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="articles/skills.html"><span class="fa fa-robot"></span> AI Skills</a></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/pjt222/putior/raw/main/inst/cheatsheet/putior-cheatsheet.pdf"><span class="fa fa-file-pdf"></span> Cheatsheet</a></li>
+<li class="nav-item"><a class="nav-link" href="articles/quick-reference.html"><span class="fa fa-file-alt"></span> Quick Ref</a></li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -180,61 +187,16 @@
 <img src="logo.svg" class="logo" alt=""><h1 id="putior-">putior <a class="anchor" aria-label="anchor" href="#putior-"></a>
 </h1>
 </div>
-<p><a href="https://github.com/pjt222/putior/actions" class="external-link"><img src="https://github.com/pjt222/putior/workflows/R-CMD-check/badge.svg" alt="R CMD check"></a> <a href="https://CRAN.R-project.org/package=putior" class="external-link"><img src="https://www.r-pkg.org/badges/version/putior" alt="CRAN status"></a> <a href="https://cran.r-project.org/package=putior" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/putior" alt="CRAN downloads"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a> <a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="lifecycle"></a> <a href="https://github.com/pjt222/putior/blob/main/inst/cheatsheet/putior-cheatsheet.pdf" class="external-link"><img src="https://img.shields.io/badge/cheatsheet-PDF-blue.svg" alt="Cheatsheet"></a> <a href="https://github.com/sponsors/pjt222" class="external-link"><img src="https://img.shields.io/github/sponsors/pjt222?style=flat&amp;logo=GitHub-Sponsors&amp;logoColor=%23EA4AAA&amp;label=Sponsor" alt="Sponsor"></a></p>
+<p><a href="https://github.com/pjt222/putior/actions" class="external-link"><img src="https://github.com/pjt222/putior/workflows/R-CMD-check/badge.svg" alt="R CMD check"></a> <a href="https://CRAN.R-project.org/package=putior" class="external-link"><img src="https://www.r-pkg.org/badges/version/putior" alt="CRAN status"></a> <a href="https://cran.r-project.org/package=putior" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/putior" alt="CRAN downloads"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a> <a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="lifecycle"></a> <a href="https://pjt222.github.io/putior/articles/quick-reference.html"><img src="https://img.shields.io/badge/Quick_Ref-online-blue.svg" alt="Quick Ref"></a> <a href="https://github.com/sponsors/pjt222" class="external-link"><img src="https://img.shields.io/github/sponsors/pjt222?style=flat&amp;logo=GitHub-Sponsors&amp;logoColor=%23EA4AAA&amp;label=Sponsor" alt="Sponsor"></a></p>
 <blockquote>
 <p><strong>Extract beautiful workflow diagrams from your code annotations</strong></p>
 </blockquote>
 <div class="float">
-<img src="reference/figures/demo.gif" alt="putior demo"><div class="figcaption">putior demo</div>
+<img src="reference/figures/demo.gif" alt="putior demo: annotate code, generate workflow diagrams"><div class="figcaption">putior demo: annotate code, generate workflow diagrams</div>
 </div>
-<p><strong>putior</strong> (PUT + Input + Output + R) is an R package that extracts structured annotations from source code files and creates beautiful Mermaid flowchart diagrams. Perfect for documenting data pipelines, workflows, and understanding complex codebases.</p>
-<details><summary><strong>📑 Table of Contents</strong>
-</summary><ul>
-<li><a href="#id_-key-features">Key Features</a></li>
-<li><a href="#id_-tldr">TL;DR</a></li>
-<li><a href="#id_-installation">Installation</a></li>
-<li><a href="#id_-quick-start">Quick Start</a></li>
-<li><a href="#id_-common-data-science-pattern">Common Data Science Pattern</a></li>
-<li><a href="#id_-visualization-examples">Visualization Examples</a></li>
-<li><a href="#id_-using-the-diagrams">Using the Diagrams</a></li>
-<li><a href="#id_-visualization-modes">Visualization Modes</a></li>
-<li><a href="#id_-theme-system">Theme System</a></li>
-<li><a href="#id_-customization-options">Customization Options</a></li>
-<li><a href="#id_-annotation-reference">Annotation Reference</a></li>
-<li><a href="#id_%EF%B8%8F-advanced-usage">Advanced Usage</a></li>
-<li><a href="#id_-advanced-features">Advanced Features</a></li>
-<li><a href="#id_-api-reference">API Reference</a></li>
-<li><a href="#id_-self-documentation-putior-documents-itself">Self-Documentation</a></li>
-<li><a href="#id_-contributing">Contributing</a></li>
-<li><a href="#id_-license">License</a></li>
-<li><a href="#id_-how-putior-compares-to-other-r-packages">How putior Compares</a></li>
-<li><a href="#id_-acknowledgments">Acknowledgments</a></li>
-</ul></details><div class="section level2">
-<h2 id="id_-key-features">🌟 Key Features<a class="anchor" aria-label="anchor" href="#id_-key-features"></a>
-</h2>
-<ul>
-<li>
-<strong>Simple annotations</strong> - Add structured comments to your existing code</li>
-<li>
-<strong>Beautiful diagrams</strong> - Generate professional Mermaid flowcharts</li>
-<li>
-<strong>File flow tracking</strong> - Automatically connects scripts based on input/output files<br>
-</li>
-<li>
-<strong>Multiple themes</strong> - 9 built-in themes including GitHub-optimized and colorblind-safe (viridis family)</li>
-<li>
-<strong>Cross-language support</strong> - Works with 30+ file types including R, Python, SQL, JavaScript, TypeScript, Go, Rust, and more</li>
-<li>
-<strong>Flexible output</strong> - Console, file, or clipboard export</li>
-<li>
-<strong>Customizable styling</strong> - Control colors, direction, and node shapes</li>
-</ul>
-<blockquote>
-<p><strong>New to putior?</strong> Check out the <a href="https://github.com/pjt222/putior/blob/main/inst/cheatsheet/putior-cheatsheet.pdf" class="external-link"><strong>Cheatsheet (PDF)</strong></a> for a quick visual reference!</p>
-</blockquote>
-</div>
+<p><strong>putior</strong> (PUT + Input + Output + R) extracts structured annotations from source code and generates Mermaid flowchart diagrams. Document data pipelines, visualize workflows, and understand complex codebases – across 30+ programming languages.</p>
 <div class="section level2">
-<h2 id="id_-tldr">⚡ TL;DR<a class="anchor" aria-label="anchor" href="#id_-tldr"></a>
+<h2 id="tldr">TL;DR<a class="anchor" aria-label="anchor" href="#tldr"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Add annotation to your script</span></span>
@@ -256,7 +218,23 @@ See result
 </details>
 </div>
 <div class="section level2">
-<h2 id="id_-installation">📦 Installation<a class="anchor" aria-label="anchor" href="#id_-installation"></a>
+<h2 id="key-features">Key Features<a class="anchor" aria-label="anchor" href="#key-features"></a>
+</h2>
+<ul>
+<li>
+<strong>Simple annotations</strong> – one-line comments in your existing code (<code># put label:"..."</code>)</li>
+<li>
+<strong>Beautiful Mermaid diagrams</strong> – 9 built-in themes including colorblind-safe viridis family</li>
+<li>
+<strong>30+ language support</strong> – R, Python, SQL, JavaScript, TypeScript, Go, Rust, and more with automatic comment syntax detection</li>
+<li>
+<strong>Auto-detection</strong> – <code><a href="reference/put_auto.html">put_auto()</a></code> analyzes code without annotations; <code><a href="reference/put_generate.html">put_generate()</a></code> creates annotation skeletons; <code><a href="reference/put_merge.html">put_merge()</a></code> combines both</li>
+<li>
+<strong>Lightweight</strong> – only depends on <code>tools</code> (base R)</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install from CRAN (recommended)</span></span>
@@ -274,1437 +252,132 @@ See result
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"pjt222/putior"</span><span class="op">)</span>  <span class="co"># GitHub version</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="id_-quick-start">🚀 Quick Start<a class="anchor" aria-label="anchor" href="#id_-quick-start"></a>
+<h2 id="example-multi-language-data-pipeline">Example: Multi-Language Data Pipeline<a class="anchor" aria-label="anchor" href="#example-multi-language-data-pipeline"></a>
 </h2>
-<div class="section level3">
-<h3 id="step-1-annotate-your-code">Step 1: Annotate Your Code<a class="anchor" aria-label="anchor" href="#step-1-annotate-your-code"></a>
-</h3>
-<p>Add <code># put</code> comments to describe each step in your workflow. Start simple:</p>
-<blockquote>
-<p>[!TIP] <strong>One line is enough!</strong> The simplest annotation is <code># put label:"My Step"</code> - ID, type, and output are auto-generated.</p>
-</blockquote>
-<p><strong>Minimal annotation (just a label):</strong></p>
+<p>putior connects scripts across languages by tracking input and output files:</p>
+<p><strong><code>01_fetch.R</code></strong></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># put label:"Load Data"</span></span></code></pre></div>
-<p>That’s it! putior will: - Auto-generate a unique ID for the node - Default <code>node_type</code> to <code>"process"</code> - Default <code>output</code> to the current filename (for connecting scripts)</p>
-<p><strong>Add more detail as needed:</strong></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># put label:"Fetch Sales Data", node_type:"input", output:"sales_data.csv"</span></span></code></pre></div>
-<p><strong>Complete example with two files:</strong></p>
-<p><strong><code>01_fetch_data.R</code></strong></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># put label:"Fetch Sales Data", node_type:"input", output:"sales_data.csv"</span></span>
-<span></span>
-<span><span class="co"># Your actual code</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://readr.tidyverse.org" class="external-link">readr</a></span><span class="op">)</span></span>
-<span><span class="va">sales_data</span> <span class="op">&lt;-</span> <span class="fu">fetch_sales_from_api</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html" class="external-link">write_csv</a></span><span class="op">(</span><span class="va">sales_data</span>, <span class="st">"sales_data.csv"</span><span class="op">)</span></span></code></pre></div>
-<p><strong><code>02_clean_data.py</code></strong></p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># put label:"Clean and Process", input:"sales_data.csv", output:"clean_sales.csv"</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"sales_data.csv"</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co"># ... data cleaning code ...</span></span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>df.to_csv(<span class="st">"clean_sales.csv"</span>)</span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="step-2-extract-and-visualize">Step 2: Extract and Visualize<a class="anchor" aria-label="anchor" href="#step-2-extract-and-visualize"></a>
-</h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># put id:"fetch", label:"Fetch Sales Data", node_type:"input", output:"raw_sales.csv"</span></span>
+<span><span class="va">sales</span> <span class="op">&lt;-</span> <span class="fu">fetch_sales_from_api</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">sales</span>, <span class="st">"raw_sales.csv"</span><span class="op">)</span></span></code></pre></div>
+<p><strong><code>02_clean.py</code></strong></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># put id:"clean", label:"Clean and Validate", input:"raw_sales.csv", output:"clean_sales.csv"</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"raw_sales.csv"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>df.dropna().to_csv(<span class="st">"clean_sales.csv"</span>)</span></code></pre></div>
+<p><strong><code>03_report.sql</code></strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">-- put id:"report", label:"Generate Summary", node_type:"output", input:"clean_sales.csv"</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="kw">SELECT</span> region, <span class="fu">SUM</span>(amount) <span class="kw">FROM</span> clean_sales <span class="kw">GROUP</span> <span class="kw">BY</span> region;</span></code></pre></div>
+<p><strong>Generate the diagram:</strong></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pjt222.github.io/putior/">putior</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Extract workflow from your scripts</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./scripts/"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Generate diagram</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./pipeline/"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"github"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Result:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    fetch_sales([Fetch Sales Data])
-    clean_data[Clean and Process]
+    fetch([Fetch Sales Data])
+    clean[Clean and Validate]
+    report[[Generate Summary]]
 
-    %% Connections
-    fetch_sales --&gt; clean_data
+    fetch --&gt; clean
+    clean --&gt; report
 
-    %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    class fetch_sales inputStyle
+    class fetch inputStyle
     classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class clean_data processStyle</code></pre>
-</div>
-</div>
-<div class="section level2">
-<h2 id="id_-common-data-science-pattern">📈 Common Data Science Pattern<a class="anchor" aria-label="anchor" href="#id_-common-data-science-pattern"></a>
-</h2>
-<div class="section level3">
-<h3 id="modular-workflow-with-source">Modular Workflow with source()<a class="anchor" aria-label="anchor" href="#modular-workflow-with-source"></a>
-</h3>
-<p>The most common data science pattern: modularize functions into separate scripts and orchestrate them in a main workflow:</p>
-<p><strong><code>utils.R</code> - Utility functions</strong></p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># put label:"Data Utilities", node_type:"input"</span></span>
-<span></span>
-<span><span class="va">load_and_clean</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">file</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span>
-<span>  <span class="va">data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html" class="external-link">complete.cases</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>, <span class="op">]</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">validate_data</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p><strong><code>analysis.R</code> - Analysis functions</strong></p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># put label:"Statistical Analysis", input:"utils.R"</span></span>
-<span></span>
-<span><span class="va">perform_analysis</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># Uses utility functions from utils.R</span></span>
-<span>  <span class="va">cleaned</span> <span class="op">&lt;-</span> <span class="fu">validate_data</span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">cleaned</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p><strong><code>main.R</code> - Workflow orchestrator</strong></p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># put label:"Main Analysis Pipeline", input:"utils.R,analysis.R", output:"results.csv"</span></span>
-<span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"utils.R"</span><span class="op">)</span>     <span class="co"># Load utility functions</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"analysis.R"</span><span class="op">)</span>  <span class="co"># Load analysis functions</span></span>
-<span></span>
-<span><span class="co"># Execute the pipeline</span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">load_and_clean</span><span class="op">(</span><span class="st">"raw_data.csv"</span><span class="op">)</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">perform_analysis</span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">results</span>, <span class="st">"results.csv"</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Generated Workflow (Simple):</strong></p>
-<pre class="mermaid"><code>flowchart TD
-    utils([Data Utilities])
-    analysis[Statistical Analysis]
-    main[Main Analysis Pipeline]
-
-    %% Connections
-    utils --&gt; analysis
-    utils --&gt; main
-    analysis --&gt; main
-
-    %% Styling
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    class utils inputStyle
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class analysis processStyle
-    class main processStyle</code></pre>
-<p><strong>Generated Workflow (With Data Artifacts):</strong></p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Show complete data flow including all files</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_artifacts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<pre class="mermaid"><code>flowchart TD
-    utils([Data Utilities])
-    analysis[Statistical Analysis]
-    main[Main Analysis Pipeline]
-    artifact_results_csv[(results.csv)]
-
-    %% Connections
-    utils --&gt; analysis
-    utils --&gt; main
-    analysis --&gt; main
-    main --&gt; artifact_results_csv
-
-    %% Styling
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    class utils inputStyle
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class analysis processStyle
-    class main processStyle
-    classDef artifactStyle fill:#f3f4f6,stroke:#6b7280,stroke-width:1px,color:#374151
-    class artifact_results_csv artifactStyle</code></pre>
-<p>This pattern clearly shows: - <strong>Function modules</strong> (<code>utils.R</code>, <code>analysis.R</code>) are sourced into the main script - <strong>Dependencies</strong> between modules (analysis depends on utils)<br>
-- <strong>Complete data flow</strong> with artifacts showing terminal outputs like <code>results.csv</code> - <strong>Two visualization modes</strong>: simple (script connections only) vs. complete (with data artifacts)</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="id_-visualization-examples">📊 Visualization Examples<a class="anchor" aria-label="anchor" href="#id_-visualization-examples"></a>
-</h2>
-<div class="section level3">
-<h3 id="basic-workflow">Basic Workflow<a class="anchor" aria-label="anchor" href="#basic-workflow"></a>
-</h3>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Simple three-step process</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./data_pipeline/"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="advanced-data-science-pipeline">Advanced Data Science Pipeline<a class="anchor" aria-label="anchor" href="#advanced-data-science-pipeline"></a>
-</h3>
-<p>Here’s how putior handles a complete data science workflow:</p>
-<p><strong>File Structure:</strong></p>
-<pre><code>data_pipeline/
-├── 01_fetch_sales.R      # Fetch sales data
-├── 02_fetch_customers.R  # Fetch customer data
-├── 03_clean_sales.py     # Clean sales data
-├── 04_merge_data.R       # Merge datasets
-├── 05_analyze.py         # Statistical analysis
-└── 06_report.R           # Generate final report</code></pre>
-<p><strong>Generated Workflow:</strong></p>
-<pre class="mermaid"><code>flowchart TD
-    fetch_sales([Fetch Sales Data])
-    fetch_customers([Fetch Customer Data])
-    clean_sales[Clean Sales Data]
-    merge_data[Merge Datasets]
-    analyze[Statistical Analysis]
-    report[[Generate Final Report]]
-
-    %% Connections
-    fetch_sales --&gt; clean_sales
-    fetch_customers --&gt; merge_data
-    clean_sales --&gt; merge_data
-    merge_data --&gt; analyze
-    analyze --&gt; report
-
-    %% Styling
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    class fetch_sales inputStyle
-    class fetch_customers inputStyle
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class clean_sales processStyle
-    class merge_data processStyle
-    class analyze processStyle
+    class clean processStyle
     classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
     class report outputStyle</code></pre>
 </div>
-</div>
 <div class="section level2">
-<h2 id="id_-using-the-diagrams">📋 Using the Diagrams<a class="anchor" aria-label="anchor" href="#id_-using-the-diagrams"></a>
+<h2 id="learn-more">Learn More<a class="anchor" aria-label="anchor" href="#learn-more"></a>
 </h2>
+<p>Explore the full documentation at the <a href="https://pjt222.github.io/putior/">pkgdown site</a>.</p>
 <div class="section level3">
-<h3 id="embedding-in-documentation">Embedding in Documentation<a class="anchor" aria-label="anchor" href="#embedding-in-documentation"></a>
-</h3>
-<p>The generated Mermaid code works perfectly in:</p>
-<ul>
-<li>
-<strong>GitHub README files</strong> (native Mermaid support)</li>
-<li><strong>GitLab documentation</strong></li>
-<li><strong>Notion pages</strong></li>
-<li><strong>Obsidian notes</strong></li>
-<li>
-<strong>Jupyter notebooks</strong> (with extensions)</li>
-<li>
-<strong>Sphinx documentation</strong> (with plugins)</li>
-<li>
-<strong>Any Markdown renderer</strong> with Mermaid support</li>
-</ul>
-</div>
-<div class="section level3">
-<h3 id="saving-and-sharing">Saving and Sharing<a class="anchor" aria-label="anchor" href="#saving-and-sharing"></a>
-</h3>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Save to markdown file</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"file"</span>, file <span class="op">=</span> <span class="st">"workflow.md"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Copy to clipboard for pasting</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"clipboard"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Include title for documentation</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"file"</span>, file <span class="op">=</span> <span class="st">"docs/pipeline.md"</span>, </span>
-<span>           title <span class="op">=</span> <span class="st">"Data Processing Pipeline"</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="id_-visualization-modes">🔧 Visualization Modes<a class="anchor" aria-label="anchor" href="#id_-visualization-modes"></a>
-</h2>
-<p>putior offers two visualization modes to suit different needs:</p>
-<div class="section level3">
-<h3 id="workflow-boundaries-demo">Workflow Boundaries Demo<a class="anchor" aria-label="anchor" href="#workflow-boundaries-demo"></a>
-</h3>
-<p>First, let’s see how workflow boundaries enhance pipeline visualization:</p>
-<p><strong>Pipeline with Boundaries (Default):</strong></p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Complete ETL pipeline with clear start/end boundaries</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_workflow_boundaries <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<pre class="mermaid"><code>flowchart TD
-    pipeline_start([Data Pipeline Start])
-    extract_data[Extract Raw Data]
-    transform_data[Transform Data]
-    pipeline_end([Pipeline Complete])
-
-    %% Connections
-    pipeline_start --&gt; extract_data
-    extract_data --&gt; transform_data
-    transform_data --&gt; pipeline_end
-
-    %% Styling
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class extract_data processStyle
-    class transform_data processStyle
-    classDef startStyle fill:#fef3c7,stroke:#d97706,stroke-width:3px,color:#92400e
-    class pipeline_start startStyle
-    classDef endStyle fill:#dcfce7,stroke:#16a34a,stroke-width:3px,color:#15803d
-    class pipeline_end endStyle</code></pre>
-<p><strong>Same Pipeline without Boundaries:</strong></p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Clean diagram without workflow control styling</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_workflow_boundaries <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<pre class="mermaid"><code>flowchart TD
-    pipeline_start([Data Pipeline Start])
-    extract_data[Extract Raw Data]
-    transform_data[Transform Data]
-    pipeline_end([Pipeline Complete])
-
-    %% Connections
-    pipeline_start --&gt; extract_data
-    extract_data --&gt; transform_data
-    transform_data --&gt; pipeline_end
-
-    %% Styling
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class extract_data processStyle
-    class transform_data processStyle</code></pre>
-</div>
-<div class="section level3">
-<h3 id="simple-mode-default">Simple Mode (Default)<a class="anchor" aria-label="anchor" href="#simple-mode-default"></a>
-</h3>
-<p>Shows only <strong>script-to-script connections</strong> - perfect for understanding code dependencies:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span>  <span class="co"># Default: simple mode</span></span></code></pre></div>
-<p><strong>Use when:</strong> - Documenting code architecture - Showing function dependencies - Clean, simple workflow diagrams</p>
-</div>
-<div class="section level3">
-<h3 id="artifact-mode-complete-data-flow">Artifact Mode (Complete Data Flow)<a class="anchor" aria-label="anchor" href="#artifact-mode-complete-data-flow"></a>
-</h3>
-<p>Shows <strong>all data files as nodes</strong> - provides complete picture of data flow including terminal outputs:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_artifacts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Use when:</strong> - Documenting data pipelines - Tracking data lineage - Showing complete input/output flow - Understanding data dependencies</p>
-</div>
-<div class="section level3">
-<h3 id="comparison-example">Comparison Example<a class="anchor" aria-label="anchor" href="#comparison-example"></a>
-</h3>
-<p><strong>Simple Mode:</strong></p>
-<pre class="mermaid"><code>flowchart TD
-    load[Load Data] --&gt; process[Process Data]
-    process --&gt; analyze[Analyze]</code></pre>
-<p><strong>Artifact Mode:</strong></p>
-<pre class="mermaid"><code>flowchart TD
-    load[Load Data]
-    raw_data[(raw_data.csv)]
-    process[Process Data]
-    clean_data[(clean_data.csv)]
-    analyze[Analyze]
-    results[(results.json)]
-
-    load --&gt; raw_data
-    raw_data --&gt; process
-    process --&gt; clean_data
-    clean_data --&gt; analyze
-    analyze --&gt; results</code></pre>
-</div>
-<div class="section level3">
-<h3 id="key-differences">Key Differences<a class="anchor" aria-label="anchor" href="#key-differences"></a>
+<h3 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h3>
 <table class="table">
 <colgroup>
-<col width="26%">
-<col width="30%">
-<col width="43%">
+<col width="35%">
+<col width="65%">
 </colgroup>
 <thead><tr class="header">
-<th>Mode</th>
-<th>Shows</th>
-<th>Best For</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><strong>Simple</strong></td>
-<td>Script connections only</td>
-<td>Code architecture, dependencies</td>
-</tr>
-<tr class="even">
-<td><strong>Artifact</strong></td>
-<td>Scripts + data files</td>
-<td>Data pipelines, complete data flow</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section level3">
-<h3 id="file-labeling">File Labeling<a class="anchor" aria-label="anchor" href="#file-labeling"></a>
-</h3>
-<p>Add file names to connections for extra clarity:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Show file names on arrows</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_artifacts <span class="op">=</span> <span class="cn">TRUE</span>, show_files <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="id_-theme-system">🎨 Theme System<a class="anchor" aria-label="anchor" href="#id_-theme-system"></a>
-</h2>
-<p>putior provides 9 carefully designed themes optimized for different environments:</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get list of available themes</span></span>
-<span><span class="fu"><a href="reference/get_diagram_themes.html">get_diagram_themes</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div class="section level3">
-<h3 id="theme-overview">Theme Overview<a class="anchor" aria-label="anchor" href="#theme-overview"></a>
-</h3>
-<div class="section level4">
-<h4 id="standard-themes">Standard Themes<a class="anchor" aria-label="anchor" href="#standard-themes"></a>
-</h4>
-<table class="table">
-<colgroup>
-<col width="23%">
-<col width="33%">
-<col width="43%">
-</colgroup>
-<thead><tr class="header">
-<th>Theme</th>
-<th>Best For</th>
+<th>Guide</th>
 <th>Description</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td><code>light</code></td>
-<td>Documentation sites, tutorials</td>
-<td>Default light theme with bright colors</td>
+<td><a href="https://pjt222.github.io/putior/articles/quick-start.html">Quick Start</a></td>
+<td>First diagram in 2 minutes</td>
 </tr>
 <tr class="even">
-<td><code>dark</code></td>
-<td>Dark mode apps, terminals</td>
-<td>Dark theme with muted colors</td>
-</tr>
-<tr class="odd">
-<td><code>auto</code></td>
-<td>GitHub README files</td>
-<td>GitHub-adaptive theme that works in both modes</td>
-</tr>
-<tr class="even">
-<td><code>minimal</code></td>
-<td>Business reports, presentations</td>
-<td>Grayscale professional theme</td>
-</tr>
-<tr class="odd">
-<td><code>github</code></td>
-<td><strong>GitHub README (recommended)</strong></td>
-<td>Optimized for maximum GitHub compatibility</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section level4">
-<h4 id="colorblind-safe-themes-viridis-family">Colorblind-Safe Themes (Viridis Family)<a class="anchor" aria-label="anchor" href="#colorblind-safe-themes-viridis-family"></a>
-</h4>
-<table class="table">
-<colgroup>
-<col width="26%">
-<col width="38%">
-<col width="34%">
-</colgroup>
-<thead><tr class="header">
-<th>Theme</th>
-<th>Best For</th>
-<th>Palette</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><code>viridis</code></td>
-<td>General accessibility</td>
-<td>Purple → Blue → Green → Yellow</td>
-</tr>
-<tr class="even">
-<td><code>magma</code></td>
-<td>Print, high contrast</td>
-<td>Purple → Red → Yellow</td>
-</tr>
-<tr class="odd">
-<td><code>plasma</code></td>
-<td>Presentations</td>
-<td>Purple → Pink → Orange → Yellow</td>
-</tr>
-<tr class="even">
-<td><code>cividis</code></td>
-<td>Maximum accessibility</td>
-<td>Blue → Gray → Yellow (red-green safe)</td>
-</tr>
-</tbody>
-</table>
-<p>All viridis themes are perceptually uniform and tested for deuteranopia, protanopia, and tritanopia.</p>
-</div>
-</div>
-<div class="section level3">
-<h3 id="theme-examples">Theme Examples<a class="anchor" aria-label="anchor" href="#theme-examples"></a>
-</h3>
-<p><strong>Light Theme</strong></p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"light"</span><span class="op">)</span></span></code></pre></div>
-<pre class="mermaid"><code>flowchart TD
-    fetch_data([Fetch API Data])
-    clean_data[Clean and Validate]
-    generate_report[[Generate Final Report]]
-
-    %% Connections
-    fetch_data --&gt; clean_data
-    clean_data --&gt; generate_report
-
-    %% Styling
-    classDef inputStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000000
-    class fetch_data inputStyle
-    classDef processStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000000
-    class clean_data processStyle
-    classDef outputStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000000
-    class generate_report outputStyle</code></pre>
-<p><strong>Dark Theme</strong></p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"dark"</span><span class="op">)</span></span></code></pre></div>
-<pre class="mermaid"><code>flowchart TD
-    fetch_data([Fetch API Data])
-    clean_data[Clean and Validate]
-    generate_report[[Generate Final Report]]
-
-    %% Connections
-    fetch_data --&gt; clean_data
-    clean_data --&gt; generate_report
-
-    %% Styling
-    classDef inputStyle fill:#1a237e,stroke:#3f51b5,stroke-width:2px,color:#ffffff
-    class fetch_data inputStyle
-    classDef processStyle fill:#4a148c,stroke:#9c27b0,stroke-width:2px,color:#ffffff
-    class clean_data processStyle
-    classDef outputStyle fill:#1b5e20,stroke:#4caf50,stroke-width:2px,color:#ffffff
-    class generate_report outputStyle</code></pre>
-<p><strong>Auto Theme (GitHub Adaptive)</strong></p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"auto"</span><span class="op">)</span>  <span class="co"># Recommended for GitHub!</span></span></code></pre></div>
-<pre class="mermaid"><code>flowchart TD
-    fetch_data([Fetch API Data])
-    clean_data[Clean and Validate]
-    generate_report[[Generate Final Report]]
-
-    %% Connections
-    fetch_data --&gt; clean_data
-    clean_data --&gt; generate_report
-
-    %% Styling
-    classDef inputStyle fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#ffffff
-    class fetch_data inputStyle
-    classDef processStyle fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#ffffff
-    class clean_data processStyle
-    classDef outputStyle fill:#10b981,stroke:#047857,stroke-width:2px,color:#ffffff
-    class generate_report outputStyle</code></pre>
-<p><strong>GitHub Theme (Maximum Compatibility)</strong></p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"github"</span><span class="op">)</span>  <span class="co"># Best for GitHub README</span></span></code></pre></div>
-<pre class="mermaid"><code>flowchart TD
-    fetch_data([Fetch API Data])
-    clean_data[Clean and Validate]
-    generate_report[[Generate Final Report]]
-
-    %% Connections
-    fetch_data --&gt; clean_data
-    clean_data --&gt; generate_report
-
-    %% Styling
-    classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    class fetch_data inputStyle
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class clean_data processStyle
-    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
-    class generate_report outputStyle</code></pre>
-<p><strong>Minimal Theme</strong></p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"minimal"</span><span class="op">)</span>  <span class="co"># Professional documents</span></span></code></pre></div>
-<pre class="mermaid"><code>flowchart TD
-    fetch_data([Fetch API Data])
-    clean_data[Clean and Validate]
-    generate_report[[Generate Final Report]]
-
-    %% Connections
-    fetch_data --&gt; clean_data
-    clean_data --&gt; generate_report
-
-    %% Styling
-    classDef inputStyle fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b
-    class fetch_data inputStyle
-    classDef processStyle fill:#f1f5f9,stroke:#64748b,stroke-width:1px,color:#1e293b
-    class clean_data processStyle
-    classDef outputStyle fill:#f8fafc,stroke:#64748b,stroke-width:1px,color:#1e293b
-    class generate_report outputStyle</code></pre>
-</div>
-<div class="section level3">
-<h3 id="when-to-use-each-theme">When to Use Each Theme<a class="anchor" aria-label="anchor" href="#when-to-use-each-theme"></a>
-</h3>
-<table class="table">
-<thead><tr class="header">
-<th>Theme</th>
-<th>Use Case</th>
-<th>Environment</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><code>light</code></td>
-<td>Documentation sites, tutorials</td>
-<td>Light backgrounds</td>
-</tr>
-<tr class="even">
-<td><code>dark</code></td>
-<td>Dark mode apps, terminals</td>
-<td>Dark backgrounds</td>
-</tr>
-<tr class="odd">
-<td><code>auto</code></td>
-<td>GitHub README files</td>
-<td>Adapts automatically</td>
-</tr>
-<tr class="even">
-<td><code>github</code></td>
-<td><strong>GitHub README (recommended)</strong></td>
-<td>Maximum compatibility</td>
-</tr>
-<tr class="odd">
-<td><code>minimal</code></td>
-<td>Business reports, presentations</td>
-<td>Print-friendly</td>
-</tr>
-<tr class="even">
-<td><code>viridis</code></td>
-<td><strong>Accessibility (recommended)</strong></td>
-<td>Colorblind-safe</td>
-</tr>
-<tr class="odd">
-<td><code>cividis</code></td>
-<td>Red-green colorblindness</td>
-<td>Maximum accessibility</td>
+<td><a href="https://pjt222.github.io/putior/articles/annotation-guide.html">Annotation Guide</a></td>
+<td>Complete syntax reference, multiline annotations, best practices</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section level3">
-<h3 id="pro-tips">Pro Tips<a class="anchor" aria-label="anchor" href="#pro-tips"></a>
-</h3>
-<ul>
-<li>
-<strong>For GitHub</strong>: Use <code>theme = "github"</code> for maximum compatibility, or <code>theme = "auto"</code> for adaptive colors</li>
-<li>
-<strong>For Documentation</strong>: Use <code>theme = "light"</code> or <code>theme = "dark"</code> to match your site</li>
-<li>
-<strong>For Reports</strong>: Use <code>theme = "minimal"</code> for professional, print-friendly diagrams</li>
-<li>
-<strong>For Demos</strong>: Light theme usually shows colors best in presentations</li>
-<li>
-<strong>For Accessibility</strong>: Use <code>theme = "viridis"</code> or <code>theme = "cividis"</code> for colorblind-safe diagrams</li>
-</ul>
-</div>
-<div class="section level3">
-<h3 id="theme-usage-examples">Theme Usage Examples<a class="anchor" aria-label="anchor" href="#theme-usage-examples"></a>
-</h3>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># For GitHub README (recommended)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"github"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># For GitHub README (adaptive)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"auto"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># For dark documentation sites</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"dark"</span>, direction <span class="op">=</span> <span class="st">"LR"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># For professional reports</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"minimal"</span>, output <span class="op">=</span> <span class="st">"file"</span>, file <span class="op">=</span> <span class="st">"report.md"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># For colorblind-safe diagrams</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"viridis"</span><span class="op">)</span>     <span class="co"># General accessibility</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"cividis"</span><span class="op">)</span>     <span class="co"># Red-green colorblindness</span></span>
-<span></span>
-<span><span class="co"># Custom palette (override individual node type colors)</span></span>
-<span><span class="va">my_theme</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put_theme.html">put_theme</a></span><span class="op">(</span>base <span class="op">=</span> <span class="st">"dark"</span>, input <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#1a1a2e"</span>, stroke <span class="op">=</span> <span class="st">"#00ff88"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, palette <span class="op">=</span> <span class="va">my_theme</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Save all themes for comparison</span></span>
-<span><span class="va">themes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"light"</span>, <span class="st">"dark"</span>, <span class="st">"auto"</span>, <span class="st">"github"</span>, <span class="st">"minimal"</span>,</span>
-<span>            <span class="st">"viridis"</span>, <span class="st">"magma"</span>, <span class="st">"plasma"</span>, <span class="st">"cividis"</span><span class="op">)</span></span>
-<span><span class="kw">for</span><span class="op">(</span><span class="va">theme</span> <span class="kw">in</span> <span class="va">themes</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>,</span>
-<span>             theme <span class="op">=</span> <span class="va">theme</span>,</span>
-<span>             output <span class="op">=</span> <span class="st">"file"</span>,</span>
-<span>             file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"workflow_"</span>, <span class="va">theme</span>, <span class="st">".md"</span><span class="op">)</span>,</span>
-<span>             title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Workflow -"</span>, <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html" class="external-link">str_to_title</a></span><span class="op">(</span><span class="va">theme</span><span class="op">)</span>, <span class="st">"Theme"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="id_-customization-options">🔧 Customization Options<a class="anchor" aria-label="anchor" href="#id_-customization-options"></a>
-</h2>
-<div class="section level3">
-<h3 id="flow-direction">Flow Direction<a class="anchor" aria-label="anchor" href="#flow-direction"></a>
-</h3>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, direction <span class="op">=</span> <span class="st">"TD"</span><span class="op">)</span>  <span class="co"># Top to bottom (default)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, direction <span class="op">=</span> <span class="st">"LR"</span><span class="op">)</span>  <span class="co"># Left to right  </span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, direction <span class="op">=</span> <span class="st">"BT"</span><span class="op">)</span>  <span class="co"># Bottom to top</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, direction <span class="op">=</span> <span class="st">"RL"</span><span class="op">)</span>  <span class="co"># Right to left</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="node-labels">Node Labels<a class="anchor" aria-label="anchor" href="#node-labels"></a>
-</h3>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, node_labels <span class="op">=</span> <span class="st">"name"</span><span class="op">)</span>   <span class="co"># Show node IDs</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, node_labels <span class="op">=</span> <span class="st">"label"</span><span class="op">)</span>  <span class="co"># Show descriptions (default)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, node_labels <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span>   <span class="co"># Show name: description</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="file-connections">File Connections<a class="anchor" aria-label="anchor" href="#file-connections"></a>
-</h3>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Show file names on arrows</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_files <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Clean arrows without file names  </span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_files <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="styling-control">Styling Control<a class="anchor" aria-label="anchor" href="#styling-control"></a>
-</h3>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Include colored styling (default)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, style_nodes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Plain diagram without colors</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, style_nodes <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Control workflow boundary styling</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_workflow_boundaries <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>   <span class="co"># Special start/end styling (default)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_workflow_boundaries <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>  <span class="co"># Regular node styling</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="workflow-boundaries">Workflow Boundaries<a class="anchor" aria-label="anchor" href="#workflow-boundaries"></a>
-</h3>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Enable workflow boundaries (default) - start/end get special styling</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_workflow_boundaries <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Disable workflow boundaries - start/end render as regular nodes</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_workflow_boundaries <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="output-options">Output Options<a class="anchor" aria-label="anchor" href="#output-options"></a>
-</h3>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Console output (default)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Save to markdown file</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"file"</span>, file <span class="op">=</span> <span class="st">"my_workflow.md"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Copy to clipboard for pasting</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"clipboard"</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="id_-annotation-reference">📝 Annotation Reference<a class="anchor" aria-label="anchor" href="#id_-annotation-reference"></a>
-</h2>
-<div class="section level3">
-<h3 id="defaults-and-auto-detection">Defaults and Auto-Detection<a class="anchor" aria-label="anchor" href="#defaults-and-auto-detection"></a>
-</h3>
-<p>putior is designed to work with minimal configuration. Here’s what happens automatically:</p>
-<table class="table">
-<colgroup>
-<col width="24%">
-<col width="41%">
-<col width="34%">
-</colgroup>
-<thead><tr class="header">
-<th>Field</th>
-<th>If Omitted</th>
-<th>Behavior</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><code>id</code></td>
-<td>Auto-generated UUID</td>
-<td>Unique identifier like <code>"a1b2c3d4-e5f6..."</code>
-</td>
-</tr>
-<tr class="even">
-<td><code>label</code></td>
-<td>None</td>
-<td>Recommended for readability</td>
-</tr>
-<tr class="odd">
-<td><code>node_type</code></td>
-<td><code>"process"</code></td>
-<td>Most common type for data transformation</td>
-</tr>
-<tr class="even">
-<td><code>output</code></td>
-<td>Current filename</td>
-<td>Enables script-to-script connections</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Minimal valid annotation:</strong></p>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># put label:"My Step"</span></span>
-<span><span class="co"># That's all you need to get started!</span></span></code></pre></div>
-<p><strong>Progressively add detail:</strong></p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># put label:"My Step"                                          # Minimal</span></span>
-<span><span class="co"># put label:"My Step", node_type:"input"                       # + type</span></span>
-<span><span class="co"># put label:"My Step", node_type:"input", output:"data.csv"    # + output</span></span>
-<span><span class="co"># put id:"step1", label:"My Step", node_type:"input", output:"data.csv"  # Full</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="basic-syntax">Basic Syntax<a class="anchor" aria-label="anchor" href="#basic-syntax"></a>
-</h3>
-<p>All PUT annotations follow this format:</p>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># put property1:"value1", property2:"value2", property3:"value3"</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="flexible-syntax-options-all-valid">Flexible Syntax Options (All Valid)<a class="anchor" aria-label="anchor" href="#flexible-syntax-options-all-valid"></a>
-</h3>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># put id:"node_id", label:"Description"             # Standard format (matches logo)</span></span>
-<span><span class="co">#put id:"node_id", label:"Description"              # Also valid (no space)</span></span>
-<span><span class="co"># put| id:"node_id", label:"Description"            # Pipe separator</span></span>
-<span><span class="co"># put: id:"node_id", label:"Description"            # Colon separator</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="annotations">Annotations<a class="anchor" aria-label="anchor" href="#annotations"></a>
+<h3 id="going-deeper">Going Deeper<a class="anchor" aria-label="anchor" href="#going-deeper"></a>
 </h3>
 <table class="table">
 <colgroup>
-<col width="27%">
-<col width="29%">
-<col width="20%">
-<col width="22%">
+<col width="35%">
+<col width="65%">
 </colgroup>
 <thead><tr class="header">
-<th>Annotation</th>
+<th>Guide</th>
 <th>Description</th>
-<th>Example</th>
-<th>Required</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td><code>id</code></td>
-<td>Unique identifier for the node (auto-generated if omitted)</td>
-<td>
-<code>"fetch_data"</code>, <code>"clean_sales"</code>
-</td>
-<td>Optional*</td>
+<td><a href="https://pjt222.github.io/putior/articles/features-tour.html">Features Tour</a></td>
+<td>Auto-detection, themes, logging, interactive diagrams</td>
 </tr>
 <tr class="even">
-<td><code>label</code></td>
-<td>Human-readable description</td>
-<td>
-<code>"Fetch Sales Data"</code>, <code>"Clean and Process"</code>
-</td>
-<td>Recommended</td>
+<td><a href="https://pjt222.github.io/putior/articles/showcase.html">Showcase</a></td>
+<td>Real-world examples (ETL, ML, bioinformatics, finance)</td>
 </tr>
 </tbody>
 </table>
-<p>*Note: If <code>id</code> is omitted, a UUID will be automatically generated. If you provide an empty <code>id</code> (e.g., <code>id:""</code>), you’ll get a validation warning.</p>
 </div>
 <div class="section level3">
-<h3 id="optional-annotations">Optional Annotations<a class="anchor" aria-label="anchor" href="#optional-annotations"></a>
+<h3 id="reference">Reference<a class="anchor" aria-label="anchor" href="#reference"></a>
 </h3>
 <table class="table">
 <colgroup>
-<col width="27%">
-<col width="30%">
-<col width="20%">
-<col width="20%">
+<col width="35%">
+<col width="65%">
 </colgroup>
 <thead><tr class="header">
-<th>Annotation</th>
+<th>Guide</th>
 <th>Description</th>
-<th>Example</th>
-<th>Default</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td><code>node_type</code></td>
-<td>Visual shape of the node</td>
-<td>
-<code>"input"</code>, <code>"process"</code>, <code>"output"</code>, <code>"decision"</code>, <code>"start"</code>, <code>"end"</code>
-</td>
-<td><code>"process"</code></td>
+<td><a href="https://pjt222.github.io/putior/articles/api-reference.html">API Reference</a></td>
+<td>Complete function documentation</td>
 </tr>
 <tr class="even">
-<td><code>input</code></td>
-<td>Input files (comma-separated)</td>
-<td><code>"raw_data.csv, config.json"</code></td>
-<td>None</td>
+<td><a href="https://pjt222.github.io/putior/articles/quick-reference.html">Quick Reference</a></td>
+<td>At-a-glance reference card</td>
 </tr>
 <tr class="odd">
-<td><code>output</code></td>
-<td>Output files (comma-separated)</td>
-<td><code>"processed_data.csv, summary.txt"</code></td>
-<td>Current file name*</td>
+<td><a href="https://pjt222.github.io/putior/articles/troubleshooting.html">Troubleshooting</a></td>
+<td>Common issues and solutions</td>
+</tr>
+<tr class="even">
+<td><a href="https://pjt222.github.io/putior/articles/skills.html">AI Skills</a></td>
+<td>MCP/ACP integration for AI assistants</td>
 </tr>
 </tbody>
 </table>
-<p>*Note: If <code>output</code> is omitted, it defaults to the name of the file containing the annotation. This ensures nodes can be connected in workflows.</p>
-</div>
-<div class="section level3">
-<h3 id="node-types-and-shapes">Node Types and Shapes<a class="anchor" aria-label="anchor" href="#node-types-and-shapes"></a>
-</h3>
-<p>putior uses a <strong>data-centric approach</strong> with workflow boundaries as special control elements:</p>
-<p><strong>Data Processing Nodes:</strong> - <strong><code>"input"</code></strong> - Data sources, APIs, file readers → Stadium shape <code>([text])</code> - <strong><code>"process"</code></strong> - Data transformation, analysis → Rectangle <code>[text]</code><br>
-- <strong><code>"output"</code></strong> - Final results, reports, exports → Subroutine <code>[[text]]</code> - <strong><code>"decision"</code></strong> - Conditional logic, branching → Diamond <a href="https://r-text.org/" class="external-link">text</a></p>
-<p><strong>Workflow Control Nodes:</strong> - <strong><code>"start"</code></strong> - Workflow entry point → Stadium shape with orange styling - <strong><code>"end"</code></strong> - Workflow termination → Stadium shape with green styling</p>
-</div>
-<div class="section level3">
-<h3 id="workflow-boundaries-1">Workflow Boundaries<a class="anchor" aria-label="anchor" href="#workflow-boundaries-1"></a>
-</h3>
-<p>Control the visualization of workflow start/end points with <code>show_workflow_boundaries</code>:</p>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Special workflow boundary styling (default)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_workflow_boundaries <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Regular nodes without special workflow styling</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_workflow_boundaries <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><strong>With boundaries enabled</strong> (default): - <code>node_type:"start"</code> gets distinctive orange styling with thicker borders - <code>node_type:"end"</code> gets distinctive green styling with thicker borders</p>
-<p><strong>With boundaries disabled</strong>: - Start/end nodes render as regular stadium shapes without special colors</p>
-</div>
-<div class="section level3">
-<h3 id="example-annotations">Example Annotations<a class="anchor" aria-label="anchor" href="#example-annotations"></a>
-</h3>
-<p><strong>R Scripts:</strong></p>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># put id:"load_sales_data", label:"Load Sales Data from API", node_type:"input", output:"raw_sales.csv, metadata.json"</span></span>
-<span></span>
-<span><span class="co"># put id:"validate_data", label:"Validate and Clean Data", node_type:"process", input:"raw_sales.csv", output:"clean_sales.csv"</span></span>
-<span></span>
-<span><span class="co"># put id:"generate_report", label:"Generate Executive Summary", node_type:"output", input:"clean_sales.csv, metadata.json", output:"executive_summary.pdf"</span></span></code></pre></div>
-<p><strong>Python Scripts:</strong></p>
-<div class="sourceCode" id="cb53"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a><span class="co"># put id:"collect_data", label:"Collect Raw Data", node_type:"input", output:"raw_data.csv"</span></span>
-<span id="cb53-2"><a href="#cb53-2" tabindex="-1"></a></span>
-<span id="cb53-3"><a href="#cb53-3" tabindex="-1"></a><span class="co"># put id:"train_model", label:"Train ML Model", node_type:"process", input:"features.csv", output:"model.pkl"</span></span>
-<span id="cb53-4"><a href="#cb53-4" tabindex="-1"></a></span>
-<span id="cb53-5"><a href="#cb53-5" tabindex="-1"></a><span class="co"># put id:"predict", label:"Generate Predictions", node_type:"output", input:"model.pkl, test_data.csv", output:"predictions.csv"</span></span></code></pre></div>
-<p><strong>SQL Scripts:</strong></p>
-<div class="sourceCode" id="cb54"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb54-1"><a href="#cb54-1" tabindex="-1"></a><span class="co">--put id:"load_customers", label:"Load Customer Data", node_type:"input", output:"customers"</span></span>
-<span id="cb54-2"><a href="#cb54-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> raw_customers <span class="kw">WHERE</span> active <span class="op">=</span> <span class="dv">1</span>;</span>
-<span id="cb54-3"><a href="#cb54-3" tabindex="-1"></a></span>
-<span id="cb54-4"><a href="#cb54-4" tabindex="-1"></a><span class="co">--put id:"aggregate_sales", label:"Aggregate Sales", input:"customers", output:"sales_summary"</span></span>
-<span id="cb54-5"><a href="#cb54-5" tabindex="-1"></a><span class="kw">SELECT</span> customer_id, <span class="fu">SUM</span>(amount) <span class="kw">FROM</span> orders <span class="kw">GROUP</span> <span class="kw">BY</span> customer_id;</span></code></pre></div>
-<p><strong>JavaScript/TypeScript:</strong></p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a><span class="co">//put id:"fetch_api", label:"Fetch API Data", node_type:"input", output:"api_data.json"</span></span>
-<span id="cb55-2"><a href="#cb55-2" tabindex="-1"></a><span class="kw">const</span> data <span class="op">=</span> <span class="cf">await</span> <span class="fu">fetch</span>(<span class="st">'/api/data'</span>)<span class="op">.</span><span class="fu">then</span>(r <span class="kw">=&gt;</span> r<span class="op">.</span><span class="fu">json</span>())<span class="op">;</span></span>
-<span id="cb55-3"><a href="#cb55-3" tabindex="-1"></a></span>
-<span id="cb55-4"><a href="#cb55-4" tabindex="-1"></a><span class="co">//put id:"process_data", label:"Process JSON", input:"api_data.json", output:"processed.json"</span></span>
-<span id="cb55-5"><a href="#cb55-5" tabindex="-1"></a><span class="kw">const</span> processed <span class="op">=</span> <span class="fu">transformData</span>(data)<span class="op">;</span></span></code></pre></div>
-<p><strong>MATLAB:</strong></p>
-<div class="sourceCode" id="cb56"><pre class="sourceCode matlab"><code class="sourceCode matlab"><span id="cb56-1"><a href="#cb56-1" tabindex="-1"></a><span class="co">%put id:"load_matrix", label:"Load Data Matrix", node_type:"input", output:"matrix_data"</span></span>
-<span id="cb56-2"><a href="#cb56-2" tabindex="-1"></a><span class="va">data</span> <span class="op">=</span> <span class="va">load</span>(<span class="ss">'experiment.mat'</span>)<span class="op">;</span></span>
-<span id="cb56-3"><a href="#cb56-3" tabindex="-1"></a></span>
-<span id="cb56-4"><a href="#cb56-4" tabindex="-1"></a><span class="co">%put id:"analyze", label:"Statistical Analysis", input:"matrix_data", output:"results.mat"</span></span>
-<span id="cb56-5"><a href="#cb56-5" tabindex="-1"></a><span class="va">results</span> <span class="op">=</span> <span class="va">analyze</span>(<span class="va">data</span>)<span class="op">;</span></span></code></pre></div>
-<p><strong>Multiple Annotations Per File:</strong></p>
-<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># analysis.R</span></span>
-<span><span class="co"># put id:"create_summary", label:"Calculate Summary Stats", node_type:"process", input:"processed_data.csv", output:"summary_stats.json"</span></span>
-<span><span class="co"># put id:"create_report", label:"Generate Sales Report", node_type:"output", input:"processed_data.csv", output:"sales_report.html"</span></span>
-<span></span>
-<span><span class="co"># Your R code here...</span></span></code></pre></div>
-<p><strong>Workflow Entry and Exit Points:</strong></p>
-<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># main_workflow.R</span></span>
-<span><span class="co"># put id:"workflow_start", label:"Start Analysis Pipeline", node_type:"start", output:"config.json"</span></span>
-<span></span>
-<span><span class="co"># put id:"workflow_end", label:"Pipeline Complete", node_type:"end", input:"final_report.pdf"</span></span></code></pre></div>
-<p><strong>Workflow Boundary Examples:</strong></p>
-<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Complete pipeline with boundaries</span></span>
-<span><span class="co"># put id:"pipeline_start", label:"Data Pipeline Start", node_type:"start", output:"raw_config.json"</span></span>
-<span><span class="co"># put id:"extract_data", label:"Extract Raw Data", node_type:"process", input:"raw_config.json", output:"raw_data.csv"</span></span>
-<span><span class="co"># put id:"transform_data", label:"Transform Data", node_type:"process", input:"raw_data.csv", output:"clean_data.csv"</span></span>
-<span><span class="co"># put id:"pipeline_end", label:"Pipeline Complete", node_type:"end", input:"clean_data.csv"</span></span></code></pre></div>
-<p><strong>Generated Workflow with Boundaries:</strong></p>
-<pre class="mermaid"><code>flowchart TD
-    pipeline_start([Data Pipeline Start])
-    extract_data[Extract Raw Data]
-    transform_data[Transform Data]
-    pipeline_end([Pipeline Complete])
-
-    pipeline_start --&gt; extract_data
-    extract_data --&gt; transform_data
-    transform_data --&gt; pipeline_end
-
-    classDef startStyle fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px,color:#1b5e20
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    classDef endStyle fill:#ffebee,stroke:#c62828,stroke-width:3px,color:#b71c1c
-    class pipeline_start startStyle
-    class extract_data,transform_data processStyle
-    class pipeline_end endStyle</code></pre>
-</div>
-<div class="section level3">
-<h3 id="supported-file-types">Supported File Types<a class="anchor" aria-label="anchor" href="#supported-file-types"></a>
-</h3>
-<p>putior automatically detects and processes 30+ file types, with language-specific comment syntax:</p>
-<table class="table">
-<colgroup>
-<col width="39%">
-<col width="28%">
-<col width="31%">
-</colgroup>
-<thead><tr class="header">
-<th>Comment Style</th>
-<th>Languages</th>
-<th>Extensions</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><code># put</code></td>
-<td>R, Python, Shell, Julia, Ruby, Perl, YAML, TOML, Dockerfile, Makefile</td>
-<td>
-<code>.R</code>, <code>.py</code>, <code>.sh</code>, <code>.jl</code>, <code>.rb</code>, <code>.pl</code>, <code>.yaml</code>, <code>.yml</code>, <code>.toml</code>, <code>Dockerfile</code>, <code>Makefile</code>
-</td>
-</tr>
-<tr class="even">
-<td><code>-- put</code></td>
-<td>SQL, Lua, Haskell</td>
-<td>
-<code>.sql</code>, <code>.lua</code>, <code>.hs</code>
-</td>
-</tr>
-<tr class="odd">
-<td><code>// put</code></td>
-<td>JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala, WGSL</td>
-<td>
-<code>.js</code>, <code>.ts</code>, <code>.jsx</code>, <code>.tsx</code>, <code>.c</code>, <code>.cpp</code>, <code>.java</code>, <code>.go</code>, <code>.rs</code>, <code>.swift</code>, <code>.kt</code>, <code>.cs</code>, <code>.php</code>, <code>.scala</code>, <code>.wgsl</code>
-</td>
-</tr>
-<tr class="even">
-<td><code>% put</code></td>
-<td>MATLAB, LaTeX</td>
-<td>
-<code>.m</code>, <code>.tex</code>
-</td>
-</tr>
-</tbody>
-</table>
-<p>Languages using <code>//</code> also support PUT annotations inside block comments (<code>/* */</code> and <code>/** */</code>), using <code>* put</code> as the line prefix.</p>
-<p><strong>Unknown extensions default to <code>#</code> prefix.</strong></p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="id_️-advanced-usage">🛠️ Advanced Usage<a class="anchor" aria-label="anchor" href="#id_%EF%B8%8F-advanced-usage"></a>
+<h2 id="how-putior-compares">How putior Compares<a class="anchor" aria-label="anchor" href="#how-putior-compares"></a>
 </h2>
-<div class="section level3">
-<h3 id="directory-scanning">Directory Scanning<a class="anchor" aria-label="anchor" href="#directory-scanning"></a>
-</h3>
-<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Scan current directory</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Scan specific directory</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Recursive scanning (include subdirectories)</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./project/"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Custom file patterns</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./analysis/"</span>, pattern <span class="op">=</span> <span class="st">"\\.(R|py)$"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Exclude files matching regex patterns</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"test"</span>, <span class="st">"deprecated"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./"</span>, exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"vendor"</span>, <span class="st">"fixture"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Single file</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./script.R"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="debugging-and-validation">Debugging and Validation<a class="anchor" aria-label="anchor" href="#debugging-and-validation"></a>
-</h3>
-<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Include line numbers for debugging</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, include_line_numbers <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Disable validation warnings  </span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, validate <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Test annotation syntax</span></span>
-<span><span class="fu"><a href="reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'# put id:"test", label:"Test Node"'</span><span class="op">)</span>  <span class="co"># TRUE</span></span>
-<span><span class="fu"><a href="reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">"# put invalid syntax"</span><span class="op">)</span>                <span class="co"># FALSE</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="uuid-auto-generation">UUID Auto-Generation<a class="anchor" aria-label="anchor" href="#uuid-auto-generation"></a>
-</h3>
-<p>When you omit the <code>id</code> field, putior automatically generates a unique UUID:</p>
-<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Annotations without explicit IDs</span></span>
-<span><span class="co"># put label:"Load Data", node_type:"input", output:"data.csv"</span></span>
-<span><span class="co"># put label:"Process Data", node_type:"process", input:"data.csv"</span></span>
-<span></span>
-<span><span class="co"># Extract workflow - IDs will be auto-generated</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span>
-<span><span class="co"># [1] "a1b2c3d4-e5f6-7890-abcd-ef1234567890"</span></span>
-<span><span class="co"># [2] "b2c3d4e5-f6a7-8901-bcde-f23456789012"</span></span></code></pre></div>
-<p>This feature is perfect for: - Quick prototyping without worrying about unique IDs - Temporary workflows where IDs don’t matter - Ensuring uniqueness across large codebases</p>
-<p>Note: If you provide an empty <code>id</code> (e.g., <code>id:""</code>), you’ll get a validation warning.</p>
-</div>
-<div class="section level3">
-<h3 id="tracking-source-relationships">Tracking Source Relationships<a class="anchor" aria-label="anchor" href="#tracking-source-relationships"></a>
-</h3>
-<p>When you have a main script that sources other scripts, annotate them to show the sourcing relationships:</p>
-<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># main.R - sources other scripts</span></span>
-<span><span class="co"># put label:"Main Workflow", input:"utils.R,analysis.R", output:"results.csv"</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"utils.R"</span><span class="op">)</span>     <span class="co"># Reading utils.R into main.R</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"analysis.R"</span><span class="op">)</span>  <span class="co"># Reading analysis.R into main.R</span></span>
-<span></span>
-<span><span class="co"># utils.R - sourced by main.R</span></span>
-<span><span class="co"># put label:"Utility Functions", node_type:"input"</span></span>
-<span><span class="co"># output defaults to "utils.R"</span></span>
-<span></span>
-<span><span class="co"># analysis.R - sourced by main.R, depends on utils.R</span></span>
-<span><span class="co"># put label:"Analysis Functions", input:"utils.R"</span></span>
-<span><span class="co"># output defaults to "analysis.R"</span></span></code></pre></div>
-<p>This creates a diagram showing: - <code>utils.R</code> → <code>main.R</code> (sourced into) - <code>analysis.R</code> → <code>main.R</code> (sourced into) - <code>utils.R</code> → <code>analysis.R</code> (dependency)</p>
-</div>
-<div class="section level3">
-<h3 id="variable-references-with-internal-extension">Variable References with <code>.internal</code> Extension<a class="anchor" aria-label="anchor" href="#variable-references-with-internal-extension"></a>
-</h3>
-<p>Track in-memory variables and objects alongside persistent files:</p>
-<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Script 1: Create and save data</span></span>
-<span><span class="co"># put output:'my_data.internal, my_data.RData'</span></span>
-<span><span class="va">my_data</span> <span class="op">&lt;-</span> <span class="fu">process_data</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></span><span class="op">(</span><span class="va">my_data</span>, file <span class="op">=</span> <span class="st">'my_data.RData'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Script 2: Load data and create new variables</span></span>
-<span><span class="co"># put input:'my_data.RData', output:'results.internal, summary.csv'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">'my_data.RData'</span><span class="op">)</span>  <span class="co"># Load the persistent file</span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">analyze</span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span>  <span class="co"># Create new in-memory variable</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">results</span>, <span class="st">'summary.csv'</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Key Concepts:</strong> - <strong><code>.internal</code> variables</strong>: Exist only during script execution (outputs only) - <strong>Persistent files</strong>: Enable data flow between scripts (inputs/outputs) - <strong>Connected workflows</strong>: Use file-based dependencies, not variable references</p>
-<p>Try the complete example:</p>
-<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"variable-reference-example.R"</span>, package <span class="op">=</span> <span class="st">"putior"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="id_-advanced-features">🚀 Advanced Features<a class="anchor" aria-label="anchor" href="#id_-advanced-features"></a>
-</h2>
-<p>putior includes powerful features for automation, interactivity, and debugging that go beyond basic annotations.</p>
-<div class="section level3">
-<h3 id="auto-annotation-system">Auto-Annotation System<a class="anchor" aria-label="anchor" href="#auto-annotation-system"></a>
-</h3>
-<p>Automatically detect workflow elements from code analysis without writing annotations:</p>
-<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Auto-detect inputs/outputs from code patterns</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Generate annotation comments for your files (like roxygen2 skeleton)</span></span>
-<span><span class="fu"><a href="reference/put_generate.html">put_generate</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span>                    <span class="co"># Print to console</span></span>
-<span><span class="fu"><a href="reference/put_generate.html">put_generate</a></span><span class="op">(</span><span class="st">"./src/"</span>, output <span class="op">=</span> <span class="st">"clipboard"</span><span class="op">)</span>  <span class="co"># Copy to clipboard</span></span>
-<span></span>
-<span><span class="co"># Combine manual annotations with auto-detected</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put_merge.html">put_merge</a></span><span class="op">(</span><span class="st">"./src/"</span>, merge_strategy <span class="op">=</span> <span class="st">"supplement"</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Use cases:</strong> Instantly visualize unfamiliar codebases, generate annotation templates, supplement manual annotations with auto-detected I/O.</p>
-</div>
-<div class="section level3">
-<h3 id="interactive-diagrams">Interactive Diagrams<a class="anchor" aria-label="anchor" href="#interactive-diagrams"></a>
-</h3>
-<p>Make your diagrams more useful with source file info and clickable nodes:</p>
-<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Show which file each node comes from</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_source_info <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Group nodes by source file</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_source_info <span class="op">=</span> <span class="cn">TRUE</span>, source_info_style <span class="op">=</span> <span class="st">"subgraph"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Enable clickable nodes (opens source in VS Code)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, enable_clicks <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Use different editors</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, enable_clicks <span class="op">=</span> <span class="cn">TRUE</span>, click_protocol <span class="op">=</span> <span class="st">"rstudio"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, enable_clicks <span class="op">=</span> <span class="cn">TRUE</span>, click_protocol <span class="op">=</span> <span class="st">"file"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="debugging-with-logging">Debugging with Logging<a class="anchor" aria-label="anchor" href="#debugging-with-logging"></a>
-</h3>
-<p>Enable structured logging to debug annotation parsing and diagram generation:</p>
-<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Set log level for detailed output</span></span>
-<span><span class="fu"><a href="reference/set_putior_log_level.html">set_putior_log_level</a></span><span class="op">(</span><span class="st">"DEBUG"</span><span class="op">)</span>  <span class="co"># Most verbose</span></span>
-<span><span class="fu"><a href="reference/set_putior_log_level.html">set_putior_log_level</a></span><span class="op">(</span><span class="st">"INFO"</span><span class="op">)</span>   <span class="co"># Progress updates</span></span>
-<span><span class="fu"><a href="reference/set_putior_log_level.html">set_putior_log_level</a></span><span class="op">(</span><span class="st">"WARN"</span><span class="op">)</span>   <span class="co"># Default - warnings only</span></span>
-<span></span>
-<span><span class="co"># Or per-call override</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, log_level <span class="op">=</span> <span class="st">"DEBUG"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, log_level <span class="op">=</span> <span class="st">"INFO"</span><span class="op">)</span></span></code></pre></div>
-<p>Requires optional <code>logger</code> package: <code>install.packages("logger")</code></p>
-</div>
-<div class="section level3">
-<h3 id="detection-pattern-customization">Detection Pattern Customization<a class="anchor" aria-label="anchor" href="#detection-pattern-customization"></a>
-</h3>
-<p>View the patterns putior uses to auto-detect inputs and outputs:</p>
-<div class="sourceCode" id="cb70"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Get all R detection patterns</span></span>
-<span><span class="va">patterns</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_detection_patterns.html">get_detection_patterns</a></span><span class="op">(</span><span class="st">"r"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Get only input patterns for Python</span></span>
-<span><span class="va">input_patterns</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_detection_patterns.html">get_detection_patterns</a></span><span class="op">(</span><span class="st">"python"</span>, type <span class="op">=</span> <span class="st">"input"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Supported languages with auto-detection (18 languages, 900+ patterns):</span></span>
-<span><span class="co"># r, python, sql, shell, julia, javascript, typescript, go, rust,</span></span>
-<span><span class="co"># java, c, cpp, matlab, ruby, lua, wgsl, dockerfile, makefile</span></span>
-<span><span class="fu"><a href="reference/list_supported_languages.html">list_supported_languages</a></span><span class="op">(</span>detection_only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="interactive-sandbox">Interactive Sandbox<a class="anchor" aria-label="anchor" href="#interactive-sandbox"></a>
-</h3>
-<p>Try putior without writing any files using the built-in Shiny app:</p>
-<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Launch interactive sandbox (requires shiny package)</span></span>
-<span><span class="fu"><a href="reference/run_sandbox.html">run_sandbox</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>The sandbox lets you: - Paste or type annotated code - Simulate multiple files - Customize diagram settings in real-time - Export generated Mermaid code</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="id_-api-reference">📚 API Reference<a class="anchor" aria-label="anchor" href="#id_-api-reference"></a>
-</h2>
-<p>Quick reference for all exported functions:</p>
-<p><strong>Core Workflow:</strong></p>
-<table class="table">
-<colgroup>
-<col width="35%">
-<col width="32%">
-<col width="32%">
-</colgroup>
-<thead><tr class="header">
-<th>Function</th>
-<th>Purpose</th>
-<th>Example</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><code><a href="reference/put.html">put()</a></code></td>
-<td>Extract annotations from files</td>
-<td><code>workflow &lt;- put("./src/")</code></td>
-</tr>
-<tr class="even">
-<td><code><a href="reference/put_diagram.html">put_diagram()</a></code></td>
-<td>Generate Mermaid diagram</td>
-<td><code>put_diagram(workflow)</code></td>
-</tr>
-<tr class="odd">
-<td><code><a href="reference/put_auto.html">put_auto()</a></code></td>
-<td>Auto-detect workflow from code</td>
-<td><code>put_auto("./src/")</code></td>
-</tr>
-<tr class="even">
-<td><code><a href="reference/put_generate.html">put_generate()</a></code></td>
-<td>Generate annotation comments</td>
-<td><code>put_generate("./src/")</code></td>
-</tr>
-<tr class="odd">
-<td><code><a href="reference/put_merge.html">put_merge()</a></code></td>
-<td>Combine manual + auto annotations</td>
-<td><code>put_merge("./src/")</code></td>
-</tr>
-<tr class="even">
-<td><code><a href="reference/put_theme.html">put_theme()</a></code></td>
-<td>Create custom color palette</td>
-<td><code>put_theme(base = "dark", input = c(fill = "#1a1a2e"))</code></td>
-</tr>
-<tr class="odd">
-<td><code><a href="reference/run_sandbox.html">run_sandbox()</a></code></td>
-<td>Launch interactive Shiny app</td>
-<td><code><a href="reference/run_sandbox.html">run_sandbox()</a></code></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Reference and Utilities:</strong></p>
-<table class="table">
-<colgroup>
-<col width="35%">
-<col width="32%">
-<col width="32%">
-</colgroup>
-<thead><tr class="header">
-<th>Function</th>
-<th>Purpose</th>
-<th>Example</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><code><a href="reference/get_detection_patterns.html">get_detection_patterns()</a></code></td>
-<td>View/customize detection patterns</td>
-<td><code>get_detection_patterns("r")</code></td>
-</tr>
-<tr class="even">
-<td><code><a href="reference/list_supported_languages.html">list_supported_languages()</a></code></td>
-<td>List supported languages</td>
-<td><code><a href="reference/list_supported_languages.html">list_supported_languages()</a></code></td>
-</tr>
-<tr class="odd">
-<td><code><a href="reference/get_comment_prefix.html">get_comment_prefix()</a></code></td>
-<td>Get comment prefix for extension</td>
-<td>
-<code>get_comment_prefix("sql")</code> → <code>"--"</code>
-</td>
-</tr>
-<tr class="even">
-<td><code><a href="reference/get_supported_extensions.html">get_supported_extensions()</a></code></td>
-<td>List all supported extensions</td>
-<td><code><a href="reference/get_supported_extensions.html">get_supported_extensions()</a></code></td>
-</tr>
-<tr class="odd">
-<td><code><a href="reference/get_diagram_themes.html">get_diagram_themes()</a></code></td>
-<td>List available themes</td>
-<td><code><a href="reference/get_diagram_themes.html">get_diagram_themes()</a></code></td>
-</tr>
-<tr class="even">
-<td><code><a href="reference/ext_to_language.html">ext_to_language()</a></code></td>
-<td>Extension to language name</td>
-<td>
-<code>ext_to_language("rs")</code> → <code>"rust"</code>
-</td>
-</tr>
-<tr class="odd">
-<td><code><a href="reference/set_putior_log_level.html">set_putior_log_level()</a></code></td>
-<td>Configure logging verbosity</td>
-<td><code>set_putior_log_level("DEBUG")</code></td>
-</tr>
-<tr class="even">
-<td><code><a href="reference/is_valid_put_annotation.html">is_valid_put_annotation()</a></code></td>
-<td>Validate annotation syntax</td>
-<td><code>is_valid_put_annotation("# put ...")</code></td>
-</tr>
-<tr class="odd">
-<td><code><a href="reference/split_file_list.html">split_file_list()</a></code></td>
-<td>Parse comma-separated files</td>
-<td><code>split_file_list("a.csv, b.csv")</code></td>
-</tr>
-<tr class="even">
-<td><code><a href="reference/putior_help.html">putior_help()</a></code></td>
-<td>Quick reference help</td>
-<td><code><a href="reference/putior_help.html">putior_help()</a></code></td>
-</tr>
-<tr class="odd">
-<td><code><a href="reference/putior_skills.html">putior_skills()</a></code></td>
-<td>AI assistant documentation</td>
-<td><code><a href="reference/putior_skills.html">putior_skills()</a></code></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Integration (MCP/ACP):</strong></p>
-<table class="table">
-<colgroup>
-<col width="35%">
-<col width="32%">
-<col width="32%">
-</colgroup>
-<thead><tr class="header">
-<th>Function</th>
-<th>Purpose</th>
-<th>Example</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><code><a href="reference/putior_mcp_server.html">putior_mcp_server()</a></code></td>
-<td>Start MCP server for AI assistants</td>
-<td><code><a href="reference/putior_mcp_server.html">putior_mcp_server()</a></code></td>
-</tr>
-<tr class="even">
-<td><code><a href="reference/putior_mcp_tools.html">putior_mcp_tools()</a></code></td>
-<td>Get MCP tool definitions</td>
-<td><code><a href="reference/putior_mcp_tools.html">putior_mcp_tools()</a></code></td>
-</tr>
-<tr class="odd">
-<td><code><a href="reference/putior_acp_server.html">putior_acp_server()</a></code></td>
-<td>Start ACP server for agent-to-agent</td>
-<td><code><a href="reference/putior_acp_server.html">putior_acp_server()</a></code></td>
-</tr>
-<tr class="even">
-<td><code><a href="reference/putior_acp_manifest.html">putior_acp_manifest()</a></code></td>
-<td>Get ACP agent manifest</td>
-<td><code><a href="reference/putior_acp_manifest.html">putior_acp_manifest()</a></code></td>
-</tr>
-</tbody>
-</table>
-<p>For detailed documentation, see: - Function help: <code><a href="reference/put.html">?put</a></code>, <code><a href="reference/put_diagram.html">?put_diagram</a></code>, <code><a href="reference/put_auto.html">?put_auto</a></code> - <a href="https://pjt222.github.io/putior/">pkgdown site</a> - <a href="https://pjt222.github.io/putior/articles/quick-start.html">Quick Start</a> - First diagram in 2 minutes - <a href="https://pjt222.github.io/putior/articles/annotation-guide.html">Annotation Guide</a> - Complete syntax reference</p>
-</div>
-<div class="section level2">
-<h2 id="id_-self-documentation-putior-documents-itself">🔄 Self-Documentation: putior Documents Itself!<a class="anchor" aria-label="anchor" href="#id_-self-documentation-putior-documents-itself"></a>
-</h2>
-<p>As a demonstration of putior’s capabilities, we’ve added PUT annotations to putior’s own source code. This creates a beautiful visualization of how the package works internally:</p>
-<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Extract putior's own workflow</span></span>
-<span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./R/"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"github"</span>, title <span class="op">=</span> <span class="st">"putior Package Internals"</span>,</span>
-<span>            show_workflow_boundaries <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><strong>putior’s Own Workflow:</strong></p>
-<pre class="mermaid"><code>---
-title: putior Package Internals
----
-flowchart TD
-    diagram_gen[Generate Mermaid Diagram]
-    styling[Apply Theme Styling]
-    node_defs[Create Node Definitions]
-    connections[Generate Node Connections]
-    output_handler([Output Final Diagram])
-    put_entry([Entry Point - Scan Files])
-    process_file[Process Single File]
-    validate[Validate Annotations]
-    parser[Parse Annotation Syntax]
-    convert_df[Convert to Data Frame]
-
-    %% Connections
-    put_entry --&gt; diagram_gen
-    convert_df --&gt; diagram_gen
-    node_defs --&gt; styling
-    put_entry --&gt; node_defs
-    convert_df --&gt; node_defs
-    node_defs --&gt; connections
-    diagram_gen --&gt; output_handler
-    process_file --&gt; validate
-    process_file --&gt; parser
-    parser --&gt; convert_df
-
-    %% Styling
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class diagram_gen processStyle
-    class styling processStyle
-    class node_defs processStyle
-    class connections processStyle
-    class process_file processStyle
-    class validate processStyle
-    class parser processStyle
-    class convert_df processStyle
-    classDef startStyle fill:#fef3c7,stroke:#d97706,stroke-width:3px,color:#92400e
-    class put_entry startStyle
-    classDef endStyle fill:#dcfce7,stroke:#16a34a,stroke-width:3px,color:#15803d
-    class output_handler endStyle</code></pre>
-<p>This diagram is <strong>auto-generated</strong> by running <code>put("./R/")</code> on putior’s own annotated source code — a real demonstration of the package in action.</p>
-<p>To see the complete data flow with intermediate files, run:</p>
-<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_artifacts <span class="op">=</span> <span class="cn">TRUE</span>, theme <span class="op">=</span> <span class="st">"github"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="id_-contributing">🤝 Contributing<a class="anchor" aria-label="anchor" href="#id_-contributing"></a>
-</h2>
-<p>Contributions welcome! Please open an issue or pull request on <a href="https://github.com/pjt222/putior" class="external-link">GitHub</a>.</p>
-<p><strong>Development Setup:</strong></p>
-<div class="sourceCode" id="cb75"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb75-1"><a href="#cb75-1" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/pjt222/putior.git</span>
-<span id="cb75-2"><a href="#cb75-2" tabindex="-1"></a><span class="bu">cd</span> putior</span>
-<span id="cb75-3"><a href="#cb75-3" tabindex="-1"></a></span>
-<span id="cb75-4"><a href="#cb75-4" tabindex="-1"></a><span class="co"># Install dev dependencies  </span></span>
-<span id="cb75-5"><a href="#cb75-5" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">"devtools::install_dev_deps()"</span></span>
-<span id="cb75-6"><a href="#cb75-6" tabindex="-1"></a></span>
-<span id="cb75-7"><a href="#cb75-7" tabindex="-1"></a><span class="co"># Run tests</span></span>
-<span id="cb75-8"><a href="#cb75-8" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">"devtools::test()"</span></span>
-<span id="cb75-9"><a href="#cb75-9" tabindex="-1"></a></span>
-<span id="cb75-10"><a href="#cb75-10" tabindex="-1"></a><span class="co"># Check package</span></span>
-<span id="cb75-11"><a href="#cb75-11" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">"devtools::check()"</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="id_-license">📄 License<a class="anchor" aria-label="anchor" href="#id_-license"></a>
-</h2>
-<p>This project is licensed under the MIT License - see the <a href="LICENSE">LICENSE</a> file for details.</p>
-</div>
-<div class="section level2">
-<h2 id="id_-how-putior-compares-to-other-r-packages">📊 How putior Compares to Other R Packages<a class="anchor" aria-label="anchor" href="#id_-how-putior-compares-to-other-r-packages"></a>
-</h2>
-<p>putior fills a unique niche in the R ecosystem by combining annotation-based workflow extraction with beautiful diagram generation:</p>
+<p>putior fills a unique niche by combining annotation-based workflow extraction with Mermaid diagram generation:</p>
 <table class="table">
 <colgroup>
 <col width="20%">
@@ -1766,28 +439,10 @@ flowchart TD
 </tbody>
 </table>
 <div class="section level3">
-<h3 id="key-advantages-of-putior">Key Advantages of putior<a class="anchor" aria-label="anchor" href="#key-advantages-of-putior"></a>
-</h3>
-<ul>
-<li>
-<strong>📝 Annotation-Based</strong>: Workflow documentation lives in your code comments</li>
-<li>
-<strong>🔄 Multi-Language</strong>: Works across R, Python, SQL, Shell, and Julia</li>
-<li>
-<strong>📁 File Flow Tracking</strong>: Automatically connects scripts based on input/output files</li>
-<li>
-<strong>🎨 Beautiful Output</strong>: GitHub-ready Mermaid diagrams with multiple themes</li>
-<li>
-<strong>📦 Lightweight</strong>: Minimal dependencies (only requires <code>tools</code> package)</li>
-<li>
-<strong>🔍 Two Views</strong>: Simple script connections + complete data artifact flow</li>
-</ul>
-</div>
-<div class="section level3">
-<h3 id="documentation-vs-execution-putior-and-pipeline-tools">Documentation vs Execution: putior and Pipeline Tools<a class="anchor" aria-label="anchor" href="#documentation-vs-execution-putior-and-pipeline-tools"></a>
+<h3 id="documentation-vs-execution">Documentation vs Execution<a class="anchor" aria-label="anchor" href="#documentation-vs-execution"></a>
 </h3>
 <p>A common question: <em>“How does putior relate to targets/drake/Airflow?”</em></p>
-<p><strong>Key insight</strong>: putior <em>documents</em> workflows, while targets/drake/Airflow <em>execute</em> them. They’re complementary!</p>
+<p>putior <em>documents</em> workflows; targets/drake/Airflow <em>execute</em> them. They are complementary – you can annotate a targets pipeline with <code># put</code> comments and use putior to generate visual documentation for your README or wiki.</p>
 <table class="table">
 <colgroup>
 <col width="15%">
@@ -1802,8 +457,8 @@ flowchart TD
 <tbody>
 <tr class="odd">
 <td><strong>putior</strong></td>
-<td>Document &amp; visualize workflows</td>
-<td>-</td>
+<td>Document and visualize workflows</td>
+<td>–</td>
 </tr>
 <tr class="even">
 <td><a href="https://cran.r-project.org/package=targets" class="external-link">targets</a></td>
@@ -1827,70 +482,107 @@ flowchart TD
 </tr>
 </tbody>
 </table>
-<p><strong>Example: Using putior WITH targets</strong></p>
-<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># _targets.R</span></span>
-<span><span class="co"># put label:"Load Raw Data", node_type:"input", output:"raw_data"</span></span>
-<span><span class="fu">tar_target</span><span class="op">(</span><span class="va">raw_data</span>, <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="st">"data/sales.csv"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># put label:"Clean Data", input:"raw_data", output:"clean_data"</span></span>
-<span><span class="fu">tar_target</span><span class="op">(</span><span class="va">clean_data</span>, <span class="fu">clean_sales</span><span class="op">(</span><span class="va">raw_data</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># put label:"Generate Report", node_type:"output", input:"clean_data"</span></span>
-<span><span class="fu">tar_target</span><span class="op">(</span><span class="va">report</span>, <span class="fu">render_report</span><span class="op">(</span><span class="va">clean_data</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Document your targets pipeline</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pjt222.github.io/putior/">putior</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"_targets.R"</span><span class="op">)</span>, title <span class="op">=</span> <span class="st">"Sales Analysis Pipeline"</span><span class="op">)</span></span></code></pre></div>
-<p>This gives you: - <strong>targets</strong>: Handles caching, parallel execution, dependency tracking - <strong>putior</strong>: Creates visual documentation for README, wikis, onboarding</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="id_-acknowledgments">🙏 Acknowledgments<a class="anchor" aria-label="anchor" href="#id_-acknowledgments"></a>
+<h2 id="self-documentation">Self-Documentation<a class="anchor" aria-label="anchor" href="#self-documentation"></a>
 </h2>
-<ul>
-<li>Built with <a href="https://mermaid-js.github.io/" class="external-link">Mermaid</a> for beautiful diagram generation</li>
-<li>Inspired by the need for better code documentation and workflow visualization</li>
-<li>Thanks to the R community for excellent development tooling</li>
-</ul>
+<p>putior uses its own annotation system to document its internal workflow – a real demonstration of the package in action. Running <code>put("./R/")</code> on putior’s own source code produces this diagram:</p>
+<pre class="mermaid"><code>---
+title: putior Package Internals
+---
+flowchart TD
+    diagram_gen[Generate Mermaid Diagram]
+    styling[Apply Theme Styling]
+    node_defs[Create Node Definitions]
+    connections[Generate Node Connections]
+    output_handler([Output Final Diagram])
+    put_entry([Entry Point - Scan Files])
+    process_file[Process Single File]
+    validate[Validate Annotations]
+    parser[Parse Annotation Syntax]
+    convert_df[Convert to Data Frame]
+
+    %% Connections
+    put_entry --&gt; diagram_gen
+    convert_df --&gt; diagram_gen
+    node_defs --&gt; styling
+    put_entry --&gt; node_defs
+    convert_df --&gt; node_defs
+    node_defs --&gt; connections
+    diagram_gen --&gt; output_handler
+    process_file --&gt; validate
+    process_file --&gt; parser
+    parser --&gt; convert_df
+
+    %% Styling
+    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
+    class diagram_gen processStyle
+    class styling processStyle
+    class node_defs processStyle
+    class connections processStyle
+    class process_file processStyle
+    class validate processStyle
+    class parser processStyle
+    class convert_df processStyle
+    classDef startStyle fill:#fef3c7,stroke:#d97706,stroke-width:3px,color:#92400e
+    class put_entry startStyle
+    classDef endStyle fill:#dcfce7,stroke:#16a34a,stroke-width:3px,color:#15803d
+    class output_handler endStyle</code></pre>
+</div>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>Contributions welcome! Please open an issue or pull request on <a href="https://github.com/pjt222/putior" class="external-link">GitHub</a>.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/pjt222/putior.git</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="bu">cd</span> putior</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">"devtools::install_dev_deps()"</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">"devtools::test()"</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">"devtools::check()"</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h2>
+<p>This project is licensed under the MIT License – see the <a href="LICENSE">LICENSE</a> file for details.</p>
+</div>
+<div class="section level2">
+<h2 id="acknowledgments">Acknowledgments<a class="anchor" aria-label="anchor" href="#acknowledgments"></a>
+</h2>
 <div class="section level3">
-<h3 id="id_-contributors">👥 Contributors<a class="anchor" aria-label="anchor" href="#id_-contributors"></a>
+<h3 id="contributors">Contributors<a class="anchor" aria-label="anchor" href="#contributors"></a>
 </h3>
 <ul>
 <li>
-<strong>Philipp Thoss</strong> (<a href="https://github.com/pjt222" class="external-link">@pjt222</a>) - Primary author and maintainer</li>
+<strong>Philipp Thoss</strong> (<a href="https://github.com/pjt222" class="external-link">@pjt222</a>) – Primary author and maintainer</li>
 <li>
-<strong>Claude</strong> (Anthropic) - Co-author on 38 commits, contributing to package development, documentation, and testing</li>
+<strong>Claude</strong> (Anthropic) – Co-author on 38 commits, contributing to package development, documentation, and testing</li>
 </ul>
-<p><em>Note: While GitHub’s contributor graph only displays primary commit authors, Claude’s contributions are properly attributed through Co-Authored-By tags in the commit messages. To see all contributions, use: <code>git log --grep="Co-Authored-By: Claude"</code></em></p>
+<p><em>While GitHub’s contributor graph only displays primary commit authors, Claude’s contributions are attributed through Co-Authored-By tags. See: <code>git log --grep="Co-Authored-By: Claude"</code></em></p>
 </div>
 <div class="section level3">
-<h3 id="id_-shoutout-to-related-r-packages">🌟 Shoutout to Related R Packages<a class="anchor" aria-label="anchor" href="#id_-shoutout-to-related-r-packages"></a>
+<h3 id="related-packages">Related Packages<a class="anchor" aria-label="anchor" href="#related-packages"></a>
 </h3>
-<p>putior stands on the shoulders of giants in the R visualization and workflow ecosystem:</p>
 <ul>
 <li>
-<strong><a href="https://cran.r-project.org/package=CodeDepends" class="external-link">CodeDepends</a></strong> by Duncan Temple Lang - pioneering work in R code dependency analysis</li>
+<strong><a href="https://cran.r-project.org/package=CodeDepends" class="external-link">CodeDepends</a></strong> – R code dependency analysis</li>
 <li>
-<strong><a href="https://cran.r-project.org/package=targets" class="external-link">targets</a></strong> by William Michael Landau - powerful pipeline toolkit for reproducible computation</li>
+<strong><a href="https://cran.r-project.org/package=targets" class="external-link">targets</a></strong> – pipeline toolkit for reproducible computation</li>
 <li>
-<strong><a href="https://cran.r-project.org/package=DiagrammeR" class="external-link">DiagrammeR</a></strong> by Richard Iannone - bringing beautiful graph visualization to R</li>
+<strong><a href="https://cran.r-project.org/package=DiagrammeR" class="external-link">DiagrammeR</a></strong> – graph visualization in R</li>
 <li>
-<strong><a href="https://cran.r-project.org/package=ggraph" class="external-link">ggraph</a></strong> by Thomas Lin Pedersen - grammar of graphics for networks and trees</li>
+<strong><a href="https://cran.r-project.org/package=ggraph" class="external-link">ggraph</a></strong> – grammar of graphics for networks</li>
 <li>
-<strong><a href="https://cran.r-project.org/package=visNetwork" class="external-link">visNetwork</a></strong> by Almende B.V. - interactive network visualization excellence</li>
+<strong><a href="https://cran.r-project.org/package=visNetwork" class="external-link">visNetwork</a></strong> – interactive network visualization</li>
 <li>
-<strong><a href="https://cran.r-project.org/package=networkD3" class="external-link">networkD3</a></strong> by Christopher Gandrud - D3.js network graphs in R</li>
+<strong><a href="https://cran.r-project.org/package=dm" class="external-link">dm</a></strong> – relational data model visualization</li>
 <li>
-<strong><a href="https://cran.r-project.org/package=dm" class="external-link">dm</a></strong> by energie360° AG - relational data model visualization</li>
+<strong><a href="https://cran.r-project.org/package=flowchart" class="external-link">flowchart</a></strong> – participant flow diagrams</li>
 <li>
-<strong><a href="https://cran.r-project.org/package=flowchart" class="external-link">flowchart</a></strong> by Adrian Antico - participant flow diagrams</li>
-<li>
-<strong><a href="https://cran.r-project.org/package=igraph" class="external-link">igraph</a></strong> by Gábor Csárdi &amp; Tamás Nepusz - the foundation of network analysis in R</li>
+<strong><a href="https://cran.r-project.org/package=igraph" class="external-link">igraph</a></strong> – network analysis foundation</li>
 </ul>
-<p>Each of these packages excels in their domain, and putior complements them by focusing specifically on code workflow documentation through annotations.</p>
+<p>Built with <a href="https://mermaid-js.github.io/" class="external-link">Mermaid</a> for diagram generation.</p>
 <hr>
-<p><strong>Made with ❤️ for polyglot data science workflows across R, Python, Julia, SQL, JavaScript, Go, Rust, and 30+ languages</strong></p>
+<p><strong>Made for polyglot data science workflows across R, Python, Julia, SQL, JavaScript, Go, Rust, and 30+ languages</strong></p>
 </div>
 </div>
 </div>
@@ -1913,6 +605,13 @@ flowchart TD
 </ul>
 </div>
 
+<div class="community">
+<h2 data-toc-skip>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
+<li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
+</ul>
+</div>
 
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>

@@ -4,6 +4,27 @@ This guide tours the advanced features of putior that go beyond basic
 annotation extraction. Learn how to auto-detect workflows, create
 interactive diagrams, customize detection patterns, and more.
 
+## Contents
+
+- [Feature Overview](#feature-overview) - Summary table of all features
+- [Auto-Annotation System](#auto-annotation-system) -
+  [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md),
+  [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md),
+  [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md)
+- [Interactive Diagrams](#interactive-diagrams) - Source info display,
+  clickable nodes
+- [Detection Patterns](#detection-patterns) - View and understand
+  auto-detection patterns
+- [Interactive Sandbox](#interactive-sandbox) - Experiment without
+  writing files
+- [Debugging with Logging](#debugging-with-logging) - Structured logging
+  via `logger`
+- [Themes and Customization](#themes-and-customization) - Built-in
+  themes, custom palettes, styling
+- [Performance](#performance) - Tips for large codebases
+- [Putting It All Together](#putting-it-all-together) - Complete
+  workflow examples
+
 ## Feature Overview
 
 | Feature              | Purpose                                      | Key Functions                                                                                                                                                                                                                 |
@@ -81,8 +102,7 @@ to create annotation templates with better labels.*
 **What Gets Detected:**
 
 For R code: - **Inputs**:
-[`read.csv()`](https://rdrr.io/r/utils/read.table.html),
-[`read_csv()`](https://readr.tidyverse.org/reference/read_delim.html),
+[`read.csv()`](https://rdrr.io/r/utils/read.table.html), `read_csv()`,
 [`readRDS()`](https://rdrr.io/r/base/readRDS.html),
 [`load()`](https://rdrr.io/r/base/load.html), `fread()`, `read_excel()`,
 [`fromJSON()`](https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html),
@@ -923,25 +943,6 @@ put_generate("./unfamiliar_project/", output = "clipboard")
 
 ------------------------------------------------------------------------
 
-## See Also
-
-- [Quick
-  Start](https://pjt222.github.io/putior/articles/quick-start.md) -
-  First diagram in 2 minutes
-- [Annotation
-  Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) -
-  Complete syntax reference
-- [Quick
-  Reference](https://pjt222.github.io/putior/articles/quick-reference.md) -
-  Cheat sheet for daily use
-- [API
-  Reference](https://pjt222.github.io/putior/articles/api-reference.md) -
-  Complete function documentation
-- [Showcase](https://pjt222.github.io/putior/articles/showcase.md) -
-  Real-world examples
-
-------------------------------------------------------------------------
-
 ## Try the Examples
 
 ``` r
@@ -957,3 +958,17 @@ source(system.file("examples", "variable-reference-example.R", package = "putior
 # Launch sandbox
 run_sandbox()
 ```
+
+------------------------------------------------------------------------
+
+## See Also
+
+| Guide                                                                            | Description                 |
+|----------------------------------------------------------------------------------|-----------------------------|
+| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)           | First diagram in 2 minutes  |
+| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference   |
+| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)       | Function documentation      |
+| [Showcase](https://pjt222.github.io/putior/articles/showcase.md)                 | Real-world examples         |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md)   | At-a-glance reference card  |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md)   | Common issues and solutions |
+| [AI Skills](https://pjt222.github.io/putior/articles/skills.md)                  | MCP/ACP integration guide   |

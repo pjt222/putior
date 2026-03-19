@@ -19,6 +19,12 @@ split_file_list(file_string)
 
 Character vector of individual file names
 
+## See also
+
+Other utilities:
+[`get_diagram_themes()`](https://pjt222.github.io/putior/reference/get_diagram_themes.md),
+[`is_valid_put_annotation()`](https://pjt222.github.io/putior/reference/is_valid_put_annotation.md)
+
 ## Examples
 
 ``` r

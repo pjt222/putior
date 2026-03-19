@@ -18,6 +18,12 @@ is_valid_put_annotation(line)
 
 Logical indicating if the annotation is valid
 
+## See also
+
+Other utilities:
+[`get_diagram_themes()`](https://pjt222.github.io/putior/reference/get_diagram_themes.md),
+[`split_file_list()`](https://pjt222.github.io/putior/reference/split_file_list.md)
+
 ## Examples
 
 ``` r

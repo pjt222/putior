@@ -28,10 +28,7 @@ put(
 
 - pattern:
 
-  Character string specifying the file pattern to match. Default: all
-  supported extensions (see
-  [`get_supported_extensions`](https://pjt222.github.io/putior/reference/get_supported_extensions.md)).
-  For a subset, specify a pattern (e.g., "\\js\$" for JavaScript only).
+  Regex pattern for filtering files (e.g., `\\.R$` for R files only).
 
 - recursive:
 
@@ -123,6 +120,15 @@ comment prefix is determined automatically by file extension.
 
 - Works with all PUT formats: prefix+put, prefix + put, prefix+put\|,
   prefix+put:
+
+## See also
+
+Other core-workflow:
+[`print.putior_theme()`](https://pjt222.github.io/putior/reference/print.putior_theme.md),
+[`print.putior_workflow()`](https://pjt222.github.io/putior/reference/print.putior_workflow.md),
+[`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md),
+[`put_theme()`](https://pjt222.github.io/putior/reference/put_theme.md),
+[`summary.putior_workflow()`](https://pjt222.github.io/putior/reference/summary.putior_workflow.md)
 
 ## Examples
 

@@ -42,6 +42,14 @@ Each pattern contains:
 
 - description: Human-readable description
 
+## See also
+
+Other language-support:
+[`ext_to_language()`](https://pjt222.github.io/putior/reference/ext_to_language.md),
+[`get_comment_prefix()`](https://pjt222.github.io/putior/reference/get_comment_prefix.md),
+[`get_supported_extensions()`](https://pjt222.github.io/putior/reference/get_supported_extensions.md),
+[`list_supported_languages()`](https://pjt222.github.io/putior/reference/list_supported_languages.md)
+
 ## Examples
 
 ``` r

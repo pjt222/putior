@@ -12,6 +12,12 @@ get_diagram_themes()
 
 Named list describing available themes
 
+## See also
+
+Other utilities:
+[`is_valid_put_annotation()`](https://pjt222.github.io/putior/reference/is_valid_put_annotation.md),
+[`split_file_list()`](https://pjt222.github.io/putior/reference/split_file_list.md)
+
 ## Examples
 
 ``` r

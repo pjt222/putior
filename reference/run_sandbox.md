@@ -34,6 +34,9 @@ The sandbox app allows you to:
 [`put`](https://pjt222.github.io/putior/reference/put.md),
 [`put_diagram`](https://pjt222.github.io/putior/reference/put_diagram.md)
 
+Other interactive:
+[`set_putior_log_level()`](https://pjt222.github.io/putior/reference/set_putior_log_level.md)
+
 ## Examples
 
 ``` r

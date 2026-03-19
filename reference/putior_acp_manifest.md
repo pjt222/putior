@@ -14,6 +14,15 @@ putior_acp_manifest()
 A list containing the agent manifest with name, description, and
 metadata about capabilities.
 
+## See also
+
+Other integration:
+[`putior_acp_server()`](https://pjt222.github.io/putior/reference/putior_acp_server.md),
+[`putior_help()`](https://pjt222.github.io/putior/reference/putior_help.md),
+[`putior_mcp_server()`](https://pjt222.github.io/putior/reference/putior_mcp_server.md),
+[`putior_mcp_tools()`](https://pjt222.github.io/putior/reference/putior_mcp_tools.md),
+[`putior_skills()`](https://pjt222.github.io/putior/reference/putior_skills.md)
+
 ## Examples
 
 ``` r

@@ -5,12 +5,12 @@
     startOnLoad: false,
     theme: 'default',
     themeVariables: {
-      primaryColor: '#fff4e6',
-      primaryTextColor: '#333',
-      primaryBorderColor: '#d97706',
-      lineColor: '#5a5a5a',
-      secondaryColor: '#f3f4f6',
-      tertiaryColor: '#e5e7eb'
+      primaryColor: '#f0f4ff',
+      primaryTextColor: '#1e293b',
+      primaryBorderColor: '#2563eb',
+      lineColor: '#64748b',
+      secondaryColor: '#f8fafc',
+      tertiaryColor: '#f1f5f9'
     },
     flowchart: {
       htmlLabels: true,
@@ -38,6 +38,8 @@
           // Create container div
           const container = document.createElement('div');
           container.className = 'mermaid-container';
+          container.setAttribute('role', 'img');
+          container.setAttribute('aria-label', 'Workflow diagram');
 
           // Create mermaid div
           const mermaidDiv = document.createElement('div');
@@ -69,6 +71,8 @@
           // Create container div
           const container = document.createElement('div');
           container.className = 'mermaid-container';
+          container.setAttribute('role', 'img');
+          container.setAttribute('aria-label', 'Workflow diagram');
 
           // Create mermaid div with just the text content
           const mermaidDiv = document.createElement('div');
@@ -121,16 +125,19 @@
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/quick-start.html">Quick Start</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>---Getting Started---</h6></li>
+    <li><a class="dropdown-item" href="../articles/quick-start.html">Quick Start</a></li>
     <li><a class="dropdown-item" href="../articles/annotation-guide.html">Annotation Guide</a></li>
-    <li><a class="dropdown-item" href="../articles/quick-reference.html">Quick Reference</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>---Going Deeper---</h6></li>
     <li><a class="dropdown-item" href="../articles/features-tour.html">Features Tour</a></li>
-    <li><a class="dropdown-item" href="../articles/api-reference.html">API Reference</a></li>
     <li><a class="dropdown-item" href="../articles/showcase.html">Showcase: Real-World Examples</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>---Reference---</h6></li>
+    <li><a class="dropdown-item" href="../articles/api-reference.html">API Reference</a></li>
+    <li><a class="dropdown-item" href="../articles/quick-reference.html">Quick Reference</a></li>
     <li><a class="dropdown-item" href="../articles/troubleshooting.html">Troubleshooting Guide</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../articles/skills.html"><span class="fa fa-robot"></span> AI Skills</a></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/pjt222/putior/raw/main/inst/cheatsheet/putior-cheatsheet.pdf"><span class="fa fa-file-pdf"></span> Cheatsheet</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/quick-reference.html"><span class="fa fa-file-alt"></span> Quick Ref</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -172,6 +179,15 @@
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Invisibly returns x</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Other core-workflow:
+<code><a href="print.putior_theme.html">print.putior_theme()</a></code>,
+<code><a href="put.html">put()</a></code>,
+<code><a href="put_diagram.html">put_diagram()</a></code>,
+<code><a href="put_theme.html">put_theme()</a></code>,
+<code><a href="summary.putior_workflow.html">summary.putior_workflow()</a></code></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
