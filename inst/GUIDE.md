@@ -3,26 +3,29 @@ name: putior
 description: Extract workflow annotations from source code and generate Mermaid diagrams
 version: 0.2.0.9000
 tags: [r, documentation, workflow, mermaid, visualization, multi-language, code-analysis]
-languages: [R, Python, SQL, JavaScript, TypeScript, Go, Rust, Java, C, C++, MATLAB, Ruby, Lua, Julia, Shell]
+languages: [R, Python, SQL, JavaScript, TypeScript, Go, Rust, Java, C, C++, MATLAB, Ruby, Lua, Julia, Shell, WGSL, Dockerfile, Makefile]
 repository: https://github.com/pjt222/putior
 documentation: https://pjt222.github.io/putior/
 ---
 
-# putior Skills
+# putior Quick Reference
 
-Skills for AI coding assistants to help users document and visualize code workflows.
+> For step-by-step procedures, see the
+> [agent-almanac putior skills](https://github.com/pjt222/agent-almanac):
+> install-putior, analyze-codebase-workflow, annotate-source-files,
+> generate-workflow-diagram, configure-putior-mcp, setup-putior-ci
 
 ## Direct Access (Non-R Environments)
 
-Access these skills without running R:
+Access this guide without running R:
 
 | Method | URL |
 |--------|-----|
-| Web Page | https://pjt222.github.io/putior/articles/skills.html |
-| Raw Markdown | https://raw.githubusercontent.com/pjt222/putior/main/inst/SKILLS.md |
-| GitHub View | https://github.com/pjt222/putior/blob/main/inst/SKILLS.md |
+| Web Page | https://pjt222.github.io/putior/articles/ai-integration.html |
+| Raw Markdown | https://raw.githubusercontent.com/pjt222/putior/main/inst/GUIDE.md |
+| GitHub View | https://github.com/pjt222/putior/blob/main/inst/GUIDE.md |
 
-For R users: `putior_skills(output = "raw")` returns this content as a string.
+For R users: `putior_guide(output = "raw")` returns this content as a string.
 
 ## Quick Start
 
@@ -73,15 +76,29 @@ Use backslash for continuation:
 #     output:"combined.rds"
 ```
 
+### Block Comment Annotations
+
+Languages using `//` comments also support PUT annotations inside `/* */` and `/** */` blocks:
+
+```javascript
+/**
+ * put id:"handler", label:"Request Handler", \
+ *     input:"request.json", output:"response.json"
+ */
+function handleRequest(req, res) { ... }
+```
+
+Use `* put` as the line prefix inside block comment bodies.
+
 ## Multi-Language Comment Syntax
 
-putior automatically detects comment style by file extension:
+putior automatically detects comment style by file extension (18 languages with auto-detection, 30+ total):
 
 | Prefix | Languages | Extensions |
 |--------|-----------|------------|
-| `# put` | R, Python, Shell, Julia, Ruby, Perl, YAML | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml` |
+| `# put` | R, Python, Shell, Julia, Ruby, Perl, YAML, Dockerfile, Makefile | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`, `Dockerfile`, `Makefile` |
 | `-- put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |
-| `// put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs` |
+| `// put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, WGSL | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs`, `.wgsl` |
 | `% put` | MATLAB, LaTeX | `.m`, `.tex` |
 
 ### Examples by Language

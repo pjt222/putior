@@ -46,7 +46,7 @@ test_that("putior_acp_manifest includes expected operations", {
   manifest <- putior_acp_manifest()
   operations <- names(manifest$metadata$operations)
 
-  expected_ops <- c("scan", "diagram", "auto", "generate", "merge", "help", "skills")
+  expected_ops <- c("scan", "diagram", "auto", "generate", "merge", "help", "guide")
   for (op in expected_ops) {
     expect_true(
       op %in% operations,
@@ -128,10 +128,11 @@ test_that("detect_operation identifies help operation", {
   expect_equal(putior:::detect_operation("usage information"), "help")
 })
 
-test_that("detect_operation identifies skills operation", {
-  expect_equal(putior:::detect_operation("what are your skills"), "skills")
-  expect_equal(putior:::detect_operation("what capabilities do you have"), "skills")
-  expect_equal(putior:::detect_operation("what can you do"), "skills")
+test_that("detect_operation identifies guide operation", {
+  expect_equal(putior:::detect_operation("show me the guide"), "guide")
+  expect_equal(putior:::detect_operation("what are your skills"), "guide")
+  expect_equal(putior:::detect_operation("what capabilities do you have"), "guide")
+  expect_equal(putior:::detect_operation("what can you do"), "guide")
 })
 
 test_that("detect_operation defaults to scan for unknown input", {
@@ -321,7 +322,7 @@ test_that("acp_create_run_handler stores run for later retrieval", {
       list(
         role = "user",
         parts = list(
-          list(content = "what are your skills", content_type = "text/plain")
+          list(content = "show me the guide", content_type = "text/plain")
         )
       )
     )
@@ -356,7 +357,23 @@ test_that("execute_acp_request handles help operation", {
   expect_true(nchar(result) > 0)
 })
 
-test_that("execute_acp_request handles skills operation", {
+test_that("execute_acp_request handles guide operation", {
+  input <- list(
+    list(
+      role = "user",
+      parts = list(
+        list(content = "show me the guide", content_type = "text/plain")
+      )
+    )
+  )
+
+  result <- putior:::execute_acp_request(input)
+
+  expect_true(is.character(result))
+  expect_true(nchar(result) > 100) # Guide doc is substantial
+})
+
+test_that("execute_acp_request handles 'skills' alias for guide operation", {
   input <- list(
     list(
       role = "user",
@@ -369,7 +386,7 @@ test_that("execute_acp_request handles skills operation", {
   result <- putior:::execute_acp_request(input)
 
   expect_true(is.character(result))
-  expect_true(nchar(result) > 100) # Skills doc is substantial
+  expect_true(nchar(result) > 100)
 })
 
 test_that("execute_acp_request handles scan operation with temp file", {
@@ -485,7 +502,7 @@ test_that("ACP output format is valid", {
       list(
         role = "user",
         parts = list(
-          list(content = "what are your skills", content_type = "text/plain")
+          list(content = "show me the guide", content_type = "text/plain")
         )
       )
     )

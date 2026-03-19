@@ -12,7 +12,7 @@
 #'     \item "node_types" - Show available node types
 #'     \item "patterns" - Show how to use detection patterns
 #'     \item "examples" - Show quick examples
-#'     \item "skills" - Show AI assistant skills reference
+#'     \item "guide" - Show AI assistant guide reference
 #'   }
 #'
 #' @return Invisibly returns NULL. Prints help content to the console.
@@ -42,8 +42,8 @@
 #' # Show quick examples
 #' putior_help("examples")
 #'
-#' # Show AI assistant skills reference
-#' putior_help("skills")
+#' # Show AI assistant guide reference
+#' putior_help("guide")
 putior_help <- function(topic = NULL) {
   if (is.null(topic)) {
     show_help_topics()
@@ -64,8 +64,9 @@ putior_help <- function(topic = NULL) {
       "detection" = show_patterns_help(),
       "examples" = ,
       "example" = show_examples_help(),
+      "guide" = ,
       "skills" = ,
-      "skill" = show_skills_summary(),
+      "skill" = show_guide_summary(),
       {
         cat("Unknown topic: '", topic, "'\n\n", sep = "")
         show_help_topics()
@@ -90,7 +91,7 @@ show_help_topics <- function() {
   cat("  putior_help(\"node_types\")   - Available node types for styling\n")
   cat("  putior_help(\"patterns\")     - Auto-detection patterns\n")
   cat("  putior_help(\"examples\")     - Quick usage examples\n")
-  cat("  putior_help(\"skills\")       - AI assistant skills reference\n")
+  cat("  putior_help(\"guide\")        - AI assistant guide reference\n")
   cat("\n")
   cat("For full documentation, see: ?put, ?put_diagram, ?put_auto\n")
   cat("\n")

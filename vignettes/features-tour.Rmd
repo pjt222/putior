@@ -915,4 +915,4 @@ run_sandbox()
 | [Showcase](showcase.html) | Real-world examples |
 | [Quick Reference](quick-reference.html) | At-a-glance reference card |
 | [Troubleshooting](troubleshooting.html) | Common issues and solutions |
-| [AI Skills](skills.html) | MCP/ACP integration guide |
+| [AI Integration](ai-integration.html) | MCP/ACP integration guide |

@@ -1,8 +1,8 @@
 ---
-title: "AI Skills Reference"
+title: "AI Integration Guide"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{AI Skills Reference}
+  %\VignetteIndexEntry{AI Integration Guide}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -27,18 +27,18 @@ If you're a human reader, you probably want one of these instead:
 
 This content is automatically available via:
 
-- **`putior_skills()`** - Returns this documentation as a string
+- **`putior_guide()`** - Returns this documentation as a string
 - **MCP server** - Exposed as a tool via `putior_mcp_server()`
 - **ACP server** - Available via `/runs` endpoint from `putior_acp_server()`
 
 ### Programmatic Access
 
 ```r
-# Get skills documentation as a string
-skills_text <- putior_skills()
+# Get guide documentation as a string
+guide_text <- putior_guide()
 
 # Use in prompt engineering
-prompt <- paste("You have access to putior:", skills_text)
+prompt <- paste("You have access to putior:", guide_text)
 
 # Or access via MCP tools
 tools <- putior_mcp_tools()
@@ -48,28 +48,43 @@ tools <- putior_mcp_tools()
 
 When running as an MCP or ACP server, AI assistants can:
 
-1. **Discover capabilities** via `putior_skills` tool
+1. **Discover capabilities** via `putior_guide` tool
 2. **Extract annotations** via `put` tool
 3. **Generate diagrams** via `put_diagram` tool
 4. **Auto-detect workflows** via `put_auto` tool
 
 See the [MCP Server section in CLAUDE.md](https://github.com/pjt222/putior/blob/main/CLAUDE.md#mcp-server-integration) for setup instructions.
 
+## Agent-Almanac Integration
+
+putior's procedural documentation lives in the
+[agent-almanac](https://github.com/pjt222/agent-almanac) repository,
+which provides 6 skills for the complete putior workflow:
+
+| Skill | Purpose |
+|-------|---------|
+| install-putior | Installation and dependency setup |
+| analyze-codebase-workflow | Auto-detect workflows in arbitrary codebases |
+| annotate-source-files | Add PUT annotations to source files |
+| generate-workflow-diagram | Generate themed Mermaid diagrams |
+| configure-putior-mcp | Set up MCP/ACP server for AI assistants |
+| setup-putior-ci | GitHub Actions CI/CD for diagram auto-refresh |
+
 ---
 
-## Skills Documentation
+## Guide Documentation
 
-The content below is the same as returned by `putior_skills()`:
+The content below is the same as returned by `putior_guide()`:
 
 ```{r, echo=FALSE, results='asis'}
-skills_path <- system.file("SKILLS.md", package = "putior")
-if (skills_path == "") {
+guide_path <- system.file("GUIDE.md", package = "putior")
+if (guide_path == "") {
 
   # Fallback for when building vignette before installation
-  skills_path <- file.path("..", "inst", "SKILLS.md")
+  guide_path <- file.path("..", "inst", "GUIDE.md")
 }
-if (file.exists(skills_path)) {
-  lines <- readLines(skills_path, warn = FALSE)
+if (file.exists(guide_path)) {
+  lines <- readLines(guide_path, warn = FALSE)
   # Skip YAML frontmatter (lines between --- markers)
   if (length(lines) > 0 && lines[1] == "---") {
     yaml_end <- which(lines[-1] == "---")[1] + 1
@@ -79,7 +94,7 @@ if (file.exists(skills_path)) {
   }
   cat(lines, sep = "\n")
 } else {
-  cat("Skills file not found. See `putior_skills()` for the full reference.")
+  cat("Guide file not found. See `putior_guide()` for the full reference.")
 }
 ```
 

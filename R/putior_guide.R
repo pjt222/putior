@@ -1,7 +1,11 @@
-#' Access putior Skills for AI Assistants
+#' Access putior Guide for AI Assistants
 #'
-#' Provides structured skills documentation for AI coding assistants
+#' Provides structured reference documentation for AI coding assistants
 #' (Claude Code, GitHub Copilot, etc.) to help users with putior.
+#'
+#' For step-by-step procedures, see the
+#' \href{https://github.com/pjt222/agent-almanac}{agent-almanac} repository,
+#' which provides 6 skills for the complete putior workflow.
 #'
 #' @param topic Character string specifying section. NULL for full content.
 #'   Options: "quick-start", "syntax", "languages", "functions",
@@ -15,29 +19,29 @@
 #' @export
 #'
 #' @examples
-#' # Show all skills
-#' putior_skills()
+#' # Show full guide
+#' putior_guide()
 #'
 #' # Show specific topic
-#' putior_skills("quick-start")
+#' putior_guide("quick-start")
 #'
 #' # Get raw markdown for AI consumption
-#' skills_md <- putior_skills(output = "raw")
-putior_skills <- function(topic = NULL,
-                          output = c("console", "raw", "clipboard")) {
+#' guide_md <- putior_guide(output = "raw")
+putior_guide <- function(topic = NULL,
+                         output = c("console", "raw", "clipboard")) {
   output <- match.arg(output)
 
 
-  # Read skills file
-  skills_path <- system.file("SKILLS.md", package = "putior")
-  if (skills_path == "") {
-    stop("SKILLS.md not found in package installation", call. = FALSE)
+  # Read guide file
+  guide_path <- system.file("GUIDE.md", package = "putior")
+  if (guide_path == "") {
+    stop("GUIDE.md not found in package installation", call. = FALSE)
   }
-  content <- readLines(skills_path, warn = FALSE)
+  content <- readLines(guide_path, warn = FALSE)
 
   # Filter by topic if specified
   if (!is.null(topic)) {
-    content <- extract_skills_topic(content, topic)
+    content <- extract_guide_topic(content, topic)
   }
 
   # Handle output
@@ -47,7 +51,7 @@ putior_skills <- function(topic = NULL,
     clipboard = {
       copy_to_clipboard(
         content = paste(content, collapse = "\n"),
-        success_msg = "Skills copied to clipboard"
+        success_msg = "Guide copied to clipboard"
       )
     }
   )
@@ -55,9 +59,9 @@ putior_skills <- function(topic = NULL,
   invisible(content)
 }
 
-#' Extract a topic section from skills content
+#' Extract a topic section from guide content
 #' @noRd
-extract_skills_topic <- function(content, topic) {
+extract_guide_topic <- function(content, topic) {
   topic <- tolower(trimws(topic))
 
   # Map topic names to section headers
@@ -98,20 +102,20 @@ extract_skills_topic <- function(content, topic) {
   content[start_idx:end_idx]
 }
 
-#' Show skills summary for putior_help integration
+#' Show guide summary for putior_help integration
 #' @noRd
-show_skills_summary <- function() {
+show_guide_summary <- function() {
   cat("\n")
-  cat("=== AI Assistant Skills Reference ===\n")
+  cat("=== AI Assistant Guide Reference ===\n")
   cat("\n")
 
-  cat("putior includes comprehensive skills documentation for AI coding assistants.\n")
+  cat("putior includes comprehensive reference documentation for AI coding assistants.\n")
   cat("\n")
   cat("ACCESS METHODS:\n")
-  cat("  putior_skills()                    # Show full skills reference\n")
-  cat("  putior_skills(\"quick-start\")       # Show quick start section\n")
-  cat("  putior_skills(output = \"raw\")      # Get raw markdown\n")
-  cat("  putior_skills(output = \"clipboard\") # Copy to clipboard\n")
+  cat("  putior_guide()                    # Show full guide reference\n")
+  cat("  putior_guide(\"quick-start\")       # Show quick start section\n")
+  cat("  putior_guide(output = \"raw\")      # Get raw markdown\n")
+  cat("  putior_guide(output = \"clipboard\") # Copy to clipboard\n")
   cat("\n")
   cat("AVAILABLE TOPICS:\n")
   cat("  quick-start  - Essential 3 commands\n")
@@ -122,6 +126,10 @@ show_skills_summary <- function() {
   cat("  examples     - Common usage patterns\n")
   cat("\n")
   cat("RAW FILE ACCESS:\n")
-  cat("  system.file(\"SKILLS.md\", package = \"putior\")\n")
+  cat("  system.file(\"GUIDE.md\", package = \"putior\")\n")
+  cat("\n")
+  cat("PROCEDURAL SKILLS:\n")
+  cat("  For step-by-step procedures, see the agent-almanac repository:\n")
+  cat("  https://github.com/pjt222/agent-almanac\n")
   cat("\n")
 }

@@ -37,7 +37,7 @@ NULL
 #'   \item \code{list_supported_languages} - List supported languages
 #'   \item \code{get_detection_patterns} - Get auto-detection patterns
 #'   \item \code{get_diagram_themes} - List available themes
-#'   \item \code{putior_skills} - AI assistant documentation
+#'   \item \code{putior_guide} - AI assistant documentation
 #'   \item \code{putior_help} - Quick reference help
 #'   \item \code{set_putior_log_level} - Configure logging
 #'   \item \code{is_valid_put_annotation} - Validate annotation syntax
@@ -183,7 +183,7 @@ putior_mcp_tools <- function(include = NULL,
     make_tool_list_supported_languages(),
     make_tool_get_detection_patterns(),
     make_tool_get_diagram_themes(),
-    make_tool_putior_skills(),
+    make_tool_putior_guide(),
     make_tool_putior_help(),
     make_tool_set_putior_log_level(),
 
@@ -620,18 +620,18 @@ make_tool_get_diagram_themes <- function() {
 }
 
 #' @noRd
-make_tool_putior_skills <- function() {
+make_tool_putior_guide <- function() {
   ellmer::tool(
-    fun = putior_skills,
+    fun = putior_guide,
     description = paste0(
-      "Access putior skills documentation for AI assistants. ",
+      "Access putior guide documentation for AI assistants. ",
       "Provides structured information about annotation syntax, supported languages, ",
       "core functions, detection patterns, and usage examples. ",
       "Use output='raw' to get markdown content."
     ),
-    name = "putior_skills",
+    name = "putior_guide",
     annotations = list(
-      title = "AI Assistant Skills Reference",
+      title = "AI Assistant Guide Reference",
       readOnlyHint = TRUE
     ),
     arguments = list(
@@ -655,7 +655,7 @@ make_tool_putior_help <- function() {
     fun = putior_help,
     description = paste0(
       "Get quick-reference help for putior tasks and syntax. ",
-      "Topics include: annotation (syntax), themes, languages, node_types, patterns, examples, skills."
+      "Topics include: annotation (syntax), themes, languages, node_types, patterns, examples, guide."
     ),
     name = "putior_help",
     annotations = list(
@@ -665,7 +665,7 @@ make_tool_putior_help <- function() {
     arguments = list(
       topic = ellmer::type_enum(
         description = "Help topic to display",
-        values = c("annotation", "themes", "languages", "node_types", "patterns", "examples", "skills"),
+        values = c("annotation", "themes", "languages", "node_types", "patterns", "examples", "guide"),
         required = FALSE
       )
     )

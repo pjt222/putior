@@ -948,4 +948,4 @@ get_supported_extensions()
 | [API Reference](api-reference.html) | Function documentation |
 | [Showcase](showcase.html) | Real-world examples |
 | [Quick Reference](quick-reference.html) | At-a-glance reference card |
-| [AI Skills](skills.html) | MCP/ACP integration guide |
+| [AI Integration](ai-integration.html) | MCP/ACP integration guide |

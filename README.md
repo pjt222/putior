@@ -140,7 +140,7 @@ Explore the full documentation at the [pkgdown site](https://pjt222.github.io/pu
 | [API Reference](https://pjt222.github.io/putior/articles/api-reference.html) | Complete function documentation |
 | [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.html) | At-a-glance reference card |
 | [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.html) | Common issues and solutions |
-| [AI Skills](https://pjt222.github.io/putior/articles/skills.html) | MCP/ACP integration for AI assistants |
+| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.html) | MCP/ACP integration for AI assistants |
 
 ## How putior Compares
 

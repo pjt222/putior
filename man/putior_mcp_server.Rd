@@ -40,7 +40,7 @@ The MCP server exposes the following putior functions as tools:
 \item \code{list_supported_languages} - List supported languages
 \item \code{get_detection_patterns} - Get auto-detection patterns
 \item \code{get_diagram_themes} - List available themes
-\item \code{putior_skills} - AI assistant documentation
+\item \code{putior_guide} - AI assistant documentation
 \item \code{putior_help} - Quick reference help
 \item \code{set_putior_log_level} - Configure logging
 \item \code{is_valid_put_annotation} - Validate annotation syntax
@@ -86,8 +86,8 @@ putior_mcp_server(type = "http", port = 8080)
 Other integration: 
 \code{\link{putior_acp_manifest}()},
 \code{\link{putior_acp_server}()},
+\code{\link{putior_guide}()},
 \code{\link{putior_help}()},
-\code{\link{putior_mcp_tools}()},
-\code{\link{putior_skills}()}
+\code{\link{putior_mcp_tools}()}
 }
 \concept{integration}

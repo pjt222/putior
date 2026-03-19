@@ -163,7 +163,7 @@ home:
 
 navbar:
   structure:
-    left: [intro, reference, articles, skills, cheatsheet, news]
+    left: [intro, reference, articles, ai-integration, cheatsheet, news]
     right: [search, github]
   components:
     home:
@@ -192,10 +192,10 @@ navbar:
         href: articles/quick-reference.html
       - text: Troubleshooting Guide
         href: articles/troubleshooting.html
-    skills:
-      text: AI Skills
+    ai-integration:
+      text: AI Integration
       icon: fa-robot
-      href: articles/skills.html
+      href: articles/ai-integration.html
     cheatsheet:
       text: Quick Ref
       icon: fa-file-alt
@@ -224,7 +224,7 @@ articles:
 - title: "AI Integration"
   navbar: ~
   contents:
-  - skills
+  - ai-integration
 
 reference:
 - title: "Core Functions"
@@ -260,7 +260,7 @@ reference:
   - putior_mcp_tools
   - putior_acp_server
   - putior_acp_manifest
-  - putior_skills
+  - putior_guide
   - putior_help
 
 - title: "Interactive Tools"

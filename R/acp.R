@@ -97,7 +97,7 @@ putior_acp_manifest <- function() {
         generate = "Generate annotation suggestions for files",
         merge = "Merge manual and auto-detected annotations",
         help = "Get help on putior usage",
-        skills = "Get AI assistant skills documentation"
+        guide = "Get AI assistant guide documentation"
       )
     )
   )
@@ -154,8 +154,8 @@ detect_operation <- function(content) {
   if (grepl("\\b(help|usage|how to)\\b", content_lower)) {
     return("help")
   }
-  if (grepl("\\b(skills|capabilities|what can)\\b", content_lower)) {
-    return("skills")
+  if (grepl("\\b(guide|skills|capabilities|what can)\\b", content_lower)) {
+    return("guide")
   }
 
 
@@ -361,8 +361,8 @@ execute_acp_request <- function(input, session_id = NULL) {
         )
         paste(help_output, collapse = "\n")
       },
-      "skills" = {
-        putior_skills(output = "raw")
+      "guide" = {
+        putior_guide(output = "raw")
       },
       # Default
       {
@@ -374,7 +374,7 @@ execute_acp_request <- function(input, session_id = NULL) {
           "- generate: Generate annotation suggestions\n",
           "- merge: Merge manual and auto annotations\n",
           "- help: Get help on putior usage\n",
-          "- skills: Get AI assistant documentation"
+          "- guide: Get AI assistant documentation"
         )
       }
     )
@@ -552,7 +552,7 @@ acp_get_run_handler <- function(run_id, response) {
 #'   \item \strong{generate}: "Generate annotation suggestions for ./R/"
 #'   \item \strong{merge}: "Merge manual and auto annotations in ./R/"
 #'   \item \strong{help}: "Help with annotation syntax"
-#'   \item \strong{skills}: "What are your capabilities?"
+#'   \item \strong{guide}: "What are your capabilities?"
 #' }
 #'
 #' @section Testing:

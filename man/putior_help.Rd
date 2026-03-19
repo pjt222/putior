@@ -16,7 +16,7 @@ putior_help(topic = NULL)
 \item "node_types" - Show available node types
 \item "patterns" - Show how to use detection patterns
 \item "examples" - Show quick examples
-\item "skills" - Show AI assistant skills reference
+\item "guide" - Show AI assistant guide reference
 }}
 }
 \value{
@@ -48,15 +48,15 @@ putior_help("patterns")
 # Show quick examples
 putior_help("examples")
 
-# Show AI assistant skills reference
-putior_help("skills")
+# Show AI assistant guide reference
+putior_help("guide")
 }
 \seealso{
 Other integration: 
 \code{\link{putior_acp_manifest}()},
 \code{\link{putior_acp_server}()},
+\code{\link{putior_guide}()},
 \code{\link{putior_mcp_server}()},
-\code{\link{putior_mcp_tools}()},
-\code{\link{putior_skills}()}
+\code{\link{putior_mcp_tools}()}
 }
 \concept{integration}

@@ -31,7 +31,7 @@ test_that("putior_mcp_tools includes all expected tool names", {
     "list_supported_languages",
     "get_detection_patterns",
     "get_diagram_themes",
-    "putior_skills",
+    "putior_guide",
     "putior_help",
     "set_putior_log_level",
 
@@ -162,12 +162,12 @@ test_that("make_tool_get_comment_prefix creates valid tool definition", {
   expect_true(nchar(tool@description) > 20)
 })
 
-test_that("make_tool_putior_skills creates valid tool definition", {
+test_that("make_tool_putior_guide creates valid tool definition", {
   skip_if_not_installed("ellmer")
 
-  tool <- putior:::make_tool_putior_skills()
+  tool <- putior:::make_tool_putior_guide()
 
-  expect_equal(tool@name, "putior_skills")
+  expect_equal(tool@name, "putior_guide")
   expect_true(nchar(tool@description) > 50)
 })
 

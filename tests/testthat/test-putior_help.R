@@ -1,4 +1,4 @@
-# Test suite for putior_help() and putior_skills()
+# Test suite for putior_help() and putior_guide()
 library(testthat)
 library(putior)
 
@@ -16,7 +16,7 @@ test_that("putior_help() with no topic prints available topics", {
   expect_true(grepl("node_types", combined))
   expect_true(grepl("patterns", combined))
   expect_true(grepl("examples", combined))
-  expect_true(grepl("skills", combined))
+  expect_true(grepl("guide", combined))
 })
 
 test_that("putior_help() returns NULL invisibly", {
@@ -109,18 +109,24 @@ test_that("putior_help('examples') shows usage examples", {
   expect_true(grepl("run_sandbox", combined))
 })
 
-test_that("putior_help('skills') shows skills summary", {
-  output <- capture.output(putior_help("skills"))
+test_that("putior_help('guide') shows guide summary", {
+  output <- capture.output(putior_help("guide"))
   combined <- paste(output, collapse = "\n")
-  expect_true(grepl("AI Assistant Skills", combined))
-  expect_true(grepl("putior_skills", combined))
+  expect_true(grepl("AI Assistant Guide", combined))
+  expect_true(grepl("putior_guide", combined))
   expect_true(grepl("AVAILABLE TOPICS", combined))
 })
 
-test_that("putior_help('skill') works as alias", {
+test_that("putior_help('skills') works as alias for guide", {
+  output_skills <- capture.output(putior_help("skills"))
+  output_guide <- capture.output(putior_help("guide"))
+  expect_equal(output_skills, output_guide)
+})
+
+test_that("putior_help('skill') works as alias for guide", {
   output_singular <- capture.output(putior_help("skill"))
-  output_plural <- capture.output(putior_help("skills"))
-  expect_equal(output_singular, output_plural)
+  output_guide <- capture.output(putior_help("guide"))
+  expect_equal(output_singular, output_guide)
 })
 
 test_that("putior_help() handles unknown topic gracefully", {
@@ -146,82 +152,82 @@ test_that("putior_help() handles whitespace in topic", {
 })
 
 # =============================================================================
-# putior_skills() tests
+# putior_guide() tests
 # =============================================================================
 
-test_that("putior_skills() prints content to console", {
-  output <- capture.output(putior_skills())
+test_that("putior_guide() prints content to console", {
+  output <- capture.output(putior_guide())
   expect_true(length(output) > 0)
   combined <- paste(output, collapse = "\n")
   expect_true(grepl("putior", combined))
 })
 
-test_that("putior_skills() returns content invisibly", {
-  result <- capture.output(val <- putior_skills())
+test_that("putior_guide() returns content invisibly", {
+  result <- capture.output(val <- putior_guide())
   expect_type(val, "character")
   expect_true(length(val) > 0)
 })
 
-test_that("putior_skills(output = 'raw') returns string", {
-  result <- putior_skills(output = "raw")
+test_that("putior_guide(output = 'raw') returns string", {
+  result <- putior_guide(output = "raw")
   expect_type(result, "character")
   expect_equal(length(result), 1)
   expect_true(nchar(result) > 100)
   expect_true(grepl("putior", result))
 })
 
-test_that("putior_skills() filters by topic", {
-  full <- putior_skills(output = "raw")
-  quick <- putior_skills("quick-start", output = "raw")
+test_that("putior_guide() filters by topic", {
+  full <- putior_guide(output = "raw")
+  quick <- putior_guide("quick-start", output = "raw")
 
   expect_true(nchar(quick) < nchar(full))
   expect_true(grepl("Quick Start", quick))
 })
 
-test_that("putior_skills() topic aliases work", {
-  quick1 <- putior_skills("quick-start", output = "raw")
-  quick2 <- putior_skills("quick", output = "raw")
+test_that("putior_guide() topic aliases work", {
+  quick1 <- putior_guide("quick-start", output = "raw")
+  quick2 <- putior_guide("quick", output = "raw")
   expect_equal(quick1, quick2)
 
-  syntax1 <- putior_skills("syntax", output = "raw")
-  syntax2 <- putior_skills("annotation", output = "raw")
+  syntax1 <- putior_guide("syntax", output = "raw")
+  syntax2 <- putior_guide("annotation", output = "raw")
   expect_equal(syntax1, syntax2)
 
-  lang1 <- putior_skills("languages", output = "raw")
-  lang2 <- putior_skills("language", output = "raw")
+  lang1 <- putior_guide("languages", output = "raw")
+  lang2 <- putior_guide("language", output = "raw")
   expect_equal(lang1, lang2)
 
-  func1 <- putior_skills("functions", output = "raw")
-  func2 <- putior_skills("function", output = "raw")
+  func1 <- putior_guide("functions", output = "raw")
+  func2 <- putior_guide("function", output = "raw")
   expect_equal(func1, func2)
 
-  pat1 <- putior_skills("patterns", output = "raw")
-  pat2 <- putior_skills("pattern", output = "raw")
+  pat1 <- putior_guide("patterns", output = "raw")
+  pat2 <- putior_guide("pattern", output = "raw")
   expect_equal(pat1, pat2)
 
-  ex1 <- putior_skills("examples", output = "raw")
-  ex2 <- putior_skills("example", output = "raw")
+  ex1 <- putior_guide("examples", output = "raw")
+  ex2 <- putior_guide("example", output = "raw")
   expect_equal(ex1, ex2)
 })
 
-test_that("putior_skills() warns on unknown topic", {
+test_that("putior_guide() warns on unknown topic", {
   expect_warning(
-    result <- putior_skills("nonexistent", output = "raw"),
+    result <- putior_guide("nonexistent", output = "raw"),
     "Unknown topic"
   )
   # Should return full content as fallback
-  full <- putior_skills(output = "raw")
+  full <- putior_guide(output = "raw")
   expect_equal(result, full)
 })
 
-test_that("putior_skills() validates output parameter", {
-  expect_error(putior_skills(output = "invalid"))
+test_that("putior_guide() validates output parameter", {
+  expect_error(putior_guide(output = "invalid"))
 })
 
-test_that("extract_skills_topic() handles missing section", {
+test_that("extract_guide_topic() handles missing section", {
   fake_content <- c("# Title", "## Other Section", "some content")
   expect_warning(
-    result <- putior:::extract_skills_topic(fake_content, "quick-start"),
+    result <- putior:::extract_guide_topic(fake_content, "quick-start"),
     "not found"
   )
   expect_equal(result, fake_content)

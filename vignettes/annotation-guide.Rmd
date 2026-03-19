@@ -634,7 +634,7 @@ is_valid_put_annotation('# put id:"test", label:"Test Node"')  # Should be TRUE
 | [Showcase](showcase.html) | Real-world examples |
 | [Quick Reference](quick-reference.html) | At-a-glance reference card |
 | [Troubleshooting](troubleshooting.html) | Common issues and solutions |
-| [AI Skills](skills.html) | MCP/ACP integration guide |
+| [AI Integration](ai-integration.html) | MCP/ACP integration guide |
 
 **Built-in examples:**
 

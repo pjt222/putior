@@ -2,6 +2,12 @@
 
 ## Breaking Changes
 
+* Renamed `putior_skills()` to `putior_guide()`. The function, its MCP tool
+  (`putior_guide`), and its ACP operation (`guide`) all use the new name.
+  `putior_help("skills")` still works as an alias for backward compatibility.
+  The inst file was renamed from `SKILLS.md` to `GUIDE.md`, and the vignette
+  from `skills.Rmd` to `ai-integration.Rmd`. (#41)
+
 * `put()`, `put_auto()`, `put_generate()`, and `put_merge()` now default to
   `recursive = TRUE` (previously `FALSE`). Directory scans now include
   subdirectories by default. Pass `recursive = FALSE` for the old behavior.
@@ -22,7 +28,7 @@
 * Added `putior_mcp_tools()` to get/filter tool definitions for custom MCP integrations
 * 16 tools available: `put`, `put_diagram`, `put_auto`, `put_generate`, `put_merge`,
   `get_comment_prefix`, `get_supported_extensions`, `list_supported_languages`,
-  `get_detection_patterns`, `get_diagram_themes`, `putior_skills`, `putior_help`,
+  `get_detection_patterns`, `get_diagram_themes`, `putior_guide`, `putior_help`,
   `set_putior_log_level`, `is_valid_put_annotation`, `split_file_list`, `ext_to_language`
 * Supports Claude Code, Claude Desktop, and other MCP-compatible clients
 
@@ -125,7 +131,7 @@
   API reference, showcase, troubleshooting, quick-reference, and skills reference
 * Professional cheat sheet (`inst/cheatsheet/putior-cheatsheet.qmd`)
 * 20 example files in `inst/examples/`
-* `putior_skills()` and `putior_help()` for in-session reference
+* `putior_guide()` and `putior_help()` for in-session reference
 
 ### New Helper Functions
 * `resolve_label()` internal helper to reduce code duplication in diagram generation
@@ -147,7 +153,7 @@
 * Consolidated language detection list into single authoritative registry
   (`.LANGUAGES_WITH_DETECTION` in `language_registry.R`)
 * Standardized `output` parameter across `put_diagram()`, `put_generate()`, and
-  `putior_skills()` -- all now support "raw"
+  `putior_guide()` -- all now support "raw"
 * Extracted duplicated label resolution into `resolve_label()` helper
 * Added input path sanitization to ACP server endpoints
 

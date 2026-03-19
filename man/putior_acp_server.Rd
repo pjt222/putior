@@ -59,7 +59,7 @@ The agent understands natural language requests for:
 \item \strong{generate}: "Generate annotation suggestions for ./R/"
 \item \strong{merge}: "Merge manual and auto annotations in ./R/"
 \item \strong{help}: "Help with annotation syntax"
-\item \strong{skills}: "What are your capabilities?"
+\item \strong{guide}: "What are your capabilities?"
 }
 }
 
@@ -93,9 +93,9 @@ putior_acp_server(host = "0.0.0.0", port = 9000)
 
 Other integration: 
 \code{\link{putior_acp_manifest}()},
+\code{\link{putior_guide}()},
 \code{\link{putior_help}()},
 \code{\link{putior_mcp_server}()},
-\code{\link{putior_mcp_tools}()},
-\code{\link{putior_skills}()}
+\code{\link{putior_mcp_tools}()}
 }
 \concept{integration}

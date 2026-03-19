@@ -170,4 +170,4 @@ cat("\n```\n")
 | [API Reference](api-reference.html) | Function documentation |
 | [Showcase](showcase.html) | Real-world examples |
 | [Troubleshooting](troubleshooting.html) | Common issues and solutions |
-| [AI Skills](skills.html) | MCP/ACP integration guide |
+| [AI Integration](ai-integration.html) | MCP/ACP integration guide |
