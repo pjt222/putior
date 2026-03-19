@@ -32,6 +32,7 @@ NULL
 #'     \item description: Human-readable description
 #'   }
 #'
+#' @family language-support
 #' @export
 #'
 #' @examples

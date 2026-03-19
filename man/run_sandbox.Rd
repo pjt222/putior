@@ -34,4 +34,8 @@ run_sandbox()
 }
 \seealso{
 \code{\link{put}}, \code{\link{put_diagram}}
+
+Other interactive: 
+\code{\link{set_putior_log_level}()}
 }
+\concept{interactive}

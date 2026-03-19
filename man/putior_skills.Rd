@@ -31,3 +31,12 @@ putior_skills("quick-start")
 # Get raw markdown for AI consumption
 skills_md <- putior_skills(output = "raw")
 }
+\seealso{
+Other integration: 
+\code{\link{putior_acp_manifest}()},
+\code{\link{putior_acp_server}()},
+\code{\link{putior_help}()},
+\code{\link{putior_mcp_server}()},
+\code{\link{putior_mcp_tools}()}
+}
+\concept{integration}

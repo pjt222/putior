@@ -18,6 +18,18 @@ library(putior)
 
 This guide tours the advanced features of putior that go beyond basic annotation extraction. Learn how to auto-detect workflows, create interactive diagrams, customize detection patterns, and more.
 
+## Contents
+
+- [Feature Overview](#feature-overview) - Summary table of all features
+- [Auto-Annotation System](#auto-annotation-system) - `put_auto()`, `put_generate()`, `put_merge()`
+- [Interactive Diagrams](#interactive-diagrams) - Source info display, clickable nodes
+- [Detection Patterns](#detection-patterns) - View and understand auto-detection patterns
+- [Interactive Sandbox](#interactive-sandbox) - Experiment without writing files
+- [Debugging with Logging](#debugging-with-logging) - Structured logging via `logger`
+- [Themes and Customization](#themes-and-customization) - Built-in themes, custom palettes, styling
+- [Performance](#performance) - Tips for large codebases
+- [Putting It All Together](#putting-it-all-together) - Complete workflow examples
+
 ## Feature Overview
 
 | Feature | Purpose | Key Functions |
@@ -875,16 +887,6 @@ put_generate("./unfamiliar_project/", output = "clipboard")
 
 ---
 
-## See Also
-
-- [Quick Start](quick-start.html) - First diagram in 2 minutes
-- [Annotation Guide](annotation-guide.html) - Complete syntax reference
-- [Quick Reference](quick-reference.html) - Cheat sheet for daily use
-- [API Reference](api-reference.html) - Complete function documentation
-- [Showcase](showcase.html) - Real-world examples
-
----
-
 ## Try the Examples
 
 ```{r eval=FALSE}
@@ -900,3 +902,17 @@ source(system.file("examples", "variable-reference-example.R", package = "putior
 # Launch sandbox
 run_sandbox()
 ```
+
+---
+
+## See Also
+
+| Guide | Description |
+|-------|-------------|
+| [Quick Start](quick-start.html) | First diagram in 2 minutes |
+| [Annotation Guide](annotation-guide.html) | Complete syntax reference |
+| [API Reference](api-reference.html) | Function documentation |
+| [Showcase](showcase.html) | Real-world examples |
+| [Quick Reference](quick-reference.html) | At-a-glance reference card |
+| [Troubleshooting](troubleshooting.html) | Common issues and solutions |
+| [AI Skills](skills.html) | MCP/ACP integration guide |

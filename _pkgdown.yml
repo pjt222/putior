@@ -3,7 +3,7 @@ template:
   bootstrap: 5
   bootswatch: cosmo
   bslib:
-    primary: "#0054AD"
+    primary: "#2563eb"
     base_font: {google: "Fira Sans"}
     heading_font: {google: "Fira Sans"}
     code_font: {google: "Fira Code"}
@@ -16,12 +16,12 @@ template:
           startOnLoad: false,
           theme: 'default',
           themeVariables: {
-            primaryColor: '#fff4e6',
-            primaryTextColor: '#333',
-            primaryBorderColor: '#d97706',
-            lineColor: '#5a5a5a',
-            secondaryColor: '#f3f4f6',
-            tertiaryColor: '#e5e7eb'
+            primaryColor: '#f0f4ff',
+            primaryTextColor: '#1e293b',
+            primaryBorderColor: '#2563eb',
+            lineColor: '#64748b',
+            secondaryColor: '#f8fafc',
+            tertiaryColor: '#f1f5f9'
           },
           flowchart: {
             htmlLabels: true,
@@ -49,12 +49,14 @@ template:
                 // Create container div
                 const container = document.createElement('div');
                 container.className = 'mermaid-container';
-                
+                container.setAttribute('role', 'img');
+                container.setAttribute('aria-label', 'Workflow diagram');
+
                 // Create mermaid div
                 const mermaidDiv = document.createElement('div');
                 mermaidDiv.className = 'mermaid';
                 mermaidDiv.textContent = text.trim();
-                
+
                 container.appendChild(mermaidDiv);
                 pre.parentElement.insertBefore(container, pre);
                 pre.style.display = 'none';
@@ -63,24 +65,26 @@ template:
               }
             }
           });
-          
+
           // Also look for code blocks that might contain mermaid
           const codeBlocks = document.querySelectorAll('pre > code');
           codeBlocks.forEach(function(code) {
             const text = code.textContent || code.innerText;
-            
+
             // Check if parent pre is already hidden
             if (code.parentElement.style.display === 'none') return;
-            
+
             // Look for mermaid content that starts with flowchart
             if (text.trim().startsWith('flowchart') || text.trim().startsWith('graph')) {
               try {
                 const pre = code.parentElement;
-                
+
                 // Create container div
                 const container = document.createElement('div');
                 container.className = 'mermaid-container';
-                
+                container.setAttribute('role', 'img');
+                container.setAttribute('aria-label', 'Workflow diagram');
+
                 // Create mermaid div with just the text content
                 const mermaidDiv = document.createElement('div');
                 mermaidDiv.className = 'mermaid';
@@ -171,18 +175,21 @@ navbar:
     articles:
       text: Articles
       menu:
+      - text: "---Getting Started---"
       - text: Quick Start
         href: articles/quick-start.html
       - text: Annotation Guide
         href: articles/annotation-guide.html
-      - text: Quick Reference
-        href: articles/quick-reference.html
+      - text: "---Going Deeper---"
       - text: Features Tour
         href: articles/features-tour.html
-      - text: API Reference
-        href: articles/api-reference.html
       - text: "Showcase: Real-World Examples"
         href: articles/showcase.html
+      - text: "---Reference---"
+      - text: API Reference
+        href: articles/api-reference.html
+      - text: Quick Reference
+        href: articles/quick-reference.html
       - text: Troubleshooting Guide
         href: articles/troubleshooting.html
     skills:
@@ -190,9 +197,34 @@ navbar:
       icon: fa-robot
       href: articles/skills.html
     cheatsheet:
-      text: Cheatsheet
-      icon: fa-file-pdf
-      href: https://github.com/pjt222/putior/raw/main/inst/cheatsheet/putior-cheatsheet.pdf
+      text: Quick Ref
+      icon: fa-file-alt
+      href: articles/quick-reference.html
+
+articles:
+- title: "Getting Started"
+  navbar: "Getting Started"
+  contents:
+  - quick-start
+  - annotation-guide
+
+- title: "Going Deeper"
+  navbar: "Going Deeper"
+  contents:
+  - features-tour
+  - showcase
+
+- title: "Reference"
+  navbar: "Reference"
+  contents:
+  - api-reference
+  - quick-reference
+  - troubleshooting
+
+- title: "AI Integration"
+  navbar: ~
+  contents:
+  - skills
 
 reference:
 - title: "Core Functions"

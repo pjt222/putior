@@ -75,6 +75,7 @@ putior_log <- function(level, ..., .envir = parent.frame()) {
 #'   }
 #'
 #' @return Invisibly returns the previous log level
+#' @family interactive
 #' @export
 #'
 #' @examples

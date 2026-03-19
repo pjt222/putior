@@ -11,6 +11,7 @@
 #' @return Invisibly returns content as character vector.
 #'   With output="raw", returns as single string.
 #'
+#' @family integration
 #' @export
 #'
 #' @examples

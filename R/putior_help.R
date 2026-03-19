@@ -17,6 +17,7 @@
 #'
 #' @return Invisibly returns NULL. Prints help content to the console.
 #'
+#' @family integration
 #' @export
 #'
 #' @examples

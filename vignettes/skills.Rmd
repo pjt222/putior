@@ -82,3 +82,17 @@ if (file.exists(skills_path)) {
   cat("Skills file not found. See `putior_skills()` for the full reference.")
 }
 ```
+
+---
+
+## See Also
+
+| Guide | Description |
+|-------|-------------|
+| [Quick Start](quick-start.html) | First diagram in 2 minutes |
+| [Annotation Guide](annotation-guide.html) | Complete syntax reference |
+| [Features Tour](features-tour.html) | Auto-detection, themes, logging |
+| [API Reference](api-reference.html) | Function documentation |
+| [Showcase](showcase.html) | Real-world examples |
+| [Quick Reference](quick-reference.html) | At-a-glance reference card |
+| [Troubleshooting](troubleshooting.html) | Common issues and solutions |

@@ -67,6 +67,7 @@ NULL
 #'
 #' @return This function does not return; it runs the MCP server until terminated.
 #'
+#' @family integration
 #' @export
 #'
 #' @examples
@@ -139,6 +140,7 @@ putior_mcp_server <- function(type = c("stdio", "http"),
 #' @return A list of ellmer tool definitions suitable for use with
 #'   \code{mcptools::mcp_server()}.
 #'
+#' @family integration
 #' @export
 #'
 #' @examples

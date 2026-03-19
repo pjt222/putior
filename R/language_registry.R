@@ -67,6 +67,7 @@ LANGUAGE_GROUPS <- list(
 #' @param ext Character string of the file extension (without dot)
 #' @return Character string of the comment prefix
 #'
+#' @family language-support
 #' @export
 #'
 #' @examples
@@ -118,6 +119,7 @@ get_block_comment_syntax <- function(ext) {
 #'
 #' @return Character vector of supported file extensions (without dots)
 #'
+#' @family language-support
 #' @export
 #'
 #' @examples
@@ -204,6 +206,7 @@ get_supported_extensions <- function() {
 #' @param ext Character string of the file extension (without dot)
 #' @return Character string of the language name, or NULL if not supported
 #'
+#' @family language-support
 #' @export
 #'
 #' @examples
@@ -321,6 +324,7 @@ build_file_pattern <- function(detection_only = FALSE) {
 #'
 #' @return Character vector of supported language names
 #'
+#' @family language-support
 #' @export
 #'
 #' @examples

@@ -14,9 +14,7 @@ NULL
 #'
 #' @param path Character string specifying the path to the folder containing files,
 #'   or path to a single file
-#' @param pattern Character string specifying the file pattern to match.
-#'   Default: all extensions with detection pattern support (see
-#'   \code{\link{list_supported_languages}(detection_only = TRUE)}).
+#' @param pattern Regex pattern for filtering files (e.g., `\\.R$` for R files only).
 #' @param recursive Logical. Should subdirectories be searched recursively?
 #'   Default: TRUE
 #' @param detect_inputs Logical. Should file inputs be detected? Default: TRUE
@@ -44,6 +42,7 @@ NULL
 #'   }
 #'   This format is directly compatible with \code{\link{put_diagram}()}.
 #'
+#' @family auto-annotation
 #' @export
 #'
 #' @examples
@@ -149,8 +148,7 @@ put_auto <- function(path,
 #' how roxygen2 generates documentation skeletons.
 #'
 #' @param path Character string specifying the path to a file or directory
-#' @param pattern Character string specifying the file pattern to match.
-#'   Default: all extensions with detection pattern support.
+#' @param pattern Regex pattern for filtering files (e.g., `\\.R$` for R files only).
 #' @param recursive Logical. Should subdirectories be searched recursively?
 #'   Default: TRUE
 #' @param output Character string specifying output destination:
@@ -177,6 +175,7 @@ put_auto <- function(path,
 #' @return Invisibly returns a character vector of generated annotations.
 #'   Side effects depend on the \code{output} parameter.
 #'
+#' @family auto-annotation
 #' @export
 #'
 #' @examples
@@ -316,8 +315,7 @@ put_generate <- function(path,
 #' allowing flexible strategies for handling conflicts and supplementing information.
 #'
 #' @param path Character string specifying the path to a file or directory
-#' @param pattern Character string specifying the file pattern to match.
-#'   Default: all extensions with detection pattern support.
+#' @param pattern Regex pattern for filtering files (e.g., `\\.R$` for R files only).
 #' @param recursive Logical. Should subdirectories be searched recursively?
 #'   Default: TRUE
 #' @param merge_strategy Character string specifying how to merge:
@@ -337,6 +335,7 @@ put_generate <- function(path,
 #' @return A data frame in the same format as \code{\link{put}()}, containing
 #'   merged workflow information from both manual and auto-detected sources.
 #'
+#' @family auto-annotation
 #' @export
 #'
 #' @examples

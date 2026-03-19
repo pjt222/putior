@@ -17,3 +17,12 @@ Invisibly returns a list with summary information
 \description{
 Provides a structured summary of a putior workflow data frame.
 }
+\seealso{
+Other core-workflow: 
+\code{\link{print.putior_theme}()},
+\code{\link{print.putior_workflow}()},
+\code{\link{put}()},
+\code{\link{put_diagram}()},
+\code{\link{put_theme}()}
+}
+\concept{core-workflow}

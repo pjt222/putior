@@ -65,3 +65,12 @@ workflow <- put("./src/")
 put_diagram(workflow, palette = my_theme)
 }
 }
+\seealso{
+Other core-workflow: 
+\code{\link{print.putior_theme}()},
+\code{\link{print.putior_workflow}()},
+\code{\link{put}()},
+\code{\link{put_diagram}()},
+\code{\link{summary.putior_workflow}()}
+}
+\concept{core-workflow}

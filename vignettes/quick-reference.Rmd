@@ -48,6 +48,29 @@ Find your language:
 | `put_generate()` | Suggest annotations | `put_generate("./src/")` |
 | `put_merge()` | Merge manual + auto | `put_merge("./src/")` |
 
+## Key Parameters
+
+**`put()`** and scan functions:
+```r
+put(path, pattern, recursive = TRUE, include_line_numbers = FALSE,
+    validate = TRUE, exclude = NULL, log_level = NULL)
+```
+
+**`put_diagram()`**:
+```r
+put_diagram(workflow, output = "console", file = NULL, direction = "TD",
+    theme = "github", show_artifacts = FALSE, show_source_info = FALSE,
+    enable_clicks = FALSE, click_protocol = "vscode", palette = NULL,
+    style_nodes = TRUE, node_labels = "label", title = NULL)
+```
+
+**`put_theme()`**:
+```r
+put_theme(base = "light", input = NULL, process = NULL, output = NULL,
+    decision = NULL, artifact = NULL, start = NULL, end = NULL)
+# Each node type: c(fill = "#hex", stroke = "#hex", color = "#hex")
+```
+
 ## Common Patterns
 
 **Basic**
@@ -60,11 +83,14 @@ put("./src/") |> put_diagram()
 put_diagram(wf, theme = "dark", direction = "LR")
 put_diagram(wf, show_artifacts = FALSE)       # Hide data files
 put_diagram(wf, show_source_info = TRUE)      # Show file info
+put_diagram(wf, palette = put_theme(base = "dark", input = c(fill = "#1a5276")))
 ```
 
 **Save**
 ```r
-put_diagram(wf, output = "workflow.md")
+put_diagram(wf, output = "file", file = "workflow.md")
+put_diagram(wf, output = "clipboard")
+mermaid_code <- put_diagram(wf, output = "raw")
 ```
 
 **Exclude files**
@@ -77,6 +103,19 @@ put_auto("./", exclude = c("vendor", "fixture"))
 ```r
 put("./", log_level = "DEBUG")
 ```
+
+## Configuration & Utilities
+
+| Function | Purpose | Example |
+|----------|---------|---------|
+| `get_comment_prefix()` | Comment prefix for extension | `get_comment_prefix("sql")` → `"--"` |
+| `get_supported_extensions()` | All supported extensions | `get_supported_extensions()` |
+| `list_supported_languages()` | Supported languages | `list_supported_languages(detection_only = TRUE)` |
+| `get_detection_patterns()` | Auto-detection patterns | `get_detection_patterns("r", type = "input")` |
+| `get_diagram_themes()` | Available themes | `get_diagram_themes()` |
+| `is_valid_put_annotation()` | Validate syntax | `is_valid_put_annotation('# put label:"X"')` |
+| `set_putior_log_level()` | Set logging level | `set_putior_log_level("DEBUG")` |
+| `run_sandbox()` | Launch Shiny sandbox | `run_sandbox()` |
 
 ## Themes and Direction
 
@@ -123,4 +162,12 @@ cat("\n```\n")
 
 ## See Also
 
-[Quick Start](quick-start.html) | [Annotation Guide](annotation-guide.html) | [API Reference](api-reference.html)
+| Guide | Description |
+|-------|-------------|
+| [Quick Start](quick-start.html) | First diagram in 2 minutes |
+| [Annotation Guide](annotation-guide.html) | Complete syntax reference |
+| [Features Tour](features-tour.html) | Auto-detection, themes, logging |
+| [API Reference](api-reference.html) | Function documentation |
+| [Showcase](showcase.html) | Real-world examples |
+| [Troubleshooting](troubleshooting.html) | Common issues and solutions |
+| [AI Skills](skills.html) | MCP/ACP integration guide |

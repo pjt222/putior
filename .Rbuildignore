@@ -44,3 +44,6 @@
 ^inst/cheatsheet/package\.json$
 ^inst/cheatsheet/package-lock\.json$
 ^CONTINUE_HERE\.md$
+^CONTRIBUTING\.md$
+^CODE_OF_CONDUCT\.md$
+^content-filter-log\.txt$

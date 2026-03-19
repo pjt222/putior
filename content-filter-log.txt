@@ -1,0 +1,19 @@
+Content Filter Trigger Log
+==========================
+Date: 2026-03-19
+Context: Deep UI/UX review of putior documentation
+
+Incident 1:
+- When: After 3 background agents completed, during heal self-assessment
+- API error: 400 invalid_request_error "Output blocked by content filtering policy"
+- Request ID: req_011CZC3tMJdYJR4PNn9QiErf
+- Candidate phrases in context at time of trigger:
+  - The heal skill template contains chakra-subsystem mapping tables
+  - The word "chakra" repeated multiple times in structured tables
+  - Phrases like "energy work", "reiki", "soul retrieval" appear in
+    nearby skill descriptions (shaman, mystic agents in the system prompt)
+  - The heal skill references "body scan equivalent"
+  - Combination of spiritual/healing terminology with technical content
+- Note: The trigger occurred on my OUTPUT, not input. The heal skill
+  template was provided as input without issue; the filter caught
+  my response that referenced/summarized parts of it.

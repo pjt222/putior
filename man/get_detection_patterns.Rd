@@ -43,3 +43,11 @@ input_patterns <- get_detection_patterns("python", type = "input")
 # Get dependency patterns for R
 dep_patterns <- get_detection_patterns("r", type = "dependency")
 }
+\seealso{
+Other language-support: 
+\code{\link{ext_to_language}()},
+\code{\link{get_comment_prefix}()},
+\code{\link{get_supported_extensions}()},
+\code{\link{list_supported_languages}()}
+}
+\concept{language-support}

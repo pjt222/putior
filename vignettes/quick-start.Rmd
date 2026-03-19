@@ -168,19 +168,6 @@ run_sandbox()  # Opens Shiny app
 
 ---
 
-## What's Next?
-
-| Guide | When to Read |
-|-------|--------------|
-| [Annotation Guide](annotation-guide.html) | Complete syntax reference, multiline annotations, best practices |
-| [Quick Reference](quick-reference.html) | Printable cheat sheet for daily use |
-| [Features Tour](features-tour.html) | Auto-detection, logging, interactive diagrams, metadata display |
-| [API Reference](api-reference.html) | All functions and parameters |
-| [Showcase](showcase.html) | Real-world examples (ETL, ML pipelines, bioinformatics) |
-| [Troubleshooting](troubleshooting.html) | Common issues and solutions |
-
----
-
 ## Quick Reference
 
 ```r
@@ -197,3 +184,17 @@ put_diagram(wf, show_artifacts = FALSE)  # Hide data files
 ```
 
 **Need help?** Run `?put` or `?put_diagram` for full documentation.
+
+---
+
+## See Also
+
+| Guide | Description |
+|-------|-------------|
+| [Annotation Guide](annotation-guide.html) | Complete syntax reference |
+| [Features Tour](features-tour.html) | Auto-detection, themes, logging |
+| [API Reference](api-reference.html) | Function documentation |
+| [Showcase](showcase.html) | Real-world examples |
+| [Quick Reference](quick-reference.html) | At-a-glance reference card |
+| [Troubleshooting](troubleshooting.html) | Common issues and solutions |
+| [AI Skills](skills.html) | MCP/ACP integration guide |

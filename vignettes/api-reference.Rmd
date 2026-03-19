@@ -844,8 +844,12 @@ set_putior_log_level("WARN")
 
 ## See Also
 
-- [Quick Start](quick-start.html) - First diagram in 2 minutes
-- [Annotation Guide](annotation-guide.html) - Complete syntax reference
-- [Quick Reference](quick-reference.html) - Cheat sheet for daily use
-- [Features Tour](features-tour.html) - Overview of advanced features
-- [Showcase](showcase.html) - Real-world examples
+| Guide | Description |
+|-------|-------------|
+| [Quick Start](quick-start.html) | First diagram in 2 minutes |
+| [Annotation Guide](annotation-guide.html) | Complete syntax reference |
+| [Features Tour](features-tour.html) | Auto-detection, themes, logging |
+| [Showcase](showcase.html) | Real-world examples |
+| [Quick Reference](quick-reference.html) | At-a-glance reference card |
+| [Troubleshooting](troubleshooting.html) | Common issues and solutions |
+| [AI Skills](skills.html) | MCP/ACP integration guide |

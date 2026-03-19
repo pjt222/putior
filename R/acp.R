@@ -70,6 +70,7 @@ get_run_by_id <- function(run_id) {
 #' @return A list containing the agent manifest with name, description,
 #'   and metadata about capabilities.
 #'
+#' @family integration
 #' @export
 #'
 #' @examples
@@ -568,6 +569,7 @@ acp_get_run_handler <- function(run_id, response) {
 #'
 #' @return This function does not return; it runs the server until terminated.
 #'
+#' @family integration
 #' @export
 #'
 #' @examples

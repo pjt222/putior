@@ -64,6 +64,7 @@
 #'   Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.
 #'
 #' @return Character string containing the mermaid diagram code
+#' @family core-workflow
 #' @export
 #'
 #' @examples
@@ -520,6 +521,7 @@ get_theme_colors <- function(theme) {
 #' Returns information about available color themes for workflow diagrams.
 #'
 #' @return Named list describing available themes
+#' @family utilities
 #' @export
 #'
 #' @examples
@@ -1153,6 +1155,7 @@ handle_output <- function(mermaid_code, output = "console", file = NULL, title =
 #'
 #' @param file_string Comma-separated file names
 #' @return Character vector of individual file names
+#' @family utilities
 #' @export
 #'
 #' @examples

@@ -20,9 +20,7 @@ put_auto(
 \item{path}{Character string specifying the path to the folder containing files,
 or path to a single file}
 
-\item{pattern}{Character string specifying the file pattern to match.
-Default: all extensions with detection pattern support (see
-\code{\link{list_supported_languages}(detection_only = TRUE)}).}
+\item{pattern}{Regex pattern for filtering files (e.g., \verb{\\\\.R$} for R files only).}
 
 \item{recursive}{Logical. Should subdirectories be searched recursively?
 Default: TRUE}
@@ -84,4 +82,9 @@ outputs_only <- put_auto("./analysis/", detect_inputs = FALSE)
 \code{\link{put}} for manual annotation extraction,
 \code{\link{put_generate}} for generating annotation comments,
 \code{\link{put_merge}} for combining manual and auto-detected annotations
+
+Other auto-annotation: 
+\code{\link{put_generate}()},
+\code{\link{put_merge}()}
 }
+\concept{auto-annotation}

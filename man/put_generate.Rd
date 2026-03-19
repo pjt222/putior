@@ -18,8 +18,7 @@ put_generate(
 \arguments{
 \item{path}{Character string specifying the path to a file or directory}
 
-\item{pattern}{Character string specifying the file pattern to match.
-Default: all extensions with detection pattern support.}
+\item{pattern}{Regex pattern for filtering files (e.g., \verb{\\\\.R$} for R files only).}
 
 \item{recursive}{Logical. Should subdirectories be searched recursively?
 Default: TRUE}
@@ -77,4 +76,9 @@ put_generate("./new_script.R", insert = TRUE)
 \seealso{
 \code{\link{put_auto}} for direct workflow detection,
 \code{\link{put}} for extracting existing annotations
+
+Other auto-annotation: 
+\code{\link{put_auto}()},
+\code{\link{put_merge}()}
 }
+\concept{auto-annotation}

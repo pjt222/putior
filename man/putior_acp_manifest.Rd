@@ -20,3 +20,12 @@ manifest <- putior_acp_manifest()
 print(manifest$name)
 print(manifest$description)
 }
+\seealso{
+Other integration: 
+\code{\link{putior_acp_server}()},
+\code{\link{putior_help}()},
+\code{\link{putior_mcp_server}()},
+\code{\link{putior_mcp_tools}()},
+\code{\link{putior_skills}()}
+}
+\concept{integration}

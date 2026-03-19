@@ -19,3 +19,9 @@ Test helper function to validate PUT annotation syntax
 is_valid_put_annotation('# put id:"test", label:"Test"') # TRUE
 is_valid_put_annotation("# put invalid syntax") # FALSE
 }
+\seealso{
+Other utilities: 
+\code{\link{get_diagram_themes}()},
+\code{\link{split_file_list}()}
+}
+\concept{utilities}

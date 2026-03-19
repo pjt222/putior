@@ -90,4 +90,12 @@ putior_acp_server(host = "0.0.0.0", port = 9000)
 \seealso{
 \code{\link{putior_acp_manifest}} for the agent definition,
 \code{\link{putior_mcp_server}} for MCP (Model-to-tool) integration
+
+Other integration: 
+\code{\link{putior_acp_manifest}()},
+\code{\link{putior_help}()},
+\code{\link{putior_mcp_server}()},
+\code{\link{putior_mcp_tools}()},
+\code{\link{putior_skills}()}
 }
+\concept{integration}

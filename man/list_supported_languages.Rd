@@ -25,3 +25,11 @@ list_supported_languages()
 # Only languages with auto-detection patterns
 list_supported_languages(detection_only = TRUE)
 }
+\seealso{
+Other language-support: 
+\code{\link{ext_to_language}()},
+\code{\link{get_comment_prefix}()},
+\code{\link{get_detection_patterns}()},
+\code{\link{get_supported_extensions}()}
+}
+\concept{language-support}

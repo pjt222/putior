@@ -22,3 +22,9 @@ workflow <- put("./src")
 put_diagram(workflow, theme = "github")
 }
 }
+\seealso{
+Other utilities: 
+\code{\link{is_valid_put_annotation}()},
+\code{\link{split_file_list}()}
+}
+\concept{utilities}

@@ -23,6 +23,7 @@
 #'   strings, one per node type), suitable for passing to
 #'   \code{put_diagram(palette = ...)}.
 #'
+#' @family core-workflow
 #' @export
 #'
 #' @examples
@@ -140,6 +141,7 @@ apply_color_override <- function(override, node_type) {
 #' @param ... Additional arguments (ignored).
 #' @return The object, invisibly.
 #'
+#' @family core-workflow
 #' @export
 print.putior_theme <- function(x, ...) {
   cat("putior custom theme palette\n")

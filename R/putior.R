@@ -7,9 +7,7 @@
 #'
 #' @param path Character string specifying the path to the folder containing files,
 #'   or path to a single file
-#' @param pattern Character string specifying the file pattern to match.
-#'   Default: all supported extensions (see \code{\link{get_supported_extensions}}).
-#'   For a subset, specify a pattern (e.g., "\\.js$" for JavaScript only).
+#' @param pattern Regex pattern for filtering files (e.g., `\\.R$` for R files only).
 #' @param recursive Logical. Should subdirectories be searched recursively?
 #'   Default: TRUE
 #' @param include_line_numbers Logical. Should line numbers be included in output?
@@ -77,6 +75,7 @@
 #'   \item Works with all PUT formats: prefix+put, prefix + put, prefix+put|, prefix+put:
 #' }
 #'
+#' @family core-workflow
 #' @export
 #'
 #' @examples
@@ -686,6 +685,7 @@ as_putior_workflow <- function(df) {
 #' @param x A putior_workflow object
 #' @param ... Additional arguments (ignored)
 #' @return Invisibly returns x
+#' @family core-workflow
 #' @export
 print.putior_workflow <- function(x, ...) {
   n <- nrow(x)
@@ -718,6 +718,7 @@ print.putior_workflow <- function(x, ...) {
 #' @param object A putior_workflow object
 #' @param ... Additional arguments (ignored)
 #' @return Invisibly returns a list with summary information
+#' @family core-workflow
 #' @export
 summary.putior_workflow <- function(object, ...) {
   n <- nrow(object)
@@ -765,6 +766,7 @@ summary.putior_workflow <- function(object, ...) {
 #'
 #' @param line Character string containing a PUT annotation
 #' @return Logical indicating if the annotation is valid
+#' @family utilities
 #' @export
 #'
 #' @examples
@@ -794,6 +796,7 @@ is_valid_put_annotation <- function(line) {
 #'
 #' @return Launches the Shiny app in the default browser. Returns invisibly.
 #'
+#' @family interactive
 #' @export
 #'
 #' @examples

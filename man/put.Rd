@@ -18,9 +18,7 @@ put(
 \item{path}{Character string specifying the path to the folder containing files,
 or path to a single file}
 
-\item{pattern}{Character string specifying the file pattern to match.
-Default: all supported extensions (see \code{\link{get_supported_extensions}}).
-For a subset, specify a pattern (e.g., "\\.js$" for JavaScript only).}
+\item{pattern}{Regex pattern for filtering files (e.g., \verb{\\\\.R$} for R files only).}
 
 \item{recursive}{Logical. Should subdirectories be searched recursively?
 Default: TRUE}
@@ -139,3 +137,12 @@ workflow <- put("./sql/", pattern = "\\\\.sql$")
 # --    output:"target_table"
 }
 }
+\seealso{
+Other core-workflow: 
+\code{\link{print.putior_theme}()},
+\code{\link{print.putior_workflow}()},
+\code{\link{put_diagram}()},
+\code{\link{put_theme}()},
+\code{\link{summary.putior_workflow}()}
+}
+\concept{core-workflow}

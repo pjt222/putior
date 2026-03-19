@@ -17,8 +17,7 @@ put_merge(
 \arguments{
 \item{path}{Character string specifying the path to a file or directory}
 
-\item{pattern}{Character string specifying the file pattern to match.
-Default: all extensions with detection pattern support.}
+\item{pattern}{Regex pattern for filtering files (e.g., \verb{\\\\.R$} for R files only).}
 
 \item{recursive}{Logical. Should subdirectories be searched recursively?
 Default: TRUE}
@@ -65,4 +64,9 @@ workflow <- put_merge("./analysis/", merge_strategy = "union")
 \seealso{
 \code{\link{put}} for manual annotation extraction,
 \code{\link{put_auto}} for auto-detection
+
+Other auto-annotation: 
+\code{\link{put_auto}()},
+\code{\link{put_generate}()}
 }
+\concept{auto-annotation}

@@ -51,3 +51,12 @@ putior_help("examples")
 # Show AI assistant skills reference
 putior_help("skills")
 }
+\seealso{
+Other integration: 
+\code{\link{putior_acp_manifest}()},
+\code{\link{putior_acp_server}()},
+\code{\link{putior_mcp_server}()},
+\code{\link{putior_mcp_tools}()},
+\code{\link{putior_skills}()}
+}
+\concept{integration}
