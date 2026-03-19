@@ -63,12 +63,12 @@ which provides 6 skills for the complete putior workflow:
 
 | Skill | Purpose |
 |-------|---------|
-| install-putior | Installation and dependency setup |
-| analyze-codebase-workflow | Auto-detect workflows in arbitrary codebases |
-| annotate-source-files | Add PUT annotations to source files |
-| generate-workflow-diagram | Generate themed Mermaid diagrams |
-| configure-putior-mcp | Set up MCP/ACP server for AI assistants |
-| setup-putior-ci | GitHub Actions CI/CD for diagram auto-refresh |
+| [`install-putior`](https://github.com/pjt222/agent-almanac/blob/main/skills/install-putior/SKILL.md) | Installation and dependency setup |
+| [`analyze-codebase-workflow`](https://github.com/pjt222/agent-almanac/blob/main/skills/analyze-codebase-workflow/SKILL.md) | Auto-detect workflows in arbitrary codebases |
+| [`annotate-source-files`](https://github.com/pjt222/agent-almanac/blob/main/skills/annotate-source-files/SKILL.md) | Add PUT annotations to source files |
+| [`generate-workflow-diagram`](https://github.com/pjt222/agent-almanac/blob/main/skills/generate-workflow-diagram/SKILL.md) | Generate themed Mermaid diagrams |
+| [`configure-putior-mcp`](https://github.com/pjt222/agent-almanac/blob/main/skills/configure-putior-mcp/SKILL.md) | Set up MCP/ACP server for AI assistants |
+| [`setup-putior-ci`](https://github.com/pjt222/agent-almanac/blob/main/skills/setup-putior-ci/SKILL.md) | GitHub Actions CI/CD for diagram auto-refresh |
 
 ---
 

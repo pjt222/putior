@@ -3,7 +3,6 @@ title: "API Reference"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{API Reference}
-
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

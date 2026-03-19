@@ -1,3 +1,8 @@
+/* ==========================================================================
+   putior pkgdown — Shared styles (light + dark)
+   Dark mode palette aligned with agent-almanac/viz cyberpunk theme
+   ========================================================================== */
+
 /* Font ligature support for Fira Code */
 pre, code, .sourceCode, .pre, .code {
   font-variant-ligatures: contextual;
@@ -28,7 +33,7 @@ pre code {
   line-height: 1.5;
 }
 
-/* Better inline code styling - WCAG AA contrast */
+/* Better inline code styling */
 p code, li code, td code {
   background-color: rgba(0, 0, 0, 0.07);
   border-radius: 3px;
@@ -86,4 +91,57 @@ body {
 a:focus-visible {
   outline: 2px solid #2563eb;
   outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Dark mode overrides
+   Colors: bg #0a0a0f, accent #00f0ff, text #e0e0e8, muted #888899
+   ========================================================================== */
+
+[data-bs-theme="dark"] p code,
+[data-bs-theme="dark"] li code,
+[data-bs-theme="dark"] td code {
+  background-color: rgba(255, 255, 255, 0.10);
+}
+
+[data-bs-theme="dark"] a:focus-visible {
+  outline-color: #00f0ff;
+}
+
+/* Mermaid containers on dark backgrounds */
+[data-bs-theme="dark"] pre.mermaid {
+  background: transparent;
+}
+
+[data-bs-theme="dark"] .mermaid-container {
+  border-radius: 6px;
+}
+
+/* Improve table readability in dark mode */
+[data-bs-theme="dark"] table {
+  --bs-table-bg: transparent;
+}
+
+[data-bs-theme="dark"] thead th {
+  border-bottom-color: rgba(0, 240, 255, 0.2);
+}
+
+[data-bs-theme="dark"] td, [data-bs-theme="dark"] th {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Accent color for dark mode links */
+[data-bs-theme="dark"] .navbar .nav-link.active,
+[data-bs-theme="dark"] .navbar .nav-link:hover {
+  color: #00f0ff;
+}
+
+/* Badge and label contrast */
+[data-bs-theme="dark"] .badge {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Blockquote accent in dark mode */
+[data-bs-theme="dark"] blockquote {
+  border-left-color: #00f0ff;
 }
