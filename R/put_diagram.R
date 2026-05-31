@@ -567,20 +567,22 @@ generate_node_definitions <- function(workflow, node_labels = "label",
     # Determine node shape based on type and workflow boundary settings
     node_shape <- get_node_shape(node$node_type, show_workflow_boundaries)
 
-    # Determine label text
-    label_text <- resolve_label(node, node_labels)
-
-    # Append source file info if requested (skip for artifacts)
+    # Build source file suffix if requested (skip for artifacts). Appended to the
+    # raw label inside resolve_label() so the <br/> and (filename) land INSIDE the
+    # quoted label -- otherwise Mermaid rejects `["label"<br/>(file)]` (#mermaid-01).
     is_artifact_node <- "is_artifact" %in% names(node) &&
                         !is.null(node$is_artifact) &&
                         !is.na(node$is_artifact) &&
                         node$is_artifact
+    source_suffix <- NULL
     if (show_source_info &&
         !is.na(node$file_name) && node$file_name != "" &&
         !is_artifact_node) {
-      # Use HTML-style line break for Mermaid
-      label_text <- paste0(label_text, "<br/>(", node$file_name, ")")
+      source_suffix <- paste0("<br/>(", node$file_name, ")")
     }
+
+    # Determine label text (source suffix folded in before quoting)
+    label_text <- resolve_label(node, node_labels, suffix = source_suffix)
 
     # Create node definition using character vector format
     node_def <- paste0("    ", node_id, node_shape[1], label_text, node_shape[2])
@@ -628,9 +630,11 @@ get_node_shape <- function(node_type, show_workflow_boundaries = TRUE) {
 #' Resolve label text for a workflow node
 #' @param node A single row from the workflow data frame
 #' @param node_labels Label display mode: "name", "label", or "both"
+#' @param suffix Optional string appended to the raw label before sanitization
+#'   (e.g. source-file info), so it lands inside the quoted label
 #' @return Character string of the resolved label text
 #' @keywords internal
-resolve_label <- function(node, node_labels) {
+resolve_label <- function(node, node_labels, suffix = NULL) {
   raw_label <- switch(node_labels,
     "name" = node$id,
     "label" = if (!is.na(node$label) && node$label != "") node$label else node$id,
@@ -642,6 +646,11 @@ resolve_label <- function(node, node_labels) {
     # Default to label
     if (!is.na(node$label) && node$label != "") node$label else node$id
   )
+  # Fold any suffix (e.g. source-file info) into the raw label BEFORE sanitizing,
+  # so it lands inside the quoted label and any special chars are escaped (#mermaid-01).
+  if (!is.null(suffix) && nzchar(suffix)) {
+    raw_label <- paste0(raw_label, suffix)
+  }
   sanitize_mermaid_label(raw_label)
 }
 

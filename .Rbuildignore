@@ -47,3 +47,6 @@
 ^CONTRIBUTING\.md$
 ^CODE_OF_CONDUCT\.md$
 ^content-filter-log\.txt$
+^CRAN_REVIEW\.md$
+^\.cran_check_ground_truth\.md$
+^\.gitattributes$

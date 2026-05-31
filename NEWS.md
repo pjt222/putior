@@ -128,7 +128,7 @@
 ### Documentation
 * Documented all valid `node_type` values across vignettes and reference (#40)
 * 8 comprehensive vignettes including quick-start, annotation guide, features tour,
-  API reference, showcase, troubleshooting, quick-reference, and skills reference
+  API reference, showcase, troubleshooting, quick-reference, and AI integration
 * Professional cheat sheet (`inst/cheatsheet/putior-cheatsheet.qmd`)
 * 20 example files in `inst/examples/`
 * `putior_guide()` and `putior_help()` for in-session reference

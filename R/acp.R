@@ -595,6 +595,14 @@ putior_acp_server <- function(host = "127.0.0.1", port = 8080L) {
     )
   }
 
+  # Validate port range (1-65535), mirroring putior_mcp_server().
+  # suppressWarnings avoids a spurious "NAs introduced by coercion" before the
+  # clean error for non-numeric input.
+  port <- suppressWarnings(as.integer(port))
+  if (is.na(port) || port < 1L || port > 65535L) {
+    stop("'port' must be an integer between 1 and 65535.", call. = FALSE)
+  }
+
   # Warn if binding to all interfaces
   if (host == "0.0.0.0") {
     warning(
@@ -627,7 +635,7 @@ putior_acp_server <- function(host = "127.0.0.1", port = 8080L) {
   message("")
   message("Press Ctrl+C to stop the server.")
 
-  # Run the server
-  plumber2::api_run(pa, host = host, port = as.integer(port))
+  # Run the server (port already validated and coerced above)
+  plumber2::api_run(pa, host = host, port = port)
 }
 

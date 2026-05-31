@@ -262,12 +262,11 @@ test_that("put_diagram() handles workflows with no connections", {
   expect_false(grepl("-->", diagram_code))
 })
 
-# Mock clipr for clipboard tests
 test_that("put_diagram() handles clipboard output", {
   workflow <- create_test_workflow()
 
-  # Mock clipr not being available
   if (!requireNamespace("clipr", quietly = TRUE)) {
+    # clipr absent: warns and falls back to console output
     expect_warning(
       {
         result <- capture.output({
@@ -276,9 +275,25 @@ test_that("put_diagram() handles clipboard output", {
       },
       "clipr package not available"
     )
-
-    # Should fall back to console output
     expect_true(any(grepl("```mermaid", result)))
+  } else {
+    # clipr present: mock write_clip so the test never touches a real clipboard
+    # (CRAN/CI machines have clipr but no clipboard backend). This exercises the
+    # success path, which was previously asserting nothing when clipr is installed.
+    written <- NULL
+    local_mocked_bindings(
+      write_clip = function(content, ...) {
+        written <<- content
+        invisible(content)
+      },
+      .package = "clipr"
+    )
+    expect_message(
+      put_diagram(workflow, output = "clipboard"),
+      "copied to clipboard"
+    )
+    expect_false(is.null(written))
+    expect_true(any(grepl("flowchart TD", written)))
   }
 })
 
@@ -538,6 +553,19 @@ test_that("show_source_info adds file names inline", {
   expect_true(grepl("<br/>", diagram_with_info))
   expect_true(grepl("01_load\\.R", diagram_with_info))
   expect_true(grepl("01_load\\.R", diagram_with_info))
+})
+
+test_that("show_source_info keeps <br/> inside the quoted label (valid Mermaid, #mermaid-01)", {
+  # Regression: the source suffix must sit INSIDE the quoted label. The form
+  # `["label"<br/>(file)]` (suffix after the closing quote) is a Mermaid parse
+  # error that aborts the entire diagram. Verified against the Mermaid engine.
+  workflow <- create_test_workflow()
+  diagram <- put_diagram(workflow, show_source_info = TRUE, output = "none")
+
+  # No closing-quote immediately followed by <br/> anywhere in the output.
+  expect_false(grepl('"<br/>', diagram, fixed = TRUE))
+  # The <br/>(file) suffix appears before the label's closing quote.
+  expect_match(diagram, '\\[".*<br/>\\(.*\\)"\\]')
 })
 
 test_that("source_info_style='subgraph' groups nodes by file", {

@@ -641,7 +641,7 @@ make_tool_putior_guide <- function() {
         required = FALSE
       ),
       output = ellmer::type_enum(
-        description = "Output format: console, raw, or clipboard (default: raw for MCP)",
+        description = "Output format: console, raw, or clipboard (omitted = the function default, console)",
         values = c("console", "raw", "clipboard"),
         required = FALSE
       )
