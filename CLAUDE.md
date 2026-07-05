@@ -836,8 +836,13 @@ cat(knitr::knit_child(text = mermaid_chunk, quiet = TRUE))
 ✅ **GitHub Pages deployed** - Documentation site live at https://pjt222.github.io/putior/
 
 ## Development Best Practices References
-@../development-guides/r-package-development-best-practices.md
-@../development-guides/wsl-rstudio-claude-integration.md
-@../development-guides/general-development-setup.md
-@../development-guides/quick-reference.md
-@../development-guides/pkgdown-github-pages-deployment.md
+Development guides available for reference when needed (read on demand, not preloaded):
+- `../agent-almanac/guides/r-package-development.md`
+- `../agent-almanac/guides/setting-up-your-environment.md`
+- `../agent-almanac/guides/quick-reference.md`
+
+## Team Activation (REQUIRED when user requests a team)
+
+When the user asks to activate or use a team: (1) call `ToolSearch("select:TeamCreate")` to load the TeamCreate tool, (2) read the team definition from `/mnt/d/dev/p/agent-almanac/teams/<team-name>.md`, (3) call `TeamCreate` with the team configuration. Do NOT fall back to spawning individual agents via the Agent tool — always use TeamCreate for team requests.
+
+Available teams are listed in `/mnt/d/dev/p/agent-almanac/teams/_registry.yml`.
