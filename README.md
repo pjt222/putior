@@ -7,6 +7,7 @@
 [![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![Quick Ref](https://img.shields.io/badge/Quick_Ref-online-blue.svg)](https://pjt222.github.io/putior/articles/quick-reference.html)
 [![Sponsor](https://img.shields.io/github/sponsors/pjt222?style=flat&logo=GitHub-Sponsors&logoColor=%23EA4AAA&label=Sponsor)](https://github.com/sponsors/pjt222)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/pjt222/putior)
 
 > **Extract beautiful workflow diagrams from your code annotations**
 
