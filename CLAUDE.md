@@ -835,6 +835,23 @@ cat(knitr::knit_child(text = mermaid_chunk, quiet = TRUE))
 ✅ **Clean codebase** - Well-organized file structure and ignore patterns
 ✅ **GitHub Pages deployed** - Documentation site live at https://pjt222.github.io/putior/
 
+## CRAN Release Tooling and Build Output
+
+Release helper scripts live in `dev/cran/` (`build-and-check.R`,
+`check-tarball.R`, `winbuilder.R`). Run each from the **package root**:
+`Rscript dev/cran/<name>.R`. They assert `file.exists("DESCRIPTION")` and use
+paths relative to `.` — no absolute `D:/dev/p/...`.
+
+Build output stays inside the repo: the tarball at the package root (covered by
+`/*.tar.gz` in `.gitignore`, `^.*\.tar\.gz$` in `.Rbuildignore`), throwaway
+`.rds`/logs in `dev/cran/out/` (gitignored). `dev/` is excluded from the tarball
+via `^dev$` in `.Rbuildignore`.
+
+Never set `pkgbuild::build(dest_path = ...)` or a `saveRDS` target outside this
+repo. See the temp-file policy in `../CLAUDE.md` — a prior release wrote its
+build dir, tarball, logs and check `.rds` into `/mnt/d/dev/p`, which is what
+that policy now forbids.
+
 ## Development Best Practices References
 Development guides available for reference when needed (read on demand, not preloaded):
 - `../agent-almanac/guides/r-package-development.md`

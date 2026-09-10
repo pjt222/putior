@@ -134,3 +134,6 @@ R/putior_test.R
 my_workflow.md
 test/
 CONTINUE_HERE.md
+
+# Local CRAN release tooling output (dev/cran/*.R)
+dev/cran/out/

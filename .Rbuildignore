@@ -50,3 +50,5 @@
 ^CRAN_REVIEW\.md$
 ^\.cran_check_ground_truth\.md$
 ^\.gitattributes$
+^dev$
+^dev/
