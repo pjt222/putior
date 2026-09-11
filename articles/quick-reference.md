@@ -3,6 +3,7 @@
 ## Quickest Start
 
 ``` r
+
 put("./src/") |> put_diagram()
 ```
 
@@ -10,13 +11,13 @@ put("./src/") |> put_diagram()
 
     # put id:"node_id", label:"Description", node_type:"process", input:"in.csv", output:"out.csv"
 
-| Field       | Required | Default   | Description                                              |
-|-------------|----------|-----------|----------------------------------------------------------|
-| `label`     | **Yes**  | \-        | Human-readable name                                      |
-| `id`        | No       | UUID      | Unique identifier                                        |
-| `node_type` | No       | `process` | `input`, `process`, `output`, `decision`, `start`, `end` |
-| `input`     | No       | \-        | Comma-separated input files                              |
-| `output`    | No       | filename  | Comma-separated output files                             |
+| Field | Required | Default | Description |
+|----|----|----|----|
+| `label` | **Yes** | \- | Human-readable name |
+| `id` | No | UUID | Unique identifier |
+| `node_type` | No | `process` | `input`, `process`, `output`, `decision`, `start`, `end` |
+| `input` | No | \- | Comma-separated input files |
+| `output` | No | filename | Comma-separated output files |
 
 **Multiline**: End lines with `\` for continuation.
 
@@ -32,13 +33,13 @@ Find your language:
 
 ## Core Functions
 
-| Function                                                                      | Purpose              | Example                  |
-|-------------------------------------------------------------------------------|----------------------|--------------------------|
-| [`put()`](https://pjt222.github.io/putior/reference/put.md)                   | Extract annotations  | `put("./src/")`          |
-| [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)   | Generate Mermaid     | `put_diagram(workflow)`  |
-| [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md)         | Auto-detect workflow | `put_auto("./src/")`     |
-| [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md) | Suggest annotations  | `put_generate("./src/")` |
-| [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md)       | Merge manual + auto  | `put_merge("./src/")`    |
+| Function | Purpose | Example |
+|----|----|----|
+| [`put()`](https://pjt222.github.io/putior/reference/put.md) | Extract annotations | `put("./src/")` |
+| [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md) | Generate Mermaid | `put_diagram(workflow)` |
+| [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md) | Auto-detect workflow | `put_auto("./src/")` |
+| [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md) | Suggest annotations | `put_generate("./src/")` |
+| [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md) | Merge manual + auto | `put_merge("./src/")` |
 
 ## Key Parameters
 
@@ -46,6 +47,7 @@ Find your language:
 functions:
 
 ``` r
+
 put(path, pattern, recursive = TRUE, include_line_numbers = FALSE,
     validate = TRUE, exclude = NULL, log_level = NULL)
 ```
@@ -53,6 +55,7 @@ put(path, pattern, recursive = TRUE, include_line_numbers = FALSE,
 **[`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)**:
 
 ``` r
+
 put_diagram(workflow, output = "console", file = NULL, direction = "TD",
     theme = "github", show_artifacts = FALSE, show_source_info = FALSE,
     enable_clicks = FALSE, click_protocol = "vscode", palette = NULL,
@@ -62,6 +65,7 @@ put_diagram(workflow, output = "console", file = NULL, direction = "TD",
 **[`put_theme()`](https://pjt222.github.io/putior/reference/put_theme.md)**:
 
 ``` r
+
 put_theme(base = "light", input = NULL, process = NULL, output = NULL,
     decision = NULL, artifact = NULL, start = NULL, end = NULL)
 # Each node type: c(fill = "#hex", stroke = "#hex", color = "#hex")
@@ -72,12 +76,14 @@ put_theme(base = "light", input = NULL, process = NULL, output = NULL,
 **Basic**
 
 ``` r
+
 put("./src/") |> put_diagram()
 ```
 
 **Customize**
 
 ``` r
+
 put_diagram(wf, theme = "dark", direction = "LR")
 put_diagram(wf, show_artifacts = FALSE)       # Hide data files
 put_diagram(wf, show_source_info = TRUE)      # Show file info
@@ -87,6 +93,7 @@ put_diagram(wf, palette = put_theme(base = "dark", input = c(fill = "#1a5276")))
 **Save**
 
 ``` r
+
 put_diagram(wf, output = "file", file = "workflow.md")
 put_diagram(wf, output = "clipboard")
 mermaid_code <- put_diagram(wf, output = "raw")
@@ -95,6 +102,7 @@ mermaid_code <- put_diagram(wf, output = "raw")
 **Exclude files**
 
 ``` r
+
 put("./src/", exclude = "test")
 put_auto("./", exclude = c("vendor", "fixture"))
 ```
@@ -102,21 +110,22 @@ put_auto("./", exclude = c("vendor", "fixture"))
 **Debug**
 
 ``` r
+
 put("./", log_level = "DEBUG")
 ```
 
 ## Configuration & Utilities
 
-| Function                                                                                              | Purpose                      | Example                                                                                               |
-|-------------------------------------------------------------------------------------------------------|------------------------------|-------------------------------------------------------------------------------------------------------|
-| [`get_comment_prefix()`](https://pjt222.github.io/putior/reference/get_comment_prefix.md)             | Comment prefix for extension | `get_comment_prefix("sql")` → `"--"`                                                                  |
-| [`get_supported_extensions()`](https://pjt222.github.io/putior/reference/get_supported_extensions.md) | All supported extensions     | [`get_supported_extensions()`](https://pjt222.github.io/putior/reference/get_supported_extensions.md) |
-| [`list_supported_languages()`](https://pjt222.github.io/putior/reference/list_supported_languages.md) | Supported languages          | `list_supported_languages(detection_only = TRUE)`                                                     |
-| [`get_detection_patterns()`](https://pjt222.github.io/putior/reference/get_detection_patterns.md)     | Auto-detection patterns      | `get_detection_patterns("r", type = "input")`                                                         |
-| [`get_diagram_themes()`](https://pjt222.github.io/putior/reference/get_diagram_themes.md)             | Available themes             | [`get_diagram_themes()`](https://pjt222.github.io/putior/reference/get_diagram_themes.md)             |
-| [`is_valid_put_annotation()`](https://pjt222.github.io/putior/reference/is_valid_put_annotation.md)   | Validate syntax              | `is_valid_put_annotation('# put label:"X"')`                                                          |
-| [`set_putior_log_level()`](https://pjt222.github.io/putior/reference/set_putior_log_level.md)         | Set logging level            | `set_putior_log_level("DEBUG")`                                                                       |
-| [`run_sandbox()`](https://pjt222.github.io/putior/reference/run_sandbox.md)                           | Launch Shiny sandbox         | [`run_sandbox()`](https://pjt222.github.io/putior/reference/run_sandbox.md)                           |
+| Function | Purpose | Example |
+|----|----|----|
+| [`get_comment_prefix()`](https://pjt222.github.io/putior/reference/get_comment_prefix.md) | Comment prefix for extension | `get_comment_prefix("sql")` → `"--"` |
+| [`get_supported_extensions()`](https://pjt222.github.io/putior/reference/get_supported_extensions.md) | All supported extensions | [`get_supported_extensions()`](https://pjt222.github.io/putior/reference/get_supported_extensions.md) |
+| [`list_supported_languages()`](https://pjt222.github.io/putior/reference/list_supported_languages.md) | Supported languages | `list_supported_languages(detection_only = TRUE)` |
+| [`get_detection_patterns()`](https://pjt222.github.io/putior/reference/get_detection_patterns.md) | Auto-detection patterns | `get_detection_patterns("r", type = "input")` |
+| [`get_diagram_themes()`](https://pjt222.github.io/putior/reference/get_diagram_themes.md) | Available themes | [`get_diagram_themes()`](https://pjt222.github.io/putior/reference/get_diagram_themes.md) |
+| [`is_valid_put_annotation()`](https://pjt222.github.io/putior/reference/is_valid_put_annotation.md) | Validate syntax | `is_valid_put_annotation('# put label:"X"')` |
+| [`set_putior_log_level()`](https://pjt222.github.io/putior/reference/set_putior_log_level.md) | Set logging level | `set_putior_log_level("DEBUG")` |
+| [`run_sandbox()`](https://pjt222.github.io/putior/reference/run_sandbox.md) | Launch Shiny sandbox | [`run_sandbox()`](https://pjt222.github.io/putior/reference/run_sandbox.md) |
 
 ## Themes and Direction
 
@@ -170,12 +179,12 @@ flowchart TD
 
 ## See Also
 
-| Guide                                                                            | Description                     |
-|----------------------------------------------------------------------------------|---------------------------------|
-| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)           | First diagram in 2 minutes      |
-| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference       |
-| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md)       | Auto-detection, themes, logging |
-| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)       | Function documentation          |
-| [Showcase](https://pjt222.github.io/putior/articles/showcase.md)                 | Real-world examples             |
-| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md)   | Common issues and solutions     |
-| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md)     | MCP/ACP integration guide       |
+| Guide | Description |
+|----|----|
+| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md) | First diagram in 2 minutes |
+| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference |
+| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md) | Auto-detection, themes, logging |
+| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md) | Function documentation |
+| [Showcase](https://pjt222.github.io/putior/articles/showcase.md) | Real-world examples |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md) | Common issues and solutions |
+| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md) | MCP/ACP integration guide |

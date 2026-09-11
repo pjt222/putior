@@ -10,13 +10,13 @@ language models to understand how to use putior effectively.
 
 If you’re a human reader, you probably want one of these instead:
 
-| Guide                                                                            | Description                            |
-|----------------------------------------------------------------------------------|----------------------------------------|
-| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)           | Create your first diagram in 2 minutes |
-| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference              |
-| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md)   | Printable cheat sheet                  |
-| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)       | Full function documentation            |
-| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md)   | Common issues and solutions            |
+| Guide | Description |
+|----|----|
+| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md) | Create your first diagram in 2 minutes |
+| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md) | Printable cheat sheet |
+| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md) | Full function documentation |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md) | Common issues and solutions |
 
 #### For AI Assistants
 
@@ -32,6 +32,7 @@ This content is automatically available via:
 #### Programmatic Access
 
 ``` r
+
 # Get guide documentation as a string
 guide_text <- putior_guide()
 
@@ -61,14 +62,14 @@ putior’s procedural documentation lives in the
 [agent-almanac](https://github.com/pjt222/agent-almanac) repository,
 which provides 6 skills for the complete putior workflow:
 
-| Skill                                                                                                                      | Purpose                                       |
-|----------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
-| [`install-putior`](https://github.com/pjt222/agent-almanac/blob/main/skills/install-putior/SKILL.md)                       | Installation and dependency setup             |
-| [`analyze-codebase-workflow`](https://github.com/pjt222/agent-almanac/blob/main/skills/analyze-codebase-workflow/SKILL.md) | Auto-detect workflows in arbitrary codebases  |
-| [`annotate-source-files`](https://github.com/pjt222/agent-almanac/blob/main/skills/annotate-source-files/SKILL.md)         | Add PUT annotations to source files           |
-| [`generate-workflow-diagram`](https://github.com/pjt222/agent-almanac/blob/main/skills/generate-workflow-diagram/SKILL.md) | Generate themed Mermaid diagrams              |
-| [`configure-putior-mcp`](https://github.com/pjt222/agent-almanac/blob/main/skills/configure-putior-mcp/SKILL.md)           | Set up MCP/ACP server for AI assistants       |
-| [`setup-putior-ci`](https://github.com/pjt222/agent-almanac/blob/main/skills/setup-putior-ci/SKILL.md)                     | GitHub Actions CI/CD for diagram auto-refresh |
+| Skill | Purpose |
+|----|----|
+| [`install-putior`](https://github.com/pjt222/agent-almanac/blob/main/skills/install-putior/SKILL.md) | Installation and dependency setup |
+| [`analyze-codebase-workflow`](https://github.com/pjt222/agent-almanac/blob/main/skills/analyze-codebase-workflow/SKILL.md) | Auto-detect workflows in arbitrary codebases |
+| [`annotate-source-files`](https://github.com/pjt222/agent-almanac/blob/main/skills/annotate-source-files/SKILL.md) | Add PUT annotations to source files |
+| [`generate-workflow-diagram`](https://github.com/pjt222/agent-almanac/blob/main/skills/generate-workflow-diagram/SKILL.md) | Generate themed Mermaid diagrams |
+| [`configure-putior-mcp`](https://github.com/pjt222/agent-almanac/blob/main/skills/configure-putior-mcp/SKILL.md) | Set up MCP/ACP server for AI assistants |
+| [`setup-putior-ci`](https://github.com/pjt222/agent-almanac/blob/main/skills/setup-putior-ci/SKILL.md) | GitHub Actions CI/CD for diagram auto-refresh |
 
 ------------------------------------------------------------------------
 
@@ -93,11 +94,11 @@ The content below is the same as returned by
 
 Access this guide without running R:
 
-| Method       | URL                                                                  |
-|--------------|----------------------------------------------------------------------|
-| Web Page     | <https://pjt222.github.io/putior/articles/ai-integration.html>       |
+| Method | URL |
+|----|----|
+| Web Page | <https://pjt222.github.io/putior/articles/ai-integration.html> |
 | Raw Markdown | <https://raw.githubusercontent.com/pjt222/putior/main/inst/GUIDE.md> |
-| GitHub View  | <https://github.com/pjt222/putior/blob/main/inst/GUIDE.md>           |
+| GitHub View | <https://github.com/pjt222/putior/blob/main/inst/GUIDE.md> |
 
 For R users: `putior_guide(output = "raw")` returns this content as a
 string.
@@ -105,6 +106,7 @@ string.
 ### Quick Start
 
 ``` r
+
 # 1. Extract annotations from source files
 workflow <- put("./R/")
 
@@ -120,6 +122,7 @@ workflow <- put_auto("./src/")
 Add `# put` comments to source files to define workflow nodes:
 
 ``` r
+
 # put id:"load", label:"Load Data", output:"raw_data.csv"
 data <- read.csv("input.csv")
 
@@ -132,19 +135,20 @@ results <- analyze(clean)
 
 #### Annotation Properties
 
-| Property    | Required | Description                                                   | Example                |
-|-------------|----------|---------------------------------------------------------------|------------------------|
-| `id`        | Yes      | Unique node identifier                                        | `id:"load_data"`       |
-| `label`     | No       | Display text (defaults to id)                                 | `label:"Load CSV"`     |
-| `input`     | No       | Input files/data (comma-separated)                            | `input:"a.csv, b.csv"` |
-| `output`    | No       | Output files/data                                             | `output:"result.rds"`  |
-| `node_type` | No       | Shape: input, process (default), output, decision, start, end | `node_type:"decision"` |
+| Property | Required | Description | Example |
+|----|----|----|----|
+| `id` | Yes | Unique node identifier | `id:"load_data"` |
+| `label` | No | Display text (defaults to id) | `label:"Load CSV"` |
+| `input` | No | Input files/data (comma-separated) | `input:"a.csv, b.csv"` |
+| `output` | No | Output files/data | `output:"result.rds"` |
+| `node_type` | No | Shape: input, process (default), output, decision, start, end | `node_type:"decision"` |
 
 #### Multiline Annotations
 
 Use backslash for continuation:
 
 ``` r
+
 # put id:"complex_step", \
 #     label:"Multi-step Process", \
 #     input:"file1.csv, file2.csv", \
@@ -171,12 +175,12 @@ Use `* put` as the line prefix inside block comment bodies.
 putior automatically detects comment style by file extension (18
 languages with auto-detection, 30+ total):
 
-| Prefix   | Languages                                                                    | Extensions                                                                 |
-|----------|------------------------------------------------------------------------------|----------------------------------------------------------------------------|
-| `# put`  | R, Python, Shell, Julia, Ruby, Perl, YAML, Dockerfile, Makefile              | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`, `Dockerfile`, `Makefile` |
-| `-- put` | SQL, Lua, Haskell                                                            | `.sql`, `.lua`, `.hs`                                                      |
-| `// put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, WGSL | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs`, `.wgsl`                 |
-| `% put`  | MATLAB, LaTeX                                                                | `.m`, `.tex`                                                               |
+| Prefix | Languages | Extensions |
+|----|----|----|
+| `# put` | R, Python, Shell, Julia, Ruby, Perl, YAML, Dockerfile, Makefile | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`, `Dockerfile`, `Makefile` |
+| `-- put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |
+| `// put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, WGSL | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs`, `.wgsl` |
+| `% put` | MATLAB, LaTeX | `.m`, `.tex` |
 
 #### Examples by Language
 
@@ -203,6 +207,7 @@ results = compute_statistics(data);
 #### `put()` - Extract Annotations
 
 ``` r
+
 # Scan directory for annotations
 workflow <- put("./R/")
 
@@ -222,6 +227,7 @@ workflow <- put("./R/", exclude = "test")
 #### `put_diagram()` - Generate Diagrams
 
 ``` r
+
 # Basic diagram
 put_diagram(workflow)
 
@@ -256,6 +262,7 @@ mermaid_code <- put_diagram(workflow, output = "raw")  # Return as string
 Analyze code to detect inputs/outputs without annotations:
 
 ``` r
+
 # Auto-detect from R files
 workflow <- put_auto("./R/")
 
@@ -276,6 +283,7 @@ workflow <- put_auto("./src/", exclude = c("vendor", "test"))
 #### `put_generate()` - Generate Annotation Templates
 
 ``` r
+
 # Print suggested annotations
 put_generate("./R/")
 
@@ -324,6 +332,7 @@ vllm, groq
 ### Helper Functions
 
 ``` r
+
 # Get comment prefix for extension
 get_comment_prefix("sql")   # Returns "--"
 get_comment_prefix("js")    # Returns "//"
@@ -351,6 +360,7 @@ putior_help()
 #### Document Existing Codebase
 
 ``` r
+
 # 1. Auto-generate annotation suggestions
 put_generate("./R/", output = "clipboard")
 
@@ -363,6 +373,7 @@ put_diagram(workflow)
 #### Quick Visualization Without Annotations
 
 ``` r
+
 # Instant workflow diagram from code analysis
 workflow <- put_auto("./src/")
 put_diagram(workflow, show_artifacts = TRUE)
@@ -371,6 +382,7 @@ put_diagram(workflow, show_artifacts = TRUE)
 #### Hybrid Approach
 
 ``` r
+
 # Manual annotations for key files, auto-detect the rest
 workflow <- put_merge("./src/", merge_strategy = "supplement")
 put_diagram(workflow)
@@ -379,6 +391,7 @@ put_diagram(workflow)
 #### Export for Documentation
 
 ``` r
+
 # Save Mermaid diagram to markdown file
 put_diagram(workflow, output = "docs/workflow.md")
 
@@ -388,15 +401,15 @@ mermaid_code <- put_diagram(workflow, output = "raw")
 
 ### Node Types
 
-| Type       | Mermaid Shape               | Use For                                                |
-|------------|-----------------------------|--------------------------------------------------------|
-| `input`    | Stadium `([...])`           | Data sources, file loading, API inputs                 |
-| `process`  | Rectangle `[...]` (default) | Data processing, transformations                       |
-| `output`   | Subroutine `[[...]]`        | Report generation, exports, final outputs              |
-| `decision` | Diamond `{...}`             | Conditional logic, branching workflows                 |
-| `start`    | Stadium `([...])`           | Workflow entry point (special boundary styling)        |
-| `end`      | Stadium `([...])`           | Workflow exit point (special boundary styling)         |
-| `artifact` | Cylinder `[(...)]`          | Data files (auto-created with `show_artifacts = TRUE`) |
+| Type | Mermaid Shape | Use For |
+|----|----|----|
+| `input` | Stadium `([...])` | Data sources, file loading, API inputs |
+| `process` | Rectangle `[...]` (default) | Data processing, transformations |
+| `output` | Subroutine `[[...]]` | Report generation, exports, final outputs |
+| `decision` | Diamond `{...}` | Conditional logic, branching workflows |
+| `start` | Stadium `([...])` | Workflow entry point (special boundary styling) |
+| `end` | Stadium `([...])` | Workflow exit point (special boundary styling) |
+| `artifact` | Cylinder `[(...)]` | Data files (auto-created with `show_artifacts = TRUE`) |
 
 > **Note**: `artifact` nodes are automatically created by
 > [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
@@ -422,12 +435,14 @@ mermaid_code <- put_diagram(workflow, output = "raw")
 Launch browser-based annotation playground:
 
 ``` r
+
 run_sandbox()  # Requires shiny package
 ```
 
 ### Quarto/RMarkdown Integration
 
 ``` r
+
 # In R chunk
 workflow <- put("./R/")
 mermaid_code <- put_diagram(workflow, output = "raw")
@@ -442,6 +457,7 @@ to embed as native Mermaid chunk.
 Enable debug output for troubleshooting:
 
 ``` r
+
 # Set globally
 options(putior.log_level = "DEBUG")
 set_putior_log_level("DEBUG")
@@ -472,12 +488,12 @@ Levels: `DEBUG`, `INFO`, `WARN` (default), `ERROR`
 
 ### See Also
 
-| Guide                                                                            | Description                     |
-|----------------------------------------------------------------------------------|---------------------------------|
-| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)           | First diagram in 2 minutes      |
-| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference       |
-| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md)       | Auto-detection, themes, logging |
-| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)       | Function documentation          |
-| [Showcase](https://pjt222.github.io/putior/articles/showcase.md)                 | Real-world examples             |
-| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md)   | At-a-glance reference card      |
-| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md)   | Common issues and solutions     |
+| Guide | Description |
+|----|----|
+| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md) | First diagram in 2 minutes |
+| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference |
+| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md) | Auto-detection, themes, logging |
+| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md) | Function documentation |
+| [Showcase](https://pjt222.github.io/putior/articles/showcase.md) | Real-world examples |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md) | At-a-glance reference card |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md) | Common issues and solutions |

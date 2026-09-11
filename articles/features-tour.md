@@ -27,17 +27,17 @@ interactive diagrams, customize detection patterns, and more.
 
 ## Feature Overview
 
-| Feature              | Purpose                                      | Key Functions                                                                                                                                                                                                                 |
-|----------------------|----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Auto-Annotation      | Detect workflows without writing annotations | [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md), [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md), [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md) |
-| Interactive Diagrams | Clickable nodes, source info display         | `enable_clicks`, `show_source_info`                                                                                                                                                                                           |
-| Detection Patterns   | View/customize what gets detected            | [`get_detection_patterns()`](https://pjt222.github.io/putior/reference/get_detection_patterns.md)                                                                                                                             |
-| Interactive Sandbox  | Experiment without writing files             | [`run_sandbox()`](https://pjt222.github.io/putior/reference/run_sandbox.md)                                                                                                                                                   |
-| Structured Logging   | Debug annotation parsing                     | [`set_putior_log_level()`](https://pjt222.github.io/putior/reference/set_putior_log_level.md)                                                                                                                                 |
-| Themes & Styling     | Customize diagram appearance                 | `theme`, `style_nodes`                                                                                                                                                                                                        |
-| File Exclusion       | Skip files by regex pattern                  | `exclude` parameter                                                                                                                                                                                                           |
-| Custom Themes        | Create your own color palettes               | [`put_theme()`](https://pjt222.github.io/putior/reference/put_theme.md), `palette` parameter                                                                                                                                  |
-| Performance          | Optimize for large codebases                 | `pattern`, `recursive`, `validate`, `exclude`                                                                                                                                                                                 |
+| Feature | Purpose | Key Functions |
+|----|----|----|
+| Auto-Annotation | Detect workflows without writing annotations | [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md), [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md), [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md) |
+| Interactive Diagrams | Clickable nodes, source info display | `enable_clicks`, `show_source_info` |
+| Detection Patterns | View/customize what gets detected | [`get_detection_patterns()`](https://pjt222.github.io/putior/reference/get_detection_patterns.md) |
+| Interactive Sandbox | Experiment without writing files | [`run_sandbox()`](https://pjt222.github.io/putior/reference/run_sandbox.md) |
+| Structured Logging | Debug annotation parsing | [`set_putior_log_level()`](https://pjt222.github.io/putior/reference/set_putior_log_level.md) |
+| Themes & Styling | Customize diagram appearance | `theme`, `style_nodes` |
+| File Exclusion | Skip files by regex pattern | `exclude` parameter |
+| Custom Themes | Create your own color palettes | [`put_theme()`](https://pjt222.github.io/putior/reference/put_theme.md), `palette` parameter |
+| Performance | Optimize for large codebases | `pattern`, `recursive`, `validate`, `exclude` |
 
 ------------------------------------------------------------------------
 
@@ -64,6 +64,7 @@ dependencies without requiring any annotations. *([Full API
 docs](https://pjt222.github.io/putior/articles/api-reference.html#put_auto---auto-detect-workflow))*
 
 ``` r
+
 library(putior)
 
 # Auto-detect workflow from code patterns
@@ -120,6 +121,7 @@ For Python code: - **Inputs**: `pd.read_csv()`, `json.load()`,
 **Control Detection:**
 
 ``` r
+
 # Only detect inputs and outputs (skip dependencies)
 workflow <- put_auto("./src/", detect_dependencies = FALSE)
 
@@ -155,6 +157,7 @@ Think of it like roxygen2’s skeleton generation. *([Full API
 docs](https://pjt222.github.io/putior/articles/api-reference.html#put_generate---generate-annotation-templates))*
 
 ``` r
+
 # Print suggested annotations to console
 put_generate("./src/")
 ```
@@ -170,6 +173,7 @@ put_generate("./src/")
 **Copy to Clipboard:**
 
 ``` r
+
 # Copy annotations to clipboard for pasting
 put_generate("./src/", output = "clipboard")
 ```
@@ -177,6 +181,7 @@ put_generate("./src/", output = "clipboard")
 **Annotation Styles:**
 
 ``` r
+
 # Single-line style (default)
 put_generate("./src/", style = "single")
 # Output: # put id:"step1", label:"Step 1", input:"a.csv", output:"b.csv"
@@ -197,6 +202,7 @@ configurable merge strategies. *([Full API
 docs](https://pjt222.github.io/putior/articles/api-reference.html#put_merge---merge-manual-and-auto))*
 
 ``` r
+
 # Manual annotations take priority
 workflow <- put_merge("./src/", merge_strategy = "manual_priority")
 
@@ -261,6 +267,7 @@ flowchart TD
 **Typical Usage Pattern:**
 
 ``` r
+
 # 1. Start with auto-detection to understand code
 auto <- put_auto("./new_project/")
 put_diagram(auto)
@@ -287,6 +294,7 @@ Show which source file each workflow node comes from. *([API
 Reference](https://pjt222.github.io/putior/articles/api-reference.html#put_diagram---generate-mermaid-diagram))*
 
 ``` r
+
 workflow <- put("./src/", include_line_numbers = TRUE)
 
 # Inline style - shows file name below node label
@@ -315,6 +323,7 @@ flowchart TD
 Group nodes by source file using subgraphs:
 
 ``` r
+
 put_diagram(workflow,
             show_source_info = TRUE,
             source_info_style = "subgraph")
@@ -349,6 +358,7 @@ editor. *([API
 Reference](https://pjt222.github.io/putior/articles/api-reference.html#put_diagram---generate-mermaid-diagram))*
 
 ``` r
+
 workflow <- put("./src/", include_line_numbers = TRUE)
 
 # Enable clicks with VS Code protocol
@@ -372,6 +382,7 @@ put_diagram(workflow, enable_clicks = TRUE, click_protocol = "file")
 **Combined Interactive Features:**
 
 ``` r
+
 put_diagram(workflow,
             show_source_info = TRUE,      # Show file names
             source_info_style = "inline",  # Inline display
@@ -389,6 +400,7 @@ outputs.
 ### `get_detection_patterns()` - View Patterns
 
 ``` r
+
 # Get all R patterns
 r_patterns <- get_detection_patterns("r")
 names(r_patterns)
@@ -416,6 +428,7 @@ input_patterns[[1]]
 ### Supported Languages
 
 ``` r
+
 # All languages with annotation support
 list_supported_languages()
 #> [1] "r"          "python"     "shell"      "julia"      "ruby"
@@ -458,14 +471,14 @@ get_comment_prefix("m")
 
 **Python Patterns Include:**
 
-| Category   | Examples                                                                        |
-|------------|---------------------------------------------------------------------------------|
-| pandas     | `pd.read_csv`, `.to_csv`, `.to_parquet`                                         |
-| Built-in   | [`open()`](https://rdrr.io/r/base/connections.html), `json.load`, `pickle.load` |
-| numpy      | `np.load`, `np.save`, `np.savetxt`                                              |
-| matplotlib | `plt.savefig`                                                                   |
-| polars     | `pl.read_csv`, `.write_csv`                                                     |
-| Database   | `create_engine`, `cursor.execute`                                               |
+| Category | Examples |
+|----|----|
+| pandas | `pd.read_csv`, `.to_csv`, `.to_parquet` |
+| Built-in | [`open()`](https://rdrr.io/r/base/connections.html), `json.load`, `pickle.load` |
+| numpy | `np.load`, `np.save`, `np.savetxt` |
+| matplotlib | `plt.savefig` |
+| polars | `pl.read_csv`, `.write_csv` |
+| Database | `create_engine`, `cursor.execute` |
 
 **JavaScript/TypeScript Patterns Include:**
 
@@ -517,6 +530,7 @@ without creating files.
 ### Launch the Sandbox
 
 ``` r
+
 run_sandbox()
 ```
 
@@ -529,6 +543,7 @@ run_sandbox()
     files:
 
 ``` r
+
 # ===== File: 01_load.R =====
 # put label:"Load Data", node_type:"input", output:"data.csv"
 data <- read.csv("source.csv")
@@ -570,6 +585,7 @@ putior includes optional structured logging via the `logger` package.
 ### Enable Logging
 
 ``` r
+
 # Install logger if needed
 install.packages("logger")
 
@@ -592,6 +608,7 @@ workflow <- put("./src/")
 ### Per-Call Override
 
 ``` r
+
 # Override for a single call without changing global setting
 workflow <- put("./src/", log_level = "DEBUG")
 put_diagram(workflow, log_level = "INFO")
@@ -602,6 +619,7 @@ put_diagram(workflow, log_level = "INFO")
 **Why isn’t my annotation found?**
 
 ``` r
+
 set_putior_log_level("DEBUG")
 workflow <- put("./problem_file.R", include_line_numbers = TRUE)
 # Check logs for pattern matching details
@@ -610,6 +628,7 @@ workflow <- put("./problem_file.R", include_line_numbers = TRUE)
 **Why are nodes not connected?**
 
 ``` r
+
 set_putior_log_level("INFO")
 put_diagram(workflow, show_artifacts = TRUE)
 # Logs show connection logic
@@ -622,6 +641,7 @@ put_diagram(workflow, show_artifacts = TRUE)
 ### Available Themes
 
 ``` r
+
 get_diagram_themes()
 #> $light
 #> [1] "Default light theme with bright colors - perfect for documentation sites"
@@ -654,6 +674,7 @@ color vision deficiencies (deuteranopia, protanopia, tritanopia).
 | `cividis` | Maximum accessibility | Blue -\> Gray -\> Yellow (red-green safe) |
 
 ``` r
+
 # Use colorblind-safe theme
 workflow <- put("./src/")
 put_diagram(workflow, theme = "viridis")
@@ -668,6 +689,7 @@ Create your own color palette by overriding specific node types from any
 base theme:
 
 ``` r
+
 # Create a custom palette
 my_palette <- put_theme(
   base = "dark",
@@ -687,6 +709,7 @@ the base theme.
 ### Theme Examples
 
 ``` r
+
 workflow <- put("./src/")
 
 # GitHub (recommended for README)
@@ -702,6 +725,7 @@ put_diagram(workflow, theme = "minimal", output = "file", file = "report.md")
 ### Styling Options
 
 ``` r
+
 put_diagram(workflow,
   theme = "github",              # Color theme
   direction = "TD",              # Flow direction
@@ -801,6 +825,7 @@ additional pattern matching.
 **1. Use specific file patterns instead of scanning everything:**
 
 ``` r
+
 # Slow: scans all files recursively
 workflow <- put("./src/")
 
@@ -814,6 +839,7 @@ workflow <- put(c("./src/etl/", "./src/analysis/"))
 **2. Exclude files with regex patterns:**
 
 ``` r
+
 # Skip test files
 workflow <- put("./src/", exclude = "test")
 
@@ -828,6 +854,7 @@ put_merge("./src/", exclude = c("mock", "snapshot"))
 **3. Disable validation for performance-critical scripts:**
 
 ``` r
+
 # Skip validation checks for faster processing
 workflow <- put("./src/", validate = FALSE)
 ```
@@ -835,6 +862,7 @@ workflow <- put("./src/", validate = FALSE)
 **4. Use `recursive = FALSE` to limit scope when appropriate:**
 
 ``` r
+
 # Only scan top-level directory (recursive is TRUE by default)
 workflow <- put("./src/", recursive = FALSE)
 
@@ -845,6 +873,7 @@ workflow2 <- put("./src/important_module/")
 **5. Consider splitting large directories:**
 
 ``` r
+
 # Process in chunks for very large projects
 etl_workflow <- put("./src/etl/")
 analysis_workflow <- put("./src/analysis/")
@@ -857,6 +886,7 @@ reporting_workflow <- put("./src/reporting/")
 **6. Cache results for repeated use:**
 
 ``` r
+
 # Save workflow for reuse
 workflow <- put("./src/")
 saveRDS(workflow, "workflow_cache.rds")
@@ -869,6 +899,7 @@ put_diagram(workflow)
 **7. Profile before optimizing:**
 
 ``` r
+
 # Measure actual time
 system.time({
   workflow <- put("./src/", recursive = TRUE)
@@ -897,6 +928,7 @@ if (requireNamespace("profvis", quietly = TRUE)) {
 ### Complete Interactive Documentation Workflow
 
 ``` r
+
 library(putior)
 
 # 1. Enable logging for debugging
@@ -933,6 +965,7 @@ set_putior_log_level("WARN")
 ### Quick Visualization of Unknown Code
 
 ``` r
+
 # Instantly understand a new codebase
 workflow <- put_auto("./unfamiliar_project/", recursive = TRUE)
 put_diagram(workflow, show_artifacts = TRUE)
@@ -946,6 +979,7 @@ put_generate("./unfamiliar_project/", output = "clipboard")
 ## Try the Examples
 
 ``` r
+
 # Auto-annotation example
 source(system.file("examples", "auto-annotation-example.R", package = "putior"))
 
@@ -963,12 +997,12 @@ run_sandbox()
 
 ## See Also
 
-| Guide                                                                            | Description                 |
-|----------------------------------------------------------------------------------|-----------------------------|
-| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)           | First diagram in 2 minutes  |
-| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference   |
-| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)       | Function documentation      |
-| [Showcase](https://pjt222.github.io/putior/articles/showcase.md)                 | Real-world examples         |
-| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md)   | At-a-glance reference card  |
-| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md)   | Common issues and solutions |
-| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md)     | MCP/ACP integration guide   |
+| Guide | Description |
+|----|----|
+| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md) | First diagram in 2 minutes |
+| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference |
+| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md) | Function documentation |
+| [Showcase](https://pjt222.github.io/putior/articles/showcase.md) | Real-world examples |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md) | At-a-glance reference card |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md) | Common issues and solutions |
+| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md) | MCP/ACP integration guide |

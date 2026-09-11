@@ -44,6 +44,7 @@ The ACP server exposes the following endpoints:
 
 POST /runs expects a JSON body with this structure:
 
+
     {
       "input": [
         {
@@ -80,6 +81,7 @@ The agent understands natural language requests for:
 ## Testing
 
 Test the server with curl:
+
 
     # Discover agents
     curl http://localhost:8080/agents

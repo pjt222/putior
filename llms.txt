@@ -12,6 +12,8 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 [![Quick
 Ref](https://img.shields.io/badge/Quick_Ref-online-blue.svg)](https://pjt222.github.io/putior/articles/quick-reference.html)
 [![Sponsor](https://img.shields.io/github/sponsors/pjt222?style=flat&logo=GitHub-Sponsors&logoColor=%23EA4AAA&label=Sponsor)](https://github.com/sponsors/pjt222)
+[![Ask
+DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/pjt222/putior)
 
 > **Extract beautiful workflow diagrams from your code annotations**
 
@@ -28,6 +30,7 @@ across 30+ programming languages.
 ## TL;DR
 
 ``` r
+
 # 1. Add annotation to your script
 # put label:"Load Data", output:"clean.csv"
 
@@ -69,6 +72,7 @@ flowchart TD
 ## Installation
 
 ``` r
+
 # Install from CRAN (recommended)
 install.packages("putior")
 
@@ -92,6 +96,7 @@ files:
 **`01_fetch.R`**
 
 ``` r
+
 # put id:"fetch", label:"Fetch Sales Data", node_type:"input", output:"raw_sales.csv"
 sales <- fetch_sales_from_api()
 write.csv(sales, "raw_sales.csv")
@@ -116,6 +121,7 @@ SELECT region, SUM(amount) FROM clean_sales GROUP BY region;
 **Generate the diagram:**
 
 ``` r
+
 library(putior)
 workflow <- put("./pipeline/")
 put_diagram(workflow, theme = "github")
@@ -145,40 +151,40 @@ site](https://pjt222.github.io/putior/).
 
 ### Getting Started
 
-| Guide                                                                              | Description                                                      |
-|------------------------------------------------------------------------------------|------------------------------------------------------------------|
-| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.html)           | First diagram in 2 minutes                                       |
+| Guide | Description |
+|----|----|
+| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.html) | First diagram in 2 minutes |
 | [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.html) | Complete syntax reference, multiline annotations, best practices |
 
 ### Going Deeper
 
-| Guide                                                                        | Description                                            |
-|------------------------------------------------------------------------------|--------------------------------------------------------|
-| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html) | Auto-detection, themes, logging, interactive diagrams  |
-| [Showcase](https://pjt222.github.io/putior/articles/showcase.html)           | Real-world examples (ETL, ML, bioinformatics, finance) |
+| Guide | Description |
+|----|----|
+| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html) | Auto-detection, themes, logging, interactive diagrams |
+| [Showcase](https://pjt222.github.io/putior/articles/showcase.html) | Real-world examples (ETL, ML, bioinformatics, finance) |
 
 ### Reference
 
-| Guide                                                                            | Description                           |
-|----------------------------------------------------------------------------------|---------------------------------------|
-| [API Reference](https://pjt222.github.io/putior/articles/api-reference.html)     | Complete function documentation       |
-| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.html) | At-a-glance reference card            |
-| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.html) | Common issues and solutions           |
-| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.html)   | MCP/ACP integration for AI assistants |
+| Guide | Description |
+|----|----|
+| [API Reference](https://pjt222.github.io/putior/articles/api-reference.html) | Complete function documentation |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.html) | At-a-glance reference card |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.html) | Common issues and solutions |
+| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.html) | MCP/ACP integration for AI assistants |
 
 ## How putior Compares
 
 putior fills a unique niche by combining annotation-based workflow
 extraction with Mermaid diagram generation:
 
-| Package                                                       | Focus                           | Approach                  | Output               | Best For                     |
-|---------------------------------------------------------------|---------------------------------|---------------------------|----------------------|------------------------------|
-| **putior**                                                    | **Data workflow visualization** | **Code annotations**      | **Mermaid diagrams** | **Pipeline documentation**   |
-| [CodeDepends](https://cran.r-project.org/package=CodeDepends) | Code dependency analysis        | Static analysis           | Variable graphs      | Understanding code structure |
-| [DiagrammeR](https://cran.r-project.org/package=DiagrammeR)   | General diagramming             | Manual diagram code       | Interactive graphs   | Custom diagrams              |
-| [visNetwork](https://cran.r-project.org/package=visNetwork)   | Interactive networks            | Manual network definition | Interactive vis.js   | Complex network exploration  |
-| [dm](https://cran.r-project.org/package=dm)                   | Database relationships          | Schema analysis           | ER diagrams          | Database documentation       |
-| [flowchart](https://cran.r-project.org/package=flowchart)     | Study flow diagrams             | Dataframe input           | ggplot2 charts       | Clinical trials              |
+| Package | Focus | Approach | Output | Best For |
+|----|----|----|----|----|
+| **putior** | **Data workflow visualization** | **Code annotations** | **Mermaid diagrams** | **Pipeline documentation** |
+| [CodeDepends](https://cran.r-project.org/package=CodeDepends) | Code dependency analysis | Static analysis | Variable graphs | Understanding code structure |
+| [DiagrammeR](https://cran.r-project.org/package=DiagrammeR) | General diagramming | Manual diagram code | Interactive graphs | Custom diagrams |
+| [visNetwork](https://cran.r-project.org/package=visNetwork) | Interactive networks | Manual network definition | Interactive vis.js | Complex network exploration |
+| [dm](https://cran.r-project.org/package=dm) | Database relationships | Schema analysis | ER diagrams | Database documentation |
+| [flowchart](https://cran.r-project.org/package=flowchart) | Study flow diagrams | Dataframe input | ggplot2 charts | Clinical trials |
 
 ### Documentation vs Execution
 
@@ -189,13 +195,13 @@ are complementary – you can annotate a targets pipeline with `# put`
 comments and use putior to generate visual documentation for your README
 or wiki.
 
-| Tool                                                  | Purpose                                      | Relationship to putior                 |
-|-------------------------------------------------------|----------------------------------------------|----------------------------------------|
-| **putior**                                            | Document and visualize workflows             | –                                      |
-| [targets](https://cran.r-project.org/package=targets) | Execute R pipelines                          | putior can document targets pipelines  |
-| [drake](https://cran.r-project.org/package=drake)     | Execute R pipelines (predecessor to targets) | putior can document drake plans        |
-| [Airflow](https://airflow.apache.org/)                | Orchestrate complex DAGs                     | putior can document Airflow DAGs       |
-| [Nextflow](https://www.nextflow.io/)                  | Execute bioinformatics pipelines             | putior can document Nextflow workflows |
+| Tool | Purpose | Relationship to putior |
+|----|----|----|
+| **putior** | Document and visualize workflows | – |
+| [targets](https://cran.r-project.org/package=targets) | Execute R pipelines | putior can document targets pipelines |
+| [drake](https://cran.r-project.org/package=drake) | Execute R pipelines (predecessor to targets) | putior can document drake plans |
+| [Airflow](https://airflow.apache.org/) | Orchestrate complex DAGs | putior can document Airflow DAGs |
+| [Nextflow](https://www.nextflow.io/) | Execute bioinformatics pipelines | putior can document Nextflow workflows |
 
 ## Self-Documentation
 

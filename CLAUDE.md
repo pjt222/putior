@@ -262,6 +262,7 @@ Extension to language name \|
 **Programmatic access:**
 
 ``` r
+
 # Start MCP server (runs until terminated)
 putior::putior_mcp_server()
 
@@ -303,6 +304,7 @@ putior agent)
 **Start ACP Server:**
 
 ``` r
+
 # Start ACP server on default port (8080)
 putior::putior_acp_server()
 
@@ -357,6 +359,7 @@ The ACP agent understands natural language requests:
 ### Agent Manifest
 
 ``` r
+
 # Get the agent manifest programmatically
 manifest <- putior::putior_acp_manifest()
 print(manifest$name)  # "putior"
@@ -382,13 +385,13 @@ print(manifest$metadata$operations)
 putior now automatically detects the correct comment prefix based on
 file extension:
 
-| Comment Style   | Languages                                                                           | Extensions                                                                 |
-|-----------------|-------------------------------------------------------------------------------------|----------------------------------------------------------------------------|
-| `# put`         | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML, Dockerfile, Makefile               | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`, `Dockerfile`, `Makefile` |
-| `-- put`        | SQL, Lua, Haskell                                                                   | `.sql`, `.lua`, `.hs`                                                      |
-| `// put`        | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala, WGSL | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs`, `.wgsl`                 |
-| `% put`         | MATLAB, LaTeX                                                                       | `.m`, `.tex`                                                               |
-| `* put` (block) | All `//`-prefix languages inside `/* */` or `/** */` blocks                         | Same as `//` group                                                         |
+| Comment Style | Languages | Extensions |
+|----|----|----|
+| `# put` | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML, Dockerfile, Makefile | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.pl`, `.yaml`, `Dockerfile`, `Makefile` |
+| `-- put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |
+| `// put` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala, WGSL | `.js`, `.ts`, `.c`, `.cpp`, `.java`, `.go`, `.rs`, `.wgsl` |
+| `% put` | MATLAB, LaTeX | `.m`, `.tex` |
+| `* put` (block) | All `//`-prefix languages inside `/* */` or `/** */` blocks | Same as `//` group |
 
 ### Block Comment Support
 
@@ -401,6 +404,7 @@ This enables JSDoc-style documentation patterns.
 ### Key Functions
 
 ``` r
+
 # Get comment prefix for an extension
 get_comment_prefix("sql")  # Returns "--"
 get_comment_prefix("js")   # Returns "//"
@@ -452,30 +456,31 @@ for 18 programming languages with **902 patterns total**.
 
 ### Languages with Auto-Detection (18 languages)
 
-| Language   | Total | Key Libraries/Frameworks                                       |
-|------------|-------|----------------------------------------------------------------|
-| R          | 124   | readr, data.table, DBI, arrow, ellmer, sparklyr                |
-| Python     | 159   | pandas, numpy, sqlalchemy, transformers, langchain             |
-| JavaScript | 71    | Node.js fs, Express.js, mongoose, Prisma, axios                |
-| TypeScript | 88    | All JS + NestJS, TypeORM, decorators                           |
-| Java       | 73    | NIO, JDBC, Jackson, Spring Boot, Hibernate                     |
-| Ruby       | 64    | File, CSV, YAML, Rails, ActiveRecord, Sequel                   |
-| Rust       | 60    | std::fs, serde, sqlx, diesel, reqwest                          |
-| Go         | 44    | os, bufio, database/sql, gorm, net/http                        |
-| C++        | 44    | All C + fstream, boost, std::filesystem                        |
-| MATLAB     | 44    | readtable, imread, h5read, VideoReader                         |
-| Julia      | 27    | CSV.jl, DataFrames, JLD2, Arrow.jl                             |
-| C          | 24    | stdio.h, POSIX, mmap                                           |
-| Lua        | 20    | io library, loadfile, dofile                                   |
-| WGSL       | 17    | uniform/storage bindings, textures, samplers, naga-oil imports |
-| Dockerfile | 13    | FROM, COPY, ADD, EXPOSE, VOLUME, CMD, RUN variants             |
-| Shell      | 12    | cat, redirects, source                                         |
-| Makefile   | 10    | include, wildcard, target rules, install, shell commands       |
-| SQL        | 8     | FROM, JOIN, COPY                                               |
+| Language | Total | Key Libraries/Frameworks |
+|----|----|----|
+| R | 124 | readr, data.table, DBI, arrow, ellmer, sparklyr |
+| Python | 159 | pandas, numpy, sqlalchemy, transformers, langchain |
+| JavaScript | 71 | Node.js fs, Express.js, mongoose, Prisma, axios |
+| TypeScript | 88 | All JS + NestJS, TypeORM, decorators |
+| Java | 73 | NIO, JDBC, Jackson, Spring Boot, Hibernate |
+| Ruby | 64 | File, CSV, YAML, Rails, ActiveRecord, Sequel |
+| Rust | 60 | std::fs, serde, sqlx, diesel, reqwest |
+| Go | 44 | os, bufio, database/sql, gorm, net/http |
+| C++ | 44 | All C + fstream, boost, std::filesystem |
+| MATLAB | 44 | readtable, imread, h5read, VideoReader |
+| Julia | 27 | CSV.jl, DataFrames, JLD2, Arrow.jl |
+| C | 24 | stdio.h, POSIX, mmap |
+| Lua | 20 | io library, loadfile, dofile |
+| WGSL | 17 | uniform/storage bindings, textures, samplers, naga-oil imports |
+| Dockerfile | 13 | FROM, COPY, ADD, EXPOSE, VOLUME, CMD, RUN variants |
+| Shell | 12 | cat, redirects, source |
+| Makefile | 10 | include, wildcard, target rules, install, shell commands |
+| SQL | 8 | FROM, JOIN, COPY |
 
 ### Usage
 
 ``` r
+
 # Get patterns for any supported language
 patterns <- get_detection_patterns("javascript")  # or "go", "rust", "wgsl", "dockerfile", "makefile", etc.
 
@@ -506,6 +511,7 @@ flow
 across all languages:
 
 ``` r
+
 list(
   regex = "pattern_to_match",      # Regex for code detection
   func = "function_name",          # Human-readable function name
@@ -550,6 +556,7 @@ how roxygen2 auto-generates documentation skeletons. Two primary modes:
 #### `put_auto()` - Auto-detect workflow from code
 
 ``` r
+
 # Analyze code to detect inputs/outputs automatically
 workflow <- put_auto("./src/")
 put_diagram(workflow)
@@ -564,6 +571,7 @@ workflow <- put_auto("./src/",
 #### `put_generate()` - Generate annotation comments (roxygen2-style)
 
 ``` r
+
 # Print suggested annotations to console
 put_generate("./src/")
 
@@ -578,6 +586,7 @@ put_generate("./src/", style = "single")
 #### `put_merge()` - Combine manual + auto annotations
 
 ``` r
+
 # Manual annotations override auto-detected
 workflow <- put_merge("./src/", merge_strategy = "manual_priority")
 
@@ -591,6 +600,7 @@ workflow <- put_merge("./src/", merge_strategy = "union")
 #### `get_detection_patterns()` - View/customize patterns
 
 ``` r
+
 # Get all R patterns
 patterns <- get_detection_patterns("r")
 
@@ -655,11 +665,11 @@ generation.
 
 ### Log Levels
 
-| Level | Purpose                                                                        |
-|-------|--------------------------------------------------------------------------------|
-| DEBUG | Fine-grained operations (file-by-file, pattern matching)                       |
-| INFO  | Progress milestones (scan started, nodes found, diagram complete)              |
-| WARN  | Issues that don’t stop execution (validation issues) - **default**             |
+| Level | Purpose |
+|----|----|
+| DEBUG | Fine-grained operations (file-by-file, pattern matching) |
+| INFO | Progress milestones (scan started, nodes found, diagram complete) |
+| WARN | Issues that don’t stop execution (validation issues) - **default** |
 | ERROR | Fatal issues (via existing [`stop()`](https://rdrr.io/r/base/stop.html) calls) |
 
 ### Configuration
@@ -667,6 +677,7 @@ generation.
 **Global option:**
 
 ``` r
+
 # Set for entire session
 options(putior.log_level = "DEBUG")
 
@@ -677,6 +688,7 @@ set_putior_log_level("DEBUG")
 **Per-call override:**
 
 ``` r
+
 # Override for a single call
 workflow <- put("./R/", log_level = "DEBUG")
 put_diagram(workflow, log_level = "INFO")
@@ -768,6 +780,7 @@ anthropic \| `Anthropic()`, `client.messages.create()` \| \| langchain
 ### Example Implementation
 
 ``` r
+
 # Script 1: Creates variable and saves it
 # put output:'data.internal, data.RData'
 data <- process_something()
@@ -801,6 +814,7 @@ display the info
 **Usage:**
 
 ``` r
+
 # Inline style - shows file name below node label
 put_diagram(workflow, show_source_info = TRUE)
 
@@ -825,6 +839,7 @@ protocol
 **Usage:**
 
 ``` r
+
 # Enable VS Code clicks
 put_diagram(workflow, enable_clicks = TRUE)
 
@@ -862,6 +877,7 @@ contrast \| \| `plasma` \| Purple→Pink→Orange→Yellow \| Presentations \|
 ### Usage
 
 ``` r
+
 # Standard themes
 put_diagram(workflow, theme = "github")
 
@@ -899,6 +915,7 @@ annotations without writing files.
 ### Launch
 
 ``` r
+
 run_sandbox()  # Requires shiny package
 ```
 
@@ -952,12 +969,14 @@ Mermaid diagrams with Quarto’s built-in styling
 ### Usage Pattern
 
 ``` r
+
 # Chunk 1: Generate code (visible, foldable)
 workflow <- put("./R/")
 mermaid_code <- put_diagram(workflow, output = "raw")
 ```
 
 ``` r
+
 # Chunk 2: Output as native mermaid chunk (hidden)
 #| output: asis
 #| echo: false

@@ -74,10 +74,12 @@ The MCP server exposes the following putior functions as tools:
 
 **Claude Code (WSL/Linux/macOS):**
 
+
     claude mcp add putior -- Rscript -e "putior::putior_mcp_server()"
 
 **Claude Desktop (Windows):** Add to
 `%APPDATA%\Claude\claude_desktop_config.json`:
+
 
     {
       "mcpServers": {

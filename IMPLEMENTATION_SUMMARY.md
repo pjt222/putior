@@ -46,6 +46,7 @@ workflows and data pipelines.
 ### UUID Generation (parse_put_annotation in putior.R)
 
 ``` r
+
 # Generate UUID if id is missing (not if it's empty)
 if (is.null(properties$id) && requireNamespace("uuid", quietly = TRUE)) {
   properties$id <- uuid::UUIDgenerate()
@@ -55,6 +56,7 @@ if (is.null(properties$id) && requireNamespace("uuid", quietly = TRUE)) {
 ### Output Defaulting (process_single_file in putior.R)
 
 ``` r
+
 # Default output to file_name if not specified
 if (is.null(properties$output) || properties$output == "") {
   properties$output <- basename(file)

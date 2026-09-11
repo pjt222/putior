@@ -12,6 +12,7 @@ Perfect for single-purpose scripts or focused analysis tasks.
 A basic extract-transform-load workflow:
 
 ``` r
+
 # 01_extract.R
 # put label:"Extract Data", node_type:"input", output:"raw_data.csv"
 
@@ -48,6 +49,7 @@ flowchart TD
 A simple report generation workflow:
 
 ``` r
+
 # fetch_metrics.R
 # put label:"Fetch Metrics", node_type:"input", output:"metrics.json"
 
@@ -89,6 +91,7 @@ stages.
 A complete ML workflow from data collection to model deployment:
 
 ``` r
+
 # 01_collect_data.py
 # put label:"Collect Raw Data", node_type:"input", output:"raw_data.csv"
 
@@ -171,6 +174,7 @@ flowchart TD
 Combining data from multiple sources:
 
 ``` r
+
 # sources/fetch_sales.R
 # put label:"Fetch Sales API", node_type:"input", output:"sales_raw.json"
 
@@ -345,12 +349,12 @@ comment syntax detection** for 30+ languages.
 
 ### Language-Specific Comment Syntax
 
-| Comment Style | Languages                                 | Example                         |
-|---------------|-------------------------------------------|---------------------------------|
-| `# put`       | R, Python, Shell, Julia, Ruby, YAML       | `# put label:"Process Data"`    |
-| `-- put`      | SQL, Lua, Haskell                         | `-- put label:"Query Database"` |
-| `// put`      | JavaScript, TypeScript, C, Go, Rust, Java | `// put label:"Transform JSON"` |
-| `% put`       | MATLAB, LaTeX                             | `% put label:"Compute Matrix"`  |
+| Comment Style | Languages | Example |
+|----|----|----|
+| `# put` | R, Python, Shell, Julia, Ruby, YAML | `# put label:"Process Data"` |
+| `-- put` | SQL, Lua, Haskell | `-- put label:"Query Database"` |
+| `// put` | JavaScript, TypeScript, C, Go, Rust, Java | `// put label:"Transform JSON"` |
+| `% put` | MATLAB, LaTeX | `% put label:"Compute Matrix"` |
 
 ### JavaScript/TypeScript Example
 
@@ -403,6 +407,7 @@ df = pd.read_csv("raw_query_results.csv")
 ```
 
 ``` r
+
 # analyze.R (R uses # comments)
 # put label:"R Statistical Analysis", input:"transformed.parquet", output:"stats.rds"
 library(arrow)
@@ -410,6 +415,7 @@ data <- read_parquet("transformed.parquet")
 ```
 
 ``` r
+
 # visualize.R
 # put label:"R Visualization", input:"stats.rds", output:"plots.pdf"
 
@@ -454,6 +460,7 @@ Real-world workflows from various data science domains.
 A genomics analysis workflow processing FASTA sequences:
 
 ``` r
+
 # sequences/fetch_sequences.R
 # put label:"Fetch FASTA Sequences", node_type:"input", output:"raw_sequences.fasta"
 
@@ -516,6 +523,7 @@ flowchart TD
 Portfolio analysis and risk assessment workflow:
 
 ``` r
+
 # data/fetch_market_data.py
 # put label:"Fetch Market Data", node_type:"input", output:"market_prices.parquet"
 
@@ -580,6 +588,7 @@ flowchart TD
 Data extraction from web sources:
 
 ``` r
+
 # scrape/fetch_urls.py
 # put label:"Fetch URL List", node_type:"input", output:"target_urls.txt"
 
@@ -641,6 +650,7 @@ A realistic ML workflow using R for data prep, Python for training, and
 R for reporting:
 
 ``` r
+
 # data/load_raw_data.R
 # put label:"Load Raw Data (R)", node_type:"input", output:"raw_data.rds"
 
@@ -737,6 +747,7 @@ how to clean them up.
 This ETL script has common problems:
 
 ``` r
+
 # etl_pipeline.R - typical messy annotations
 
 # put id:"step1", output:"data"
@@ -782,6 +793,7 @@ flowchart TD
 **Step 1: Audit current state**
 
 ``` r
+
 workflow <- put("etl_pipeline.R", validate = TRUE)
 print(workflow)  # See what's detected
 # Validation warnings will highlight issues
@@ -790,6 +802,7 @@ print(workflow)  # See what's detected
 **Step 2: Use auto-detection to find gaps**
 
 ``` r
+
 auto <- put_auto("etl_pipeline.R")
 print(auto)  # Shows file I/O that wasn't annotated
 ```
@@ -797,6 +810,7 @@ print(auto)  # Shows file I/O that wasn't annotated
 **Step 3: Generate annotation templates**
 
 ``` r
+
 put_generate("etl_pipeline.R")
 # Outputs suggested annotations based on code patterns
 ```
@@ -813,6 +827,7 @@ put_generate("etl_pipeline.R")
 ### After: Clean Annotations
 
 ``` r
+
 # etl_pipeline.R - improved annotations
 
 # put id:"extract_sales", label:"Load Sales Data", \
@@ -859,19 +874,20 @@ flowchart TD
 
 ### Key Improvements Made
 
-| Before               | After                            | Why                     |
-|----------------------|----------------------------------|-------------------------|
-| `id:"step1"`         | `id:"extract_sales"`             | Descriptive, searchable |
-| `output:"data"`      | `output:"sales_2024.csv"`        | Actual file name        |
-| Missing annotation   | Added for aggregation step       | Complete workflow       |
-| `label:"final step"` | `label:"Export Regional Report"` | Specific action         |
-| No node_type         | Explicit input/process/output    | Proper diagram shapes   |
+| Before | After | Why |
+|----|----|----|
+| `id:"step1"` | `id:"extract_sales"` | Descriptive, searchable |
+| `output:"data"` | `output:"sales_2024.csv"` | Actual file name |
+| Missing annotation | Added for aggregation step | Complete workflow |
+| `label:"final step"` | `label:"Export Regional Report"` | Specific action |
+| No node_type | Explicit input/process/output | Proper diagram shapes |
 
 ### Workflow for Legacy Code
 
 For existing codebases without any annotations:
 
 ``` r
+
 # 1. Start with auto-detection
 auto_workflow <- put_auto("./legacy_code/", recursive = TRUE)
 put_diagram(auto_workflow)  # Get initial picture
@@ -906,6 +922,7 @@ When working with complex workflows:
     when data lineage matters
 
 ``` r
+
 # For large workflows, consider:
 put_diagram(workflow,
   direction = "LR",              # Left-to-right for wide pipelines
@@ -920,6 +937,7 @@ put_diagram(workflow,
 Run the built-in examples:
 
 ``` r
+
 # Basic example
 source(system.file("examples", "reprex.R", package = "putior"))
 
@@ -934,12 +952,12 @@ source(system.file("examples", "self-documentation.R", package = "putior"))
 
 ## See Also
 
-| Guide                                                                            | Description                     |
-|----------------------------------------------------------------------------------|---------------------------------|
-| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)           | First diagram in 2 minutes      |
-| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference       |
-| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md)       | Auto-detection, themes, logging |
-| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)       | Function documentation          |
-| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md)   | At-a-glance reference card      |
-| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md)   | Common issues and solutions     |
-| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md)     | MCP/ACP integration guide       |
+| Guide | Description |
+|----|----|
+| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md) | First diagram in 2 minutes |
+| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference |
+| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md) | Auto-detection, themes, logging |
+| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md) | Function documentation |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md) | At-a-glance reference card |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md) | Common issues and solutions |
+| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md) | MCP/ACP integration guide |

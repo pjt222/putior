@@ -5,23 +5,23 @@ functions in the putior package.
 
 ## Function Overview
 
-| Function                                                                                              | Category        | Purpose                                 |
-|-------------------------------------------------------------------------------------------------------|-----------------|-----------------------------------------|
-| [`put()`](https://pjt222.github.io/putior/reference/put.md)                                           | Core            | Extract annotations from source files   |
-| [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)                           | Core            | Generate Mermaid flowchart diagrams     |
-| [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md)                                 | Auto-Annotation | Auto-detect workflow from code patterns |
-| [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md)                         | Auto-Annotation | Generate annotation comments for files  |
-| [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md)                               | Auto-Annotation | Combine manual and auto annotations     |
-| [`get_detection_patterns()`](https://pjt222.github.io/putior/reference/get_detection_patterns.md)     | Configuration   | View/customize detection patterns       |
-| [`list_supported_languages()`](https://pjt222.github.io/putior/reference/list_supported_languages.md) | Configuration   | List supported programming languages    |
-| [`get_comment_prefix()`](https://pjt222.github.io/putior/reference/get_comment_prefix.md)             | Configuration   | Get comment prefix for file extension   |
-| [`get_supported_extensions()`](https://pjt222.github.io/putior/reference/get_supported_extensions.md) | Configuration   | List all supported file extensions      |
-| [`get_diagram_themes()`](https://pjt222.github.io/putior/reference/get_diagram_themes.md)             | Configuration   | List available diagram themes           |
-| [`put_theme()`](https://pjt222.github.io/putior/reference/put_theme.md)                               | Configuration   | Create custom color palette             |
-| [`set_putior_log_level()`](https://pjt222.github.io/putior/reference/set_putior_log_level.md)         | Configuration   | Configure logging verbosity             |
-| [`is_valid_put_annotation()`](https://pjt222.github.io/putior/reference/is_valid_put_annotation.md)   | Utilities       | Validate annotation syntax              |
-| [`split_file_list()`](https://pjt222.github.io/putior/reference/split_file_list.md)                   | Utilities       | Parse comma-separated file lists        |
-| [`run_sandbox()`](https://pjt222.github.io/putior/reference/run_sandbox.md)                           | Interactive     | Launch Shiny sandbox app                |
+| Function | Category | Purpose |
+|----|----|----|
+| [`put()`](https://pjt222.github.io/putior/reference/put.md) | Core | Extract annotations from source files |
+| [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md) | Core | Generate Mermaid flowchart diagrams |
+| [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md) | Auto-Annotation | Auto-detect workflow from code patterns |
+| [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md) | Auto-Annotation | Generate annotation comments for files |
+| [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md) | Auto-Annotation | Combine manual and auto annotations |
+| [`get_detection_patterns()`](https://pjt222.github.io/putior/reference/get_detection_patterns.md) | Configuration | View/customize detection patterns |
+| [`list_supported_languages()`](https://pjt222.github.io/putior/reference/list_supported_languages.md) | Configuration | List supported programming languages |
+| [`get_comment_prefix()`](https://pjt222.github.io/putior/reference/get_comment_prefix.md) | Configuration | Get comment prefix for file extension |
+| [`get_supported_extensions()`](https://pjt222.github.io/putior/reference/get_supported_extensions.md) | Configuration | List all supported file extensions |
+| [`get_diagram_themes()`](https://pjt222.github.io/putior/reference/get_diagram_themes.md) | Configuration | List available diagram themes |
+| [`put_theme()`](https://pjt222.github.io/putior/reference/put_theme.md) | Configuration | Create custom color palette |
+| [`set_putior_log_level()`](https://pjt222.github.io/putior/reference/set_putior_log_level.md) | Configuration | Configure logging verbosity |
+| [`is_valid_put_annotation()`](https://pjt222.github.io/putior/reference/is_valid_put_annotation.md) | Utilities | Validate annotation syntax |
+| [`split_file_list()`](https://pjt222.github.io/putior/reference/split_file_list.md) | Utilities | Parse comma-separated file lists |
+| [`run_sandbox()`](https://pjt222.github.io/putior/reference/run_sandbox.md) | Interactive | Launch Shiny sandbox app |
 
 ------------------------------------------------------------------------
 
@@ -35,6 +35,7 @@ files.
 **Usage:**
 
 ``` r
+
 put(
   path = ".",
   pattern = "\\.(R|r|py|sql|sh|jl)$",
@@ -48,34 +49,35 @@ put(
 
 **Parameters:**
 
-| Parameter              | Type      | Default                    | Description                                                                                                                          |
-|------------------------|-----------|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `path`                 | character | `"."`                      | File or directory path to scan                                                                                                       |
-| `pattern`              | character | `"\\.(R|r|py|sql|sh|jl)$"` | Regex pattern for file matching                                                                                                      |
-| `recursive`            | logical   | `TRUE`                     | Search subdirectories                                                                                                                |
-| `include_line_numbers` | logical   | `FALSE`                    | Include line numbers in output                                                                                                       |
-| `validate`             | logical   | `TRUE`                     | Show validation warnings                                                                                                             |
-| `exclude`              | character | `NULL`                     | Regex patterns to exclude files (e.g., `"test"` skips test files)                                                                    |
-| `log_level`            | character | `NULL`                     | Override log level. See [Debugging with Logging](https://pjt222.github.io/putior/articles/features-tour.html#debugging-with-logging) |
+| Parameter | Type | Default | Description |
+|----|----|----|----|
+| `path` | character | `"."` | File or directory path to scan |
+| `pattern` | character | `"\\.(R|r|py|sql|sh|jl)$"` | Regex pattern for file matching |
+| `recursive` | logical | `TRUE` | Search subdirectories |
+| `include_line_numbers` | logical | `FALSE` | Include line numbers in output |
+| `validate` | logical | `TRUE` | Show validation warnings |
+| `exclude` | character | `NULL` | Regex patterns to exclude files (e.g., `"test"` skips test files) |
+| `log_level` | character | `NULL` | Override log level. See [Debugging with Logging](https://pjt222.github.io/putior/articles/features-tour.html#debugging-with-logging) |
 
 **Returns:**
 
 A data frame with columns:
 
-| Column        | Description                                                                                                                                                     |
-|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `file_name`   | Source file containing the annotation                                                                                                                           |
-| `file_type`   | Programming language (r, py, sql, etc.)                                                                                                                         |
-| `id`          | Unique node identifier (auto-generated if omitted)                                                                                                              |
-| `label`       | Human-readable description                                                                                                                                      |
-| `node_type`   | Type: input, process, output, decision, start, end. (`artifact` is auto-created by [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)) |
-| `input`       | Comma-separated input files                                                                                                                                     |
-| `output`      | Comma-separated output files                                                                                                                                    |
-| `line_number` | Line number (if `include_line_numbers = TRUE`)                                                                                                                  |
+| Column | Description |
+|----|----|
+| `file_name` | Source file containing the annotation |
+| `file_type` | Programming language (r, py, sql, etc.) |
+| `id` | Unique node identifier (auto-generated if omitted) |
+| `label` | Human-readable description |
+| `node_type` | Type: input, process, output, decision, start, end. (`artifact` is auto-created by [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)) |
+| `input` | Comma-separated input files |
+| `output` | Comma-separated output files |
+| `line_number` | Line number (if `include_line_numbers = TRUE`) |
 
 **Examples:**
 
 ``` r
+
 library(putior)
 
 # Scan a directory
@@ -103,6 +105,7 @@ Converts workflow data into Mermaid flowchart syntax.
 **Usage:**
 
 ``` r
+
 put_diagram(
   workflow,
   output = "console",
@@ -125,24 +128,24 @@ put_diagram(
 
 **Parameters:**
 
-| Parameter                  | Type       | Default     | Description                                                                                                                                                     |
-|----------------------------|------------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `workflow`                 | data.frame | (required)  | Workflow data from [`put()`](https://pjt222.github.io/putior/reference/put.md)                                                                                  |
-| `output`                   | character  | `"console"` | Output mode: “console”, “file”, “clipboard”, “raw”                                                                                                              |
-| `file`                     | character  | `NULL`      | Output file path (when output = “file”)                                                                                                                         |
-| `direction`                | character  | `"TD"`      | Flow direction: “TD”, “LR”, “BT”, “RL”                                                                                                                          |
-| `theme`                    | character  | `"github"`  | Theme: “github”, “light”, “dark”, “auto”, “minimal”, “viridis”, “magma”, “plasma”, “cividis” (colorblind-safe)                                                  |
-| `show_artifacts`           | logical    | `FALSE`     | Show data file nodes                                                                                                                                            |
-| `show_files`               | logical    | `FALSE`     | Show file names on connections                                                                                                                                  |
-| `style_nodes`              | logical    | `TRUE`      | Apply color styling to nodes                                                                                                                                    |
-| `show_workflow_boundaries` | logical    | `TRUE`      | Special styling for start/end nodes                                                                                                                             |
-| `node_labels`              | character  | `"label"`   | Label style: “name”, “label”, “both”                                                                                                                            |
-| `title`                    | character  | `NULL`      | Optional diagram title                                                                                                                                          |
-| `show_source_info`         | logical    | `FALSE`     | Display source file info in nodes. See [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#show_source_info---display-file-information) |
-| `source_info_style`        | character  | `"inline"`  | Source info style: “inline”, “subgraph”                                                                                                                         |
-| `enable_clicks`            | logical    | `FALSE`     | Make nodes clickable. See [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#enable_clicks---clickable-nodes)                          |
-| `click_protocol`           | character  | `"vscode"`  | Click protocol: “vscode”, “rstudio”, “file”                                                                                                                     |
-| `log_level`                | character  | `NULL`      | Override log level. See [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#debugging-with-logging)                                     |
+| Parameter | Type | Default | Description |
+|----|----|----|----|
+| `workflow` | data.frame | (required) | Workflow data from [`put()`](https://pjt222.github.io/putior/reference/put.md) |
+| `output` | character | `"console"` | Output mode: “console”, “file”, “clipboard”, “raw” |
+| `file` | character | `NULL` | Output file path (when output = “file”) |
+| `direction` | character | `"TD"` | Flow direction: “TD”, “LR”, “BT”, “RL” |
+| `theme` | character | `"github"` | Theme: “github”, “light”, “dark”, “auto”, “minimal”, “viridis”, “magma”, “plasma”, “cividis” (colorblind-safe) |
+| `show_artifacts` | logical | `FALSE` | Show data file nodes |
+| `show_files` | logical | `FALSE` | Show file names on connections |
+| `style_nodes` | logical | `TRUE` | Apply color styling to nodes |
+| `show_workflow_boundaries` | logical | `TRUE` | Special styling for start/end nodes |
+| `node_labels` | character | `"label"` | Label style: “name”, “label”, “both” |
+| `title` | character | `NULL` | Optional diagram title |
+| `show_source_info` | logical | `FALSE` | Display source file info in nodes. See [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#show_source_info---display-file-information) |
+| `source_info_style` | character | `"inline"` | Source info style: “inline”, “subgraph” |
+| `enable_clicks` | logical | `FALSE` | Make nodes clickable. See [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#enable_clicks---clickable-nodes) |
+| `click_protocol` | character | `"vscode"` | Click protocol: “vscode”, “rstudio”, “file” |
+| `log_level` | character | `NULL` | Override log level. See [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#debugging-with-logging) |
 
 **Returns:**
 
@@ -154,6 +157,7 @@ put_diagram(
 **Examples:**
 
 ``` r
+
 library(putior)
 
 workflow <- put("./src/")
@@ -206,6 +210,7 @@ dependencies without requiring manual annotations.
 **Usage:**
 
 ``` r
+
 put_auto(
   path = ".",
   pattern = "\\.(R|r|py|sql|sh|jl)$",
@@ -220,16 +225,16 @@ put_auto(
 
 **Parameters:**
 
-| Parameter             | Type      | Default                    | Description                     |
-|-----------------------|-----------|----------------------------|---------------------------------|
-| `path`                | character | `"."`                      | File or directory to analyze    |
-| `pattern`             | character | `"\\.(R|r|py|sql|sh|jl)$"` | File pattern                    |
-| `recursive`           | logical   | `TRUE`                     | Search subdirectories           |
-| `detect_inputs`       | logical   | `TRUE`                     | Detect file read operations     |
-| `detect_outputs`      | logical   | `TRUE`                     | Detect file write operations    |
-| `detect_dependencies` | logical   | `TRUE`                     | Detect script dependencies      |
-| `exclude`             | character | `NULL`                     | Regex patterns to exclude files |
-| `log_level`           | character | `NULL`                     | Override log level              |
+| Parameter | Type | Default | Description |
+|----|----|----|----|
+| `path` | character | `"."` | File or directory to analyze |
+| `pattern` | character | `"\\.(R|r|py|sql|sh|jl)$"` | File pattern |
+| `recursive` | logical | `TRUE` | Search subdirectories |
+| `detect_inputs` | logical | `TRUE` | Detect file read operations |
+| `detect_outputs` | logical | `TRUE` | Detect file write operations |
+| `detect_dependencies` | logical | `TRUE` | Detect script dependencies |
+| `exclude` | character | `NULL` | Regex patterns to exclude files |
+| `log_level` | character | `NULL` | Override log level |
 
 **Returns:**
 
@@ -240,6 +245,7 @@ auto-detected workflow nodes.
 **Examples:**
 
 ``` r
+
 # Auto-detect workflow from code patterns
 workflow <- put_auto("./src/")
 put_diagram(workflow)
@@ -261,6 +267,7 @@ source files. Similar to how roxygen2 generates documentation skeletons.
 **Usage:**
 
 ``` r
+
 put_generate(
   path = ".",
   pattern = "\\.(R|r|py|sql|sh|jl)$",
@@ -274,15 +281,15 @@ put_generate(
 
 **Parameters:**
 
-| Parameter   | Type      | Default                    | Description                               |
-|-------------|-----------|----------------------------|-------------------------------------------|
-| `path`      | character | `"."`                      | File or directory to analyze              |
-| `pattern`   | character | `"\\.(R|r|py|sql|sh|jl)$"` | File pattern                              |
-| `recursive` | logical   | `TRUE`                     | Search subdirectories                     |
-| `output`    | character | `"console"`                | Output: “console” or “clipboard”          |
-| `style`     | character | `"single"`                 | Annotation style: “single” or “multiline” |
-| `exclude`   | character | `NULL`                     | Regex patterns to exclude files           |
-| `log_level` | character | `NULL`                     | Override log level                        |
+| Parameter | Type | Default | Description |
+|----|----|----|----|
+| `path` | character | `"."` | File or directory to analyze |
+| `pattern` | character | `"\\.(R|r|py|sql|sh|jl)$"` | File pattern |
+| `recursive` | logical | `TRUE` | Search subdirectories |
+| `output` | character | `"console"` | Output: “console” or “clipboard” |
+| `style` | character | `"single"` | Annotation style: “single” or “multiline” |
+| `exclude` | character | `NULL` | Regex patterns to exclude files |
+| `log_level` | character | `NULL` | Override log level |
 
 **Returns:**
 
@@ -291,6 +298,7 @@ Invisibly returns the generated annotation text.
 **Examples:**
 
 ``` r
+
 # Print suggested annotations to console
 put_generate("./src/")
 
@@ -311,6 +319,7 @@ configurable merge strategies.
 **Usage:**
 
 ``` r
+
 put_merge(
   path = ".",
   pattern = "\\.(R|r|py|sql|sh|jl)$",
@@ -323,14 +332,14 @@ put_merge(
 
 **Parameters:**
 
-| Parameter        | Type      | Default                    | Description                     |
-|------------------|-----------|----------------------------|---------------------------------|
-| `path`           | character | `"."`                      | File or directory to process    |
-| `pattern`        | character | `"\\.(R|r|py|sql|sh|jl)$"` | File pattern                    |
-| `recursive`      | logical   | `TRUE`                     | Search subdirectories           |
-| `merge_strategy` | character | `"manual_priority"`        | Merge strategy (see below)      |
-| `exclude`        | character | `NULL`                     | Regex patterns to exclude files |
-| `log_level`      | character | `NULL`                     | Override log level              |
+| Parameter | Type | Default | Description |
+|----|----|----|----|
+| `path` | character | `"."` | File or directory to process |
+| `pattern` | character | `"\\.(R|r|py|sql|sh|jl)$"` | File pattern |
+| `recursive` | logical | `TRUE` | Search subdirectories |
+| `merge_strategy` | character | `"manual_priority"` | Merge strategy (see below) |
+| `exclude` | character | `NULL` | Regex patterns to exclude files |
+| `log_level` | character | `NULL` | Override log level |
 
 **Merge Strategies:**
 
@@ -347,6 +356,7 @@ A data frame containing merged workflow data.
 **Examples:**
 
 ``` r
+
 # Manual annotations take priority
 workflow <- put_merge("./src/", merge_strategy = "manual_priority")
 
@@ -371,15 +381,16 @@ and dependencies.
 **Usage:**
 
 ``` r
+
 get_detection_patterns(language = "r", type = NULL)
 ```
 
 **Parameters:**
 
-| Parameter  | Type      | Default | Description                                      |
-|------------|-----------|---------|--------------------------------------------------|
-| `language` | character | `"r"`   | Language: “r”, “python”, “sql”, “shell”, “julia” |
-| `type`     | character | `NULL`  | Filter by type: “input”, “output”, “dependency”  |
+| Parameter | Type | Default | Description |
+|----|----|----|----|
+| `language` | character | `"r"` | Language: “r”, “python”, “sql”, “shell”, “julia” |
+| `type` | character | `NULL` | Filter by type: “input”, “output”, “dependency” |
 
 **Returns:**
 
@@ -394,6 +405,7 @@ A list of patterns. Each pattern contains:
 **Examples:**
 
 ``` r
+
 # Get all R patterns
 patterns <- get_detection_patterns("r")
 
@@ -414,13 +426,14 @@ Returns the programming languages supported by putior.
 **Usage:**
 
 ``` r
+
 list_supported_languages(detection_only = FALSE)
 ```
 
 **Parameters:**
 
-| Parameter        | Type    | Default | Description                                          |
-|------------------|---------|---------|------------------------------------------------------|
+| Parameter | Type | Default | Description |
+|----|----|----|----|
 | `detection_only` | logical | `FALSE` | If TRUE, only languages with auto-detection patterns |
 
 **Returns:**
@@ -430,6 +443,7 @@ Character vector of supported language names.
 **Examples:**
 
 ``` r
+
 # All languages with annotation support (25+)
 list_supported_languages()
 #> [1] "r"          "python"     "shell"      "julia"      "ruby"
@@ -450,6 +464,7 @@ Returns the appropriate comment prefix for a given file extension.
 **Usage:**
 
 ``` r
+
 get_comment_prefix(ext)
 ```
 
@@ -465,16 +480,17 @@ Character string: the comment prefix for that language.
 
 **Comment Prefix Groups:**
 
-| Prefix | Languages                                                                     |
-|--------|-------------------------------------------------------------------------------|
-| `#`    | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML                               |
-| `--`   | SQL, Lua, Haskell                                                             |
-| `//`   | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala |
-| `%`    | MATLAB, LaTeX                                                                 |
+| Prefix | Languages |
+|----|----|
+| `#` | R, Python, Shell, Julia, Ruby, Perl, YAML, TOML |
+| `--` | SQL, Lua, Haskell |
+| `//` | JavaScript, TypeScript, C, C++, Java, Go, Rust, Swift, Kotlin, C#, PHP, Scala |
+| `%` | MATLAB, LaTeX |
 
 **Examples:**
 
 ``` r
+
 get_comment_prefix("r")
 #> [1] "#"
 
@@ -501,6 +517,7 @@ Returns all file extensions that putior can process.
 **Usage:**
 
 ``` r
+
 get_supported_extensions()
 ```
 
@@ -511,6 +528,7 @@ Character vector of supported file extensions (without dots).
 **Examples:**
 
 ``` r
+
 get_supported_extensions()
 #> [1] "r"     "py"    "sh"    "bash"  "jl"    "rb"    "pl"    "yaml"
 #> [9] "yml"   "toml"  "sql"   "lua"   "hs"    "js"    "ts"    "jsx"
@@ -526,6 +544,7 @@ Returns the names of available diagram themes.
 **Usage:**
 
 ``` r
+
 get_diagram_themes()
 ```
 
@@ -536,6 +555,7 @@ Character vector of theme names.
 **Examples:**
 
 ``` r
+
 get_diagram_themes()
 #> $light
 #> [1] "Default light theme with bright colors - perfect for documentation sites"
@@ -578,6 +598,7 @@ base theme.
 **Usage:**
 
 ``` r
+
 put_theme(
   base = "light",
   input = NULL,
@@ -592,16 +613,16 @@ put_theme(
 
 **Parameters:**
 
-| Parameter  | Type            | Default   | Description                                                       |
-|------------|-----------------|-----------|-------------------------------------------------------------------|
-| `base`     | character       | `"light"` | Base theme to override                                            |
-| `input`    | named character | `NULL`    | Named vector: `c(fill = "#hex", stroke = "#hex", color = "#hex")` |
-| `process`  | named character | `NULL`    | Same format as `input`                                            |
-| `output`   | named character | `NULL`    | Same format as `input`                                            |
-| `decision` | named character | `NULL`    | Same format as `input`                                            |
-| `artifact` | named character | `NULL`    | Same format as `input`                                            |
-| `start`    | named character | `NULL`    | Same format as `input`                                            |
-| `end`      | named character | `NULL`    | Same format as `input`                                            |
+| Parameter | Type | Default | Description |
+|----|----|----|----|
+| `base` | character | `"light"` | Base theme to override |
+| `input` | named character | `NULL` | Named vector: `c(fill = "#hex", stroke = "#hex", color = "#hex")` |
+| `process` | named character | `NULL` | Same format as `input` |
+| `output` | named character | `NULL` | Same format as `input` |
+| `decision` | named character | `NULL` | Same format as `input` |
+| `artifact` | named character | `NULL` | Same format as `input` |
+| `start` | named character | `NULL` | Same format as `input` |
+| `end` | named character | `NULL` | Same format as `input` |
 
 **Returns:**
 
@@ -610,6 +631,7 @@ A `putior_theme` object for use with `put_diagram(palette = ...)`.
 **Examples:**
 
 ``` r
+
 # Create a custom palette based on the dark theme
 my_theme <- put_theme(
   base = "dark",
@@ -632,6 +654,7 @@ Sets the logging verbosity for putior functions. Requires the optional
 **Usage:**
 
 ``` r
+
 set_putior_log_level(level = "WARN")
 ```
 
@@ -653,6 +676,7 @@ set_putior_log_level(level = "WARN")
 **Examples:**
 
 ``` r
+
 # Enable debug logging for troubleshooting
 set_putior_log_level("DEBUG")
 workflow <- put("./src/")
@@ -675,6 +699,7 @@ Tests whether a string is a valid PUT annotation.
 **Usage:**
 
 ``` r
+
 is_valid_put_annotation(line)
 ```
 
@@ -691,6 +716,7 @@ Logical: `TRUE` if valid PUT annotation, `FALSE` otherwise.
 **Examples:**
 
 ``` r
+
 # Valid annotations - hash style (R, Python)
 is_valid_put_annotation('# put label:"My Step"')
 #> [1] TRUE
@@ -730,6 +756,7 @@ Splits a comma-separated file list string into a character vector.
 **Usage:**
 
 ``` r
+
 split_file_list(file_string)
 ```
 
@@ -746,6 +773,7 @@ Character vector of trimmed file names.
 **Examples:**
 
 ``` r
+
 split_file_list("data.csv, results.json, report.html")
 #> [1] "data.csv"     "results.json" "report.html"
 
@@ -766,6 +794,7 @@ annotations.
 **Usage:**
 
 ``` r
+
 run_sandbox()
 ```
 
@@ -786,6 +815,7 @@ run_sandbox()
 **Examples:**
 
 ``` r
+
 # Launch the sandbox
 run_sandbox()
 ```
@@ -797,6 +827,7 @@ run_sandbox()
 ### Basic Workflow
 
 ``` r
+
 library(putior)
 
 # Extract and visualize
@@ -807,6 +838,7 @@ put_diagram(workflow)
 ### Auto-Detection Pipeline
 
 ``` r
+
 # Analyze code automatically
 auto_workflow <- put_auto("./src/")
 
@@ -821,6 +853,7 @@ put_diagram(merged)
 ### Interactive Documentation
 
 ``` r
+
 workflow <- put("./src/", include_line_numbers = TRUE)
 
 put_diagram(workflow,
@@ -837,6 +870,7 @@ put_diagram(workflow,
 ### Debugging
 
 ``` r
+
 # Enable verbose logging
 set_putior_log_level("DEBUG")
 
@@ -854,12 +888,12 @@ set_putior_log_level("WARN")
 
 ## See Also
 
-| Guide                                                                            | Description                     |
-|----------------------------------------------------------------------------------|---------------------------------|
-| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)           | First diagram in 2 minutes      |
-| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference       |
-| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md)       | Auto-detection, themes, logging |
-| [Showcase](https://pjt222.github.io/putior/articles/showcase.md)                 | Real-world examples             |
-| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md)   | At-a-glance reference card      |
-| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md)   | Common issues and solutions     |
-| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md)     | MCP/ACP integration guide       |
+| Guide | Description |
+|----|----|
+| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md) | First diagram in 2 minutes |
+| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference |
+| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md) | Auto-detection, themes, logging |
+| [Showcase](https://pjt222.github.io/putior/articles/showcase.md) | Real-world examples |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md) | At-a-glance reference card |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md) | Common issues and solutions |
+| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md) | MCP/ACP integration guide |

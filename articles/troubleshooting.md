@@ -43,6 +43,7 @@ files.
 | MATLAB            | `% put`        | `% put label:"Step 1"`  |
 
 ``` r
+
 # Check what prefix your file type needs
 get_comment_prefix("sql")  # Returns "--"
 get_comment_prefix("js")   # Returns "//"
@@ -62,6 +63,7 @@ workflow.
 **Solution:** Check that output of one node matches input of the next:
 
 ``` r
+
 # WRONG - Names don't match
 # put id:"step1", output:"data.csv"      # Outputs "data.csv"
 # put id:"step2", input:"Data.csv"       # Expects "Data.csv" (case mismatch!)
@@ -74,6 +76,7 @@ workflow.
 **Diagnostic:**
 
 ``` r
+
 workflow <- put("./src/")
 # Check for mismatches
 unique(workflow$output)
@@ -98,6 +101,7 @@ unique(workflow$input)
     [mermaid.live](https://mermaid.live)
 
 ``` r
+
 # Get raw Mermaid code to debug
 mermaid_code <- put_diagram(workflow, output = "raw")
 cat(mermaid_code)  # Copy this to mermaid.live to test
@@ -120,6 +124,7 @@ doesn’t detect file reads/writes you expected.
 1.  Check if your library is supported:
 
 ``` r
+
 patterns <- get_detection_patterns("r")
 # Search for your function
 grep("readr", sapply(patterns$input, `[[`, "func"), value = TRUE)
@@ -143,6 +148,7 @@ MATLAB vs Objective-C).
 **Solution:**
 
 ``` r
+
 # Check what language is detected for your extension
 ext_to_language("m")   # Returns "matlab"
 ext_to_language("jl")  # Returns "julia"
@@ -161,6 +167,7 @@ manual annotations with the correct comment prefix.
 Before diving into specific issues, run these quick checks:
 
 ``` r
+
 library(putior)
 
 # 1. Check if annotations are found
@@ -187,6 +194,7 @@ workflow <- put("./src/")  # Now shows detailed output
 **Problem**: Annotation is not recognized or properties are missing.
 
 ``` r
+
 # WRONG - No quotes around values
 # put id:my_node, label:My Process
 
@@ -200,6 +208,7 @@ workflow <- put("./src/")  # Now shows detailed output
 **Solution**: Always use matching quotes around all values.
 
 ``` r
+
 # CORRECT - Double quotes
 # put id:"my_node", label:"My Process"
 
@@ -213,6 +222,7 @@ workflow <- put("./src/")  # Now shows detailed output
 **Diagnostic**:
 
 ``` r
+
 # Test your annotation syntax
 is_valid_put_annotation('# put id:"my_node", label:"My Process"')  # TRUE
 is_valid_put_annotation('# put id:my_node, label:My Process')      # FALSE
@@ -223,6 +233,7 @@ is_valid_put_annotation('# put id:my_node, label:My Process')      # FALSE
 **Problem**: Validation warning about unusual node_type.
 
 ``` r
+
 # Triggers warning - non-standard type
 # put id:"step1", label:"Process", node_type:"transform"
 ```
@@ -230,6 +241,7 @@ is_valid_put_annotation('# put id:my_node, label:My Process')      # FALSE
 **Solution**: Use standard node types for consistency.
 
 ``` r
+
 # Standard node types
 # put id:"step1", label:"Load Data", node_type:"input"
 # put id:"step2", label:"Transform", node_type:"process"
@@ -243,6 +255,7 @@ is_valid_put_annotation('# put id:my_node, label:My Process')      # FALSE
 `validate = FALSE`:
 
 ``` r
+
 workflow <- put("./src/", validate = FALSE)
 ```
 
@@ -251,6 +264,7 @@ workflow <- put("./src/", validate = FALSE)
 **Problem**: Values containing commas are truncated.
 
 ``` r
+
 # WRONG - Comma breaks the label
 # put id:"step1", label:Load, clean, transform data
 ```
@@ -258,6 +272,7 @@ workflow <- put("./src/", validate = FALSE)
 **Solution**: Enclose values with commas in quotes.
 
 ``` r
+
 # CORRECT - Quotes protect the comma
 # put id:"step1", label:"Load, clean, transform data"
 ```
@@ -267,6 +282,7 @@ workflow <- put("./src/", validate = FALSE)
 **Problem**: Warning about empty ID.
 
 ``` r
+
 # WRONG - Empty ID string
 # put id:"", label:"My Process"
 
@@ -278,6 +294,7 @@ workflow <- put("./src/", validate = FALSE)
 valid one.
 
 ``` r
+
 # With auto-generated ID
 workflow <- put("./src/")
 print(workflow$id)  # Shows UUIDs like "a1b2c3d4-..."
@@ -292,6 +309,7 @@ print(workflow$id)  # Shows UUIDs like "a1b2c3d4-..."
 **Problem**: Warning about duplicate node IDs.
 
 ``` r
+
 # In file1.R
 # put id:"load_data", label:"Load from CSV"
 
@@ -302,6 +320,7 @@ print(workflow$id)  # Shows UUIDs like "a1b2c3d4-..."
 **Solution**: Use unique IDs across all files in your workflow.
 
 ``` r
+
 # In file1.R
 # put id:"load_csv", label:"Load from CSV"
 
@@ -314,6 +333,7 @@ print(workflow$id)  # Shows UUIDs like "a1b2c3d4-..."
 **Problem**: Multiline annotations not being parsed correctly.
 
 ``` r
+
 # WRONG - Missing backslash
 # put id:"step1", label:"Process",
 #     input:"data.csv", output:"results.csv"
@@ -330,6 +350,7 @@ print(workflow$id)  # Shows UUIDs like "a1b2c3d4-..."
 **Solution**: Use proper multiline syntax.
 
 ``` r
+
 # CORRECT - Backslash at end, comment prefix on each line
 # put id:"step1", label:"Process Data", \
 #     input:"data.csv,config.json", \
@@ -362,6 +383,7 @@ print(workflow$id)  # Shows UUIDs like "a1b2c3d4-..."
 returns empty result or “no files found” warning.
 
 ``` r
+
 workflow <- put("./src/")
 #> Warning: No files matching pattern '\.(R|r|py|sql|sh|jl)$' found in: ./src/
 ```
@@ -369,6 +391,7 @@ workflow <- put("./src/")
 **Diagnostic Steps**:
 
 ``` r
+
 # 1. Check if directory exists
 dir.exists("./src/")
 
@@ -382,6 +405,7 @@ list.files("./src/", pattern = "\\.(R|r|py)$")
 **Solutions**:
 
 ``` r
+
 # Use correct path (absolute or relative)
 workflow <- put("/full/path/to/src/")
 
@@ -397,6 +421,7 @@ workflow <- put("./src/script.R")
 **Problem**: Your files use extensions not in the default pattern.
 
 ``` r
+
 # Default pattern only matches: R, r, py, sql, sh, jl
 workflow <- put("./src/")  # Won't find .js, .ts, .go files
 ```
@@ -404,6 +429,7 @@ workflow <- put("./src/")  # Won't find .js, .ts, .go files
 **Solution**: Specify a custom pattern for your file types.
 
 ``` r
+
 # JavaScript/TypeScript files
 workflow <- put("./src/", pattern = "\\.(js|ts|jsx|tsx)$")
 
@@ -427,6 +453,7 @@ workflow <- put("./src/", pattern = pattern)
 **Problem**: Files not found due to case mismatch.
 
 ``` r
+
 # Pattern is case-sensitive by default
 list.files("./src/", pattern = "\\.R$")   # Finds script.R
 list.files("./src/", pattern = "\\.r$")   # Finds script.r
@@ -435,6 +462,7 @@ list.files("./src/", pattern = "\\.r$")   # Finds script.r
 **Solution**: Include both cases in pattern.
 
 ``` r
+
 # Match both .R and .r
 workflow <- put("./src/", pattern = "\\.(R|r)$")
 
@@ -453,6 +481,7 @@ workflow <- put("./src/")  # Default: "\\.(R|r|py|sql|sh|jl)$"
 **Diagnostic**:
 
 ``` r
+
 # Get raw Mermaid code to inspect
 workflow <- put("./src/")
 mermaid_code <- put_diagram(workflow, output = "raw")
@@ -464,6 +493,7 @@ cat(mermaid_code)
 1.  **Special characters in labels**: Mermaid has reserved characters.
 
 ``` r
+
 # Problem: Quotes in labels
 # put id:"step1", label:"Load "raw" data"
 
@@ -475,6 +505,7 @@ cat(mermaid_code)
 2.  **Reserved words in IDs**: Some words are reserved in Mermaid.
 
 ``` r
+
 # Problem: Reserved word as ID
 # put id:"end", label:"Finish"
 # put id:"class", label:"Classify"
@@ -489,6 +520,7 @@ cat(mermaid_code)
 **Problem**: Diagram colors don’t appear or look wrong.
 
 ``` r
+
 # Check available themes
 get_diagram_themes()
 #> $light, $dark, $auto, $minimal, $github
@@ -498,6 +530,7 @@ get_diagram_themes()
 **Solutions**:
 
 ``` r
+
 # Try a different theme
 put_diagram(workflow, theme = "github")
 put_diagram(workflow, theme = "minimal")
@@ -519,6 +552,7 @@ put_diagram(workflow, style_nodes = FALSE)
 **Cause**: Input/output values don’t match between nodes.
 
 ``` r
+
 # Problem: Typo in file name
 # put id:"step1", output:"data.csv"
 # put id:"step2", input:"Data.csv"  # Case mismatch!
@@ -531,6 +565,7 @@ put_diagram(workflow, style_nodes = FALSE)
 **Diagnostic**:
 
 ``` r
+
 # Check what inputs and outputs are defined
 workflow <- put("./src/")
 print(workflow[, c("id", "input", "output")])
@@ -541,6 +576,7 @@ print(workflow[, c("id", "input", "output")])
 **Problem**: Data files (artifacts) don’t appear in diagram.
 
 ``` r
+
 # Enable artifacts display
 put_diagram(workflow, show_artifacts = TRUE)
 
@@ -577,6 +613,7 @@ put_diagram(workflow, show_artifacts = TRUE)
 **Check the correct prefix**:
 
 ``` r
+
 # Get comment prefix for any extension
 get_comment_prefix("sql")   # "--"
 get_comment_prefix("js")    # "//"
@@ -606,6 +643,7 @@ get_comment_prefix("rs")    # "//"
 **Problem**: File type not automatically recognized.
 
 ``` r
+
 # Check if extension is supported
 ext <- "xyz"
 get_comment_prefix(ext)  # Returns "#" as fallback
@@ -625,6 +663,7 @@ comments)
 **Option 2: Create a wrapper annotation file**
 
 ``` r
+
 # workflow-annotations.R
 # This file documents the workflow for unsupported file types
 
@@ -638,6 +677,7 @@ workflow <- put("workflow-annotations.R")
 **Option 3: Use text input for ad-hoc annotations**
 
 ``` r
+
 # Define workflow without files
 workflow <- put(text = '
 # put id:"step1", label:"Custom Step 1", output:"data.xyz"
@@ -664,6 +704,7 @@ takes too long on large projects.
 **Solutions**:
 
 ``` r
+
 # 1. Limit to specific directories
 workflow <- put("./src/core/")  # Instead of ./
 
@@ -684,6 +725,7 @@ workflow <- put("./src/", validate = FALSE)
 **Solutions**:
 
 ``` r
+
 # 1. Split into smaller subgraphs
 workflow_etl <- put("./src/etl/")
 workflow_ml <- put("./src/ml/")
@@ -704,6 +746,7 @@ put_diagram(workflow, theme = "minimal", style_nodes = FALSE)
 **Best Practices**:
 
 ``` r
+
 # Annotate key steps only, not every function
 # Good: Major pipeline stages
 # put id:"ingest", label:"Data Ingestion", node_type:"input"
@@ -721,6 +764,7 @@ put_diagram(workflow, theme = "minimal", style_nodes = FALSE)
 ### Enable Detailed Logging
 
 ``` r
+
 # Install logger package (optional but recommended)
 install.packages("logger")
 
@@ -734,6 +778,7 @@ set_putior_log_level("ERROR")  # Fatal errors only
 ### Per-Call Logging
 
 ``` r
+
 # Override log level for a single call
 workflow <- put("./src/", log_level = "DEBUG")
 put_diagram(workflow, log_level = "INFO")
@@ -751,6 +796,7 @@ put_diagram(workflow, log_level = "INFO")
 ### Debugging Example
 
 ``` r
+
 # Problem: Annotations not being found
 
 # 1. Enable debug logging
@@ -774,6 +820,7 @@ If you don’t have the `logger` package installed, putior works silently
 without logging. Install it for debugging:
 
 ``` r
+
 install.packages("logger")
 
 # Verify it's working
@@ -801,6 +848,7 @@ workflow <- put("./src/")
 4.  **Typo in “put”** keyword (must be lowercase: `# put` not `# PUT`)
 
 ``` r
+
 # Validate syntax
 is_valid_put_annotation('# put id:"test", label:"Test"')  # TRUE
 is_valid_put_annotation('# PUT id:"test", label:"Test"')  # FALSE (uppercase)
@@ -811,6 +859,7 @@ is_valid_put_annotation('# PUT id:"test", label:"Test"')  # FALSE (uppercase)
 **A**: Use matching input/output file names:
 
 ``` r
+
 # In 01_load.R
 # put id:"load", label:"Load Data", output:"raw_data.csv"
 
@@ -823,6 +872,7 @@ is_valid_put_annotation('# PUT id:"test", label:"Test"')  # FALSE (uppercase)
 **A**: putior automatically uses the file name as the output.
 
 ``` r
+
 # In process_data.R
 # put id:"process", label:"Process Data", input:"raw.csv"
 # Output defaults to "process_data.R"
@@ -837,6 +887,7 @@ is_valid_put_annotation('# PUT id:"test", label:"Test"')  # FALSE (uppercase)
 **A**: Yes, putior works in headless environments:
 
 ``` r
+
 # Generate diagram file for documentation
 workflow <- put("./src/", recursive = TRUE)
 put_diagram(workflow,
@@ -850,6 +901,7 @@ put_diagram(workflow,
 **A**: Use the `.internal` extension:
 
 ``` r
+
 # Variables created during script execution
 # put id:"create", output:"dataset.internal, dataset.RData"
 dataset <- data.frame(x = 1:100)
@@ -869,6 +921,7 @@ between scripts.
 **A**: Different Mermaid renderers interpret themes differently.
 
 ``` r
+
 # For GitHub README
 put_diagram(workflow, theme = "github")
 
@@ -884,6 +937,7 @@ put_diagram(workflow, theme = "minimal", style_nodes = FALSE)
 **A**: Yes, putior preserves any properties you define:
 
 ``` r
+
 # put id:"train", label:"Train Model", \
 #     node_type:"process", \
 #     runtime:"2h", \
@@ -892,6 +946,7 @@ put_diagram(workflow, theme = "minimal", style_nodes = FALSE)
 ```
 
 ``` r
+
 workflow <- put("./src/")
 print(workflow$runtime)   # "2h"
 print(workflow$gpu)       # "required"
@@ -903,6 +958,7 @@ print(workflow$priority)  # "high"
 **A**: Disable validation:
 
 ``` r
+
 # Suppress all validation warnings
 workflow <- put("./src/", validate = FALSE)
 
@@ -937,6 +993,7 @@ If you’re still stuck:
 2.  **Use the sandbox**:
 
     ``` r
+
     run_sandbox()  # Interactive experimentation
     ```
 
@@ -950,6 +1007,7 @@ If you’re still stuck:
     - Debug log output
 
 ``` r
+
 # Gather diagnostic info
 sessionInfo()
 packageVersion("putior")
@@ -960,12 +1018,12 @@ get_supported_extensions()
 
 ## See Also
 
-| Guide                                                                            | Description                     |
-|----------------------------------------------------------------------------------|---------------------------------|
-| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)           | First diagram in 2 minutes      |
-| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference       |
-| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md)       | Auto-detection, themes, logging |
-| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)       | Function documentation          |
-| [Showcase](https://pjt222.github.io/putior/articles/showcase.md)                 | Real-world examples             |
-| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md)   | At-a-glance reference card      |
-| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md)     | MCP/ACP integration guide       |
+| Guide | Description |
+|----|----|
+| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md) | First diagram in 2 minutes |
+| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference |
+| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md) | Auto-detection, themes, logging |
+| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md) | Function documentation |
+| [Showcase](https://pjt222.github.io/putior/articles/showcase.md) | Real-world examples |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md) | At-a-glance reference card |
+| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md) | MCP/ACP integration guide |

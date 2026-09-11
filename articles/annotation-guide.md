@@ -1,6 +1,7 @@
 # Annotation Guide
 
 ``` r
+
 library(putior)
 ```
 
@@ -100,6 +101,7 @@ Use the [`put()`](https://pjt222.github.io/putior/reference/put.md)
 function to scan your files and extract workflow information:
 
 ``` r
+
 # Scan all R and Python files in a directory
 workflow <- put("./src/")
 
@@ -147,6 +149,7 @@ continuation:
 **R/Python style:**
 
 ``` r
+
 # put id:"complex_etl", \
 #     label:"Complex ETL Process", \
 #     node_type:"process", \
@@ -187,6 +190,7 @@ SELECT * FROM raw_customers;
 **Example with many properties:**
 
 ``` r
+
 # put id:"train_model", \
 #     label:"Train Random Forest Model", \
 #     node_type:"process", \
@@ -214,12 +218,12 @@ SELECT * FROM raw_customers;
 putior automatically uses the correct comment prefix based on file
 extension:
 
-| Comment Style | Languages                                 | Extensions                                |
-|:--------------|:------------------------------------------|:------------------------------------------|
-| `# put`       | R, Python, Shell, Julia, Ruby, YAML       | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.yaml` |
-| `-- put`      | SQL, Lua, Haskell                         | `.sql`, `.lua`, `.hs`                     |
-| `// put`      | JavaScript, TypeScript, C, Java, Go, Rust | `.js`, `.ts`, `.c`, `.java`, `.go`, `.rs` |
-| `% put`       | MATLAB, LaTeX                             | `.m`, `.tex`                              |
+| Comment Style | Languages | Extensions |
+|:---|:---|:---|
+| `# put` | R, Python, Shell, Julia, Ruby, YAML | `.R`, `.py`, `.sh`, `.jl`, `.rb`, `.yaml` |
+| `-- put` | SQL, Lua, Haskell | `.sql`, `.lua`, `.hs` |
+| `// put` | JavaScript, TypeScript, C, Java, Go, Rust | `.js`, `.ts`, `.c`, `.java`, `.go`, `.rs` |
+| `% put` | MATLAB, LaTeX | `.m`, `.tex` |
 
 **SQL Example:**
 
@@ -292,14 +296,14 @@ While putior accepts any properties you define, these are commonly used:
 
 For consistency across projects, use these standard node types:
 
-| Type       | Mermaid Shape        | Use For                                              |
-|------------|----------------------|------------------------------------------------------|
-| `input`    | Stadium `([...])`    | Data sources, file loading, API inputs               |
-| `process`  | Rectangle `[...]`    | Data transformation, analysis, computation (default) |
-| `output`   | Subroutine `[[...]]` | Report generation, data export, visualization        |
-| `decision` | Diamond `{...}`      | Conditional logic, branching workflows               |
-| `start`    | Stadium `([...])`    | Workflow entry point (gets boundary styling)         |
-| `end`      | Stadium `([...])`    | Workflow exit point (gets boundary styling)          |
+| Type | Mermaid Shape | Use For |
+|----|----|----|
+| `input` | Stadium `([...])` | Data sources, file loading, API inputs |
+| `process` | Rectangle `[...]` | Data transformation, analysis, computation (default) |
+| `output` | Subroutine `[[...]]` | Report generation, data export, visualization |
+| `decision` | Diamond `{...}` | Conditional logic, branching workflows |
+| `start` | Stadium `([...])` | Workflow entry point (gets boundary styling) |
+| `end` | Stadium `([...])` | Workflow exit point (gets boundary styling) |
 
 > **`artifact`** nodes (cylinder shape) are automatically created by
 > `put_diagram(show_artifacts = TRUE)` for data files referenced in
@@ -347,6 +351,7 @@ management systems.
 You can process single files instead of entire directories:
 
 ``` r
+
 # Process a single file
 workflow <- put("./scripts/analysis.R")
 ```
@@ -356,6 +361,7 @@ workflow <- put("./scripts/analysis.R")
 Include subdirectories in your scan:
 
 ``` r
+
 # Search subdirectories recursively
 workflow <- put("./project/", recursive = TRUE)
 ```
@@ -365,6 +371,7 @@ workflow <- put("./project/", recursive = TRUE)
 Control which files are processed:
 
 ``` r
+
 # Only R files
 workflow <- put("./src/", pattern = "\\.R$")
 
@@ -380,6 +387,7 @@ workflow <- put("./src/", pattern = "\\.(R|r|py|sql|sh|jl)$")
 For debugging annotation issues, include line numbers:
 
 ``` r
+
 # Include line numbers for debugging
 workflow <- put("./src/", include_line_numbers = TRUE)
 ```
@@ -389,6 +397,7 @@ workflow <- put("./src/", include_line_numbers = TRUE)
 Control annotation validation:
 
 ``` r
+
 # Enable validation (default) - provides helpful warnings
 workflow <- put("./src/", validate = TRUE)
 
@@ -402,6 +411,7 @@ If you omit the `id` field, putior will automatically generate a unique
 UUID:
 
 ``` r
+
 # Annotations without explicit IDs get auto-generated UUIDs
 # put label:"Load Data", node_type:"input", output:"data.csv"
 # put label:"Process Data", node_type:"process", input:"data.csv", output:"clean.csv"
@@ -420,6 +430,7 @@ If you omit the `output` field, putior automatically uses the file name
 as the output:
 
 ``` r
+
 # In process_data.R:
 # put label:"Process Step", node_type:"process", input:"raw.csv"
 # No output specified - will default to "process_data.R"
@@ -438,6 +449,7 @@ When you have scripts that source other scripts, use this annotation
 pattern:
 
 ``` r
+
 # In main.R (sources other scripts):
 # put label:"Main Analysis", input:"load_data.R,process_data.R", output:"report.pdf"
 source("load_data.R")    # Reading load_data.R into main.R
@@ -475,6 +487,7 @@ both inputs and outputs - Required for connected workflows - Example:
 ### Correct Usage Pattern
 
 ``` r
+
 # Script 1: Create variable and save it
 # put id:"create_data", output:"dataset.internal, dataset.RData"
 dataset <- data.frame(x = 1:100, y = rnorm(100))
@@ -490,6 +503,7 @@ writeLines(capture.output(analysis), "summary.txt")
 ### What NOT to Do
 
 ``` r
+
 # INCORRECT: Using .internal as input between scripts
 # put input:"dataset.internal"  # This is wrong!
 
@@ -502,6 +516,7 @@ writeLines(capture.output(analysis), "summary.txt")
 Try the comprehensive variable reference example:
 
 ``` r
+
 source(system.file("examples", "variable-reference-example.R", package = "putior"))
 ```
 
@@ -583,6 +598,7 @@ Let’s walk through a complete data science workflow:
 ### 4. Extract the Complete Workflow
 
 ``` r
+
 # Extract workflow from all files
 complete_workflow <- put("./sales_project/", recursive = TRUE)
 print(complete_workflow)
@@ -654,25 +670,27 @@ Guide](https://pjt222.github.io/putior/articles/troubleshooting.md) for:
 **Quick diagnostic:**
 
 ``` r
+
 # Test if your annotation is valid
 is_valid_put_annotation('# put id:"test", label:"Test Node"')  # Should be TRUE
 ```
 
 ## See Also
 
-| Guide                                                                          | Description                     |
-|--------------------------------------------------------------------------------|---------------------------------|
-| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md)         | First diagram in 2 minutes      |
-| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md)     | Auto-detection, themes, logging |
-| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)     | Function documentation          |
-| [Showcase](https://pjt222.github.io/putior/articles/showcase.md)               | Real-world examples             |
-| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md) | At-a-glance reference card      |
-| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md) | Common issues and solutions     |
-| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md)   | MCP/ACP integration guide       |
+| Guide | Description |
+|----|----|
+| [Quick Start](https://pjt222.github.io/putior/articles/quick-start.md) | First diagram in 2 minutes |
+| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md) | Auto-detection, themes, logging |
+| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md) | Function documentation |
+| [Showcase](https://pjt222.github.io/putior/articles/showcase.md) | Real-world examples |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md) | At-a-glance reference card |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md) | Common issues and solutions |
+| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md) | MCP/ACP integration guide |
 
 **Built-in examples:**
 
 ``` r
+
 # Complete workflow example
 source(system.file("examples", "reprex.R", package = "putior"))
 

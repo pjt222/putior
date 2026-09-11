@@ -65,6 +65,7 @@ Imports contains only `tools`
 Suggests are all real, available packages
 
 ``` r
+
 # Verify
 desc::desc_get("Title")
 desc::desc_get("Version")
@@ -82,6 +83,7 @@ S3 methods properly registered (`S3method()`)
 No unnecessary imports
 
 ``` r
+
 # Verify: regenerate and diff
 devtools::document()
 # Should produce no changes if already up-to-date
@@ -104,6 +106,7 @@ No broken `\link{}` or `\code{}` references in man pages
 No spelling errors in documentation
 
 ``` r
+
 devtools::spell_check()
 devtools::run_examples()
 ```
@@ -124,6 +127,7 @@ Review each vignette renders correctly and content is accurate:
 | 8   | `skills.Rmd`           | \[ \]   | \[ \]      |       |
 
 ``` r
+
 # Build all vignettes
 devtools::build_vignettes()
 ```
@@ -177,6 +181,7 @@ No tests modify global state without cleanup
 Tests use `testthat` 3rd edition
 
 ``` r
+
 devtools::test()
 # Expected: FAIL 0 | WARN 0 | SKIP 2 | PASS 3956
 ```
@@ -229,6 +234,7 @@ Large file handling
 0 notes (or only expected notes)
 
 ``` r
+
 devtools::check()
 ```
 
@@ -382,6 +388,7 @@ Package installs cleanly: `R CMD INSTALL putior_*.tar.gz`
 ### QA-7.1: Core Workflow - Annotation Scanning
 
 ``` r
+
 library(putior)
 
 # Scan package's own R files
@@ -401,6 +408,7 @@ S3 summary method shows file/type breakdown
 ### QA-7.2: Diagram Generation
 
 ``` r
+
 diagram <- put_diagram(workflow)
 # Expected: opens viewer or prints mermaid code
 
@@ -419,6 +427,7 @@ All 9 themes work:
 ### QA-7.3: Auto-Detection
 
 ``` r
+
 auto <- put_auto("./R/")
 print(auto)
 ```
@@ -430,6 +439,7 @@ Returns putior_workflow data frame
 ### QA-7.4: Multi-Language Support
 
 ``` r
+
 # Verify comment prefixes
 get_comment_prefix("sql")   # "--"
 get_comment_prefix("js")    # "//"
@@ -450,6 +460,7 @@ All comment prefixes correct
 ### QA-7.5: Help System
 
 ``` r
+
 putior_help()
 putior_help("annotation")
 putior_help("themes")
@@ -468,6 +479,7 @@ Unknown topic handled gracefully
 ### QA-7.6: Interactive Sandbox (requires shiny)
 
 ``` r
+
 # Only if shiny is installed
 run_sandbox()
 ```
@@ -489,6 +501,7 @@ Copy-to-clipboard button works
 ### QA-8.1: CRAN Pre-flight Checks
 
 ``` r
+
 # Local
 devtools::check(cran = TRUE)
 
@@ -534,6 +547,7 @@ No writing to user’s home directory
 Package size \< 5MB after build
 
 ``` r
+
 # Check built package size
 file.size(list.files(pattern = "putior.*\\.tar\\.gz"))
 ```

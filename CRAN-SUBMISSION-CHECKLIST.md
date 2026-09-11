@@ -84,6 +84,7 @@ platform-specific issues
 ### 4. Submit to CRAN
 
 ``` r
+
 # This will guide you through the submission process
 devtools::release()
 ```

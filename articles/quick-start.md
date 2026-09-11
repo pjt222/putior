@@ -5,10 +5,12 @@
 #### Step 1: Install
 
 ``` r
+
 install.packages("putior")
 ```
 
 ``` r
+
 library(putior)
 ```
 
@@ -17,6 +19,7 @@ library(putior)
 Add `# put` comments to your R scripts:
 
 ``` r
+
 # my_analysis.R
 # put label:"Load Data", output:"raw_data"
 data <- read.csv("sales.csv")
@@ -31,6 +34,7 @@ rmarkdown::render("report.Rmd")
 #### Step 3: Generate Diagram
 
 ``` r
+
 workflow <- put("my_analysis.R")
 put_diagram(workflow)
 ```
@@ -61,6 +65,7 @@ flowchart TD
 ### Try It Now
 
 ``` r
+
 # Create a temporary file with annotations
 temp_file <- tempfile(fileext = ".R")
 writeLines(c(
@@ -76,28 +81,31 @@ writeLines(c(
 
 # Scan and visualize
 workflow <- put(temp_file)
-#> Warning: Validation issues in file272042ab49e3.R line 7:
+#> Warning: Validation issues in file25d2ee32ceb.R line 7:
 #> File reference missing extension: database
 ```
 
 ``` r
+
 cat("```mermaid\n")
 ```
 
 ``` mermaid
+
 ``` r
 cat(put_diagram(workflow, output = "raw"))
 ```
 
-flowchart TD node_43d662c5_b1b9_4e27_80b7_699cae1edc3f\[“Extract”\]
-b6bbfe5f_664a_488b_9648_8ff0bea5e1da\[“Transform”\]
-node_76805014_7a61_46de_88fd_449a58083036\[“Load”\]
+flowchart TD node_2b365a3a_cb62_4454_9bbd_8793e3bdfcaa\[“Extract”\]
+bd540292_fd7c_40aa_b3a4_e05271bff8c4\[“Transform”\]
+dfa54f36_9f64_441d_9126_3957bcf2ee3b\[“Load”\]
 
     %% Connections
-    node_43d662c5_b1b9_4e27_80b7_699cae1edc3f --> b6bbfe5f_664a_488b_9648_8ff0bea5e1da
-    b6bbfe5f_664a_488b_9648_8ff0bea5e1da --> node_76805014_7a61_46de_88fd_449a58083036
+    node_2b365a3a_cb62_4454_9bbd_8793e3bdfcaa --> bd540292_fd7c_40aa_b3a4_e05271bff8c4
+    bd540292_fd7c_40aa_b3a4_e05271bff8c4 --> dfa54f36_9f64_441d_9126_3957bcf2ee3b
 
 ``` r
+
 cat("\n```\n")
 ```
 
@@ -105,10 +113,12 @@ cat("\n```\n")
 
 unlink(temp_file)
 
+
     ---
     ## Annotation Syntax at a Glance
 
 ## put label:“Step Name”, input:“file.csv”, output:“result.csv”
+
 
     | Field | Purpose | Required |
     |-------|---------|----------|
@@ -146,12 +156,14 @@ unlink(temp_file)
 #### Include Subdirectories
 
 ``` r
+
 workflow <- put("./project/", recursive = TRUE)
 ```
 
 #### Auto-Detect Workflow (No Annotations!)
 
 ``` r
+
 # Automatically detect file I/O from code
 workflow <- put_auto("./src/")
 put_diagram(workflow)
@@ -160,12 +172,14 @@ put_diagram(workflow)
 #### Choose a Theme
 
 ``` r
+
 put_diagram(workflow, theme = "github")  # or: light, dark, minimal, viridis
 ```
 
 #### Save to File
 
 ``` r
+
 put_diagram(workflow, output = "file", file = "workflow.md")
 ```
 
@@ -176,6 +190,7 @@ put_diagram(workflow, output = "file", file = "workflow.md")
 Experiment without creating files:
 
 ``` r
+
 run_sandbox()  # Opens Shiny app
 ```
 
@@ -184,6 +199,7 @@ run_sandbox()  # Opens Shiny app
 ### Quick Reference
 
 ``` r
+
 # Core functions
 put(path)                    # Extract annotations
 put_diagram(workflow)        # Generate Mermaid diagram
@@ -205,12 +221,12 @@ for full documentation.
 
 ### See Also
 
-| Guide                                                                            | Description                     |
-|----------------------------------------------------------------------------------|---------------------------------|
-| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference       |
-| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md)       | Auto-detection, themes, logging |
-| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md)       | Function documentation          |
-| [Showcase](https://pjt222.github.io/putior/articles/showcase.md)                 | Real-world examples             |
-| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md)   | At-a-glance reference card      |
-| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md)   | Common issues and solutions     |
-| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md)     | MCP/ACP integration guide       |
+| Guide | Description |
+|----|----|
+| [Annotation Guide](https://pjt222.github.io/putior/articles/annotation-guide.md) | Complete syntax reference |
+| [Features Tour](https://pjt222.github.io/putior/articles/features-tour.md) | Auto-detection, themes, logging |
+| [API Reference](https://pjt222.github.io/putior/articles/api-reference.md) | Function documentation |
+| [Showcase](https://pjt222.github.io/putior/articles/showcase.md) | Real-world examples |
+| [Quick Reference](https://pjt222.github.io/putior/articles/quick-reference.md) | At-a-glance reference card |
+| [Troubleshooting](https://pjt222.github.io/putior/articles/troubleshooting.md) | Common issues and solutions |
+| [AI Integration](https://pjt222.github.io/putior/articles/ai-integration.md) | MCP/ACP integration guide |
