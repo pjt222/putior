@@ -6,7 +6,7 @@
   (`putior_guide`), and its ACP operation (`guide`) all use the new name.
   `putior_help("skills")` still works as an alias for backward compatibility.
   The inst file was renamed from `SKILLS.md` to `GUIDE.md`, and the vignette
-  from `skills.Rmd` to `ai-integration.Rmd`. (#41)
+  from `skills.Rmd` to `ai-integration.Rmd`.
 
 * `put()`, `put_auto()`, `put_generate()`, and `put_merge()` now default to
   `recursive = TRUE` (previously `FALSE`). Directory scans now include
