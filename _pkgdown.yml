@@ -128,9 +128,6 @@ template:
       </script>
     after_body: |
       <style>
-        /* Import external CSS */
-        @import url('extra.css');
-
         /* Fira font family overrides */
         :root {
           --font-family-sans-serif: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -290,6 +287,10 @@ reference:
 authors:
   Philipp Thoss:
     href: https://orcid.org/0000-0002-4672-2792
+
+# Old article names, so links to them keep working
+redirects:
+  - ["articles/skills.html", "articles/ai-integration.html"]
 
 # Development mode disabled for GitHub Pages deployment
 # development:
