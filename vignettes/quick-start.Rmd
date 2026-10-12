@@ -84,14 +84,12 @@ writeLines(c(
   'write_to_db(clean)'
 ), temp_file)
 
-# Scan and visualize
+# Scan, then clean up
 workflow <- put(temp_file)
-cat("```mermaid\n")
-cat(put_diagram(workflow, output = "raw"))
-cat("\n```\n")
-
-# Cleanup
 unlink(temp_file)
+
+# Visualize
+cat("```mermaid\n", put_diagram(workflow, output = "raw"), "\n```\n", sep = "")
 ```
 
 ---
