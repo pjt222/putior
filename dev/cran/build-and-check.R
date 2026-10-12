@@ -13,6 +13,19 @@ Sys.setenv(RSTUDIO_PANDOC = "C:/Program Files/RStudio/resources/app/bin/quarto/b
 Sys.setenv("_R_CHECK_CRAN_INCOMING_REMOTE_" = "FALSE")
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 
+# R CMD check builds the PDF manual with pdflatex. If pdflatex is not on PATH
+# but TinyTeX is installed, put TinyTeX's bin directory on PATH so the manual
+# is checked locally instead of failing with "pdflatex is not available".
+if (!nzchar(Sys.which("pdflatex")) && requireNamespace("tinytex", quietly = TRUE)) {
+  tinytex_root <- tinytex::tinytex_root(error = FALSE)
+  if (nzchar(tinytex_root)) {
+    tinytex_bin_dirs <- list.dirs(file.path(tinytex_root, "bin"), recursive = FALSE)
+    Sys.setenv(PATH = paste(c(tinytex_bin_dirs, Sys.getenv("PATH")),
+                            collapse = .Platform$path.sep))
+  }
+}
+cat("pdflatex:", Sys.which("pdflatex"), "\n")
+
 cat("Package root:", normalizePath("."), "\n")
 
 tarball <- pkgbuild::build(".", dest_path = ".", manual = FALSE,
