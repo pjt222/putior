@@ -493,16 +493,20 @@ server <- function(input, output, session) {
     }
   )
 
-  # Auto-generate on load
+  # Live preview: render the initial diagram once the template has loaded,
+  # then re-render when an edit changes the generated Mermaid code. Debounced
+  # so typing does not re-render on every keystroke. Nothing is sent while the
+  # app is idle, and an edit that leaves the code identical (possible when the
+  # annotations set explicit ids) does not re-render. The Generate button
+  # still forces a re-render of the current code.
+  debounced_mermaid_code <- debounce(mermaid_code, 500)
+  last_rendered_code <- NULL
   observe({
-    # Small delay to let the page load
-    invalidateLater(500, session)
-    isolate({
-      code <- mermaid_code()
-      if (!is.null(code)) {
-        session$sendCustomMessage("renderMermaid", code)
-      }
-    })
+    code <- debounced_mermaid_code()
+    if (!is.null(code) && !identical(code, last_rendered_code)) {
+      last_rendered_code <<- code
+      session$sendCustomMessage("renderMermaid", code)
+    }
   })
 }
 

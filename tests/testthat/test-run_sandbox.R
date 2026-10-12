@@ -123,3 +123,43 @@ test_that("default multi-file example yields all four workflow nodes", {
     c("Fetch Data", "Clean Data", "Analyze", "Generate Report")
   )
 })
+
+test_that("sandbox renders once on load and does not re-render while idle", {
+  # Relies on swapping a method on shiny's MockShinySession, which is shiny
+  # internals; keep it off CRAN so a shiny change cannot break CRAN checks.
+  skip_on_cran()
+  skip_if_not_installed("shiny")
+
+  app_file <- system.file("shiny", "putior-sandbox", "app.R", package = "putior")
+  app_env <- new.env()
+  sys.source(app_file, envir = app_env)
+  render_counter <- new.env()
+  render_counter$count <- 0
+
+  shiny::testServer(app_env$server, {
+    unlockBinding("sendCustomMessage", session)
+    session$sendCustomMessage <- function(type, message) {
+      if (identical(type, "renderMermaid")) {
+        render_counter$count <- render_counter$count + 1
+      }
+      invisible(NULL)
+    }
+
+    session$setInputs(
+      template = "multi", code = app_env$sample_multi_file,
+      direction = "TD", theme = "github", show_artifacts = FALSE,
+      show_files = FALSE, style_nodes = TRUE, show_boundaries = TRUE
+    )
+    session$elapse(1000)
+    expect_equal(render_counter$count, 1)
+
+    # Idle: the old invalidateLater(500) loop re-rendered twice per second.
+    session$elapse(10000)
+    expect_equal(render_counter$count, 1)
+
+    # A settings change still updates the preview, once.
+    session$setInputs(direction = "LR")
+    session$elapse(1000)
+    expect_equal(render_counter$count, 2)
+  })
+})
