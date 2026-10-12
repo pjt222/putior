@@ -160,7 +160,7 @@ ui <- fluidPage(
         }
       });
 
-      Shiny.addCustomMessageHandler('renderMermaid', function(code) {
+      function renderMermaidCode(code) {
         var container = document.getElementById('mermaid-container');
         container.innerHTML = '';
 
@@ -174,6 +174,31 @@ ui <- fluidPage(
         mermaid.run({ nodes: [div] }).catch(function(err) {
           console.error('Mermaid render failed: ', err);
         });
+      }
+
+      // Mermaid measures text with the browser's layout, so a diagram
+      // rendered while the Diagram tab is hidden collapses to an empty
+      // 16px box. Keep code that arrives while the tab is hidden and render
+      // it when the tab is shown again.
+      var pendingMermaidCode = null;
+
+      Shiny.addCustomMessageHandler('renderMermaid', function(code) {
+        var container = document.getElementById('mermaid-container');
+        if (container.offsetParent === null) {
+          pendingMermaidCode = code;
+          return;
+        }
+        pendingMermaidCode = null;
+        renderMermaidCode(code);
+      });
+
+      $(document).on('shown.bs.tab', function() {
+        var container = document.getElementById('mermaid-container');
+        if (pendingMermaidCode !== null && container.offsetParent !== null) {
+          var code = pendingMermaidCode;
+          pendingMermaidCode = null;
+          renderMermaidCode(code);
+        }
       });
 
       // Copy to clipboard function
