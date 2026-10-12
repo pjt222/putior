@@ -671,6 +671,9 @@ fill_missing_ids <- function(results) {
   }
 
   used_ids <- unlist(lapply(results[!has_no_id], function(annotation) annotation[["id"]]))
+  # put_diagram() sanitizes ids for Mermaid, which turns "1" or "node-1" into
+  # "node_1". Skip those forms too, or the fallback would merge two nodes.
+  used_ids <- unique(c(used_ids, vapply(used_ids, sanitize_node_id, character(1))))
   id_counter <- 0L
   for (annotation_index in which(has_no_id)) {
     repeat {

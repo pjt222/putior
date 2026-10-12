@@ -34,6 +34,39 @@ test_that("fill_missing_ids() skips ids that are already in use", {
   expect_false(anyDuplicated(ids) > 0)
 })
 
+test_that("fill_missing_ids() skips ids that become node_<n> in the diagram", {
+  # sanitize_node_id() turns "1" into "node_1" and "node-2" into "node_2".
+  results <- list(
+    list(id = "1", label = "Step One"),
+    list(id = "node-2", label = "Step Two"),
+    list(label = "No id")
+  )
+
+  filled <- fill_missing_ids(results)
+
+  expect_equal(filled[[3]][["id"]], "node_3")
+})
+
+test_that("explicit numeric ids and a missing id give distinct diagram nodes", {
+  test_dir <- file.path(tempdir(), "putior_test_fallback_numeric")
+  dir.create(test_dir, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE))
+  create_test_file(c(
+    '# put id:"1", label:"Step One", output:"a.csv"',
+    '# put id:"2", label:"Step Two", input:"a.csv", output:"b.csv"'
+  ), "a.R", test_dir)
+  create_test_file(c(
+    '# put label:"No id step", input:"b.csv", output:"c.csv"'
+  ), "b.R", test_dir)
+
+  diagram <- put_diagram(put(test_dir), output = "raw")
+
+  for (node_label in c("Step One", "Step Two", "No id step")) {
+    expect_match(diagram, paste0('"', node_label, '"'), fixed = TRUE)
+  }
+  expect_false(grepl("node_2 --> node_1", diagram, fixed = TRUE))
+})
+
 test_that("fill_missing_ids() keeps explicit ids, including empty ones", {
   results <- list(
     list(id = "extract", label = "Extract"),

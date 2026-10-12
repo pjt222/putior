@@ -108,7 +108,7 @@ cat(paste(rep("=", 50), collapse = ""), "\n")
 cat("1. When 'id' is omitted → UUID is auto-generated (node_1, node_2, ... without the uuid package)\n")
 cat("2. When 'id' is explicit → Your ID is used as-is\n")
 cat("3. When 'id' is empty (\"\") → Validation warning\n")
-cat("4. UUIDs ensure uniqueness across workflows\n")
+cat("4. Generated ids are unique within the workflow\n")
 cat("5. Use 'label' for human-readable node names\n\n")
 
 cat("📝 BEST PRACTICES:\n")
