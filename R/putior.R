@@ -533,6 +533,9 @@ parse_put_annotation <- function(line) {
   # - Block open: /** put, /* put (on opening line of block comment)
   # - Block line: * put (inside block comment body)
   cleaned <- sub("^\\s*(/\\*\\*?\\s*|\\*\\s*|#|--|//|%)\\s*put(\\||\\s+|:)\\s*", "", line, ignore.case = FALSE)
+  # A single-line block comment (/* put ... */) also ends with "*/". Strip it,
+  # or the last pair fails to parse and is dropped (#72).
+  cleaned <- sub("\\s*\\*/\\s*$", "", cleaned)
 
   # Handle edge case of empty annotation
   if (is.null(cleaned) || length(cleaned) == 0 || nchar(trimws(cleaned)) == 0) {

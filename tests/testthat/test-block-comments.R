@@ -618,3 +618,35 @@ test_that("C++ files support block comments", {
   expect_equal(nrow(wf), 1)
   expect_equal(wf$id, "render")
 })
+
+test_that("single-line block annotations keep their last property (#72)", {
+  block_result <- parse_put_annotation('/* put label:"X", input:"x.json", output:"y.json" */')
+  expect_equal(block_result$label, "X")
+  expect_equal(block_result$input, "x.json")
+  expect_equal(block_result$output, "y.json")
+
+  doc_result <- parse_put_annotation('/** put id:"a", label:"B"*/')
+  expect_equal(doc_result$id, "a")
+  expect_equal(doc_result$label, "B")
+
+  # A value that itself ends in "*/" inside the quotes is left alone.
+  quoted_result <- parse_put_annotation('// put id:"c", label:"ends with */"')
+  expect_equal(quoted_result$label, "ends with */")
+})
+
+test_that("a single-line block annotation keeps its edge to the next node (#72)", {
+  test_dir <- file.path(tempdir(), "putior_test_block_single_line")
+  dir.create(test_dir, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE))
+  create_test_file(c(
+    '// put id:"load", label:"Load", output:"x.json"',
+    '/* put id:"transform", label:"Transform", input:"x.json", output:"y.json" */',
+    '// put id:"save", label:"Save", input:"y.json", output:"z.json"'
+  ), "pipe.js", test_dir)
+
+  workflow <- put(test_dir)
+  diagram <- put_diagram(workflow, output = "raw")
+
+  expect_equal(workflow$output[workflow$id == "transform"], "y.json")
+  expect_match(diagram, "transform --> save", fixed = TRUE)
+})

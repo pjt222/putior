@@ -33,6 +33,9 @@
   is now the only threshold, and an invalid `log_level` is an error. With
   logger installed, WARN-level messages now appear on stderr next to the
   matching R warnings. (#70)
+* Fixed single-line block comment annotations (`/* put ... */`) silently
+  losing their last property, which could drop an output and its edge.
+  (#72)
 
 ## New Features
 
