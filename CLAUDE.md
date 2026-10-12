@@ -1037,10 +1037,38 @@ cat(knitr::knit_child(text = mermaid_chunk, quiet = TRUE))
 patterns ✅ **GitHub Pages deployed** - Documentation site live at
 <https://pjt222.github.io/putior/>
 
+## CRAN Release Tooling and Build Output
+
+Release helper scripts live in `dev/cran/` (`build-and-check.R`,
+`check-tarball.R`, `winbuilder.R`). Run each from the **package root**:
+`Rscript dev/cran/<name>.R`. They assert `file.exists("DESCRIPTION")`
+and use paths relative to `.` — no absolute `D:/dev/p/...`.
+
+Build output stays inside the repo: the tarball at the package root
+(covered by `/*.tar.gz` in `.gitignore`, `^.*\.tar\.gz$` in
+`.Rbuildignore`), throwaway `.rds`/logs in `dev/cran/out/` (gitignored).
+`dev/` is excluded from the tarball via `^dev$` in `.Rbuildignore`.
+
+Never set `pkgbuild::build(dest_path = ...)` or a `saveRDS` target
+outside this repo. See the temp-file policy in `../CLAUDE.md` — a prior
+release wrote its build dir, tarball, logs and check `.rds` into
+`/mnt/d/dev/p`, which is what that policy now forbids.
+
 ## Development Best Practices References
 
-@../development-guides/r-package-development-best-practices.md
-@../development-guides/wsl-rstudio-claude-integration.md
-@../development-guides/general-development-setup.md
-@../development-guides/quick-reference.md
-@../development-guides/pkgdown-github-pages-deployment.md
+Development guides available for reference when needed (read on demand,
+not preloaded): - `../agent-almanac/guides/r-package-development.md` -
+`../agent-almanac/guides/setting-up-your-environment.md` -
+`../agent-almanac/guides/quick-reference.md`
+
+## Team Activation (REQUIRED when user requests a team)
+
+When the user asks to activate or use a team: (1) call
+`ToolSearch("select:TeamCreate")` to load the TeamCreate tool, (2) read
+the team definition from
+`/mnt/d/dev/p/agent-almanac/teams/<team-name>.md`, (3) call `TeamCreate`
+with the team configuration. Do NOT fall back to spawning individual
+agents via the Agent tool — always use TeamCreate for team requests.
+
+Available teams are listed in
+`/mnt/d/dev/p/agent-almanac/teams/_registry.yml`.

@@ -19,7 +19,7 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Features Tour">
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.3/dist/mermaid.min.js"></script><script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.8/dist/mermaid.min.js"></script><script>
   // Theme-aware Mermaid configuration
   // Light colors aligned with putior default theme
   // Dark colors aligned with agent-almanac/viz cyberpunk palette
@@ -582,8 +582,8 @@ Reference</a>)</em></p>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_source_info <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Output:</strong></p>
 <pre class="mermaid"><code>flowchart TD
-    load(["Load Data"&lt;br/&gt;(01_load.R)])
-    process["Process"&lt;br/&gt;(02_process.R)]
+    load(["Load Data&lt;br/&gt;(01_load.R)"])
+    process["Process&lt;br/&gt;(02_process.R)"]
 
     %% Connections
     load --&gt; process

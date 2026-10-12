@@ -19,7 +19,7 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Quick Start">
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.3/dist/mermaid.min.js"></script><script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.8/dist/mermaid.min.js"></script><script>
   // Theme-aware Mermaid configuration
   // Light colors aligned with putior default theme
   // Dark colors aligned with agent-almanac/viz cyberpunk palette
@@ -291,19 +291,19 @@
 <span></span>
 <span><span class="co"># Scan and visualize</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="va">temp_file</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Validation issues in file25d2ee32ceb.R line 7:</span></span>
+<span><span class="co">#&gt; Warning: Validation issues in file25285f5287a3.R line 7:</span></span>
 <span><span class="co">#&gt; File reference missing extension: database</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"```mermaid\n"</span><span class="op">)</span></span></code></pre></div>
 <pre class="mermaid"><code>
 ``` r
 cat(put_diagram(workflow, output = "raw"))</code></pre>
-<p>flowchart TD node_2b365a3a_cb62_4454_9bbd_8793e3bdfcaa[“Extract”]
-bd540292_fd7c_40aa_b3a4_e05271bff8c4[“Transform”]
-dfa54f36_9f64_441d_9126_3957bcf2ee3b[“Load”]</p>
+<p>flowchart TD d6f488a9_fd78_4d69_af8b_64d1b0d37b26[“Extract”]
+a71565e3_0211_4b3c_95ba_e090d327a853[“Transform”]
+node_334add93_2128_40ea_b671_15d3993ae6bc[“Load”]</p>
 <pre><code>%% Connections
-node_2b365a3a_cb62_4454_9bbd_8793e3bdfcaa --&gt; bd540292_fd7c_40aa_b3a4_e05271bff8c4
-bd540292_fd7c_40aa_b3a4_e05271bff8c4 --&gt; dfa54f36_9f64_441d_9126_3957bcf2ee3b</code></pre>
+d6f488a9_fd78_4d69_af8b_64d1b0d37b26 --&gt; a71565e3_0211_4b3c_95ba_e090d327a853
+a71565e3_0211_4b3c_95ba_e090d327a853 --&gt; node_334add93_2128_40ea_b671_15d3993ae6bc</code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n```\n"</span><span class="op">)</span></span></code></pre></div>
 </div>

@@ -11,7 +11,6 @@
   an alias for backward compatibility. The inst file was renamed from
   `SKILLS.md` to `GUIDE.md`, and the vignette from `skills.Rmd` to
   `ai-integration.Rmd`.
-  ([\#41](https://github.com/pjt222/putior/issues/41))
 
 - [`put()`](https://pjt222.github.io/putior/reference/put.md),
   [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md),
@@ -208,6 +207,9 @@
 
 - Added copy-to-clipboard button for quick Mermaid code export
 - Added optional shinyAce syntax highlighting (graceful degradation)
+- The sandbox loads Mermaid 10.9.8, which fixes 8 published Mermaid
+  security advisories that affect the 10.9.3 pin used during development
+  ([\#48](https://github.com/pjt222/putior/issues/48))
 
 #### Documentation
 
@@ -215,7 +217,7 @@
   ([\#40](https://github.com/pjt222/putior/issues/40))
 - 8 comprehensive vignettes including quick-start, annotation guide,
   features tour, API reference, showcase, troubleshooting,
-  quick-reference, and skills reference
+  quick-reference, and AI integration
 - Professional cheat sheet (`inst/cheatsheet/putior-cheatsheet.qmd`)
 - 20 example files in `inst/examples/`
 - [`putior_guide()`](https://pjt222.github.io/putior/reference/putior_guide.md)

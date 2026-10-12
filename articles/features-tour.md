@@ -305,8 +305,8 @@ put_diagram(workflow, show_source_info = TRUE)
 
 ``` mermaid
 flowchart TD
-    load(["Load Data"<br/>(01_load.R)])
-    process["Process"<br/>(02_process.R)]
+    load(["Load Data<br/>(01_load.R)"])
+    process["Process<br/>(02_process.R)"]
 
     %% Connections
     load --> process
