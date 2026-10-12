@@ -38,7 +38,7 @@ test_that("set_putior_log_level returns previous level", {
 })
 
 test_that("putior_log respects log level threshold", {
-  skip_if_not_installed("logger")
+  skip_if_not_installed("logger", minimum_version = "0.3.0")
 
   # logger writes to stderr, which capture.output(type = "message") captures.
   set_putior_log_level("DEBUG")
@@ -187,7 +187,7 @@ test_that("log_level parameter overrides global option", {
 })
 
 test_that("putior writes log lines at the requested level (#70)", {
-  skip_if_not_installed("logger")
+  skip_if_not_installed("logger", minimum_version = "0.3.0")
   set_putior_log_level("WARN")
   on.exit(set_putior_log_level("WARN"), add = TRUE)
   test_dir <- file.path(tempdir(), "putior_test_logging_output")
@@ -206,4 +206,27 @@ test_that("putior writes log lines at the requested level (#70)", {
   expect_equal(getOption("putior.log_level"), "WARN")
   quiet <- utils::capture.output(invisible(put(test_dir)), type = "message")
   expect_length(quiet, 0)
+})
+
+test_that("the putior.log_level option alone controls logging (#70)", {
+  skip_if_not_installed("logger", minimum_version = "0.3.0")
+  old_options <- options(putior.log_level = "debug")
+  on.exit(options(old_options), add = TRUE)
+
+  # Set directly, in lowercase, without set_putior_log_level().
+  logged <- utils::capture.output(putior_log("DEBUG", "option-only message"), type = "message")
+
+  expect_true(any(grepl("option-only message", logged, fixed = TRUE)))
+})
+
+test_that("an invalid per-call log_level is an error, not a crash (#70)", {
+  test_dir <- file.path(tempdir(), "putior_test_logging_invalid")
+  dir.create(test_dir, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE), add = TRUE)
+  writeLines('# put id:"load", label:"Load", output:"data.csv"', file.path(test_dir, "load.R"))
+  set_putior_log_level("WARN")
+
+  expect_error(put(test_dir, log_level = "VERBOSE"), "Invalid log_level")
+  expect_equal(getOption("putior.log_level"), "WARN")
+  expect_no_error(put(test_dir, log_level = "info"))
 })

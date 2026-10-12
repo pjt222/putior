@@ -163,8 +163,10 @@ is_valid_hex_color <- function(x) {
   # Initialize logger namespace if logger package is available
   if (requireNamespace("logger", quietly = TRUE)) {
     tryCatch({
-      # Create a putior-specific logging namespace
-      logger::log_threshold(logger::WARN, namespace = pkgname)
+      # Let every putior message through logger's own filter: putior_log()
+      # already filters by getOption("putior.log_level"), so that option is
+      # the only threshold users need to set (#70).
+      logger::log_threshold(logger::DEBUG, namespace = pkgname)
     }, error = function(e) {
       # Silently ignore errors during logger setup
     })

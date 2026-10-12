@@ -27,11 +27,12 @@
   one, it silently dropped the others. This broke the quick-start example and
   the sandbox templates for anyone without uuid. The sandbox now also shows
   diagram errors in its status line instead of a blank preview. (#58)
-* Fixed logging, which wrote nothing with logger 0.4.x: every log call failed
-  inside logger and the error was hidden. The per-call `log_level` argument
-  now also sets logger's threshold for that call. With logger installed,
-  WARN-level messages now appear on stderr next to the matching R warnings.
-  (#70)
+* Fixed logging, which wrote nothing with logger 0.3 or later: every log call
+  failed inside logger and the error was hidden. The `putior.log_level` option,
+  set by `set_putior_log_level()` or for one call by the `log_level` argument,
+  is now the only threshold, and an invalid `log_level` is an error. With
+  logger installed, WARN-level messages now appear on stderr next to the
+  matching R warnings. (#70)
 
 ## New Features
 
