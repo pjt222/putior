@@ -54,7 +54,7 @@ test_that("put_diagram() handles different directions", {
   directions <- c("TD", "LR", "BT", "RL")
 
   for (dir in directions) {
-    diagram_code <- put_diagram(workflow, direction = dir, output = "none")
+    diagram_code <- put_diagram(workflow, direction = dir, output = "raw")
     expect_true(grepl(paste0("flowchart ", dir), diagram_code))
   }
 })
@@ -63,21 +63,21 @@ test_that("put_diagram() handles different node label options", {
   workflow <- create_test_workflow()
 
   # Test ID labels (node_labels = "name" shows IDs)
-  diagram_id <- put_diagram(workflow, node_labels = "name", output = "none")
+  diagram_id <- put_diagram(workflow, node_labels = "name", output = "raw")
   expect_true(grepl("load_data", diagram_id))
 
   # Test description labels
-  diagram_label <- put_diagram(workflow, node_labels = "label", output = "none")
+  diagram_label <- put_diagram(workflow, node_labels = "label", output = "raw")
   expect_true(grepl("Load Raw Data", diagram_label))
 
   # Test both labels
-  diagram_both <- put_diagram(workflow, node_labels = "both", output = "none")
+  diagram_both <- put_diagram(workflow, node_labels = "both", output = "raw")
   expect_true(grepl("load_data: Load Raw Data", diagram_both))
 })
 
 test_that("put_diagram() generates correct node shapes", {
   workflow <- create_test_workflow()
-  diagram_code <- put_diagram(workflow, output = "none")
+  diagram_code <- put_diagram(workflow, output = "raw")
 
   # Check shapes for different node types
   expect_true(grepl("\\(\\[.*\\]\\)", diagram_code)) # Stadium shape for input
@@ -87,7 +87,7 @@ test_that("put_diagram() generates correct node shapes", {
 
 test_that("put_diagram() creates connections based on file flow", {
   workflow <- create_test_workflow()
-  diagram_code <- put_diagram(workflow, output = "none")
+  diagram_code <- put_diagram(workflow, output = "raw")
 
   # Should have connections between nodes that share files
   expect_true(grepl("load_data --> process_data", diagram_code))
@@ -98,12 +98,12 @@ test_that("put_diagram() shows file names on connections when requested", {
   workflow <- create_test_workflow()
 
   # Without file names
-  diagram_no_files <- put_diagram(workflow, show_files = FALSE, output = "none")
+  diagram_no_files <- put_diagram(workflow, show_files = FALSE, output = "raw")
   expect_true(grepl("load_data --> process_data", diagram_no_files))
   expect_false(grepl("raw_data.csv", diagram_no_files))
 
   # With file names
-  diagram_with_files <- put_diagram(workflow, show_files = TRUE, output = "none")
+  diagram_with_files <- put_diagram(workflow, show_files = TRUE, output = "raw")
   expect_true(grepl("\\|raw_data.csv\\|", diagram_with_files))
   expect_true(grepl("\\|processed_data.csv\\|", diagram_with_files))
 })
@@ -112,23 +112,23 @@ test_that("put_diagram() adds styling when requested", {
   workflow <- create_test_workflow()
 
   # With styling
-  diagram_styled <- put_diagram(workflow, style_nodes = TRUE, output = "none")
+  diagram_styled <- put_diagram(workflow, style_nodes = TRUE, output = "raw")
   expect_true(grepl("classDef inputStyle", diagram_styled))
   expect_true(grepl("classDef processStyle", diagram_styled))
   expect_true(grepl("classDef outputStyle", diagram_styled))
 
   # Without styling
-  diagram_unstyled <- put_diagram(workflow, style_nodes = FALSE, output = "none")
+  diagram_unstyled <- put_diagram(workflow, style_nodes = FALSE, output = "raw")
   expect_false(grepl("classDef", diagram_unstyled))
 })
 
 test_that("put_diagram() includes title when provided", {
   workflow <- create_test_workflow()
 
-  diagram_with_title <- put_diagram(workflow, title = "My Workflow", output = "none")
+  diagram_with_title <- put_diagram(workflow, title = "My Workflow", output = "raw")
   expect_true(grepl("title: My Workflow", diagram_with_title))
 
-  diagram_no_title <- put_diagram(workflow, title = NULL, output = "none")
+  diagram_no_title <- put_diagram(workflow, title = NULL, output = "raw")
   expect_false(grepl("title:", diagram_no_title))
 })
 
@@ -224,7 +224,7 @@ test_that("put_diagram() handles complex workflows", {
     stringsAsFactors = FALSE
   )
 
-  diagram_code <- put_diagram(complex_workflow, output = "none")
+  diagram_code <- put_diagram(complex_workflow, output = "raw")
 
   # Should handle all node types
   expect_true(grepl("collect", diagram_code))
@@ -250,7 +250,7 @@ test_that("put_diagram() handles workflows with no connections", {
     stringsAsFactors = FALSE
   )
 
-  diagram_code <- put_diagram(independent_workflow, output = "none")
+  diagram_code <- put_diagram(independent_workflow, output = "raw")
 
   # Should still create valid diagram with nodes
   expect_true(grepl("flowchart TD", diagram_code))
@@ -306,13 +306,13 @@ test_that("put_diagram() supports show_artifacts parameter", {
   
   # Test that show_artifacts parameter is accepted
   expect_no_error({
-    diagram_simple <- put_diagram(workflow, output = "none")
-    diagram_artifacts <- put_diagram(workflow, show_artifacts = TRUE, output = "none")
+    diagram_simple <- put_diagram(workflow, output = "raw")
+    diagram_artifacts <- put_diagram(workflow, show_artifacts = TRUE, output = "raw")
   })
   
   # Diagrams should be different
-  diagram_simple <- put_diagram(workflow, output = "none")
-  diagram_artifacts <- put_diagram(workflow, show_artifacts = TRUE, output = "none")
+  diagram_simple <- put_diagram(workflow, output = "raw")
+  diagram_artifacts <- put_diagram(workflow, show_artifacts = TRUE, output = "raw")
   expect_false(identical(diagram_simple, diagram_artifacts))
 })
 
@@ -334,7 +334,7 @@ test_that("artifact nodes have correct shape", {
 
 test_that("show_artifacts creates artifact nodes in diagram", {
   workflow <- create_test_workflow_with_terminal()
-  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, output = "none")
+  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, output = "raw")
   
   # Should contain artifact node for terminal output
   expect_true(grepl("artifact_final_results_csv", diagram_code))
@@ -343,7 +343,7 @@ test_that("show_artifacts creates artifact nodes in diagram", {
 
 test_that("show_artifacts creates correct connections", {
   workflow <- create_test_workflow_with_terminal()
-  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, output = "none")
+  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, output = "raw")
   
   # Should have BOTH script-to-script AND script-to-artifact connections
   # Script-to-script connection (preserved from simple mode)
@@ -357,7 +357,7 @@ test_that("show_artifacts creates correct connections", {
 
 test_that("artifact styling is applied correctly", {
   workflow <- create_test_workflow_with_terminal()
-  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, output = "none")
+  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, output = "raw")
   
   # Should contain artifact styling
   expect_true(grepl("classDef artifactStyle", diagram_code))
@@ -366,7 +366,7 @@ test_that("artifact styling is applied correctly", {
 
 test_that("show_artifacts with show_files shows file labels", {
   workflow <- create_test_workflow_with_terminal()
-  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, show_files = TRUE, output = "none")
+  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, show_files = TRUE, output = "raw")
   
   # Should have file labels on connections
   expect_true(grepl("-->\\|.*\\|", diagram_code))  # Should have |file| labels
@@ -380,7 +380,7 @@ test_that("show_artifacts works with different themes", {
   
   for (theme in themes) {
     expect_no_error({
-      diagram_code <- put_diagram(workflow, show_artifacts = TRUE, theme = theme, output = "none")
+      diagram_code <- put_diagram(workflow, show_artifacts = TRUE, theme = theme, output = "raw")
       expect_true(grepl("artifact", diagram_code))
     })
   }
@@ -398,7 +398,7 @@ test_that("show_artifacts handles workflow with no artifacts", {
     stringsAsFactors = FALSE
   )
   
-  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, output = "none")
+  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, output = "raw")
   
   # Should handle gracefully and show results.txt artifact
   expect_true(grepl("artifact_results_txt", diagram_code))
@@ -406,7 +406,7 @@ test_that("show_artifacts handles workflow with no artifacts", {
 
 test_that("show_artifacts combines with existing node_type styling", {
   workflow <- create_test_workflow_with_terminal()
-  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, style_nodes = TRUE, output = "none")
+  diagram_code <- put_diagram(workflow, show_artifacts = TRUE, style_nodes = TRUE, output = "raw")
   
   # Should have both script node styling and artifact styling
   expect_true(grepl("classDef inputStyle", diagram_code))
@@ -429,13 +429,13 @@ test_that("put_diagram() supports show_workflow_boundaries parameter", {
   
   # Test that show_workflow_boundaries parameter is accepted
   expect_no_error({
-    diagram_boundaries <- put_diagram(workflow, show_workflow_boundaries = TRUE, output = "none")
-    diagram_no_boundaries <- put_diagram(workflow, show_workflow_boundaries = FALSE, output = "none")
+    diagram_boundaries <- put_diagram(workflow, show_workflow_boundaries = TRUE, output = "raw")
+    diagram_no_boundaries <- put_diagram(workflow, show_workflow_boundaries = FALSE, output = "raw")
   })
   
   # Diagrams should be different
-  diagram_boundaries <- put_diagram(workflow, show_workflow_boundaries = TRUE, output = "none")
-  diagram_no_boundaries <- put_diagram(workflow, show_workflow_boundaries = FALSE, output = "none")
+  diagram_boundaries <- put_diagram(workflow, show_workflow_boundaries = TRUE, output = "raw")
+  diagram_no_boundaries <- put_diagram(workflow, show_workflow_boundaries = FALSE, output = "raw")
   expect_false(identical(diagram_boundaries, diagram_no_boundaries))
 })
 
@@ -448,7 +448,7 @@ test_that("workflow boundaries show special icons when enabled", {
     stringsAsFactors = FALSE
   )
   
-  diagram_code <- put_diagram(workflow, show_workflow_boundaries = TRUE, output = "none")
+  diagram_code <- put_diagram(workflow, show_workflow_boundaries = TRUE, output = "raw")
   
   # Should contain start and end nodes with special styling
   expect_true(grepl("startStyle", diagram_code))  # Special start styling
@@ -464,7 +464,7 @@ test_that("workflow boundaries hide icons when disabled", {
     stringsAsFactors = FALSE
   )
   
-  diagram_code <- put_diagram(workflow, show_workflow_boundaries = FALSE, output = "none")
+  diagram_code <- put_diagram(workflow, show_workflow_boundaries = FALSE, output = "raw")
   
   # Should NOT contain special styling when boundaries are disabled
   expect_false(grepl("startStyle", diagram_code))  # No start styling
@@ -480,7 +480,7 @@ test_that("workflow boundary styling is applied when enabled", {
     stringsAsFactors = FALSE
   )
   
-  diagram_code <- put_diagram(workflow, show_workflow_boundaries = TRUE, output = "none")
+  diagram_code <- put_diagram(workflow, show_workflow_boundaries = TRUE, output = "raw")
   
   # Should contain start and end styling
   expect_true(grepl("classDef startStyle", diagram_code))
@@ -498,7 +498,7 @@ test_that("workflow boundary styling is hidden when disabled", {
     stringsAsFactors = FALSE
   )
   
-  diagram_code <- put_diagram(workflow, show_workflow_boundaries = FALSE, output = "none")
+  diagram_code <- put_diagram(workflow, show_workflow_boundaries = FALSE, output = "raw")
   
   # Should NOT contain start and end styling when boundaries are disabled
   expect_false(grepl("classDef startStyle", diagram_code))
@@ -529,7 +529,7 @@ test_that("workflow boundaries work with different themes", {
   
   for (theme in themes) {
     expect_no_error({
-      diagram_code <- put_diagram(workflow, show_workflow_boundaries = TRUE, theme = theme, output = "none")
+      diagram_code <- put_diagram(workflow, show_workflow_boundaries = TRUE, theme = theme, output = "raw")
       expect_true(grepl("startStyle", diagram_code))
       expect_true(grepl("endStyle", diagram_code))
     })
@@ -544,12 +544,12 @@ test_that("show_source_info adds file names inline", {
   workflow <- create_test_workflow()
 
   # Without source info
-  diagram_no_info <- put_diagram(workflow, show_source_info = FALSE, output = "none")
+  diagram_no_info <- put_diagram(workflow, show_source_info = FALSE, output = "raw")
   expect_false(grepl("<br/>", diagram_no_info))
   expect_false(grepl("01_load\\.R", diagram_no_info))
 
   # With source info inline
-  diagram_with_info <- put_diagram(workflow, show_source_info = TRUE, output = "none")
+  diagram_with_info <- put_diagram(workflow, show_source_info = TRUE, output = "raw")
   expect_true(grepl("<br/>", diagram_with_info))
   expect_true(grepl("01_load\\.R", diagram_with_info))
   expect_true(grepl("01_load\\.R", diagram_with_info))
@@ -560,7 +560,7 @@ test_that("show_source_info keeps <br/> inside the quoted label (valid Mermaid, 
   # `["label"<br/>(file)]` (suffix after the closing quote) is a Mermaid parse
   # error that aborts the entire diagram. Verified against the Mermaid engine.
   workflow <- create_test_workflow()
-  diagram <- put_diagram(workflow, show_source_info = TRUE, output = "none")
+  diagram <- put_diagram(workflow, show_source_info = TRUE, output = "raw")
 
   # No closing-quote immediately followed by <br/> anywhere in the output.
   expect_false(grepl('"<br/>', diagram, fixed = TRUE))
@@ -575,7 +575,7 @@ test_that("source_info_style='subgraph' groups nodes by file", {
     workflow,
     show_source_info = TRUE,
     source_info_style = "subgraph",
-    output = "none"
+    output = "raw"
   )
 
   # Should contain subgraph declarations
@@ -598,10 +598,10 @@ test_that("show_source_info handles missing file_name", {
 
   # Should not error with NA or empty file names
   expect_no_error({
-    diagram_code <- put_diagram(workflow, show_source_info = TRUE, output = "none")
+    diagram_code <- put_diagram(workflow, show_source_info = TRUE, output = "raw")
   })
 
-  diagram_code <- put_diagram(workflow, show_source_info = TRUE, output = "none")
+  diagram_code <- put_diagram(workflow, show_source_info = TRUE, output = "raw")
   # Only test.R should show source info
   expect_true(grepl("test\\.R", diagram_code))
 })
@@ -610,7 +610,7 @@ test_that("show_source_info with invalid source_info_style warns and uses defaul
   workflow <- create_test_workflow()
 
   expect_warning(
-    put_diagram(workflow, show_source_info = TRUE, source_info_style = "invalid", output = "none"),
+    put_diagram(workflow, show_source_info = TRUE, source_info_style = "invalid", output = "raw"),
     "Invalid source_info_style"
   )
 })
@@ -622,7 +622,7 @@ test_that("show_source_info excludes artifact nodes from source info", {
     workflow,
     show_artifacts = TRUE,
     show_source_info = TRUE,
-    output = "none"
+    output = "raw"
   )
 
   # Artifact nodes should NOT have source info appended
@@ -640,11 +640,11 @@ test_that("enable_clicks adds click directives", {
   workflow <- create_test_workflow()
 
   # Without clicks
-  diagram_no_clicks <- put_diagram(workflow, enable_clicks = FALSE, output = "none")
+  diagram_no_clicks <- put_diagram(workflow, enable_clicks = FALSE, output = "raw")
   expect_false(grepl("click ", diagram_no_clicks))
 
   # With clicks
-  diagram_with_clicks <- put_diagram(workflow, enable_clicks = TRUE, output = "none")
+  diagram_with_clicks <- put_diagram(workflow, enable_clicks = TRUE, output = "raw")
   expect_true(grepl("click ", diagram_with_clicks))
   expect_true(grepl("%% Click Actions", diagram_with_clicks))
 })
@@ -656,7 +656,7 @@ test_that("click_protocol='vscode' generates correct URLs", {
     workflow,
     enable_clicks = TRUE,
     click_protocol = "vscode",
-    output = "none"
+    output = "raw"
   )
 
   # Should have vscode:// protocol
@@ -671,7 +671,7 @@ test_that("click_protocol='file' generates correct URLs", {
     workflow,
     enable_clicks = TRUE,
     click_protocol = "file",
-    output = "none"
+    output = "raw"
   )
 
   # Should have file:/// protocol
@@ -685,7 +685,7 @@ test_that("click_protocol='rstudio' generates correct URLs", {
     workflow,
     enable_clicks = TRUE,
     click_protocol = "rstudio",
-    output = "none"
+    output = "raw"
   )
 
   # Should have rstudio:// protocol
@@ -696,7 +696,7 @@ test_that("enable_clicks with invalid protocol warns and uses default", {
   workflow <- create_test_workflow()
 
   expect_warning(
-    put_diagram(workflow, enable_clicks = TRUE, click_protocol = "invalid", output = "none"),
+    put_diagram(workflow, enable_clicks = TRUE, click_protocol = "invalid", output = "raw"),
     "Invalid click_protocol"
   )
 })
@@ -738,7 +738,7 @@ test_that("generate_click_url creates proper URLs for each protocol", {
 test_that("click directives include tooltips", {
   workflow <- create_test_workflow()
 
-  diagram_code <- put_diagram(workflow, enable_clicks = TRUE, output = "none")
+  diagram_code <- put_diagram(workflow, enable_clicks = TRUE, output = "raw")
 
   # Should have tooltip format: click nodeId "url" "tooltip"
   expect_true(grepl('click load_data "[^"]*" "Open 01_load\\.R"', diagram_code))
@@ -748,7 +748,7 @@ test_that("click directives respect line_number when available", {
   workflow <- create_test_workflow()
   workflow$line_number <- c(10, 25, 40)
 
-  diagram_code <- put_diagram(workflow, enable_clicks = TRUE, output = "none")
+  diagram_code <- put_diagram(workflow, enable_clicks = TRUE, output = "raw")
 
   # Should include line numbers in URLs (for vscode)
   expect_true(grepl(":10", diagram_code))
@@ -766,7 +766,7 @@ test_that("click directives skip artifact nodes", {
     workflow,
     show_artifacts = TRUE,
     enable_clicks = TRUE,
-    output = "none"
+    output = "raw"
   )
 
   # Script nodes should have click directives
@@ -788,7 +788,7 @@ test_that("enable_clicks works with all themes", {
         workflow,
         enable_clicks = TRUE,
         theme = theme,
-        output = "none"
+        output = "raw"
       )
       expect_true(grepl("click ", diagram_code))
     })
@@ -802,7 +802,7 @@ test_that("show_source_info and enable_clicks work together", {
     workflow,
     show_source_info = TRUE,
     enable_clicks = TRUE,
-    output = "none"
+    output = "raw"
   )
 
   # Should have both source info and click directives
@@ -819,7 +819,7 @@ test_that("show_source_info and enable_clicks work together", {
 test_that("viridis theme produces valid diagram with correct styling", {
   workflow <- create_test_workflow()
 
-  diagram_code <- put_diagram(workflow, theme = "viridis", output = "none")
+  diagram_code <- put_diagram(workflow, theme = "viridis", output = "raw")
 
   # Should contain mermaid code
 
@@ -833,7 +833,7 @@ test_that("viridis theme produces valid diagram with correct styling", {
 test_that("magma theme produces valid diagram with correct styling", {
   workflow <- create_test_workflow()
 
-  diagram_code <- put_diagram(workflow, theme = "magma", output = "none")
+  diagram_code <- put_diagram(workflow, theme = "magma", output = "raw")
 
   expect_true(grepl("flowchart", diagram_code))
   expect_true(grepl("classDef", diagram_code))
@@ -845,7 +845,7 @@ test_that("magma theme produces valid diagram with correct styling", {
 test_that("plasma theme produces valid diagram with correct styling", {
   workflow <- create_test_workflow()
 
-  diagram_code <- put_diagram(workflow, theme = "plasma", output = "none")
+  diagram_code <- put_diagram(workflow, theme = "plasma", output = "raw")
 
   expect_true(grepl("flowchart", diagram_code))
   expect_true(grepl("classDef", diagram_code))
@@ -857,7 +857,7 @@ test_that("plasma theme produces valid diagram with correct styling", {
 test_that("cividis theme produces valid diagram with correct styling", {
   workflow <- create_test_workflow()
 
-  diagram_code <- put_diagram(workflow, theme = "cividis", output = "none")
+  diagram_code <- put_diagram(workflow, theme = "cividis", output = "raw")
 
   expect_true(grepl("flowchart", diagram_code))
   expect_true(grepl("classDef", diagram_code))
@@ -902,7 +902,7 @@ test_that("viridis themes work with all node types", {
 
   for (theme in viridis_themes) {
     expect_no_error({
-      diagram_code <- put_diagram(workflow, theme = theme, output = "none")
+      diagram_code <- put_diagram(workflow, theme = theme, output = "raw")
       # All node types should have class definitions
       expect_true(grepl("classDef input", diagram_code))
       expect_true(grepl("classDef process", diagram_code))
@@ -925,7 +925,7 @@ test_that("viridis themes work with artifacts", {
         workflow,
         theme = theme,
         show_artifacts = TRUE,
-        output = "none"
+        output = "raw"
       )
       # Should have artifact class definition
       expect_true(grepl("classDef artifact", diagram_code))
@@ -944,7 +944,7 @@ test_that("enable_clicks works with viridis themes", {
         workflow,
         enable_clicks = TRUE,
         theme = theme,
-        output = "none"
+        output = "raw"
       )
       expect_true(grepl("click ", diagram_code))
     })
@@ -955,7 +955,7 @@ test_that("invalid theme falls back to light with warning", {
   workflow <- create_test_workflow()
 
   expect_warning(
-    diagram_code <- put_diagram(workflow, theme = "nonexistent", output = "none"),
+    diagram_code <- put_diagram(workflow, theme = "nonexistent", output = "raw"),
     "Invalid theme"
   )
 
