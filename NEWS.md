@@ -121,7 +121,10 @@
 * Added `print.putior_workflow()` for concise workflow summaries
 * Added `summary.putior_workflow()` for structured summary information
 
-### Interactive Sandbox Enhancements
+### Interactive Sandbox
+* New `run_sandbox()` opens an interactive Shiny app for trying PUT
+  annotations: paste or type annotated code, simulate several files, and see
+  the workflow diagram update as you edit (needs the shiny package)
 * Added copy-to-clipboard button for quick Mermaid code export
 * Added optional shinyAce syntax highlighting (graceful degradation)
 * The sandbox loads Mermaid 12.1.0 from jsdelivr, pinned with a Subresource

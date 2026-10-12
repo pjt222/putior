@@ -7,8 +7,8 @@ Authors@R:
 Description: Provides tools for extracting and processing structured annotations from
     source files in 30+ programming languages to facilitate workflow visualization.
     The package scans source files for special 'PUT' annotations that define nodes,
-    connections, and metadata within a data processing workflow. Supports R, Python,
-    SQL, JavaScript, TypeScript, Go, Rust, Java, and more with automatic comment
+    connections, and metadata within a data processing workflow. Supports 'R', 'Python',
+    'SQL', 'JavaScript', 'TypeScript', 'Go', 'Rust', 'Java', and more with automatic comment
     syntax detection. These annotations can then be used to generate visual
     representations of data flows and processing steps across polyglot software
     environments. Builds on concepts from literate programming 
