@@ -40,20 +40,23 @@ test_that("set_putior_log_level returns previous level", {
 test_that("putior_log respects log level threshold", {
   skip_if_not_installed("logger")
 
-  # This tests internal behavior - we can't easily capture log output
-
-  # but we can verify it doesn't error at different levels
-
+  # logger writes to stderr, which capture.output(type = "message") captures.
   set_putior_log_level("DEBUG")
-  expect_silent(putior_log("DEBUG", "Test debug message"))
-  expect_silent(putior_log("INFO", "Test info message"))
-  expect_silent(putior_log("WARN", "Test warn message"))
-  expect_silent(putior_log("ERROR", "Test error message"))
+  logged <- utils::capture.output({
+    putior_log("DEBUG", "Test debug message")
+    putior_log("INFO", "Test info message")
+    putior_log("WARN", "Test warn message")
+    putior_log("ERROR", "Test error message")
+  }, type = "message")
+  expect_length(logged, 4)
 
   set_putior_log_level("ERROR")
-  expect_silent(putior_log("DEBUG", "Should not log"))
-  expect_silent(putior_log("INFO", "Should not log"))
-  expect_silent(putior_log("WARN", "Should not log"))
+  logged <- utils::capture.output({
+    putior_log("DEBUG", "Should not log")
+    putior_log("INFO", "Should not log")
+    putior_log("WARN", "Should not log")
+  }, type = "message")
+  expect_length(logged, 0)
 
   # Reset to default
   set_putior_log_level("WARN")
@@ -176,9 +179,29 @@ test_that("log_level parameter overrides global option", {
   writeLines('#put id:"test", label:"Test"', test_file)
 
   # Call with DEBUG level - global should still be WARN after call
-  put(test_file, log_level = "DEBUG")
+  utils::capture.output(invisible(put(test_file, log_level = "DEBUG")), type = "message")
   expect_equal(getOption("putior.log_level"), "WARN")
 
   # Clean up
   unlink(test_file)
+})
+
+test_that("putior writes log lines at the requested level (#70)", {
+  skip_if_not_installed("logger")
+  set_putior_log_level("WARN")
+  on.exit(set_putior_log_level("WARN"), add = TRUE)
+  test_dir <- file.path(tempdir(), "putior_test_logging_output")
+  dir.create(test_dir, showWarnings = FALSE)
+  on.exit(unlink(test_dir, recursive = TRUE), add = TRUE)
+  writeLines('# put id:"load", label:"Load", output:"data.csv"', file.path(test_dir, "load.R"))
+
+  # logger writes to stderr, which type = "message" captures.
+  logged <- utils::capture.output(invisible(put(test_dir, log_level = "DEBUG")), type = "message")
+  expect_true(any(grepl("Starting PUT annotation scan", logged, fixed = TRUE)))
+  expect_true(any(grepl("^DEBUG", logged)))
+
+  # The per-call level is restored afterwards, so the default stays quiet.
+  expect_equal(getOption("putior.log_level"), "WARN")
+  quiet <- utils::capture.output(invisible(put(test_dir)), type = "message")
+  expect_length(quiet, 0)
 })

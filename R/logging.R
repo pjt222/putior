@@ -51,9 +51,11 @@ putior_log <- function(level, ..., .envir = parent.frame()) {
     logger::log_info  # Default fallback
   )
 
-  # Call the logger function with the message
+  # Call the logger function with the message. logger takes the environment
+  # for glue interpolation as `.topenv`; passing `.envir` as well made glue
+  # fail on every call, and this tryCatch hid it (#70).
   tryCatch(
-    log_fn(..., .envir = .envir),
+    log_fn(..., .topenv = .envir),
     error = function(e) invisible(NULL)
   )
 
@@ -103,21 +105,34 @@ set_putior_log_level <- function(level = "WARN") {
   options(putior.log_level = level)
 
   # Also configure logger namespace if available
-  if (requireNamespace("logger", quietly = TRUE)) {
-    logger_level <- switch(level,
-      "DEBUG" = logger::DEBUG,
-      "INFO" = logger::INFO,
-      "WARN" = logger::WARN,
-      "ERROR" = logger::ERROR,
-      logger::WARN
-    )
-    tryCatch(
-      logger::log_threshold(logger_level, namespace = "putior"),
-      error = function(e) invisible(NULL)
-    )
-  }
+  set_logger_threshold(level)
 
   invisible(old_level)
+}
+
+#' Set logger's threshold for the putior namespace
+#'
+#' putior filters messages by its own level, but logger also filters them by
+#' the threshold of the "putior" namespace, so both must match.
+#' @param level One of "DEBUG", "INFO", "WARN", "ERROR"
+#' @return The previous threshold, or NULL when logger is not installed
+#' @noRd
+set_logger_threshold <- function(level) {
+  if (!requireNamespace("logger", quietly = TRUE)) {
+    return(NULL)
+  }
+  logger_level <- switch(level,
+    "DEBUG" = logger::DEBUG,
+    "INFO" = logger::INFO,
+    "WARN" = logger::WARN,
+    "ERROR" = logger::ERROR,
+    logger::WARN
+  )
+  tryCatch({
+    old_threshold <- logger::log_threshold(namespace = "putior")
+    logger::log_threshold(logger_level, namespace = "putior")
+    old_threshold
+  }, error = function(e) NULL)
 }
 
 #' Check if Logger is Available
@@ -153,9 +168,16 @@ with_log_level <- function(level) {
 
   old_level <- getOption("putior.log_level", "WARN")
   options(putior.log_level = toupper(level))
+  old_threshold <- set_logger_threshold(toupper(level))
 
   # Return cleanup function
   function() {
     options(putior.log_level = old_level)
+    if (!is.null(old_threshold)) {
+      tryCatch(
+        logger::log_threshold(old_threshold, namespace = "putior"),
+        error = function(e) invisible(NULL)
+      )
+    }
   }
 }
