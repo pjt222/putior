@@ -81,10 +81,13 @@ for (i in seq_len(nrow(workflow))) {
   cat(sprintf("%-20s: %s\n", "ID", row$id))
   cat(sprintf("%-20s: %s\n", "Label", row$label))
   
-  # Check if ID looks like a UUID
+  # Check if ID looks like a UUID, or like the node_<n> fallback putior uses
+  # when the uuid package is not installed
   is_uuid <- grepl("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", 
                    row$id, ignore.case = TRUE)
-  cat(sprintf("%-20s: %s\n", "Auto-generated?", ifelse(is_uuid, "Yes (UUID)", "No (explicit)")))
+  is_fallback <- grepl("^node_[0-9]+$", row$id)
+  generated_text <- if (is_uuid) "Yes (UUID)" else if (is_fallback) "Yes (node_<n>, uuid not installed)" else "No (explicit)"
+  cat(sprintf("%-20s: %s\n", "Auto-generated?", generated_text))
   cat(paste(rep("-", 50), collapse = ""), "\n")
 }
 
@@ -102,7 +105,7 @@ put_diagram(workflow[workflow$file_name != "03_empty_id.R", ],  # Exclude the em
 
 cat("\n\n💡 KEY POINTS:\n")
 cat(paste(rep("=", 50), collapse = ""), "\n")
-cat("1. When 'id' is omitted → UUID is auto-generated\n")
+cat("1. When 'id' is omitted → UUID is auto-generated (node_1, node_2, ... without the uuid package)\n")
 cat("2. When 'id' is explicit → Your ID is used as-is\n")
 cat("3. When 'id' is empty (\"\") → Validation warning\n")
 cat("4. UUIDs ensure uniqueness across workflows\n")
