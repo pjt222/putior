@@ -195,10 +195,12 @@ test_that("putior writes log lines at the requested level (#70)", {
   on.exit(unlink(test_dir, recursive = TRUE), add = TRUE)
   writeLines('# put id:"load", label:"Load", output:"data.csv"', file.path(test_dir, "load.R"))
 
-  # logger writes to stderr, which type = "message" captures.
+  # logger writes to stderr, which type = "message" captures. Match the
+  # messages, not the level prefix: under GitHub Actions logger switches to
+  # layout_gha(), which writes "::debug::<message>" instead of "DEBUG [...]".
   logged <- utils::capture.output(invisible(put(test_dir, log_level = "DEBUG")), type = "message")
-  expect_true(any(grepl("Starting PUT annotation scan", logged, fixed = TRUE)))
-  expect_true(any(grepl("^DEBUG", logged)))
+  expect_true(any(grepl("Starting PUT annotation scan", logged, fixed = TRUE)))  # INFO
+  expect_true(any(grepl("Processing file: load.R", logged, fixed = TRUE)))       # DEBUG
 
   # The per-call level is restored afterwards, so the default stays quiet.
   expect_equal(getOption("putior.log_level"), "WARN")
