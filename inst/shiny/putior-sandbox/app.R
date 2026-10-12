@@ -60,6 +60,37 @@ results <- readRDS("results.rds")
 rmarkdown::render("template.Rmd", output_file = "report.html")
 '
 
+# Parse editor text into simulated files, split at "# ===== File: name ====="
+# markers. Defined at top level (not inside server) so tests can evaluate it.
+parse_code_to_files <- function(code) {
+  file_pattern <- "# ===== File: ([^=]+) ====="
+
+  marker_matches <- gregexpr(file_pattern, code, perl = TRUE)
+  file_names <- regmatches(code, marker_matches)[[1]]
+  file_names <- trimws(gsub("# ===== File: | =====", "", file_names))
+
+  if (length(file_names) == 0) {
+    # No file markers, treat as single file
+    return(list(list(name = "script.R", content = code)))
+  }
+
+  # code_parts[1] is the text before the first marker ("" when the code starts
+  # with a marker) and code_parts[i + 1] belongs to file i. Empty parts must be
+  # kept so the indices stay aligned. strsplit() drops a trailing empty part, so
+  # a marker at the very end of the code has no entry and gets empty content.
+  code_parts <- strsplit(code, file_pattern, perl = TRUE)[[1]]
+
+  lapply(seq_along(file_names), function(file_index) {
+    part_index <- file_index + 1
+    file_content <- if (part_index <= length(code_parts)) {
+      trimws(code_parts[part_index])
+    } else {
+      ""
+    }
+    list(name = file_names[file_index], content = file_content)
+  })
+}
+
 ui <- fluidPage(
   tags$head(
     tags$style(HTML("
@@ -331,40 +362,6 @@ server <- function(input, output, session) {
       updateTextAreaInput(session, "code", value = code)
     }
   })
-
-  # Parse code into simulated files
-  parse_code_to_files <- function(code) {
-    # Split by file markers
-    file_pattern <- "# ===== File: ([^=]+) ====="
-
-    # Find all file markers
-    matches <- gregexpr(file_pattern, code, perl = TRUE)
-    file_names <- regmatches(code, matches)[[1]]
-    file_names <- gsub("# ===== File: | =====", "", file_names)
-    file_names <- trimws(file_names)
-
-    if (length(file_names) == 0) {
-      # No file markers, treat as single file
-      return(list(list(name = "script.R", content = code)))
-    }
-
-    # Split content by markers
-    parts <- strsplit(code, file_pattern, perl = TRUE)[[1]]
-    parts <- parts[parts != ""]  # Remove empty parts
-
-    # Match file names to content
-    files <- list()
-    for (i in seq_along(file_names)) {
-      if (i <= length(parts)) {
-        files[[i]] <- list(
-          name = file_names[i],
-          content = trimws(parts[i + 1])  # +1 because first part is before any marker
-        )
-      }
-    }
-
-    return(files)
-  }
 
   # Extract workflow from code
   workflow_data <- reactive({

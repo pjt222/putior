@@ -21,3 +21,105 @@ test_that("run_sandbox() takes no required arguments", {
   args <- formals(putior::run_sandbox)
   expect_equal(length(args), 0)
 })
+
+# Evaluate selected top-level assignments from the sandbox app.R without
+# running the app, so these tests need neither shiny nor a browser.
+load_sandbox_definitions <- function(object_names) {
+  app_file <- system.file("shiny", "putior-sandbox", "app.R", package = "putior")
+  app_expressions <- parse(app_file, keep.source = FALSE)
+  sandbox_env <- new.env(parent = baseenv())
+  for (app_expression in app_expressions) {
+    is_wanted_assignment <- is.call(app_expression) &&
+      identical(app_expression[[1]], as.name("<-")) &&
+      is.name(app_expression[[2]]) &&
+      as.character(app_expression[[2]]) %in% object_names
+    if (is_wanted_assignment) {
+      eval(app_expression, sandbox_env)
+    }
+  }
+  sandbox_env
+}
+
+file_field <- function(files, field_name) {
+  vapply(files, function(file_entry) file_entry[[field_name]], character(1))
+}
+
+test_that("sandbox parser is defined at the top level of app.R", {
+  sandbox_env <- load_sandbox_definitions("parse_code_to_files")
+  expect_true(is.function(sandbox_env$parse_code_to_files))
+})
+
+test_that("sandbox parser keeps every file of the default multi-file example", {
+  sandbox_env <- load_sandbox_definitions(
+    c("parse_code_to_files", "sample_multi_file")
+  )
+  files <- sandbox_env$parse_code_to_files(sandbox_env$sample_multi_file)
+
+  expect_equal(
+    file_field(files, "name"),
+    c("01_fetch.R", "02_clean.R", "03_analyze.R", "04_report.R")
+  )
+  file_contents <- file_field(files, "content")
+  expect_match(file_contents[1], 'label:"Fetch Data"', fixed = TRUE)
+  expect_match(file_contents[2], 'label:"Clean Data"', fixed = TRUE)
+  expect_match(file_contents[3], 'label:"Analyze"', fixed = TRUE)
+  expect_match(file_contents[4], 'label:"Generate Report"', fixed = TRUE)
+})
+
+test_that("sandbox parser ignores text before the first marker", {
+  sandbox_env <- load_sandbox_definitions("parse_code_to_files")
+  code <- paste0(
+    "# preamble\n",
+    "# ===== File: a.R =====\nfirst\n",
+    "# ===== File: b.R =====\nsecond\n"
+  )
+  files <- sandbox_env$parse_code_to_files(code)
+
+  expect_equal(file_field(files, "name"), c("a.R", "b.R"))
+  expect_equal(file_field(files, "content"), c("first", "second"))
+})
+
+test_that("sandbox parser keeps files aligned around empty files", {
+  sandbox_env <- load_sandbox_definitions("parse_code_to_files")
+  code <- paste0(
+    "# ===== File: a.R =====\n",
+    "# ===== File: b.R =====\nsecond\n",
+    "# ===== File: c.R ====="
+  )
+  files <- sandbox_env$parse_code_to_files(code)
+
+  expect_equal(file_field(files, "name"), c("a.R", "b.R", "c.R"))
+  expect_equal(file_field(files, "content"), c("", "second", ""))
+})
+
+test_that("sandbox parser treats code without markers as one script", {
+  sandbox_env <- load_sandbox_definitions("parse_code_to_files")
+  code <- "# put label:\"Only Step\"\nx <- 1\n"
+  files <- sandbox_env$parse_code_to_files(code)
+
+  expect_length(files, 1)
+  expect_equal(files[[1]]$name, "script.R")
+  expect_equal(files[[1]]$content, code)
+})
+
+test_that("default multi-file example yields all four workflow nodes", {
+  sandbox_env <- load_sandbox_definitions(
+    c("parse_code_to_files", "sample_multi_file")
+  )
+  files <- sandbox_env$parse_code_to_files(sandbox_env$sample_multi_file)
+
+  # Mirror the app's server: write the simulated files, then scan them.
+  sandbox_dir <- tempfile("putior_sandbox_test_")
+  dir.create(sandbox_dir)
+  on.exit(unlink(sandbox_dir, recursive = TRUE), add = TRUE)
+  for (file_entry in files) {
+    writeLines(file_entry$content, file.path(sandbox_dir, basename(file_entry$name)))
+  }
+  workflow <- put(sandbox_dir, validate = FALSE)
+
+  expect_equal(nrow(workflow), 4)
+  expect_setequal(
+    workflow$label,
+    c("Fetch Data", "Clean Data", "Analyze", "Generate Report")
+  )
+})
