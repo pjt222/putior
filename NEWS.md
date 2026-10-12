@@ -124,8 +124,14 @@
 ### Interactive Sandbox Enhancements
 * Added copy-to-clipboard button for quick Mermaid code export
 * Added optional shinyAce syntax highlighting (graceful degradation)
-* The sandbox loads Mermaid 10.9.8, which fixes 8 published Mermaid security
-  advisories that affect the 10.9.3 pin used during development (#48)
+* The sandbox loads Mermaid 12.1.0 from jsdelivr, pinned with a Subresource
+  Integrity hash (#48). It draws diagrams in Mermaid 11's classic style (dagre
+  layout, classic look, 200px label wrapping, no minimum node width), which
+  putior's themes are made for and which GitLab, Quarto and VS Code show.
+  GitHub moved to Mermaid 12 in October 2026 and draws putior diagrams in the
+  neo look with labels wrapped at 120px (#54). A diagram with a syntax error
+  shows Mermaid's error message. Mermaid 12 needs a current browser (ES2024;
+  Safari 17.4 or later)
 
 ### Documentation
 * Documented all valid `node_type` values across vignettes and reference (#40)

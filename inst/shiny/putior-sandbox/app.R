@@ -135,15 +135,28 @@ ui <- fluidPage(
         margin-top: 5px;
       }
     ")),
-    # Include Mermaid.js
-    tags$script(src = "https://cdn.jsdelivr.net/npm/mermaid@10.9.8/dist/mermaid.min.js"),
+    # Include Mermaid.js. Keep this pin and its integrity hash in sync with
+    # _pkgdown.yml.
+    tags$script(
+      src = "https://cdn.jsdelivr.net/npm/mermaid@12.1.0/dist/mermaid.min.js",
+      integrity = "sha384-EbBpjO7rlR6eqZEcG7GaPpyk9H9WrMyPWX4d3KvPYltgt8Z8l0z6R56B1qP40pR4",
+      crossorigin = "anonymous"
+    ),
     tags$script(HTML("
+      // Mermaid 12 defaults to the ELK layout, the neo look and the
+      // redux-color theme, wraps labels at 120px and makes nodes at least
+      // 120px wide. Keep Mermaid 11's classic rendering, which putior's
+      // themes are made for and which GitLab, Quarto and VS Code still show.
       mermaid.initialize({
         startOnLoad: false,
+        layout: 'dagre',
+        look: 'classic',
         theme: 'default',
         flowchart: {
           htmlLabels: true,
-          curve: 'linear'
+          curve: 'linear',
+          wrappingWidth: 200,
+          minNodeWidth: 0
         }
       });
 
@@ -156,7 +169,11 @@ ui <- fluidPage(
         div.textContent = code;
         container.appendChild(div);
 
-        mermaid.init(undefined, div);
+        // On a syntax error Mermaid draws its error diagram, with the
+        // message, into the div; the rejection only needs logging.
+        mermaid.run({ nodes: [div] }).catch(function(err) {
+          console.error('Mermaid render failed: ', err);
+        });
       });
 
       // Copy to clipboard function
