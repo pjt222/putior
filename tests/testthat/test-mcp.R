@@ -415,3 +415,48 @@ test_that("GUIDE.md version matches the package version", {
     as.character(utils::packageVersion("putior"))
   )
 })
+
+test_that("MCP put_diagram passes its arguments through unchanged", {
+  skip_if_not_installed("ellmer")
+  project_dir <- create_mcp_test_project()
+  on.exit(unlink(project_dir, recursive = TRUE), add = TRUE)
+  tools <- putior_mcp_tools()
+
+  # The tool must give exactly what put() + put_diagram() give directly.
+  expect_identical(
+    tools$put_diagram(path = project_dir, theme = "dark", direction = "LR",
+                      show_artifacts = TRUE, title = "ETL"),
+    put_diagram(put(project_dir), output = "raw", theme = "dark",
+                direction = "LR", show_artifacts = TRUE, title = "ETL")
+  )
+  # Click links need line numbers, which the tool asks put() for.
+  expect_identical(
+    tools$put_diagram(path = project_dir, enable_clicks = TRUE, click_protocol = "file"),
+    put_diagram(put(project_dir, include_line_numbers = TRUE), output = "raw",
+                enable_clicks = TRUE, click_protocol = "file")
+  )
+})
+
+test_that("MCP put passes include_line_numbers through", {
+  skip_if_not_installed("ellmer")
+  skip_if_not_installed("jsonlite")
+  project_dir <- create_mcp_test_project()
+  on.exit(unlink(project_dir, recursive = TRUE), add = TRUE)
+  tools <- putior_mcp_tools()
+
+  nodes <- jsonlite::fromJSON(tools$put(path = project_dir, include_line_numbers = TRUE))
+
+  expect_equal(nodes$line_number, c(1L, 3L))
+})
+
+test_that("MCP set_putior_log_level and ext_to_language return readable text", {
+  skip_if_not_installed("ellmer")
+  tools <- putior_mcp_tools()
+  old_level <- getOption("putior.log_level", "WARN")
+  on.exit(set_putior_log_level(old_level), add = TRUE)
+  set_putior_log_level("WARN")
+
+  expect_equal(tools$set_putior_log_level(level = "INFO"), "Log level set to INFO (was WARN)")
+  expect_equal(tools$ext_to_language(ext = "py"), "python")
+  expect_match(tools$ext_to_language(ext = "xyz"), "No language is registered", fixed = TRUE)
+})

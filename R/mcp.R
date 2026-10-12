@@ -329,6 +329,24 @@ mcp_putior_help <- function(topic = NULL) {
   paste(utils::capture.output(putior_help(topic)), collapse = "\n")
 }
 
+#' set_putior_log_level() returns the previous level; say what changed
+#' @noRd
+mcp_set_putior_log_level <- function(level = "WARN") {
+  previous_level <- set_putior_log_level(level)
+  paste0("Log level set to ", toupper(level), " (was ", previous_level, ")")
+}
+
+#' ext_to_language() returns NULL for unknown extensions, which reaches the
+#' client as empty text
+#' @noRd
+mcp_ext_to_language <- function(ext) {
+  language <- ext_to_language(ext)
+  if (is.null(language)) {
+    return(paste0("No language is registered for the extension '", ext, "'"))
+  }
+  language
+}
+
 # =============================================================================
 # Tool Definition Functions
 # =============================================================================
@@ -785,7 +803,7 @@ make_tool_putior_help <- function() {
 #' @noRd
 make_tool_set_putior_log_level <- function() {
   ellmer::tool(
-    fun = set_putior_log_level,
+    fun = mcp_set_putior_log_level,
     description = paste0(
       "Configure logging verbosity for putior functions. ",
       "DEBUG shows fine-grained operations, INFO shows progress milestones, ",
@@ -852,10 +870,10 @@ make_tool_split_file_list <- function() {
 #' @noRd
 make_tool_ext_to_language <- function() {
   ellmer::tool(
-    fun = ext_to_language,
+    fun = mcp_ext_to_language,
     description = paste0(
       "Convert a file extension to a standardized language name. ",
-      "Used for detection pattern lookup. Returns NULL for unsupported extensions."
+      "Used for detection pattern lookup. For an unsupported extension, says so."
     ),
     name = "ext_to_language",
     annotations = list(
