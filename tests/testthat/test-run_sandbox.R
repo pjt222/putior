@@ -163,3 +163,49 @@ test_that("sandbox renders once on load and does not re-render while idle", {
     expect_equal(render_counter$count, 2)
   })
 })
+
+test_that("sandbox status shows why a diagram could not be drawn (#58)", {
+  skip_on_cran()
+  skip_if_not_installed("shiny")
+
+  app_file <- system.file("shiny", "putior-sandbox", "app.R", package = "putior")
+  app_env <- new.env()
+  sys.source(app_file, envir = app_env)
+  # The server finds put_diagram() through app_env first, so this stand-in
+  # makes every diagram fail the way a real error would.
+  app_env$put_diagram <- function(...) {
+    stop("stand-in diagram failure", call. = FALSE)
+  }
+
+  shiny::testServer(app_env$server, {
+    session$setInputs(
+      template = "multi", code = app_env$sample_multi_file,
+      direction = "TD", theme = "github", show_artifacts = FALSE,
+      show_files = FALSE, style_nodes = TRUE, show_boundaries = TRUE
+    )
+
+    expect_match(output$status, "Found 4 workflow node(s)", fixed = TRUE)
+    expect_match(output$status, "stand-in diagram failure", fixed = TRUE)
+    expect_null(mermaid_code())
+  })
+})
+
+test_that("sandbox status has no error when the diagram is drawn", {
+  skip_on_cran()
+  skip_if_not_installed("shiny")
+
+  app_file <- system.file("shiny", "putior-sandbox", "app.R", package = "putior")
+  app_env <- new.env()
+  sys.source(app_file, envir = app_env)
+
+  shiny::testServer(app_env$server, {
+    session$setInputs(
+      template = "multi", code = app_env$sample_multi_file,
+      direction = "TD", theme = "github", show_artifacts = FALSE,
+      show_files = FALSE, style_nodes = TRUE, show_boundaries = TRUE
+    )
+
+    expect_equal(output$status, "Found 4 workflow node(s)")
+    expect_match(mermaid_code(), "flowchart TD", fixed = TRUE)
+  })
+})

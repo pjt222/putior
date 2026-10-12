@@ -438,13 +438,14 @@ server <- function(input, output, session) {
     })
   })
 
-  # Generate mermaid code
-  mermaid_code <- reactive({
+  # Generate mermaid code. Keep the error message, if there is one, so the
+  # status line can say why no diagram appears instead of leaving it blank.
+  diagram_result <- reactive({
     req(workflow_data())
 
     workflow <- workflow_data()
     if (is.null(workflow) || nrow(workflow) == 0) {
-      return(NULL)
+      return(list(code = NULL, error = NULL))
     }
 
     tryCatch({
@@ -458,11 +459,12 @@ server <- function(input, output, session) {
         style_nodes = input$style_nodes,
         show_workflow_boundaries = input$show_boundaries
       )
-      return(code)
+      list(code = code, error = NULL)
     }, error = function(e) {
-      return(NULL)
+      list(code = NULL, error = conditionMessage(e))
     })
   })
+  mermaid_code <- reactive(diagram_result()$code)
 
   # Generate diagram on button click
   observeEvent(input$generate, {
@@ -478,7 +480,12 @@ server <- function(input, output, session) {
     if (is.null(workflow)) {
       return("No annotations found. Add # put comments to your code.")
     }
-    paste0("Found ", nrow(workflow), " workflow node(s)")
+    status <- paste0("Found ", nrow(workflow), " workflow node(s)")
+    diagram_error <- diagram_result()$error
+    if (!is.null(diagram_error)) {
+      status <- paste0(status, ", but the diagram could not be drawn:\n", diagram_error)
+    }
+    status
   })
 
   # Mermaid code output

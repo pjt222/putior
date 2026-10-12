@@ -20,7 +20,7 @@ put("./src/") |> put_diagram()
 | Field | Required | Default | Description |
 |-------|----------|---------|-------------|
 | `label` | **Yes** | - | Human-readable name |
-| `id` | No | UUID | Unique identifier |
+| `id` | No | generated | Unique identifier (UUID, or `node_1`, ... without uuid) |
 | `node_type` | No | `process` | `input`, `process`, `output`, `decision`, `start`, `end` |
 | `input` | No | - | Comma-separated input files |
 | `output` | No | filename | Comma-separated output files |

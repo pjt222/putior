@@ -24,6 +24,8 @@
 #' @return A data frame containing file names and all properties found in annotations.
 #'   Always includes columns: file_name, file_type, and any properties found in
 #'   PUT annotations (typically: id, label, node_type, input, output).
+#'   Annotations without an \code{id} get one: a UUID when the uuid package is
+#'   installed, otherwise \code{node_1}, \code{node_2}, and so on.
 #'   Valid \code{node_type} values: \code{"input"}, \code{"process"} (default),
 #'   \code{"output"}, \code{"decision"}, \code{"start"}, \code{"end"}.
 #'   An additional type \code{"artifact"} is used internally by \code{put_diagram()}
@@ -194,6 +196,7 @@ put <- function(path,
 
   # Convert results to data frame
   if (length(results) > 0) {
+    results <- fill_missing_ids(results)
     df <- convert_results_to_df(results, include_line_numbers)
 
     # Check for duplicate IDs if validation is enabled
@@ -206,7 +209,7 @@ put <- function(path,
           "Each node must have a unique ID within the workflow.\n",
           "Solutions:\n",
           "- Use unique 'id' values in your PUT annotations\n",
-          "- Omit 'id' to enable auto-generation (requires uuid package)\n",
+          "- Omit 'id' to have one generated automatically\n",
           "Use include_line_numbers = TRUE to locate duplicates.",
           call. = FALSE
         )
@@ -649,6 +652,37 @@ convert_results_to_df <- function(results, include_line_numbers) {
   rownames(result_df) <- NULL
 
   return(result_df)
+}
+
+#' Give annotations without an id a fallback id
+#'
+#' parse_put_annotation() generates a UUID for an annotation without `id` when
+#' the uuid package is installed. Without it such annotations have no id, and
+#' put_diagram() cannot draw them. Number them instead: node_1, node_2, ...,
+#' skipping ids already in use. An explicit empty id (`id:""`) is left alone so
+#' that validation still reports it.
+#' @param results List of annotation property lists
+#' @return The same list, with an `id` on every annotation
+#' @noRd
+fill_missing_ids <- function(results) {
+  has_no_id <- vapply(results, function(annotation) is.null(annotation[["id"]]), logical(1))
+  if (!any(has_no_id)) {
+    return(results)
+  }
+
+  used_ids <- unlist(lapply(results[!has_no_id], function(annotation) annotation[["id"]]))
+  id_counter <- 0L
+  for (annotation_index in which(has_no_id)) {
+    repeat {
+      id_counter <- id_counter + 1L
+      fallback_id <- paste0("node_", id_counter)
+      if (!fallback_id %in% used_ids) break
+    }
+    results[[annotation_index]][["id"]] <- fallback_id
+  }
+
+  putior_log("DEBUG", "Assigned fallback ids to {sum(has_no_id)} annotation(s) without an id")
+  results
 }
 
 #' Create empty result data frame

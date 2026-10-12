@@ -20,6 +20,13 @@
   formatting tags. (#32)
 * Fixed pipe characters (`|`) in node labels breaking Mermaid diagram parsing.
   Pipes are now escaped using the `#124;` entity. (#33)
+* `put()` now gives annotations without an `id` a fallback id (`node_1`,
+  `node_2`, ...) when the uuid package is not installed. Before, such
+  annotations had no id: if none had one, `put_diagram()` failed with a
+  misleading "missing required column(s): id" error, and if only some had
+  one, it silently dropped the others. This broke the quick-start example and
+  the sandbox templates for anyone without uuid. The sandbox now also shows
+  diagram errors in its status line instead of a blank preview. (#58)
 
 ## New Features
 

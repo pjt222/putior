@@ -236,12 +236,10 @@ put_diagram <- function(workflow,
     stop(
       "No valid workflow nodes found (all IDs are missing or empty).\n",
       "This can happen if:\n",
-      "- PUT annotations don't include 'id' properties and uuid package is not installed\n",
-      "- The annotation syntax is incorrect\n",
-      "Solution: Either add explicit IDs to your annotations:\n",
+      "- PUT annotations set an empty id (id:\"\")\n",
+      "- The data frame was built by hand without ids\n",
+      "Solution: Give each annotation a unique id, or omit 'id' to have one generated:\n",
       "  # put id:\"my_node\", label:\"Description\"\n",
-      "Or install the uuid package for auto-generation:\n",
-      "  install.packages(\"uuid\")\n",
       "See putior_help(\"annotation\") for syntax details.",
       call. = FALSE
     )
