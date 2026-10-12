@@ -80,7 +80,7 @@ writeLines(c(
   '# put label:"Transform", input:"raw.csv", output:"clean.csv"',
   'clean <- transform(data)',
   '',
-  '# put label:"Load", input:"clean.csv", output:"database"',
+  '# put label:"Load", input:"clean.csv", output:"database.db"',
   'write_to_db(clean)'
 ), temp_file)
 
