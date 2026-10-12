@@ -1,8 +1,8 @@
 # Quick Start
 
-### Your First Diagram in 2 Minutes
+## Your First Diagram in 2 Minutes
 
-#### Step 1: Install
+### Step 1: Install
 
 ``` r
 
@@ -14,7 +14,7 @@ install.packages("putior")
 library(putior)
 ```
 
-#### Step 2: Add Annotations to Your Code
+### Step 2: Add Annotations to Your Code
 
 Add `# put` comments to your R scripts:
 
@@ -31,7 +31,7 @@ clean <- data[complete.cases(data), ]
 rmarkdown::render("report.Rmd")
 ```
 
-#### Step 3: Generate Diagram
+### Step 3: Generate Diagram
 
 ``` r
 
@@ -62,7 +62,7 @@ flowchart TD
 
 ------------------------------------------------------------------------
 
-### Try It Now
+## Try It Now
 
 ``` r
 
@@ -79,88 +79,80 @@ writeLines(c(
   'write_to_db(clean)'
 ), temp_file)
 
-# Scan and visualize
+# Scan, then clean up
 workflow <- put(temp_file)
-#> Warning: Validation issues in file25285f5287a3.R line 7:
+#> Warning: Validation issues in file25146793755e.R line 7:
 #> File reference missing extension: database
 ```
 
 ``` r
 
-cat("```mermaid\n")
+unlink(temp_file)
+
+# Visualize
+cat("```mermaid\n", put_diagram(workflow, output = "raw"), "\n```\n", sep = "")
 ```
 
 ``` mermaid
-
-``` r
-cat(put_diagram(workflow, output = "raw"))
-```
-
-flowchart TD d6f488a9_fd78_4d69_af8b_64d1b0d37b26\[“Extract”\]
-a71565e3_0211_4b3c_95ba_e090d327a853\[“Transform”\]
-node_334add93_2128_40ea_b671_15d3993ae6bc\[“Load”\]
+flowchart TD
+    node_32523f7d_8660_4f2d_8010_a901cb4dd22f["Extract"]
+    node_68ba3eb7_a7de_4d62_bd0f_ea18a39ae17c["Transform"]
+    ffdb4b00_eb30_44b7_8321_1482a9fac1d6["Load"]
 
     %% Connections
-    d6f488a9_fd78_4d69_af8b_64d1b0d37b26 --> a71565e3_0211_4b3c_95ba_e090d327a853
-    a71565e3_0211_4b3c_95ba_e090d327a853 --> node_334add93_2128_40ea_b671_15d3993ae6bc
+    node_32523f7d_8660_4f2d_8010_a901cb4dd22f --> node_68ba3eb7_a7de_4d62_bd0f_ea18a39ae17c
+    node_68ba3eb7_a7de_4d62_bd0f_ea18a39ae17c --> ffdb4b00_eb30_44b7_8321_1482a9fac1d6
+```
+
+------------------------------------------------------------------------
+
+## Annotation Syntax at a Glance
+
+    # put label:"Step Name", input:"file.csv", output:"result.csv"
+
+| Field | Purpose | Required |
+|----|----|----|
+| `label` | Human-readable name | Yes |
+| `input` | Files/data consumed | No |
+| `output` | Files/data produced | No |
+| `id` | Unique identifier | No (auto-generated) |
+| `node_type` | `input`, `process`, `output`, `decision`, `start`, `end` | No (defaults to `process`) |
+
+**Multiple inputs/outputs:** Use commas: `input:"a.csv, b.csv"`
+
+------------------------------------------------------------------------
+
+## Multi-Language Support
+
+putior works with 30+ languages. Comment prefix is auto-detected:
+
+| Language             | Annotation           |
+|----------------------|----------------------|
+| R, Python, Shell     | `# put label:"..."`  |
+| SQL, Lua             | `-- put label:"..."` |
+| JavaScript, Go, Rust | `// put label:"..."` |
+| MATLAB               | `% put label:"..."`  |
+
+------------------------------------------------------------------------
+
+## Common Patterns
+
+### Scan a Directory
 
 ``` r
 
-cat("\n```\n")
+workflow <- put("./src/")
+put_diagram(workflow)
 ```
 
-## Cleanup
-
-unlink(temp_file)
-
-
-    ---
-    ## Annotation Syntax at a Glance
-
-## put label:“Step Name”, input:“file.csv”, output:“result.csv”
-
-
-    | Field | Purpose | Required |
-    |-------|---------|----------|
-    | `label` | Human-readable name | Yes |
-    | `input` | Files/data consumed | No |
-    | `output` | Files/data produced | No |
-    | `id` | Unique identifier | No (auto-generated) |
-    | `node_type` | `input`, `process`, `output`, `decision`, `start`, `end` | No (defaults to `process`) |
-
-    **Multiple inputs/outputs:** Use commas: `input:"a.csv, b.csv"`
-
-    ---
-
-    ## Multi-Language Support
-
-    putior works with 30+ languages. Comment prefix is auto-detected:
-
-    | Language | Annotation |
-    |----------|------------|
-    | R, Python, Shell | `# put label:"..."` |
-    | SQL, Lua | `-- put label:"..."` |
-    | JavaScript, Go, Rust | `// put label:"..."` |
-    | MATLAB | `% put label:"..."` |
-
-    ---
-
-    ## Common Patterns
-
-    ### Scan a Directory
-
-    ``` r
-    workflow <- put("./src/")
-    put_diagram(workflow)
-
-#### Include Subdirectories
+### Include Subdirectories
 
 ``` r
 
 workflow <- put("./project/", recursive = TRUE)
 ```
 
-#### Auto-Detect Workflow (No Annotations!)
+### Auto-Detect Workflow (No Annotations!)
 
 ``` r
 
@@ -169,14 +161,14 @@ workflow <- put_auto("./src/")
 put_diagram(workflow)
 ```
 
-#### Choose a Theme
+### Choose a Theme
 
 ``` r
 
 put_diagram(workflow, theme = "github")  # or: light, dark, minimal, viridis
 ```
 
-#### Save to File
+### Save to File
 
 ``` r
 
@@ -185,7 +177,7 @@ put_diagram(workflow, output = "file", file = "workflow.md")
 
 ------------------------------------------------------------------------
 
-### Interactive Sandbox
+## Interactive Sandbox
 
 Experiment without creating files:
 
@@ -196,7 +188,7 @@ run_sandbox()  # Opens Shiny app
 
 ------------------------------------------------------------------------
 
-### Quick Reference
+## Quick Reference
 
 ``` r
 
@@ -219,7 +211,7 @@ for full documentation.
 
 ------------------------------------------------------------------------
 
-### See Also
+## See Also
 
 | Guide | Description |
 |----|----|

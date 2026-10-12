@@ -305,7 +305,7 @@ remaining work is NOTE-level cleanup and quality.
 - **Evidence:** No `accTitle`/`accDescr`/`aria` anywhere in `R/`.
   Package markets 4 colorblind-safe themes but emits no machine-readable
   accessible title/description. `accTitle`/`accDescr` shipped in Mermaid
-  v9.0.0 (2022) — safe under the pinned 10.9.x (10.9.8 since 2026-10-12)
+  v9.0.0 (2022) — safe under the pinned 12.1.0 (since 2026-10-12, \#48)
   and on GitHub.
 - **Fix (optional, additive):** When `title` is supplied, also emit
   `accTitle: <title>` and an `accDescr:` after the
@@ -317,20 +317,21 @@ remaining work is NOTE-level cleanup and quality.
 - **Evidence:**
   [`get_node_shape()`](https://pjt222.github.io/putior/reference/get_node_shape.md)
   uses only classic ASCII shapes. The expanded shape catalog requires
-  Mermaid v11.3.0+, which the pinned `mermaid@10.9.8`
-  (`_pkgdown.yml:13`; bumped from 10.9.3 on 2026-10-12, \#48) cannot
-  parse.
-- **Action:** Do NOT adopt v11.3+ syntax while pkgdown pins 10.9.x. If
-  desired later, bump the CDN pin AND verify GitHub rendering first.
-  No-op now.
+  Mermaid v11.3.0+. The pkgdown site and sandbox now pin
+  `mermaid@12.1.0` (2026-10-12, \#48), but Quarto bundles Mermaid
+  11.12.0, so the floor that matters is the oldest renderer users have
+  (#50).
+- **Action:** Superseded: the site no longer constrains this. Decide in
+  \#50 against the renderer matrix (Quarto 11.12.0 is the oldest), and
+  verify GitHub rendering first. No-op now.
 
 ### T3-7 · pkgdown-04 — Redundant Mermaid double-render timers + duplicate `extra.css` @import
 
-- **<file:line>:** `_pkgdown.yml:133-138` (timers), `_pkgdown.yml:153`
-  (@import)
-- **Fix (optional, cosmetic):** Drop the line-138 fallback timer (guard
-  with a “rendered” flag); remove the `@import` since pkgdown auto-links
-  `extra.css`.
+- **<file:line>:** `_pkgdown.yml:132` (@import). The timers are gone.
+- **Status:** Timers resolved 2026-10-12 (#62, \#48): the site renders
+  once, when the DOM is ready. The duplicate `@import` remains.
+- **Fix (optional, cosmetic):** Remove the `@import`, since pkgdown
+  links `extra.css` itself.
 
 ### T3-8 · pkgdown-05 — No `redirects:` entry for the renamed skills→ai-integration article
 

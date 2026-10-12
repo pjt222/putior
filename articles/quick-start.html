@@ -19,7 +19,12 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Quick Start">
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.8/dist/mermaid.min.js"></script><script>
+<!-- Keep this Mermaid pin and its integrity hash in sync with
+     inst/shiny/putior-sandbox/app.R. --><script src="https://cdn.jsdelivr.net/npm/mermaid@12.1.0/dist/mermaid.min.js" integrity="sha384-EbBpjO7rlR6eqZEcG7GaPpyk9H9WrMyPWX4d3KvPYltgt8Z8l0z6R56B1qP40pR4" crossorigin="anonymous"></script><script>
+  // Stop Mermaid from rendering the <pre class="mermaid"> blocks by itself
+  // on page load; they are rendered below with the site's theme.
+  mermaid.initialize({ startOnLoad: false });
+
   // Theme-aware Mermaid configuration
   // Light colors aligned with putior default theme
   // Dark colors aligned with agent-almanac/viz cyberpunk palette
@@ -56,100 +61,71 @@
     var colors = isDarkMode() ? mermaidThemes.dark : mermaidThemes.light;
     return {
       startOnLoad: false,
+      // Mermaid 12 defaults to the ELK layout and the neo look, wraps labels
+      // at 120px and makes nodes at least 120px wide. Keep Mermaid 11's
+      // classic rendering, which putior's themes are made for and which
+      // GitLab, Quarto and VS Code still show.
+      layout: 'dagre',
+      look: 'classic',
       theme: colors.theme,
       themeVariables: colors.themeVariables,
-      flowchart: { htmlLabels: true, curve: 'linear' }
+      flowchart: { htmlLabels: true, curve: 'linear', wrappingWidth: 200, minNodeWidth: 0 }
     };
   }
 
-  // Store original diagram source for re-rendering on theme switch
+  // Diagram sources, kept for re-rendering when the theme changes
   var mermaidSources = [];
 
+  // pkgdown turns ```mermaid fences into <pre class="mermaid">. Replace
+  // each one with a container and keep its source. Other code blocks are
+  // left alone, even when they mention flowchart or graph.
+  function collectMermaidBlocks() {
+    document.querySelectorAll('pre.mermaid').forEach(function(pre) {
+      var container = document.createElement('div');
+      container.className = 'mermaid-container';
+      container.setAttribute('role', 'img');
+      container.setAttribute('aria-label', 'Workflow diagram');
+      pre.parentElement.insertBefore(container, pre);
+      pre.style.display = 'none';
+      mermaidSources.push({ container: container, source: pre.textContent.trim() });
+    });
+  }
+
+  // Render (or re-render) every collected diagram with the current theme
   function renderMermaidDiagrams() {
-    var config = getMermaidConfig();
-    mermaid.initialize(config);
-
-    // Find all pre blocks containing mermaid syntax
-    var preBlocks = document.querySelectorAll('pre');
-    preBlocks.forEach(function(pre) {
-      var text = pre.textContent || pre.innerText;
-      if ((text.includes('flowchart') || text.includes('graph') || text.includes('sequenceDiagram')) && pre.style.display !== 'none') {
-        try {
-          var container = document.createElement('div');
-          container.className = 'mermaid-container';
-          container.setAttribute('role', 'img');
-          container.setAttribute('aria-label', 'Workflow diagram');
-          var mermaidDiv = document.createElement('div');
-          mermaidDiv.className = 'mermaid';
-          mermaidDiv.textContent = text.trim();
-          container.appendChild(mermaidDiv);
-          pre.parentElement.insertBefore(container, pre);
-          pre.style.display = 'none';
-          mermaidSources.push({ container: container, source: text.trim() });
-        } catch (e) { console.error('Error processing pre block', e); }
-      }
+    mermaid.initialize(getMermaidConfig());
+    var mermaidDivs = mermaidSources.map(function(entry) {
+      entry.container.innerHTML = '';
+      var mermaidDiv = document.createElement('div');
+      mermaidDiv.className = 'mermaid';
+      mermaidDiv.textContent = entry.source;
+      entry.container.appendChild(mermaidDiv);
+      return mermaidDiv;
     });
-
-    // Also check code blocks
-    var codeBlocks = document.querySelectorAll('pre > code');
-    codeBlocks.forEach(function(code) {
-      var text = code.textContent || code.innerText;
-      if (code.parentElement.style.display === 'none') return;
-      if (text.trim().startsWith('flowchart') || text.trim().startsWith('graph')) {
-        try {
-          var pre = code.parentElement;
-          var container = document.createElement('div');
-          container.className = 'mermaid-container';
-          container.setAttribute('role', 'img');
-          container.setAttribute('aria-label', 'Workflow diagram');
-          var mermaidDiv = document.createElement('div');
-          mermaidDiv.className = 'mermaid';
-          mermaidDiv.textContent = text.trim();
-          container.appendChild(mermaidDiv);
-          pre.parentElement.insertBefore(container, pre);
-          pre.style.display = 'none';
-          mermaidSources.push({ container: container, source: text.trim() });
-        } catch (e) { console.error('Error processing code block', e); }
-      }
-    });
-
-    // Render all mermaid divs
-    var allMermaidDivs = document.querySelectorAll('div.mermaid');
-    if (allMermaidDivs.length > 0) {
-      mermaid.init(config, allMermaidDivs);
+    if (mermaidDivs.length > 0) {
+      mermaid.run({ nodes: mermaidDivs }).catch(function(err) {
+        console.error('Mermaid render failed: ', err);
+      });
     }
   }
 
-  // Re-render diagrams when theme changes
-  function rerenderMermaidDiagrams() {
-    var config = getMermaidConfig();
-    mermaid.initialize(config);
-    mermaidSources.forEach(function(entry, idx) {
-      var container = entry.container;
-      container.innerHTML = '';
-      var mermaidDiv = document.createElement('div');
-      mermaidDiv.className = 'mermaid';
-      mermaidDiv.id = 'mermaid-rerender-' + idx;
-      mermaidDiv.textContent = entry.source;
-      container.appendChild(mermaidDiv);
-    });
-    var divs = document.querySelectorAll('div.mermaid');
-    if (divs.length > 0) { mermaid.init(config, divs); }
+  function setUpMermaidDiagrams() {
+    collectMermaidBlocks();
+    renderMermaidDiagrams();
   }
 
-  // Wait for DOM to be ready
+  // Render once, when the DOM is ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', renderMermaidDiagrams);
+    document.addEventListener('DOMContentLoaded', setUpMermaidDiagrams);
   } else {
-    setTimeout(renderMermaidDiagrams, 100);
+    setUpMermaidDiagrams();
   }
-  setTimeout(renderMermaidDiagrams, 1000);
 
   // Listen for Bootstrap light-switch theme changes
   var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(m) {
       if (m.attributeName === 'data-bs-theme') {
-        setTimeout(rerenderMermaidDiagrams, 50);
+        setTimeout(renderMermaidDiagrams, 50);
       }
     });
   });
@@ -220,20 +196,20 @@
 
     
     
+<div class="section level2">
+<h2 id="your-first-diagram-in-2-minutes">Your First Diagram in 2 Minutes<a class="anchor" aria-label="anchor" href="#your-first-diagram-in-2-minutes"></a>
+</h2>
 <div class="section level3">
-<h3 id="your-first-diagram-in-2-minutes">Your First Diagram in 2 Minutes<a class="anchor" aria-label="anchor" href="#your-first-diagram-in-2-minutes"></a>
+<h3 id="step-1-install">Step 1: Install<a class="anchor" aria-label="anchor" href="#step-1-install"></a>
 </h3>
-<div class="section level4">
-<h4 id="step-1-install">Step 1: Install<a class="anchor" aria-label="anchor" href="#step-1-install"></a>
-</h4>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"putior"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pjt222.github.io/putior/">putior</a></span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="step-2-add-annotations-to-your-code">Step 2: Add Annotations to Your Code<a class="anchor" aria-label="anchor" href="#step-2-add-annotations-to-your-code"></a>
-</h4>
+<div class="section level3">
+<h3 id="step-2-add-annotations-to-your-code">Step 2: Add Annotations to Your Code<a class="anchor" aria-label="anchor" href="#step-2-add-annotations-to-your-code"></a>
+</h3>
 <p>Add <code># put</code> comments to your R scripts:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># my_analysis.R</span></span>
@@ -246,9 +222,9 @@
 <span><span class="co"># put label:"Generate Report", input:"clean_data", output:"report.html"</span></span>
 <span><span class="fu">rmarkdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgs.rstudio.com/rmarkdown/reference/render.html" class="external-link">render</a></span><span class="op">(</span><span class="st">"report.Rmd"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="step-3-generate-diagram">Step 3: Generate Diagram<a class="anchor" aria-label="anchor" href="#step-3-generate-diagram"></a>
-</h4>
+<div class="section level3">
+<h3 id="step-3-generate-diagram">Step 3: Generate Diagram<a class="anchor" aria-label="anchor" href="#step-3-generate-diagram"></a>
+</h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"my_analysis.R"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span></code></pre></div>
@@ -272,9 +248,9 @@
 <hr>
 </div>
 </div>
-<div class="section level3">
-<h3 id="try-it-now">Try It Now<a class="anchor" aria-label="anchor" href="#try-it-now"></a>
-</h3>
+<div class="section level2">
+<h2 id="try-it-now">Try It Now<a class="anchor" aria-label="anchor" href="#try-it-now"></a>
+</h2>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create a temporary file with annotations</span></span>
 <span><span class="va">temp_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".R"</span><span class="op">)</span></span>
@@ -289,108 +265,155 @@
 <span>  <span class="st">'write_to_db(clean)'</span></span>
 <span><span class="op">)</span>, <span class="va">temp_file</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Scan and visualize</span></span>
+<span><span class="co"># Scan, then clean up</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="va">temp_file</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Validation issues in file25285f5287a3.R line 7:</span></span>
+<span><span class="co">#&gt; Warning: Validation issues in file25146793755e.R line 7:</span></span>
 <span><span class="co">#&gt; File reference missing extension: database</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"```mermaid\n"</span><span class="op">)</span></span></code></pre></div>
-<pre class="mermaid"><code>
-``` r
-cat(put_diagram(workflow, output = "raw"))</code></pre>
-<p>flowchart TD d6f488a9_fd78_4d69_af8b_64d1b0d37b26[“Extract”]
-a71565e3_0211_4b3c_95ba_e090d327a853[“Transform”]
-node_334add93_2128_40ea_b671_15d3993ae6bc[“Load”]</p>
-<pre><code>%% Connections
-d6f488a9_fd78_4d69_af8b_64d1b0d37b26 --&gt; a71565e3_0211_4b3c_95ba_e090d327a853
-a71565e3_0211_4b3c_95ba_e090d327a853 --&gt; node_334add93_2128_40ea_b671_15d3993ae6bc</code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">temp_file</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Visualize</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"```mermaid\n"</span>, <span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span>, <span class="st">"\n```\n"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
+<pre class="mermaid"><code>flowchart TD
+    node_32523f7d_8660_4f2d_8010_a901cb4dd22f["Extract"]
+    node_68ba3eb7_a7de_4d62_bd0f_ea18a39ae17c["Transform"]
+    ffdb4b00_eb30_44b7_8321_1482a9fac1d6["Load"]
+
+    %% Connections
+    node_32523f7d_8660_4f2d_8010_a901cb4dd22f --&gt; node_68ba3eb7_a7de_4d62_bd0f_ea18a39ae17c
+    node_68ba3eb7_a7de_4d62_bd0f_ea18a39ae17c --&gt; ffdb4b00_eb30_44b7_8321_1482a9fac1d6</code></pre>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="annotation-syntax-at-a-glance">Annotation Syntax at a Glance<a class="anchor" aria-label="anchor" href="#annotation-syntax-at-a-glance"></a>
+</h2>
+<pre><code><span><span class="co"># put label:"Step Name", input:"file.csv", output:"result.csv"</span></span></code></pre>
+<table class="table">
+<colgroup>
+<col width="26%">
+<col width="34%">
+<col width="38%">
+</colgroup>
+<thead><tr class="header">
+<th>Field</th>
+<th>Purpose</th>
+<th>Required</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>label</code></td>
+<td>Human-readable name</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td><code>input</code></td>
+<td>Files/data consumed</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td><code>output</code></td>
+<td>Files/data produced</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td><code>id</code></td>
+<td>Unique identifier</td>
+<td>No (auto-generated)</td>
+</tr>
+<tr class="odd">
+<td><code>node_type</code></td>
+<td>
+<code>input</code>, <code>process</code>, <code>output</code>,
+<code>decision</code>, <code>start</code>, <code>end</code>
+</td>
+<td>No (defaults to <code>process</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Multiple inputs/outputs:</strong> Use commas:
+<code>input:"a.csv, b.csv"</code></p>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="multi-language-support">Multi-Language Support<a class="anchor" aria-label="anchor" href="#multi-language-support"></a>
+</h2>
+<p>putior works with 30+ languages. Comment prefix is auto-detected:</p>
+<table class="table">
+<thead><tr class="header">
+<th>Language</th>
+<th>Annotation</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>R, Python, Shell</td>
+<td><code># put label:"..."</code></td>
+</tr>
+<tr class="even">
+<td>SQL, Lua</td>
+<td><code>-- put label:"..."</code></td>
+</tr>
+<tr class="odd">
+<td>JavaScript, Go, Rust</td>
+<td><code>// put label:"..."</code></td>
+</tr>
+<tr class="even">
+<td>MATLAB</td>
+<td><code>% put label:"..."</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="common-patterns">Common Patterns<a class="anchor" aria-label="anchor" href="#common-patterns"></a>
+</h2>
+<div class="section level3">
+<h3 id="scan-a-directory">Scan a Directory<a class="anchor" aria-label="anchor" href="#scan-a-directory"></a>
+</h3>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n```\n"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="cleanup">Cleanup<a class="anchor" aria-label="anchor" href="#cleanup"></a>
-</h2>
-<p>unlink(temp_file)</p>
-<pre><code>
----
-## Annotation Syntax at a Glance
-</code></pre>
-</div>
-<div class="section level2">
-<h2 id="put-labelstep-name-inputfile-csv-outputresult-csv">put label:“Step Name”, input:“file.csv”, output:“result.csv”<a class="anchor" aria-label="anchor" href="#put-labelstep-name-inputfile-csv-outputresult-csv"></a>
-</h2>
-<pre><code>
-| Field | Purpose | Required |
-|-------|---------|----------|
-| `label` | Human-readable name | Yes |
-| `input` | Files/data consumed | No |
-| `output` | Files/data produced | No |
-| `id` | Unique identifier | No (auto-generated) |
-| `node_type` | `input`, `process`, `output`, `decision`, `start`, `end` | No (defaults to `process`) |
-
-**Multiple inputs/outputs:** Use commas: `input:"a.csv, b.csv"`
-
----
-
-## Multi-Language Support
-
-putior works with 30+ languages. Comment prefix is auto-detected:
-
-| Language | Annotation |
-|----------|------------|
-| R, Python, Shell | `# put label:"..."` |
-| SQL, Lua | `-- put label:"..."` |
-| JavaScript, Go, Rust | `// put label:"..."` |
-| MATLAB | `% put label:"..."` |
-
----
-
-## Common Patterns
-
-### Scan a Directory
-
-``` r
-workflow &lt;- put("./src/")
-put_diagram(workflow)</code></pre>
-<div class="section level4">
-<h4 id="include-subdirectories">Include Subdirectories<a class="anchor" aria-label="anchor" href="#include-subdirectories"></a>
-</h4>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="include-subdirectories">Include Subdirectories<a class="anchor" aria-label="anchor" href="#include-subdirectories"></a>
+</h3>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./project/"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="auto-detect-workflow-no-annotations">Auto-Detect Workflow (No Annotations!)<a class="anchor" aria-label="anchor" href="#auto-detect-workflow-no-annotations"></a>
-</h4>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="auto-detect-workflow-no-annotations">Auto-Detect Workflow (No Annotations!)<a class="anchor" aria-label="anchor" href="#auto-detect-workflow-no-annotations"></a>
+</h3>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Automatically detect file I/O from code</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="choose-a-theme">Choose a Theme<a class="anchor" aria-label="anchor" href="#choose-a-theme"></a>
-</h4>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="choose-a-theme">Choose a Theme<a class="anchor" aria-label="anchor" href="#choose-a-theme"></a>
+</h3>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"github"</span><span class="op">)</span>  <span class="co"># or: light, dark, minimal, viridis</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="save-to-file">Save to File<a class="anchor" aria-label="anchor" href="#save-to-file"></a>
-</h4>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="save-to-file">Save to File<a class="anchor" aria-label="anchor" href="#save-to-file"></a>
+</h3>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"file"</span>, file <span class="op">=</span> <span class="st">"workflow.md"</span><span class="op">)</span></span></code></pre></div>
 <hr>
 </div>
-<div class="section level3">
-<h3 id="interactive-sandbox">Interactive Sandbox<a class="anchor" aria-label="anchor" href="#interactive-sandbox"></a>
-</h3>
+</div>
+<div class="section level2">
+<h2 id="interactive-sandbox">Interactive Sandbox<a class="anchor" aria-label="anchor" href="#interactive-sandbox"></a>
+</h2>
 <p>Experiment without creating files:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/run_sandbox.html">run_sandbox</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># Opens Shiny app</span></span></code></pre></div>
 <hr>
 </div>
-<div class="section level3">
-<h3 id="quick-reference">Quick Reference<a class="anchor" aria-label="anchor" href="#quick-reference"></a>
-</h3>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="section level2">
+<h2 id="quick-reference">Quick Reference<a class="anchor" aria-label="anchor" href="#quick-reference"></a>
+</h2>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Core functions</span></span>
 <span><span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>                    <span class="co"># Extract annotations</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span>        <span class="co"># Generate Mermaid diagram</span></span>
@@ -405,9 +428,9 @@ put_diagram(workflow)</code></pre>
 <code><a href="../reference/put_diagram.html">?put_diagram</a></code> for full documentation.</p>
 <hr>
 </div>
-<div class="section level3">
-<h3 id="see-also">See Also<a class="anchor" aria-label="anchor" href="#see-also"></a>
-</h3>
+<div class="section level2">
+<h2 id="see-also">See Also<a class="anchor" aria-label="anchor" href="#see-also"></a>
+</h2>
 <table class="table">
 <colgroup>
 <col width="35%">
@@ -448,7 +471,6 @@ put_diagram(workflow)</code></pre>
 </tr>
 </tbody>
 </table>
-</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

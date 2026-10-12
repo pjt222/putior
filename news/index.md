@@ -203,13 +203,26 @@
   [`summary.putior_workflow()`](https://pjt222.github.io/putior/reference/summary.putior_workflow.md)
   for structured summary information
 
-#### Interactive Sandbox Enhancements
+#### Interactive Sandbox
 
+- New
+  [`run_sandbox()`](https://pjt222.github.io/putior/reference/run_sandbox.md)
+  opens an interactive Shiny app for trying PUT annotations: paste or
+  type annotated code, simulate several files, and see the workflow
+  diagram update as you edit (needs the shiny package)
 - Added copy-to-clipboard button for quick Mermaid code export
 - Added optional shinyAce syntax highlighting (graceful degradation)
-- The sandbox loads Mermaid 10.9.8, which fixes 8 published Mermaid
-  security advisories that affect the 10.9.3 pin used during development
-  ([\#48](https://github.com/pjt222/putior/issues/48))
+- The sandbox loads Mermaid 12.1.0 from jsdelivr, pinned with a
+  Subresource Integrity hash
+  ([\#48](https://github.com/pjt222/putior/issues/48)). It draws
+  diagrams in Mermaid 11’s classic style (dagre layout, classic look,
+  200px label wrapping, no minimum node width), which putior’s themes
+  are made for and which GitLab, Quarto and VS Code show. GitHub moved
+  to Mermaid 12 in October 2026 and draws putior diagrams in the neo
+  look with labels wrapped at 120px
+  ([\#54](https://github.com/pjt222/putior/issues/54)). A diagram with a
+  syntax error shows Mermaid’s error message. Mermaid 12 needs a current
+  browser (ES2024; Safari 17.4 or later)
 
 #### Documentation
 
