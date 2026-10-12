@@ -124,6 +124,8 @@
 ### Interactive Sandbox Enhancements
 * Added copy-to-clipboard button for quick Mermaid code export
 * Added optional shinyAce syntax highlighting (graceful degradation)
+* The sandbox loads Mermaid 10.9.8, which fixes 8 published Mermaid security
+  advisories that affect the 10.9.3 pin used during development (#48)
 
 ### Documentation
 * Documented all valid `node_type` values across vignettes and reference (#40)

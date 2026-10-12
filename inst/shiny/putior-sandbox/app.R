@@ -105,7 +105,7 @@ ui <- fluidPage(
       }
     ")),
     # Include Mermaid.js
-    tags$script(src = "https://cdn.jsdelivr.net/npm/mermaid@10.9.3/dist/mermaid.min.js"),
+    tags$script(src = "https://cdn.jsdelivr.net/npm/mermaid@10.9.8/dist/mermaid.min.js"),
     tags$script(HTML("
       mermaid.initialize({
         startOnLoad: false,

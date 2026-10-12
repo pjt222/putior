@@ -10,7 +10,7 @@ template:
     code_font: {google: "Fira Code"}
   includes:
     in_header: |
-      <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.3/dist/mermaid.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.8/dist/mermaid.min.js"></script>
       <script>
         // Theme-aware Mermaid configuration
         // Light colors aligned with putior default theme

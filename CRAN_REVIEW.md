@@ -173,13 +173,13 @@ There is no confirmed finding that would cause an R CMD check ERROR/WARNING, a C
 
 ### T3-5 · mermaid-02 — No accessibility directives (`accTitle`/`accDescr`) emitted
 - **file:line:** `R/put_diagram.R:253-261`
-- **Evidence:** No `accTitle`/`accDescr`/`aria` anywhere in `R/`. Package markets 4 colorblind-safe themes but emits no machine-readable accessible title/description. `accTitle`/`accDescr` shipped in Mermaid v9.0.0 (2022) — safe under the pinned 10.9.3 and on GitHub.
+- **Evidence:** No `accTitle`/`accDescr`/`aria` anywhere in `R/`. Package markets 4 colorblind-safe themes but emits no machine-readable accessible title/description. `accTitle`/`accDescr` shipped in Mermaid v9.0.0 (2022) — safe under the pinned 10.9.x (10.9.8 since 2026-10-12) and on GitHub.
 - **Fix (optional, additive):** When `title` is supplied, also emit `accTitle: <title>` and an `accDescr:` after the `flowchart <direction>` line. Optional `acc_descr` param.
 
 ### T3-6 · mermaid-03 — Confirmation: v11.3+ `A@{ shape: ... }` syntax correctly NOT used (keep it that way)
 - **file:line:** `R/put_diagram.R:598-626`
-- **Evidence:** `get_node_shape()` uses only classic ASCII shapes. The expanded shape catalog requires Mermaid v11.3.0+, which the pinned `mermaid@10.9.3` (`_pkgdown.yml:13`) cannot parse.
-- **Action:** Do NOT adopt v11.3+ syntax while pkgdown pins 10.9.3. If desired later, bump the CDN pin AND verify GitHub rendering first. No-op now.
+- **Evidence:** `get_node_shape()` uses only classic ASCII shapes. The expanded shape catalog requires Mermaid v11.3.0+, which the pinned `mermaid@10.9.8` (`_pkgdown.yml:13`; bumped from 10.9.3 on 2026-10-12, #48) cannot parse.
+- **Action:** Do NOT adopt v11.3+ syntax while pkgdown pins 10.9.x. If desired later, bump the CDN pin AND verify GitHub rendering first. No-op now.
 
 ### T3-7 · pkgdown-04 — Redundant Mermaid double-render timers + duplicate `extra.css` @import
 - **file:line:** `_pkgdown.yml:133-138` (timers), `_pkgdown.yml:153` (@import)
