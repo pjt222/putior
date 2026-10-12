@@ -261,6 +261,21 @@ test_that("generate_run_id produces unique IDs", {
   expect_false(id1 == id2)
 })
 
+test_that("fallback_run_id gives unique IDs without using the RNG (#67)", {
+  had_seed <- exists(".Random.seed", envir = globalenv())
+  seed_before <- if (had_seed) get(".Random.seed", envir = globalenv())
+
+  # Many calls within the same second must still differ.
+  ids <- vapply(seq_len(200), function(i) putior:::fallback_run_id(), character(1))
+
+  expect_false(anyDuplicated(ids) > 0)
+  expect_match(ids, "^run_[0-9]{14}_[0-9]+$")
+  expect_identical(exists(".Random.seed", envir = globalenv()), had_seed)
+  if (had_seed) {
+    expect_identical(get(".Random.seed", envir = globalenv()), seed_before)
+  }
+})
+
 test_that("store_run and get_run_by_id work correctly", {
   run_id <- "test_run_123"
   run_data <- list(

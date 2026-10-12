@@ -18,15 +18,27 @@ NULL
 # Maximum number of runs to retain (prevents unbounded memory growth)
 .ACP_MAX_RUNS <- 1000L
 
+# Counter for run IDs made without the uuid package
+.acp_run_counter <- new.env(parent = emptyenv())
+
 #' Generate a unique run ID
 #' @noRd
 generate_run_id <- function() {
   if (requireNamespace("uuid", quietly = TRUE)) {
     uuid::UUIDgenerate()
   } else {
-    # Fallback to timestamp-based ID
-    paste0("run_", format(Sys.time(), "%Y%m%d%H%M%S"), "_", sample(1000:9999, 1))
+    fallback_run_id()
   }
+}
+
+#' Run ID for when the uuid package is not installed
+#'
+#' A timestamp plus a counter that only increases, so IDs made in the same
+#' second still differ, and the session's random-number stream is left alone.
+#' @noRd
+fallback_run_id <- function() {
+  .acp_run_counter$value <- (.acp_run_counter$value %||% 0L) + 1L
+  paste0("run_", format(Sys.time(), "%Y%m%d%H%M%S"), "_", .acp_run_counter$value)
 }
 
 #' Store a run result, evicting oldest entries when at capacity
