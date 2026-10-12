@@ -93,6 +93,7 @@ cat("```mermaid\n", put_diagram(workflow, output = "raw"), "\n```\n", sep = "")
 ```
 
 ---
+
 ## Annotation Syntax at a Glance
 
 ```
