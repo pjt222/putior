@@ -36,6 +36,7 @@ Suggests:
     shinyAce,
     mcptools,
     ellmer,
+    jsonlite,
     plumber2
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

@@ -38,6 +38,11 @@
   `get_detection_patterns`, `get_diagram_themes`, `putior_guide`, `putior_help`,
   `set_putior_log_level`, `is_valid_put_annotation`, `split_file_list`, `ext_to_language`
 * Supports Claude Code, Claude Desktop, and other MCP-compatible clients
+* Tools return JSON (workflow data as one object per node) or plain text.
+  They print nothing, because with the stdio transport stdout is the protocol
+  channel, and never write files or the clipboard, so every tool except
+  `set_putior_log_level` is read-only. The `put_diagram` tool scans a `path`
+  and returns the Mermaid code. (#65)
 
 ### ACP Server Integration
 * Added `putior_acp_server()` to expose putior as an ACP agent for inter-agent

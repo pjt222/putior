@@ -249,3 +249,169 @@ test_that("get_diagram_themes works correctly for MCP integration", {
   expect_true("plasma" %in% names(themes))
   expect_true("cividis" %in% names(themes))
 })
+
+# =============================================================================
+# Tool results as an MCP client receives them (#65)
+# =============================================================================
+
+create_mcp_test_project <- function() {
+  project_dir <- file.path(tempdir(), "putior_mcp_tools_test")
+  unlink(project_dir, recursive = TRUE)
+  dir.create(project_dir)
+  writeLines(c(
+    '# put id:"extract", label:"Extract", output:"raw.csv"',
+    'data <- read.csv("source.csv")',
+    '# put id:"clean", label:"Clean", input:"raw.csv", output:"clean.csv"',
+    'write.csv(data, "clean.csv")'
+  ), file.path(project_dir, "etl.R"))
+  project_dir
+}
+
+test_that("MCP tools return text and print nothing", {
+  skip_if_not_installed("ellmer")
+  skip_if_not_installed("jsonlite")
+  project_dir <- create_mcp_test_project()
+  on.exit(unlink(project_dir, recursive = TRUE), add = TRUE)
+  tools <- putior_mcp_tools()
+
+  # set_putior_log_level is left out because it changes a global option.
+  tool_arguments <- list(
+    put = list(path = project_dir),
+    put_diagram = list(path = project_dir),
+    put_auto = list(path = project_dir),
+    put_generate = list(path = project_dir),
+    put_merge = list(path = project_dir),
+    get_comment_prefix = list(ext = "sql"),
+    get_supported_extensions = list(),
+    list_supported_languages = list(),
+    get_detection_patterns = list(language = "r", type = "input"),
+    get_diagram_themes = list(),
+    putior_guide = list(topic = "syntax"),
+    putior_help = list(),
+    is_valid_put_annotation = list(line = '# put id:"a", label:"A"'),
+    split_file_list = list(file_string = "a.csv, b.csv"),
+    ext_to_language = list(ext = "py")
+  )
+  expect_setequal(names(tool_arguments), setdiff(names(tools), "set_putior_log_level"))
+
+  for (tool_name in names(tool_arguments)) {
+    # With the stdio transport, anything printed lands in the JSON-RPC stream.
+    printed <- utils::capture.output(
+      result <- do.call(tools[[tool_name]], tool_arguments[[tool_name]])
+    )
+    expect_equal(length(printed), 0, info = tool_name)
+    expect_true(is.atomic(result) && length(result) > 0, info = tool_name)
+  }
+})
+
+test_that("MCP data tools return JSON with field names", {
+  skip_if_not_installed("ellmer")
+  skip_if_not_installed("jsonlite")
+  project_dir <- create_mcp_test_project()
+  on.exit(unlink(project_dir, recursive = TRUE), add = TRUE)
+  tools <- putior_mcp_tools()
+
+  nodes <- jsonlite::fromJSON(tools$put(path = project_dir))
+  expect_true(is.data.frame(nodes))
+  expect_setequal(nodes$id, c("extract", "clean"))
+  expect_true(all(c("file_name", "label", "input", "output") %in% names(nodes)))
+
+  for (tool_name in c("put_auto", "put_merge")) {
+    detected <- jsonlite::fromJSON(tools[[tool_name]](path = project_dir))
+    expect_true(is.data.frame(detected), info = tool_name)
+    expect_true("id" %in% names(detected), info = tool_name)
+  }
+
+  patterns <- jsonlite::fromJSON(tools$get_detection_patterns(language = "r", type = "input"))
+  expect_true(all(c("regex", "func", "description") %in% names(patterns)))
+
+  themes <- jsonlite::fromJSON(tools$get_diagram_themes())
+  expect_true(all(c("light", "dark", "github") %in% names(themes)))
+})
+
+test_that("MCP put_diagram tool takes a path and returns Mermaid code", {
+  skip_if_not_installed("ellmer")
+  project_dir <- create_mcp_test_project()
+  on.exit(unlink(project_dir, recursive = TRUE), add = TRUE)
+  tools <- putior_mcp_tools()
+
+  expect_true("path" %in% names(tools$put_diagram@arguments@properties))
+  code <- tools$put_diagram(path = project_dir, direction = "LR")
+  expect_match(code, "flowchart LR", fixed = TRUE)
+  expect_match(code, 'extract["Extract"]', fixed = TRUE)
+  expect_match(code, 'clean["Clean"]', fixed = TRUE)
+})
+
+test_that("MCP tools expose no arguments that write files or the clipboard", {
+  skip_if_not_installed("ellmer")
+  tools <- putior_mcp_tools()
+
+  for (tool_name in names(tools)) {
+    argument_names <- names(tools[[tool_name]]@arguments@properties)
+    expect_false(
+      any(c("output", "file", "insert") %in% argument_names),
+      info = tool_name
+    )
+  }
+})
+
+test_that("MCP results reach the client as JSON text through mcptools", {
+  # Uses an mcptools internal (the server's tools/call handler); keep it off CRAN.
+  skip_on_cran()
+  skip_if_not_installed("mcptools")
+  skip_if_not_installed("jsonlite")
+  project_dir <- create_mcp_test_project()
+  on.exit(unlink(project_dir, recursive = TRUE), add = TRUE)
+  tools <- putior_mcp_tools()
+  execute_tool_call <- utils::getFromNamespace("execute_tool_call", "mcptools")
+
+  call_tool <- function(tool_name, arguments) {
+    execute_tool_call(list(
+      id = 1L, protocolVersion = "2025-06-18",
+      params = list(name = tool_name, arguments = arguments),
+      tool = tools[[tool_name]]
+    ))
+  }
+
+  put_response <- call_tool("put", list(path = project_dir))
+  nodes <- jsonlite::fromJSON(put_response$result$content[[1]]$text)
+  expect_setequal(nodes$id, c("extract", "clean"))
+
+  diagram_response <- call_tool("put_diagram", list(path = project_dir))
+  expect_null(diagram_response$error)
+  expect_match(diagram_response$result$content[[1]]$text, "flowchart TD", fixed = TRUE)
+
+  help_response <- call_tool("putior_help", list())
+  expect_match(help_response$result$content[[1]]$text, "putior Quick Reference", fixed = TRUE)
+})
+
+test_that("ellmer accepts MCP tool results without a deprecation warning", {
+  # Uses an ellmer internal (the function that warns); keep it off CRAN.
+  skip_on_cran()
+  skip_if_not_installed("ellmer", minimum_version = "0.5.0")
+  skip_if_not_installed("jsonlite")
+  normalize_tool_result <- tryCatch(
+    utils::getFromNamespace("normalize_tool_result", "ellmer"),
+    error = function(e) NULL
+  )
+  skip_if(is.null(normalize_tool_result), "ellmer has no normalize_tool_result()")
+  project_dir <- create_mcp_test_project()
+  on.exit(unlink(project_dir, recursive = TRUE), add = TRUE)
+  old_options <- options(lifecycle_verbosity = "warning")
+  on.exit(options(old_options), add = TRUE)
+  tools <- putior_mcp_tools()
+
+  expect_no_warning(normalize_tool_result(tools$put(path = project_dir)))
+  expect_no_warning(normalize_tool_result(tools$get_detection_patterns(language = "r")))
+})
+
+test_that("GUIDE.md version matches the package version", {
+  guide_lines <- readLines(system.file("GUIDE.md", package = "putior"), n = 20)
+  version_line <- grep("^version:", guide_lines, value = TRUE)
+
+  expect_length(version_line, 1)
+  expect_equal(
+    sub("^version:\\s*", "", version_line),
+    as.character(utils::packageVersion("putior"))
+  )
+})

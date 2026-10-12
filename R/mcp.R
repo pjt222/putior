@@ -89,8 +89,7 @@ putior_mcp_server <- function(type = c("stdio", "http"),
   if (!requireNamespace("mcptools", quietly = TRUE)) {
     stop(
       "The 'mcptools' package is required for MCP server functionality.\n",
-      "Install it with: remotes::install_github('posit-dev/mcptools')\n",
-      "Or: pak::pak('posit-dev/mcptools')",
+      "Install it with: install.packages('mcptools')",
       call. = FALSE
     )
   }
@@ -210,19 +209,141 @@ putior_mcp_tools <- function(include = NULL,
 }
 
 # =============================================================================
+# Tool Functions
+# =============================================================================
+#
+# MCP clients need text. mcptools formats a data frame or list that a tool
+# returns as deparsed R, one column per line and without names, and ellmer
+# 0.5.0 deprecates converting such results itself. Tools must also not print:
+# with the stdio transport, stdout is the JSON-RPC channel. The wrappers below
+# therefore return JSON or plain text and never write to stdout, the console,
+# the clipboard or files, which keeps every tool honestly read-only.
+
+#' Convert a tool result to JSON text, a data frame as one object per row
+#' @noRd
+mcp_json <- function(x) {
+  if (is.data.frame(x)) {
+    class(x) <- "data.frame"
+  }
+  jsonlite::toJSON(x, dataframe = "rows", auto_unbox = TRUE, na = "null", null = "null")
+}
+
+#' @noRd
+mcp_put <- function(path, pattern = NULL, recursive = TRUE,
+                    include_line_numbers = FALSE, validate = TRUE,
+                    exclude = NULL, log_level = NULL) {
+  mcp_json(put(
+    path, pattern = pattern, recursive = recursive,
+    include_line_numbers = include_line_numbers, validate = validate,
+    exclude = exclude, log_level = log_level
+  ))
+}
+
+#' Scan a path and return the Mermaid code of its diagram
+#' @noRd
+mcp_put_diagram <- function(path, pattern = NULL, recursive = TRUE,
+                            exclude = NULL, title = NULL, direction = "TD",
+                            node_labels = "label", show_files = FALSE,
+                            show_artifacts = FALSE,
+                            show_workflow_boundaries = TRUE,
+                            style_nodes = TRUE, theme = "light",
+                            show_source_info = FALSE,
+                            source_info_style = "inline",
+                            enable_clicks = FALSE, click_protocol = "vscode",
+                            log_level = NULL) {
+  # Click links include line numbers when the workflow has them
+  workflow <- put(
+    path, pattern = pattern, recursive = recursive,
+    include_line_numbers = isTRUE(enable_clicks), exclude = exclude,
+    log_level = log_level
+  )
+  put_diagram(
+    workflow, output = "raw", title = title, direction = direction,
+    node_labels = node_labels, show_files = show_files,
+    show_artifacts = show_artifacts,
+    show_workflow_boundaries = show_workflow_boundaries,
+    style_nodes = style_nodes, theme = theme,
+    show_source_info = show_source_info,
+    source_info_style = source_info_style, enable_clicks = enable_clicks,
+    click_protocol = click_protocol, log_level = log_level
+  )
+}
+
+#' @noRd
+mcp_put_auto <- function(path, pattern = NULL, recursive = TRUE,
+                         detect_inputs = TRUE, detect_outputs = TRUE,
+                         detect_dependencies = TRUE,
+                         include_line_numbers = FALSE, exclude = NULL,
+                         log_level = NULL) {
+  mcp_json(put_auto(
+    path, pattern = pattern, recursive = recursive,
+    detect_inputs = detect_inputs, detect_outputs = detect_outputs,
+    detect_dependencies = detect_dependencies,
+    include_line_numbers = include_line_numbers, exclude = exclude,
+    log_level = log_level
+  ))
+}
+
+#' @noRd
+mcp_put_generate <- function(path, pattern = NULL, recursive = TRUE,
+                             style = "multiline", exclude = NULL,
+                             log_level = NULL) {
+  annotations <- put_generate(
+    path, pattern = pattern, recursive = recursive, output = "raw",
+    insert = FALSE, style = style, exclude = exclude, log_level = log_level
+  )
+  paste(annotations, collapse = "\n\n")
+}
+
+#' @noRd
+mcp_put_merge <- function(path, pattern = NULL, recursive = TRUE,
+                          merge_strategy = "manual_priority",
+                          include_line_numbers = FALSE, exclude = NULL,
+                          log_level = NULL) {
+  mcp_json(put_merge(
+    path, pattern = pattern, recursive = recursive,
+    merge_strategy = merge_strategy,
+    include_line_numbers = include_line_numbers, exclude = exclude,
+    log_level = log_level
+  ))
+}
+
+#' @noRd
+mcp_get_detection_patterns <- function(language, type = NULL) {
+  mcp_json(get_detection_patterns(language = language, type = type))
+}
+
+#' @noRd
+mcp_get_diagram_themes <- function() {
+  mcp_json(get_diagram_themes())
+}
+
+#' @noRd
+mcp_putior_guide <- function(topic = NULL) {
+  putior_guide(topic = topic, output = "raw")
+}
+
+#' putior_help() prints its text; capture it instead
+#' @noRd
+mcp_putior_help <- function(topic = NULL) {
+  paste(utils::capture.output(putior_help(topic)), collapse = "\n")
+}
+
+# =============================================================================
 # Tool Definition Functions
 # =============================================================================
 
 #' @noRd
 make_tool_put <- function() {
   ellmer::tool(
-    fun = put,
+    fun = mcp_put,
     description = paste0(
       "Scan source files for PUT workflow annotations. ",
       "Extracts structured annotations that define workflow nodes, ",
       "inputs, outputs, and metadata from source code comments. ",
       "Supports 30+ programming languages with automatic comment syntax detection. ",
-      "Returns a data frame that can be passed to put_diagram() for visualization."
+      "Returns the nodes as JSON, one object per node. ",
+      "To draw them, call put_diagram with the same path."
     ),
     name = "put",
     annotations = list(
@@ -266,12 +387,11 @@ make_tool_put <- function() {
 #' @noRd
 make_tool_put_diagram <- function() {
   ellmer::tool(
-    fun = put_diagram,
+    fun = mcp_put_diagram,
     description = paste0(
-      "Generate a Mermaid flowchart diagram from PUT workflow data. ",
-      "Creates visual representations of data flows and processing steps. ",
-      "Supports multiple themes, node styling, and interactive features. ",
-      "Output can be printed to console, saved to file, or returned as raw code."
+      "Scan source files for PUT annotations and return the Mermaid flowchart ",
+      "code of the workflow. Shows data flows and processing steps. ",
+      "Supports multiple themes, node styling, and interactive features."
     ),
     name = "put_diagram",
     annotations = list(
@@ -279,14 +399,19 @@ make_tool_put_diagram <- function() {
       readOnlyHint = TRUE
     ),
     arguments = list(
-      workflow = ellmer::type_ignore(),
-      output = ellmer::type_enum(
-        description = "Output format: console, file, clipboard, or raw (default: console)",
-        values = c("console", "file", "clipboard", "raw"),
+      path = ellmer::type_string(
+        description = "Path to directory or file to scan for PUT annotations"
+      ),
+      pattern = ellmer::type_string(
+        description = "File pattern regex (default: all supported extensions)",
         required = FALSE
       ),
-      file = ellmer::type_string(
-        description = "Output file path when output='file' (default: workflow_diagram.md)",
+      recursive = ellmer::type_boolean(
+        description = "Search subdirectories recursively (default: TRUE)",
+        required = FALSE
+      ),
+      exclude = ellmer::type_string(
+        description = "Comma-separated regex patterns to exclude files (default: none)",
         required = FALSE
       ),
       title = ellmer::type_string(
@@ -324,7 +449,6 @@ make_tool_put_diagram <- function() {
         values = .VALID_THEMES,
         required = FALSE
       ),
-      palette = ellmer::type_ignore(),
       show_source_info = ellmer::type_boolean(
         description = "Display source file info in nodes (default: FALSE)",
         required = FALSE
@@ -355,13 +479,13 @@ make_tool_put_diagram <- function() {
 #' @noRd
 make_tool_put_auto <- function() {
   ellmer::tool(
-    fun = put_auto,
+    fun = mcp_put_auto,
     description = paste0(
       "Auto-detect workflow elements from code analysis without requiring explicit annotations. ",
       "Analyzes source files to detect file inputs, outputs, and dependencies ",
       "based on function calls like read_csv(), write.csv(), etc. ",
       "Similar to how roxygen2 auto-generates documentation skeletons. ",
-      "Returns a data frame compatible with put_diagram()."
+      "Returns the detected nodes as JSON, one object per node."
     ),
     name = "put_auto",
     annotations = list(
@@ -413,11 +537,12 @@ make_tool_put_auto <- function() {
 #' @noRd
 make_tool_put_generate <- function() {
   ellmer::tool(
-    fun = put_generate,
+    fun = mcp_put_generate,
     description = paste0(
       "Generate suggested PUT annotation comments based on code analysis. ",
-      "Analyzes source files and produces annotation text that can be copied ",
-      "into source files. Similar to how roxygen2 generates documentation skeletons. ",
+      "Analyzes source files and returns annotation text that can be copied ",
+      "into source files; the files themselves are not changed. ",
+      "Similar to how roxygen2 generates documentation skeletons. ",
       "Supports single-line and multiline annotation styles."
     ),
     name = "put_generate",
@@ -436,15 +561,6 @@ make_tool_put_generate <- function() {
       ),
       recursive = ellmer::type_boolean(
         description = "Search subdirectories recursively (default: TRUE)",
-        required = FALSE
-      ),
-      output = ellmer::type_enum(
-        description = "Output: console, raw, clipboard, or file (default: console)",
-        values = c("console", "raw", "clipboard", "file"),
-        required = FALSE
-      ),
-      insert = ellmer::type_boolean(
-        description = "Insert annotations directly into source files (default: FALSE)",
         required = FALSE
       ),
       style = ellmer::type_enum(
@@ -468,12 +584,12 @@ make_tool_put_generate <- function() {
 #' @noRd
 make_tool_put_merge <- function() {
   ellmer::tool(
-    fun = put_merge,
+    fun = mcp_put_merge,
     description = paste0(
       "Combine manually written PUT annotations with auto-detected workflow elements. ",
       "Supports flexible strategies: manual_priority (manual overrides auto), ",
       "supplement (auto fills in missing fields), union (combine all detected I/O). ",
-      "Returns a merged data frame compatible with put_diagram()."
+      "Returns the merged nodes as JSON, one object per node."
     ),
     name = "put_merge",
     annotations = list(
@@ -578,10 +694,10 @@ make_tool_list_supported_languages <- function() {
 #' @noRd
 make_tool_get_detection_patterns <- function() {
   ellmer::tool(
-    fun = get_detection_patterns,
+    fun = mcp_get_detection_patterns,
     description = paste0(
       "Get auto-detection patterns for a programming language. ",
-      "Returns patterns used to detect file inputs, outputs, and dependencies. ",
+      "Returns the patterns used to detect file inputs, outputs, and dependencies, as JSON. ",
       "Supports 18 languages including R, Python, JavaScript, Go, Rust, WGSL, Dockerfile, Makefile, etc."
     ),
     name = "get_detection_patterns",
@@ -605,10 +721,10 @@ make_tool_get_detection_patterns <- function() {
 #' @noRd
 make_tool_get_diagram_themes <- function() {
   ellmer::tool(
-    fun = get_diagram_themes,
+    fun = mcp_get_diagram_themes,
     description = paste0(
       "Get information about available color themes for workflow diagrams. ",
-      "Returns a named list describing 9 themes: light, dark, auto, minimal, github, ",
+      "Returns a JSON object describing 9 themes: light, dark, auto, minimal, github, ",
       "and 4 colorblind-safe viridis family themes (viridis, magma, plasma, cividis)."
     ),
     name = "get_diagram_themes",
@@ -622,12 +738,11 @@ make_tool_get_diagram_themes <- function() {
 #' @noRd
 make_tool_putior_guide <- function() {
   ellmer::tool(
-    fun = putior_guide,
+    fun = mcp_putior_guide,
     description = paste0(
       "Access putior guide documentation for AI assistants. ",
       "Provides structured information about annotation syntax, supported languages, ",
-      "core functions, detection patterns, and usage examples. ",
-      "Use output='raw' to get markdown content."
+      "core functions, detection patterns, and usage examples, as markdown."
     ),
     name = "putior_guide",
     annotations = list(
@@ -639,11 +754,6 @@ make_tool_putior_guide <- function() {
         description = "Topic section: quick-start, syntax, languages, functions, patterns, or examples",
         values = c("quick-start", "syntax", "languages", "functions", "patterns", "examples"),
         required = FALSE
-      ),
-      output = ellmer::type_enum(
-        description = "Output format: console, raw, or clipboard (omitted = the function default, console)",
-        values = c("console", "raw", "clipboard"),
-        required = FALSE
       )
     )
   )
@@ -652,7 +762,7 @@ make_tool_putior_guide <- function() {
 #' @noRd
 make_tool_putior_help <- function() {
   ellmer::tool(
-    fun = putior_help,
+    fun = mcp_putior_help,
     description = paste0(
       "Get quick-reference help for putior tasks and syntax. ",
       "Topics include: annotation (syntax), themes, languages, node_types, patterns, examples, guide."
