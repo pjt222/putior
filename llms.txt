@@ -215,7 +215,7 @@ on putior’s own source code produces this diagram:
 
 ``` mermaid
 ---
-title: putior Package Internals
+title: "putior Package Internals"
 ---
 flowchart TD
     diagram_gen["Generate Mermaid Diagram"]

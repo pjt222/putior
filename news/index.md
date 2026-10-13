@@ -54,6 +54,70 @@
 - Fixed single-line block comment annotations (`/* put ... */`) silently
   losing their last property, which could drop an output and its edge.
   ([\#72](https://github.com/pjt222/putior/issues/72))
+- [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  gives every node one Mermaid id and uses it in the node definition,
+  edges, `class` lines and click directives. Before, edges to an
+  artifact whose path has two punctuation characters in a row (such as
+  `./raw data (v2).csv`) used a different id than the artifact node, so
+  Mermaid drew an extra unlabeled node and left the artifact
+  unconnected. Annotation ids that differ only in punctuation (`a-b` and
+  `a_b`) were merged into one node with a self-loop; they now stay two
+  nodes (`a_b`, `a_b_2`) and
+  [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  warns. Two data files whose names differ only in punctuation get two
+  artifact nodes.
+  [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md)
+  and
+  [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md),
+  which derive ids from file names, now give files that would share an
+  id (`a-b.R` and `a_b.R`, `end.R` and `node_end.R`, or `load.R` in two
+  folders) distinct ids (`load`, `load_2`).
+  `put_generate(output = "file")` now writes each annotation next to the
+  file it belongs to; when a file in between gave no annotation, the
+  next one went into the wrong `.put` file.
+  ([\#46](https://github.com/pjt222/putior/issues/46))
+- Node ids that are Mermaid keywords (`end`, `graph`, `flowchart`,
+  `subgraph`, `style`, `class`, `classDef`, `click`, `linkStyle`,
+  `call`, `href`, `interpolate`, and the link targets `_self`, `_blank`,
+  `_parent`, `_top`) made the whole diagram fail to parse. They are now
+  written as `node_end` and so on. `id:"end"` is a natural name for a
+  pipeline’s last step.
+  ([\#45](https://github.com/pjt222/putior/issues/45))
+- With `source_info_style = "subgraph"`, subgraph ids are now
+  `file_<name>` and never equal a node id. Before, a file `load.R` with
+  a node `id:"load"` failed to render (“would create a cycle”) on
+  Mermaid 11, and on Mermaid 12, which GitHub uses, the node silently
+  disappeared. Files with the same name in different folders now get one
+  subgraph each instead of sharing one, and the subgraph label then
+  includes as much of the folder path as it takes to tell them apart
+  (`x/load.R`, `a/x/load.R`).
+  ([\#45](https://github.com/pjt222/putior/issues/45),
+  [\#46](https://github.com/pjt222/putior/issues/46))
+- With `show_files = TRUE`, edge labels are now quoted and escaped like
+  node labels (`-->|"raw data (v2).csv"|`). A file name with parentheses
+  or other special characters made the diagram fail to parse.
+  ([\#45](https://github.com/pjt222/putior/issues/45))
+- The `title` of
+  [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  is now written as a quoted YAML string. A title with `:` (such as
+  `"ETL: stage 1"`) made the diagram fail to parse, and text after `#`
+  was dropped as a YAML comment.
+  ([\#45](https://github.com/pjt222/putior/issues/45))
+- A `#` in a label that Mermaid would read as a character entity is now
+  escaped as `#35;`. Mermaid decodes `#<name>;` and `#<digits>;`, so a
+  label such as
+  `Step `[`#35`](https://github.com/pjt222/putior/issues/35)`;` was
+  shown as `Step #`. A plain `#` (`C#`,
+  `item `[`#1`](https://github.com/pjt222/putior/issues/1)) is left
+  alone.
+  [`?put_diagram`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  now describes how labels and ids are written.
+  ([\#45](https://github.com/pjt222/putior/issues/45))
+- [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  and the MCP and ACP servers accept `direction = "TB"`, Mermaid’s
+  synonym for `"TD"`. GUIDE.md named `TB` as the default, but `"TB"` was
+  rejected with an error.
+  ([\#79](https://github.com/pjt222/putior/issues/79))
 
 ### New Features
 

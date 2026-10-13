@@ -60,7 +60,8 @@ put_diagram(
 - direction:
 
   Character string specifying diagram direction. Options: "TD"
-  (top-down), "LR" (left-right), "BT" (bottom-top), "RL" (right-left)
+  (top-down; "TB" is a synonym), "LR" (left-right), "BT" (bottom-top),
+  "RL" (right-left)
 
 - node_labels:
 
@@ -162,6 +163,21 @@ put_diagram(
 ## Value
 
 Character string containing the mermaid diagram code
+
+## Labels and ids
+
+Labels are quoted, and double quotes, `|` and a `#` that Mermaid would
+read as a character entity (as in `#35;`) are escaped. Mermaid still
+interprets HTML tags such as `<br/>` and `$$...$$` (KaTeX math) inside
+labels.
+
+Node ids are reduced to letters, digits and underscores. An id that
+starts with a digit or is a Mermaid keyword (such as `end` or `class`)
+gets a `node_` prefix. Ids that only differ in punctuation (`a-b` and
+`a_b`) are kept apart with a numeric suffix and a warning; an id that is
+already valid (`a_b`) keeps its form. With
+`source_info_style = "subgraph"`, each source file becomes a subgraph
+with the id `file_<name>`.
 
 ## See also
 

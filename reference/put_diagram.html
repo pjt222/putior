@@ -247,7 +247,8 @@ the flow of data through your analysis pipeline.</p>
 
 <dt id="arg-direction">direction<a class="anchor" aria-label="anchor" href="#arg-direction"></a></dt>
 <dd><p>Character string specifying diagram direction. Options:
-"TD" (top-down), "LR" (left-right), "BT" (bottom-top), "RL" (right-left)</p></dd>
+"TD" (top-down; "TB" is a synonym), "LR" (left-right), "BT" (bottom-top),
+"RL" (right-left)</p></dd>
 
 
 <dt id="arg-node-labels">node_labels<a class="anchor" aria-label="anchor" href="#arg-node-labels"></a></dt>
@@ -328,6 +329,21 @@ Options: "DEBUG", "INFO", "WARN", "ERROR". See <code><a href="set_putior_log_lev
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Character string containing the mermaid diagram code</p>
+    </div>
+    <div class="section level2">
+    <h2 id="labels-and-ids">Labels and ids<a class="anchor" aria-label="anchor" href="#labels-and-ids"></a></h2>
+
+
+<p>Labels are quoted, and double quotes, <code>|</code> and a <code>#</code> that Mermaid
+would read as a character entity (as in <code>#35;</code>) are escaped. Mermaid still interprets HTML tags such as
+<code>&lt;br/&gt;</code> and <code>$$...$$</code> (KaTeX math) inside labels.</p>
+<p>Node ids are reduced to letters, digits and underscores. An id that starts
+with a digit or is a Mermaid keyword (such as <code>end</code> or <code>class</code>)
+gets a <code>node_</code> prefix. Ids that only differ in punctuation (<code>a-b</code>
+and <code>a_b</code>) are kept apart with a numeric suffix and a warning; an id
+that is already valid (<code>a_b</code>) keeps its form. With
+<code>source_info_style = "subgraph"</code>, each source file becomes a subgraph
+with the id <code>file_&lt;name&gt;</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

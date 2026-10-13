@@ -292,6 +292,11 @@ While putior accepts any properties you define, these are commonly used:
 | `input`     | Input files       | `"raw_data.csv"`, `"data/*.json"`  |
 | `output`    | Output files      | `"processed_data.csv"`             |
 
+[`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+quotes each label and escapes quotes, `|` and a `#` that Mermaid would
+read as a character entity (such as `#35;`). Mermaid still renders HTML
+tags such as `<br/>` and `$$...$$` math in labels.
+
 ### Standard Node Types
 
 For consistency across projects, use these standard node types:

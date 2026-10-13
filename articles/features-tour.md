@@ -333,11 +333,11 @@ put_diagram(workflow,
 
 ``` mermaid
 flowchart TD
-    subgraph 01_load ["01_load.R"]
+    subgraph file_01_load ["01_load.R"]
         load(["Load Data"])
     end
 
-    subgraph 02_process ["02_process.R"]
+    subgraph file_02_process ["02_process.R"]
         process["Process"]
     end
 
