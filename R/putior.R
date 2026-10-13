@@ -263,6 +263,13 @@ collect_multiline_annotation <- function(lines, start_idx, escaped_prefix,
     continuation <- strip_comment_before_continuation(
       sub(sprintf("^\\s*%s\\s*", escaped_prefix), "", continuation_line)
     )
+    # A line that is only a comment is skipped when it continues, and ends
+    # the annotation otherwise, as before (#91). Joined in, it would start a
+    # comment that cuts every line after it.
+    if (grepl("^\\s*(#|--|//|%)", continuation)) {
+      if (!grepl("\\\\\\s*$", continuation_line)) break
+      next
+    }
 
     if (nchar(trimws(continuation)) > 0) {
       if (!grepl("^\\s*,", continuation)) {
@@ -895,8 +902,12 @@ summary.putior_workflow <- function(object, ...) {
 #' is_valid_put_annotation("# put invalid syntax") # FALSE
 is_valid_put_annotation <- function(line) {
   # The first line of a multiline annotation ends with a continuation
-  # backslash, which put() does not read as a property
-  result <- parse_put_annotation(sub("\\s*\\\\\\s*$", "", line))
+  # backslash, which put() does not read as a property. Inside a block
+  # comment there is no continuation, so there the backslash stays.
+  if (!grepl("^\\s*(/\\*|\\*)", line)) {
+    line <- sub("\\s*\\\\\\s*$", "", line)
+  }
+  result <- parse_put_annotation(line)
   # put() ignores the pairs it cannot read, so they make the line invalid
   !is.null(result) && length(result) > 0 && is.null(attr(result, "unparsed"))
 }

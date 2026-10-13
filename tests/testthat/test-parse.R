@@ -384,6 +384,8 @@ test_that("is_valid_put_annotation() correctly identifies valid annotations", {
   # The first line of a multiline annotation is valid
   expect_true(is_valid_put_annotation('# put id:"a", label:"b", \\'))
   expect_true(is_valid_put_annotation('-- put id:"a", label:"b" \\'))
+  # Inside a block comment there is no continuation, so the backslash counts
+  expect_false(is_valid_put_annotation(' * put id:"a", label:"b", \\'))
 })
 
 # Test error handling in parsing

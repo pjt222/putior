@@ -502,7 +502,16 @@ test_that("a comment before a continuation backslash keeps the next lines (#91)"
     '#   output:"out.csv"',
     '',
     '# put id:"b", label:"M"  # first \\',
-    '#   output:"o.csv"   # last'
+    '#   output:"o.csv"   # last',
+    '',
+    '# put id:"c", \\',
+    '#     label:"ETL"          # display name \\',
+    '#     input:"raw.csv"      # source',
+    '',
+    '# put id:"d", \\',
+    '#   # a line that is only a comment \\',
+    '#   label:"L", \\',
+    '#   output:"o.csv"'
   ), "multi.R", test_dir)
 
   expect_no_warning(result <- put(test_dir))
@@ -510,6 +519,10 @@ test_that("a comment before a continuation backslash keeps the next lines (#91)"
   expect_equal(c(step_a$label, step_a$input, step_a$output), c("L", "raw.csv", "out.csv"))
   step_b <- result[result$id == "b", ]
   expect_equal(c(step_b$label, step_b$output), c("M", "o.csv"))
+  step_c <- result[result$id == "c", ]
+  expect_equal(c(step_c$label, step_c$input), c("ETL", "raw.csv"))
+  step_d <- result[result$id == "d", ]
+  expect_equal(c(step_d$label, step_d$output), c("L", "o.csv"))
 })
 
 test_that("put() preserves line numbers with multiline annotations", {
