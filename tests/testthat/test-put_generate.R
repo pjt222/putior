@@ -513,3 +513,36 @@ test_that("put_generate(output = 'file') writes each annotation next to its own 
   expect_true(file.exists(file.path(generate_dir, "b.R.put")))
   expect_match(paste(readLines(file.path(generate_dir, "b.R.put")), collapse = "\n"), 'id:"b"', fixed = TRUE)
 })
+
+test_that("put_generate() writes annotations that put() reads back (#91)", {
+  source_dir <- tempfile("putior_generate_quotes_")
+  dir.create(source_dir)
+  on.exit(unlink(source_dir, recursive = TRUE), add = TRUE)
+  # The label comes from the file name
+  create_test_file('d <- read.csv("data.csv")', "O'Brien.R", source_dir)
+
+  for (style in c("single", "multiline")) {
+    annotation <- put_generate(source_dir, output = "raw", style = style)
+    expect_match(annotation, "label:\"O'Brien\"", fixed = TRUE, label = style)
+
+    # The suggestion, pasted into a file, gives back the same values
+    annotated_dir <- tempfile(paste0("putior_generate_copy_", style, "_"))
+    dir.create(annotated_dir)
+    on.exit(unlink(annotated_dir, recursive = TRUE), add = TRUE)
+    create_test_file(strsplit(annotation, "\n", fixed = TRUE)[[1]], "copy.R", annotated_dir)
+    workflow <- put(annotated_dir)
+    expect_equal(workflow$label, "O'Brien", label = style)
+    expect_equal(workflow$input, "data.csv", label = style)
+  }
+})
+
+test_that("annotation_property() picks quotes that put() can read (#91)", {
+  expect_equal(annotation_property("label", "Plain", "a.R"), 'label:"Plain"')
+  expect_equal(annotation_property("label", "Don't", "a.R"), 'label:"Don\'t"')
+  expect_equal(annotation_property("label", 'Say "hi"', "a.R"), "label:'Say \"hi\"'")
+  expect_warning(
+    expect_null(annotation_property("label", 'Don\'t say "hi"', "a.R")),
+    "both kinds of quote"
+  )
+})
+

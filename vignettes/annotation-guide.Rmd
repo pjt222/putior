@@ -145,6 +145,9 @@ PUT annotations support several formats to fit different coding styles:
     # put| id:"my_node", label:"My Process"         # Pipe separator
     # put id:'my_node', label:'Single quotes'       # Single quotes
     # put id:"my_node", label:'Mixed quotes'        # Mixed quote styles
+    # put id:"my_node", label:"Don't panic"         # The other quote inside a value
+
+A value can contain the kind of quote it is not wrapped in, as in `label:"Don't panic"` or `label:'Say "hi"'`, but not its own. There are no escapes: a backslash stays as it is, so Windows paths such as `"C:\data\in.csv"` work. With `validate = TRUE` (the default), `put()` warns about each property it cannot read.
 
 ### Multiline Annotations
 

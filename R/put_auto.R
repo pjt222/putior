@@ -682,19 +682,19 @@ generate_annotation_for_file <- function(file, style = "multiline", node_id = NU
 
   parts <- list()
 
-  parts$id <- paste0('id:"', elements$id, '"')
-  parts$label <- paste0('label:"', elements$label, '"')
+  parts$id <- annotation_property("id", elements$id, file_name)
+  parts$label <- annotation_property("label", elements$label, file_name)
 
   if (!is.na(elements$node_type) && elements$node_type != "") {
-    parts$node_type <- paste0('node_type:"', elements$node_type, '"')
+    parts$node_type <- annotation_property("node_type", elements$node_type, file_name)
   }
 
   if (!is.na(elements$input) && elements$input != "") {
-    parts$input <- paste0('input:"', elements$input, '"')
+    parts$input <- annotation_property("input", elements$input, file_name)
   }
 
   if (!is.na(elements$output) && elements$output != "" && elements$output != file_name) {
-    parts$output <- paste0('output:"', elements$output, '"')
+    parts$output <- annotation_property("output", elements$output, file_name)
   }
 
   # Format based on style, using the appropriate comment prefix
@@ -702,9 +702,10 @@ generate_annotation_for_file <- function(file, style = "multiline", node_id = NU
     annotation <- paste0(comment_prefix, "put ", paste(unlist(parts), collapse = ", "))
   } else {
     # Multiline format
+    first_parts <- unlist(parts[c("id", "label")])
     annotation_lines <- c(
       paste0(comment_prefix, " Suggested annotations for: ", file_name),
-      paste0(comment_prefix, "put ", parts$id, ", ", parts$label, ", \\")
+      paste0(comment_prefix, "put ", paste(first_parts, collapse = ", "), ", \\")
     )
 
     remaining <- parts[!names(parts) %in% c("id", "label")]
@@ -720,6 +721,29 @@ generate_annotation_for_file <- function(file, style = "multiline", node_id = NU
   }
 
   return(annotation)
+}
+
+#' Write one property of a suggested annotation
+#'
+#' Uses double quotes, or single quotes when the value contains a double
+#' quote, so that put() reads the value back unchanged (#91). A value with
+#' both kinds of quote cannot be written; it is left out with a warning.
+#' @param key Property name
+#' @param value Property value
+#' @param file_name File the annotation is for, named in the warning
+#' @return \code{key:"value"} or \code{key:'value'}, or NULL
+#' @noRd
+annotation_property <- function(key, value, file_name) {
+  if (!grepl('"', value, fixed = TRUE)) {
+    return(paste0(key, ':"', value, '"'))
+  }
+  if (!grepl("'", value, fixed = TRUE)) {
+    return(paste0(key, ":'", value, "'"))
+  }
+  warning("The suggested annotation for ", file_name, " leaves out its ", key,
+          ", because the value contains both kinds of quote: ", value,
+          call. = FALSE)
+  NULL
 }
 
 #' Insert annotation at top of file

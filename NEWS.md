@@ -44,6 +44,18 @@
   by file path, so an annotated `x/load.R` no longer hides an unannotated
   `y/load.R`, and with `merge_strategy = "supplement"` or `"union"` no
   longer takes the inputs and outputs detected in the other file. (#74)
+* Annotation values may now contain the other kind of quote:
+  `label:"Don't panic"` and `label:'Say "hi"'` keep their labels. Before,
+  `put()` dropped any value with a quote character in it, without a warning,
+  and the node showed its id instead; the troubleshooting vignette even
+  recommended `label:"Load 'raw' data"`. There are still no escapes, so a
+  value cannot contain its own kind of quote, and backslashes in Windows
+  paths stay as they are. `put()` now warns about each property it cannot
+  read (with `validate = TRUE`, the default). An annotation that ends with
+  a continuation `\` on the last line of the file no longer loses its last
+  property. `put_generate()` wraps a value that contains a double quote
+  in single quotes, so that `put()` reads its suggestions back unchanged.
+  (#91)
 * `put_diagram()` gives every node one Mermaid id and uses it in the node
   definition, edges, `class` lines and click directives. Before, edges to an
   artifact whose path has two punctuation characters in a row (such as

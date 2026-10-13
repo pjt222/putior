@@ -275,7 +275,9 @@ collect_multiline_annotation <- function(lines, start_idx, escaped_prefix,
     }
   }
 
-  full_content
+  # A backslash on the file's last line continues into nothing; left in
+  # place, it made the last property unreadable (#91)
+  sub("\\\\\\s*$", "", full_content)
 }
 
 #' Find PUT annotations inside block comments
@@ -413,8 +415,10 @@ process_single_file <- function(file, include_line_numbers, validate) {
         }
 
         properties <- parse_put_annotation(full_content)
+        unparsed_pairs <- attr(properties, "unparsed")
 
         if (!is.null(properties)) {
+          attr(properties, "unparsed") <- NULL
           # Add file metadata
           properties$file_name <- basename(file)
           properties$file_path <- file
@@ -431,7 +435,15 @@ process_single_file <- function(file, include_line_numbers, validate) {
 
           # Validate if requested
           if (validate) {
-            validation_issues <- validate_annotation(properties, full_content)
+            validation_issues <- c(
+              if (length(unparsed_pairs) > 0) {
+                paste0(
+                  "Ignored ", unparsed_pairs, ": a value must be in double or single ",
+                  "quotes, and may contain the other kind of quote but not its own"
+                )
+              },
+              validate_annotation(properties, full_content)
+            )
             if (length(validation_issues) > 0) {
               warning(
                 "Validation issues in ", basename(file), " line ", line_idx, ":\n",
@@ -511,9 +523,12 @@ validate_annotation <- function(properties, line_content) {
 #' Parses a single line containing a PUT annotation and extracts key-value pairs.
 #' Supports flexible syntax with optional spaces and pipe separators.
 #' Handles multiple comment prefix styles: # (hash), -- (dash), // (slash), % (percent).
+#' A value is in double or single quotes and may contain the other kind of
+#' quote, but not its own; there are no escapes.
 #'
 #' @param line Character string containing a PUT annotation
-#' @return Named list containing all extracted properties, or NULL if invalid
+#' @return Named list containing all extracted properties, or NULL if invalid.
+#'   Pairs that could not be read are listed in its attribute \code{unparsed}.
 #' @keywords internal
 #'
 parse_put_annotation <- function(line) {
@@ -546,25 +561,29 @@ parse_put_annotation <- function(line) {
   # Split on commas, but not commas inside quotes
   pairs <- parse_comma_separated_pairs(cleaned)
 
-  # Extract all key-value pairs
+  # Extract all key-value pairs. A value is in double or single quotes and
+  # may contain the other kind (label:"Don't panic", label:'Say "hi"'), but
+  # not its own: there are no escapes, so that the backslashes of Windows
+  # paths stay as they are (#91). The last pattern keeps accepting values
+  # without quotes between mismatched quotes, as before.
+  value_patterns <- c(
+    '^([^:"\']+):\\s*"([^"]*)"\\s*$',
+    "^([^:\"']+):\\s*'([^']*)'\\s*$",
+    '^([^:"\']+):\\s*["\']([^"\']*)["\']\\s*$'
+  )
   properties <- list()
+  unparsed_pairs <- character()
 
   for (pair in pairs) {
     pair <- trimws(pair)
-
-    # Match key:"value" or key:'value' pattern
-    if (grepl('^([^:"\']+):\\s*["\']([^"\']*)["\']\\s*$', pair)) {
-      key <- sub('^([^:"\']+):\\s*["\'].*$', "\\1", pair)
-      value <- sub('^[^:"\']+:\\s*["\']([^"\']*)["\']\\s*$', "\\1", pair)
-
-      # Clean up key but preserve value whitespace
-      key <- trimws(key)
-      # Don't trim value - preserve internal whitespace as specified by user
-
-      if (nchar(key) > 0) {
-        properties[[key]] <- value
-      }
+    pattern <- value_patterns[vapply(value_patterns, grepl, logical(1), x = pair)][1]
+    key <- if (is.na(pattern)) "" else trimws(sub(pattern, "\\1", pair))
+    if (nchar(key) == 0) {
+      unparsed_pairs <- c(unparsed_pairs, pair)
+      next
     }
+    # Don't trim value - preserve internal whitespace as specified by user
+    properties[[key]] <- sub(pattern, "\\2", pair)
   }
 
   # Return NULL if no valid properties were found
@@ -574,6 +593,10 @@ parse_put_annotation <- function(line) {
     # Generate UUID if id is missing (not if it's empty)
     if (is.null(properties$id) && requireNamespace("uuid", quietly = TRUE)) {
       properties$id <- uuid::UUIDgenerate()
+    }
+    # The caller warns about pairs it could not read
+    if (length(unparsed_pairs) > 0) {
+      attr(properties, "unparsed") <- unparsed_pairs
     }
     properties
   }

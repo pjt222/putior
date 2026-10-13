@@ -44,6 +44,50 @@ test_that("parse_put_annotation() handles different quote styles", {
   expect_equal(result3$label, "Double Quotes")
 })
 
+test_that("a value may contain the other kind of quote (#91)", {
+  result <- parse_put_annotation('#put id:"a", label:"Don\'t panic", output:"O\'Brien.csv"')
+  expect_equal(result$label, "Don't panic")
+  expect_equal(result$output, "O'Brien.csv")
+  expect_null(attr(result, "unparsed"))
+
+  result <- parse_put_annotation("#put id:'b', label:'Say \"hi\"', input:'a.csv, b.csv'")
+  expect_equal(result$label, 'Say "hi"')
+  expect_equal(result$input, "a.csv, b.csv")
+
+  # There are no escapes, so the backslashes of Windows paths stay
+  result <- parse_put_annotation('#put id:"c", input:"C:\\data\\in.csv"')
+  expect_equal(result$input, "C:\\data\\in.csv")
+})
+
+test_that("parse_put_annotation() lists the pairs it cannot read (#91)", {
+  # A value cannot contain its own kind of quote
+  result <- parse_put_annotation('#put id:"a", label:"Say "hi"", output:"x.csv"')
+  expect_equal(result$id, "a")
+  expect_equal(result$output, "x.csv")
+  expect_null(result$label)
+  expect_equal(attr(result, "unparsed"), 'label:"Say "hi""')
+
+  # Text after a value
+  result <- parse_put_annotation('#put id:"a", label:"A" more')
+  expect_equal(attr(result, "unparsed"), 'label:"A" more')
+
+  # Mismatched quotes around a value without quotes are still read, as before
+  expect_equal(parse_put_annotation("#put id:\"a\", label:'A\"")$label, "A")
+})
+
+test_that("put() warns about the properties it ignores (#91)", {
+  test_dir <- tempfile("putior_quotes_")
+  dir.create(test_dir)
+  on.exit(unlink(test_dir, recursive = TRUE), add = TRUE)
+  create_test_file('# put id:"a", label:"Say "hi"", output:"x.csv"', "a.R", test_dir)
+
+  expect_warning(workflow <- put(test_dir), 'Ignored label:"Say "hi""', fixed = TRUE)
+  expect_equal(workflow$id, "a")
+  expect_false("label" %in% names(workflow))
+  # Like the other validation warnings, it needs validate = TRUE
+  expect_no_warning(put(test_dir, validate = FALSE))
+})
+
 test_that("parse_put_annotation() handles whitespace correctly", {
   # Extra spaces around properties
   result1 <- parse_put_annotation('#put  id : "test" , label : "Test Label"  ')

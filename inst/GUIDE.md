@@ -69,6 +69,8 @@ results <- analyze(clean)
 | `output` | No | Output files/data | `output:"result.rds"` |
 | `node_type` | No | Shape: input, process (default), output, decision, start, end | `node_type:"decision"` |
 
+Values go in double or single quotes. A value may contain the other kind of quote (`label:"Don't panic"`, `label:'Say "hi"'`) but not its own; there are no escapes, so backslashes in Windows paths stay as they are. `put()` warns about each property it cannot read.
+
 ### Multiline Annotations
 
 Use backslash for continuation:

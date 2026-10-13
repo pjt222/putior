@@ -307,7 +307,7 @@ test_that("put() handles multiple annotations efficiently", {
   for (i in 1:50) {
     many_annotations <- c(
       many_annotations,
-      paste0('#put id:"node', i, '", label:"Node ', i, '", step:', i)
+      paste0('#put id:"node', i, '", label:"Node ', i, '", step:"', i, '"')
     )
   }
 
@@ -486,6 +486,10 @@ test_that("put() handles edge cases in multiline annotations", {
   edge4 <- result[result$id == "edge4", ]
   expect_equal(edge4$label, "With Empty Lines")
   expect_equal(edge4$input, "test.csv")
+
+  # The backslash on the last line continues into nothing (#91)
+  edge5 <- result[result$id == "edge5", ]
+  expect_equal(edge5$label, "End of File")
 })
 
 test_that("put() preserves line numbers with multiline annotations", {
