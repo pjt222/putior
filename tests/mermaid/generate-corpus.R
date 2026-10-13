@@ -152,6 +152,13 @@ add_case("artifact_path_special_characters", scan_fixture("artifact_paths", list
   "a.R" = '# put id:"load", label:"Load", output:"./raw data (v2).csv"',
   "b.R" = '# put id:"use", label:"Use", input:"./raw data (v2).csv"'
 )), show_artifacts = TRUE)
+add_case("artifact_files_with_equal_ids", scan_fixture("artifact_collision", list(
+  "w.R" = '# put id:"write_both", label:"Write", output:"a b.csv, a_b.csv"',
+  "r.R" = c(
+    '# put id:"read_space", label:"Read space", input:"a b.csv"',
+    '# put id:"read_underscore", label:"Read underscore", input:"a_b.csv"'
+  )
+)), show_artifacts = TRUE)
 add_case("ids_equal_after_sanitizing", scan_fixture("id_collision", list(
   "a.R" = c(
     '# put id:"a-b", label:"Dash", output:"x.csv"',

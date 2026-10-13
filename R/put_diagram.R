@@ -297,6 +297,9 @@ put_diagram <- function(workflow,
     combined_workflow <- workflow
   }
 
+  # One Mermaid id per node, used by every line that names it (#46)
+  combined_workflow <- assign_mermaid_ids(combined_workflow)
+
   # Generate node definitions (use subgraphs if requested)
   putior_log("DEBUG", "Generating node definitions")
   if (show_source_info && source_info_style == "subgraph") {
@@ -360,6 +363,7 @@ put_diagram <- function(workflow,
 #' @keywords internal
 generate_node_styling <- function(workflow, theme = "light", show_workflow_boundaries = TRUE, palette = NULL) {
   styling <- character()
+  workflow <- ensure_mermaid_ids(workflow)
 
   # Use palette if provided, otherwise use theme
   if (!is.null(palette) && inherits(palette, "putior_theme")) {
@@ -378,7 +382,7 @@ generate_node_styling <- function(workflow, theme = "light", show_workflow_bound
     nodes_of_type <- workflow[!is.na(workflow$node_type) & workflow$node_type == node_type, ]
 
     if (nrow(nodes_of_type) > 0) {
-      node_ids <- vapply(nodes_of_type$id, sanitize_node_id, character(1))
+      node_ids <- unique(nodes_of_type$mermaid_id)
       class_name <- paste0(node_type, "Style")
 
       # Create class definition
@@ -557,10 +561,11 @@ generate_node_definitions <- function(workflow, node_labels = "label",
                                       show_workflow_boundaries = TRUE,
                                       show_source_info = FALSE) {
   node_defs <- character()
+  workflow <- ensure_mermaid_ids(workflow)
 
   for (i in seq_len(nrow(workflow))) {
     node <- workflow[i, ]
-    node_id <- sanitize_node_id(node$id)
+    node_id <- node$mermaid_id
 
     # Determine node shape based on type and workflow boundary settings
     node_shape <- get_node_shape(node$node_type, show_workflow_boundaries)
@@ -702,6 +707,81 @@ sanitize_node_id <- function(node_id) {
   return(sanitized)
 }
 
+#' Give every node of a workflow its Mermaid id
+#'
+#' Sanitizes each id once and stores it in a \code{mermaid_id} column, so
+#' node definitions, edges, class lines and click directives all use the same
+#' id. Distinct ids that become equal after sanitizing (\code{"a-b"} and
+#' \code{"a_b"}) are kept apart with a numeric suffix (\code{a_b_2}); for
+#' annotation ids this gives a warning. Rows with the same raw id share one
+#' Mermaid id. Earlier rows keep the plain form, so script nodes (which come
+#' before artifact nodes) are never renamed because of an artifact.
+#' @param workflow Workflow data frame, optionally with artifact rows
+#'   (\code{is_artifact = TRUE})
+#' @param warn Whether to warn when annotation ids collide
+#' @return The workflow with a \code{mermaid_id} column
+#' @noRd
+assign_mermaid_ids <- function(workflow, warn = TRUE) {
+  raw_ids <- as.character(workflow$id)
+  unique_raw_ids <- unique(raw_ids)
+  sanitized_ids <- vapply(unique_raw_ids, sanitize_node_id, character(1),
+                          USE.NAMES = FALSE)
+
+  is_artifact_id <- if ("is_artifact" %in% names(workflow)) {
+    artifact_flags <- !is.na(workflow$is_artifact) & workflow$is_artifact
+    unique_raw_ids %in% raw_ids[artifact_flags]
+  } else {
+    rep(FALSE, length(unique_raw_ids))
+  }
+
+  mermaid_ids <- character(length(unique_raw_ids))
+  collision_messages <- character()
+  for (id_index in seq_along(unique_raw_ids)) {
+    candidate <- sanitized_ids[id_index]
+    if (candidate %in% mermaid_ids[seq_len(id_index - 1)]) {
+      # Skip every id that is taken or that a later node will want
+      reserved_ids <- c(mermaid_ids[seq_len(id_index - 1)], sanitized_ids)
+      suffix_number <- 2L
+      while (paste0(sanitized_ids[id_index], "_", suffix_number) %in% reserved_ids) {
+        suffix_number <- suffix_number + 1L
+      }
+      candidate <- paste0(sanitized_ids[id_index], "_", suffix_number)
+      if (!is_artifact_id[id_index]) {
+        first_raw_id <- unique_raw_ids[match(sanitized_ids[id_index], mermaid_ids)]
+        collision_messages <- c(collision_messages, paste0(
+          "'", unique_raw_ids[id_index], "' and '", first_raw_id, "' both become '",
+          sanitized_ids[id_index], "'; '", unique_raw_ids[id_index],
+          "' is drawn as '", candidate, "'"
+        ))
+      }
+    }
+    mermaid_ids[id_index] <- candidate
+  }
+
+  if (warn && length(collision_messages) > 0) {
+    warning(
+      "Node ids that differ only in punctuation become the same Mermaid id:\n",
+      paste0("- ", collision_messages, collapse = "\n"), "\n",
+      "Use ids made of letters, digits and underscores to control the Mermaid ids.",
+      call. = FALSE
+    )
+  }
+
+  workflow$mermaid_id <- mermaid_ids[match(raw_ids, unique_raw_ids)]
+  workflow
+}
+
+#' Return the workflow with a mermaid_id column, adding one if missing
+#' @param workflow Workflow data frame
+#' @return The workflow with a \code{mermaid_id} column
+#' @noRd
+ensure_mermaid_ids <- function(workflow) {
+  if ("mermaid_id" %in% names(workflow)) {
+    return(workflow)
+  }
+  assign_mermaid_ids(workflow, warn = FALSE)
+}
+
 #' Normalize file path for URL generation
 #'
 #' Converts file paths to URL-friendly format, handling cross-platform differences.
@@ -801,10 +881,11 @@ generate_click_url <- function(file_path, line_number = NULL, protocol = "vscode
 #' @keywords internal
 generate_click_directives <- function(workflow, protocol = "vscode") {
   click_lines <- character()
+  workflow <- ensure_mermaid_ids(workflow)
 
   for (i in seq_len(nrow(workflow))) {
     node <- workflow[i, ]
-    node_id <- sanitize_node_id(node$id)
+    node_id <- node$mermaid_id
 
     # Skip artifact nodes - they represent data files, not source files
     if (!is.null(node$is_artifact) && !is.na(node$is_artifact) && node$is_artifact) {
@@ -854,6 +935,7 @@ generate_click_directives <- function(workflow, protocol = "vscode") {
 generate_file_subgraphs <- function(workflow, node_labels = "label",
                                     show_workflow_boundaries = TRUE) {
   subgraph_lines <- character()
+  workflow <- ensure_mermaid_ids(workflow)
 
   # Helper function to check if a row is an artifact
   is_artifact_row <- function(wf) {
@@ -878,7 +960,7 @@ generate_file_subgraphs <- function(workflow, node_labels = "label",
   if (nrow(artifact_nodes) > 0) {
     for (i in seq_len(nrow(artifact_nodes))) {
       node <- artifact_nodes[i, ]
-      node_id <- sanitize_node_id(node$id)
+      node_id <- node$mermaid_id
       node_shape <- get_node_shape(node$node_type, show_workflow_boundaries)
 
       label_text <- resolve_label(node, node_labels)
@@ -912,7 +994,7 @@ generate_file_subgraphs <- function(workflow, node_labels = "label",
     # Add nodes within subgraph
     for (i in seq_len(nrow(file_nodes))) {
       node <- file_nodes[i, ]
-      node_id <- sanitize_node_id(node$id)
+      node_id <- node$mermaid_id
       node_shape <- get_node_shape(node$node_type, show_workflow_boundaries)
 
       label_text <- resolve_label(node, node_labels)
@@ -976,9 +1058,10 @@ create_artifact_nodes <- function(workflow) {
     ))
   }
   
-  # Create artifact node definitions
+  # Create artifact node definitions. The id keeps the file path as it is, so
+  # two files never share an id; assign_mermaid_ids() makes it Mermaid-safe.
   artifact_nodes <- data.frame(
-    id = paste0("artifact_", gsub("[^a-zA-Z0-9_]", "_", data_files)),
+    id = paste0("artifact_", data_files),
     label = data_files,
     node_type = "artifact",
     file_name = data_files,
@@ -998,26 +1081,34 @@ create_artifact_nodes <- function(workflow) {
 #' @keywords internal
 generate_connections <- function(workflow, show_files = FALSE, show_artifacts = FALSE) {
   connections <- character()
+  workflow <- ensure_mermaid_ids(workflow)
 
   # Get script nodes (non-artifacts); handle missing is_artifact column
   has_artifact_col <- "is_artifact" %in% names(workflow)
   if (has_artifact_col) {
     is_artifact <- !is.na(workflow$is_artifact) & workflow$is_artifact
     script_nodes <- workflow[!is_artifact, ]
+    artifact_nodes <- workflow[is_artifact, ]
   } else {
     script_nodes <- workflow
+    artifact_nodes <- workflow[0, ]
+  }
+
+  # Mermaid id of the artifact node for a data file (character(0) if none)
+  artifact_id_for <- function(file) {
+    unique(artifact_nodes$mermaid_id[artifact_nodes$file_name == file])
   }
 
   # Script-to-script connections (always generated)
   source_pool <- if (show_artifacts) script_nodes else workflow
   for (i in seq_len(nrow(script_nodes))) {
     node <- script_nodes[i, ]
-    target_id <- sanitize_node_id(node$id)
+    target_id <- node$mermaid_id
 
     for (input_file in parse_file_list(node$input)) {
       source_nodes <- find_nodes_outputting(source_pool, input_file)
       for (j in seq_len(nrow(source_nodes))) {
-        source_id <- sanitize_node_id(source_nodes[j, ]$id)
+        source_id <- source_nodes[j, ]$mermaid_id
         connections <- c(connections,
                          make_edge(source_id, target_id, input_file, show_files))
       }
@@ -1028,12 +1119,11 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
   if (show_artifacts) {
     for (i in seq_len(nrow(script_nodes))) {
       node <- script_nodes[i, ]
-      node_id <- sanitize_node_id(node$id)
+      node_id <- node$mermaid_id
 
       # Input: artifact --> script
       for (input_file in parse_file_list(node$input)) {
-        artifact_id <- paste0("artifact_", gsub("[^a-zA-Z0-9_]", "_", input_file))
-        if (any(workflow$id == artifact_id, na.rm = TRUE)) {
+        for (artifact_id in artifact_id_for(input_file)) {
           connections <- c(connections,
                            make_edge(artifact_id, node_id, input_file, show_files))
         }
@@ -1041,8 +1131,7 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
 
       # Output: script --> artifact
       for (output_file in parse_file_list(node$output)) {
-        artifact_id <- paste0("artifact_", gsub("[^a-zA-Z0-9_]", "_", output_file))
-        if (any(workflow$id == artifact_id, na.rm = TRUE)) {
+        for (artifact_id in artifact_id_for(output_file)) {
           connections <- c(connections,
                            make_edge(node_id, artifact_id, output_file, show_files))
         }

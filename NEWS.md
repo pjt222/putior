@@ -36,6 +36,15 @@
 * Fixed single-line block comment annotations (`/* put ... */`) silently
   losing their last property, which could drop an output and its edge.
   (#72)
+* `put_diagram()` gives every node one Mermaid id and uses it in the node
+  definition, edges, `class` lines and click directives. Before, edges to an
+  artifact whose path has two punctuation characters in a row (such as
+  `./raw data (v2).csv`) used a different id than the artifact node, so
+  Mermaid drew an extra unlabeled node and left the artifact unconnected.
+  Annotation ids that differ only in punctuation (`a-b` and `a_b`) were
+  merged into one node with a self-loop; they now stay two nodes (`a_b`,
+  `a_b_2`) and `put_diagram()` warns. Two data files whose names differ only
+  in punctuation get two artifact nodes. (#46)
 
 ## New Features
 
