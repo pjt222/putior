@@ -194,8 +194,10 @@ test_that("files with the same name in two folders get two subgraphs (#46)", {
                          source_info_style = "subgraph", output = "raw")
 
   expect_equal(subgraph_ids_of(diagram), c("file_a", "file_a_2", "file_a_3"))
-  expect_match(diagram, 'subgraph file_a ["a.R"]', fixed = TRUE)
+  # a.R appears twice, so both labels show the folder; a.py is unique
+  expect_match(diagram, 'subgraph file_a ["R/a.R"]', fixed = TRUE)
   expect_match(diagram, 'subgraph file_a_2 ["a.py"]', fixed = TRUE)
+  expect_match(diagram, 'subgraph file_a_3 ["x/a.R"]', fixed = TRUE)
 })
 
 test_that("subgraphs fall back to file_name without a file_path column", {

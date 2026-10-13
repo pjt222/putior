@@ -1024,6 +1024,15 @@ generate_file_subgraphs <- function(workflow, node_labels = "label",
   # Mermaid nests a node in itself (#45)
   taken_ids <- unique(workflow$mermaid_id)
 
+  # The file name shown for each file; files with the same name in different
+  # folders also show their folder, so their subgraphs can be told apart
+  key_file_names <- vapply(script_file_keys, function(file_key) {
+    key_rows <- which(!is.na(file_keys) & file_keys == file_key & !artifact_indicator)
+    key_name <- workflow$file_name[key_rows[1]]
+    if (is_empty_string(key_name)) basename(file_key) else key_name
+  }, character(1), USE.NAMES = FALSE)
+  repeated_file_names <- unique(key_file_names[duplicated(key_file_names)])
+
   # Process artifact nodes first (they go outside subgraphs)
   artifact_nodes <- workflow[artifact_indicator, ]
   if (nrow(artifact_nodes) > 0) {
@@ -1041,7 +1050,8 @@ generate_file_subgraphs <- function(workflow, node_labels = "label",
   }
 
   # Create subgraph for each file
-  for (file_key in script_file_keys) {
+  for (key_index in seq_along(script_file_keys)) {
+    file_key <- script_file_keys[key_index]
     # Get nodes from this file
     file_nodes <- workflow[
       !is.na(file_keys) & file_keys == file_key & !artifact_indicator,
@@ -1049,10 +1059,11 @@ generate_file_subgraphs <- function(workflow, node_labels = "label",
 
     if (nrow(file_nodes) == 0) next
 
-    file_name <- if (is_empty_string(file_nodes$file_name[1])) {
-      basename(file_key)
+    file_name <- key_file_names[key_index]
+    file_label <- if (file_name %in% repeated_file_names && dirname(file_key) != ".") {
+      paste0(basename(dirname(file_key)), "/", file_name)
     } else {
-      file_nodes$file_name[1]
+      file_name
     }
 
     # Subgraph id: file_<name>, with a suffix if that id is taken
@@ -1068,7 +1079,7 @@ generate_file_subgraphs <- function(workflow, node_labels = "label",
     taken_ids <- c(taken_ids, subgraph_id)
 
     # Start subgraph
-    safe_file_label <- sanitize_mermaid_label(file_name)
+    safe_file_label <- sanitize_mermaid_label(file_label)
     subgraph_lines <- c(subgraph_lines,
                        paste0("    subgraph ", subgraph_id, " [", safe_file_label, "]"))
 
