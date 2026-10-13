@@ -161,6 +161,12 @@
   neo look with labels wrapped at 120px (#54). A diagram with a syntax error
   shows Mermaid's error message. Mermaid 12 needs a current browser (ES2024;
   Safari 17.4 or later)
+* File markers (`# ===== File: name.R =====`) are read one line at a time,
+  with any spaces or tabs around them, any number of `=` and an optional
+  closing run, so an unclosed marker or a name containing `=` no longer
+  swallows the next file. When two simulated files have the same name, the
+  later one is renamed (`a_2.R`) and the status line says so, instead of one
+  file silently replacing the other (#53)
 
 ### Documentation
 * Documented all valid `node_type` values across vignettes and reference (#40)

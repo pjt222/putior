@@ -62,33 +62,58 @@ rmarkdown::render("template.Rmd", output_file = "report.html")
 
 # Parse editor text into simulated files, split at "# ===== File: name ====="
 # markers. Defined at top level (not inside server) so tests can evaluate it.
+#
+# A marker is one whole line: "#", a run of "=", "File:", the name, and an
+# optional closing run of "=", with any spaces or tabs in between (#53). Text
+# before the first marker is ignored; text without any marker is one script.
+# The server writes each file to its base name, so a repeated name would
+# overwrite the earlier file; repeats are renamed (a.R, a_2.R) and listed in
+# the "notes" attribute, which the status line shows.
 parse_code_to_files <- function(code) {
-  file_pattern <- "# ===== File: ([^=]+) ====="
+  code_lines <- strsplit(code, "\r?\n")[[1]]
+  marker_pattern <- "^[ \t]*#[ \t]*=+[ \t]*File:[ \t]*(.+?)(?:[ \t]*=+)?[ \t]*$"
+  marker_matches <- regmatches(code_lines, regexec(marker_pattern, code_lines, perl = TRUE))
+  marker_rows <- which(lengths(marker_matches) > 0)
 
-  marker_matches <- gregexpr(file_pattern, code, perl = TRUE)
-  file_names <- regmatches(code, marker_matches)[[1]]
-  file_names <- trimws(gsub("# ===== File: | =====", "", file_names))
-
-  if (length(file_names) == 0) {
+  if (length(marker_rows) == 0) {
     # No file markers, treat as single file
     return(list(list(name = "script.R", content = code)))
   }
 
-  # code_parts[1] is the text before the first marker ("" when the code starts
-  # with a marker) and code_parts[i + 1] belongs to file i. Empty parts must be
-  # kept so the indices stay aligned. strsplit() drops a trailing empty part, so
-  # a marker at the very end of the code has no entry and gets empty content.
-  code_parts <- strsplit(code, file_pattern, perl = TRUE)[[1]]
-
-  lapply(seq_along(file_names), function(file_index) {
-    part_index <- file_index + 1
-    file_content <- if (part_index <= length(code_parts)) {
-      trimws(code_parts[part_index])
-    } else {
-      ""
-    }
-    list(name = file_names[file_index], content = file_content)
+  file_names <- vapply(marker_matches[marker_rows], function(match) match[2], character(1))
+  last_rows <- c(marker_rows[-1] - 1, length(code_lines))
+  files <- lapply(seq_along(marker_rows), function(file_index) {
+    body_rows <- marker_rows[file_index] + seq_len(last_rows[file_index] - marker_rows[file_index])
+    list(
+      name = file_names[file_index],
+      content = trimws(paste(code_lines[body_rows], collapse = "\n"))
+    )
   })
+
+  notes <- character()
+  used_names <- character()
+  for (file_index in seq_along(files)) {
+    file_name <- basename(files[[file_index]]$name)
+    if (file_name %in% used_names) {
+      name_stem <- tools::file_path_sans_ext(file_name)
+      name_extension <- tools::file_ext(file_name)
+      suffix_number <- 2L
+      repeat {
+        new_name <- paste0(name_stem, "_", suffix_number,
+                           if (nzchar(name_extension)) paste0(".", name_extension) else "")
+        if (!new_name %in% c(used_names, basename(file_names))) break
+        suffix_number <- suffix_number + 1L
+      }
+      notes <- c(notes, paste0("Repeated file name ", file_name,
+                               ": the later file is used as ", new_name, "."))
+      file_name <- new_name
+    }
+    files[[file_index]]$name <- file_name
+    used_names <- c(used_names, file_name)
+  }
+
+  attr(files, "notes") <- notes
+  files
 }
 
 ui <- fluidPage(
@@ -405,12 +430,17 @@ server <- function(input, output, session) {
     }
   })
 
+  # Split the editor text into simulated files
+  parsed_files <- reactive({
+    req(input$code)
+    parse_code_to_files(input$code)
+  })
+
   # Extract workflow from code
   workflow_data <- reactive({
-    req(input$code)
+    files <- parsed_files()
 
     tryCatch({
-      files <- parse_code_to_files(input$code)
 
       # Create temp directory with files
       temp_dir <- tempdir()
@@ -478,12 +508,18 @@ server <- function(input, output, session) {
   output$status <- renderText({
     workflow <- workflow_data()
     if (is.null(workflow)) {
-      return("No annotations found. Add # put comments to your code.")
+      status <- "No annotations found. Add # put comments to your code."
+    } else {
+      status <- paste0("Found ", nrow(workflow), " workflow node(s)")
+      diagram_error <- diagram_result()$error
+      if (!is.null(diagram_error)) {
+        status <- paste0(status, ", but the diagram could not be drawn:\n", diagram_error)
+      }
     }
-    status <- paste0("Found ", nrow(workflow), " workflow node(s)")
-    diagram_error <- diagram_result()$error
-    if (!is.null(diagram_error)) {
-      status <- paste0(status, ", but the diagram could not be drawn:\n", diagram_error)
+    # Renamed duplicate file names (#53)
+    file_notes <- attr(parsed_files(), "notes")
+    if (length(file_notes) > 0) {
+      status <- paste(c(status, file_notes), collapse = "\n")
     }
     status
   })

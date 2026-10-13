@@ -102,6 +102,52 @@ test_that("sandbox parser treats code without markers as one script", {
   expect_equal(files[[1]]$content, code)
 })
 
+test_that("sandbox parser keeps an unclosed marker to its own line (#53)", {
+  sandbox_env <- load_sandbox_definitions("parse_code_to_files")
+  code <- "# ===== File: a.R\nA\n# ===== File: b.R =====\nB"
+  files <- sandbox_env$parse_code_to_files(code)
+
+  expect_equal(file_field(files, "name"), c("a.R", "b.R"))
+  expect_equal(file_field(files, "content"), c("A", "B"))
+})
+
+test_that("sandbox parser accepts = in a file name and longer closing runs (#53)", {
+  sandbox_env <- load_sandbox_definitions("parse_code_to_files")
+  code <- "# ===== File: a=b.R =====\nfirst\n# ===== File: c.R ======\nsecond"
+  files <- sandbox_env$parse_code_to_files(code)
+
+  expect_equal(file_field(files, "name"), c("a=b.R", "c.R"))
+  expect_equal(file_field(files, "content"), c("first", "second"))
+})
+
+test_that("sandbox parser accepts extra spaces and tabs in markers (#53)", {
+  sandbox_env <- load_sandbox_definitions("parse_code_to_files")
+  code <- "#  ===== File:  a.R =====\nfirst\n#\t=====\tFile: b.R\t=====  \nsecond"
+  files <- sandbox_env$parse_code_to_files(code)
+
+  expect_equal(file_field(files, "name"), c("a.R", "b.R"))
+  expect_equal(file_field(files, "content"), c("first", "second"))
+})
+
+test_that("sandbox parser renames repeated file names and says so (#53)", {
+  sandbox_env <- load_sandbox_definitions("parse_code_to_files")
+  code <- paste0(
+    "# ===== File: a.R =====\nfirst\n",
+    "# ===== File: a.R =====\nsecond\n",
+    "# ===== File: sub/a.R =====\nthird\n",
+    "# ===== File: a_2.R =====\nfourth"
+  )
+  files <- sandbox_env$parse_code_to_files(code)
+
+  expect_equal(file_field(files, "name"), c("a.R", "a_3.R", "a_4.R", "a_2.R"))
+  expect_equal(file_field(files, "content"), c("first", "second", "third", "fourth"))
+  expect_equal(
+    attr(files, "notes"),
+    c("Repeated file name a.R: the later file is used as a_3.R.",
+      "Repeated file name a.R: the later file is used as a_4.R.")
+  )
+})
+
 test_that("default multi-file example yields all four workflow nodes", {
   sandbox_env <- load_sandbox_definitions(
     c("parse_code_to_files", "sample_multi_file")
