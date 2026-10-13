@@ -183,7 +183,7 @@ putior uses its own annotation system to document its internal workflow -- a rea
 <!-- putior-diagram: self-documentation -->
 ```mermaid
 ---
-title: putior Package Internals
+title: "putior Package Internals"
 ---
 flowchart TD
     diagram_gen["Generate Mermaid Diagram"]
