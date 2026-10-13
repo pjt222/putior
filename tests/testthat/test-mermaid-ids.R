@@ -142,3 +142,63 @@ test_that("a Mermaid keyword as id is written as node_<keyword> everywhere (#45)
   expect_match(diagram, "click node_end ", fixed = TRUE)
   expect_true(all(ids$used %in% ids$defined))
 })
+
+# A workflow as put() returns it, for subgraph tests
+subgraph_workflow <- function(ids, file_paths) {
+  data.frame(
+    id = ids,
+    label = toupper(ids),
+    node_type = "process",
+    input = c(NA, rep("x.csv", length(ids) - 1)),
+    output = c("x.csv", rep(NA, length(ids) - 1)),
+    file_name = basename(file_paths),
+    file_path = file_paths,
+    stringsAsFactors = FALSE
+  )
+}
+
+subgraph_ids_of <- function(diagram) {
+  code_lines <- strsplit(diagram, "\n", fixed = TRUE)[[1]]
+  sub("^\\s*subgraph\\s+(\\S+)\\s.*$", "\\1", grep("^\\s*subgraph\\s", code_lines, value = TRUE))
+}
+
+test_that("a subgraph id never equals a node id (#45)", {
+  workflow <- subgraph_workflow(c("load", "use"), c("/p/load.R", "/p/use.R"))
+
+  diagram <- put_diagram(workflow, show_source_info = TRUE,
+                         source_info_style = "subgraph", output = "raw")
+
+  expect_equal(subgraph_ids_of(diagram), c("file_load", "file_use"))
+  expect_true(all(c("load", "use") %in% diagram_ids(diagram)$defined))
+})
+
+test_that("a subgraph id skips a node id that already starts with file_", {
+  workflow <- subgraph_workflow(c("file_load", "use"), c("/p/load.R", "/p/use.R"))
+
+  diagram <- put_diagram(workflow, show_source_info = TRUE,
+                         source_info_style = "subgraph", output = "raw")
+
+  expect_equal(subgraph_ids_of(diagram), c("file_load_2", "file_use"))
+})
+
+test_that("files with the same name in two folders get two subgraphs (#46)", {
+  workflow <- subgraph_workflow(c("r_step", "py_step", "other"),
+                                c("/p/R/a.R", "/p/py/a.py", "/p/x/a.R"))
+
+  diagram <- put_diagram(workflow, show_source_info = TRUE,
+                         source_info_style = "subgraph", output = "raw")
+
+  expect_equal(subgraph_ids_of(diagram), c("file_a", "file_a_2", "file_a_3"))
+  expect_match(diagram, 'subgraph file_a ["a.R"]', fixed = TRUE)
+  expect_match(diagram, 'subgraph file_a_2 ["a.py"]', fixed = TRUE)
+})
+
+test_that("subgraphs fall back to file_name without a file_path column", {
+  workflow <- subgraph_workflow(c("load", "use"), c("load.R", "use.R"))
+  workflow$file_path <- NULL
+
+  diagram <- put_diagram(workflow, show_source_info = TRUE,
+                         source_info_style = "subgraph", output = "raw")
+
+  expect_equal(subgraph_ids_of(diagram), c("file_load", "file_use"))
+})

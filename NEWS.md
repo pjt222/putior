@@ -50,6 +50,12 @@
   `href`, `interpolate`) made the whole diagram fail to parse. They are now
   written as `node_end` and so on. `id:"end"` is a natural name for a
   pipeline's last step. (#45)
+* With `source_info_style = "subgraph"`, subgraph ids are now `file_<name>`
+  and never equal a node id. Before, a file `load.R` with a node `id:"load"`
+  failed to render ("would create a cycle") on Mermaid 11, and on Mermaid 12,
+  which GitHub uses, the node silently disappeared. Files with the same name
+  in different folders now get one subgraph each instead of sharing one.
+  (#45, #46)
 
 ## New Features
 

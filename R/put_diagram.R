@@ -964,9 +964,20 @@ generate_file_subgraphs <- function(workflow, node_labels = "label",
   # Get artifact indicator for all rows
   artifact_indicator <- is_artifact_row(workflow)
 
-  # Get unique file names (excluding artifacts)
-  file_names <- unique(workflow$file_name[!artifact_indicator])
-  file_names <- file_names[!is.na(file_names) & file_names != ""]
+  # Group nodes by file path when it is known, so that files with the same
+  # name in different folders get one subgraph each (#46); fall back to the
+  # file name for workflows without a file_path column
+  file_keys <- workflow$file_name
+  if ("file_path" %in% names(workflow)) {
+    has_path <- !is.na(workflow$file_path) & workflow$file_path != ""
+    file_keys[has_path] <- workflow$file_path[has_path]
+  }
+  script_file_keys <- unique(file_keys[!artifact_indicator])
+  script_file_keys <- script_file_keys[!is.na(script_file_keys) & script_file_keys != ""]
+
+  # Subgraph ids must differ from every node id and from each other, or
+  # Mermaid nests a node in itself (#45)
+  taken_ids <- unique(workflow$mermaid_id)
 
   # Process artifact nodes first (they go outside subgraphs)
   artifact_nodes <- workflow[artifact_indicator, ]
@@ -985,19 +996,31 @@ generate_file_subgraphs <- function(workflow, node_labels = "label",
   }
 
   # Create subgraph for each file
-  for (file_name in file_names) {
+  for (file_key in script_file_keys) {
     # Get nodes from this file
     file_nodes <- workflow[
-      !is.na(workflow$file_name) &
-      workflow$file_name == file_name &
-      !artifact_indicator,
+      !is.na(file_keys) & file_keys == file_key & !artifact_indicator,
     ]
 
     if (nrow(file_nodes) == 0) next
 
-    # Create subgraph ID from file name
-    subgraph_id <- gsub("[^a-zA-Z0-9_]", "_",
-                        tools::file_path_sans_ext(basename(file_name)))
+    file_name <- if (is_empty_string(file_nodes$file_name[1])) {
+      basename(file_key)
+    } else {
+      file_nodes$file_name[1]
+    }
+
+    # Subgraph id: file_<name>, with a suffix if that id is taken
+    base_subgraph_id <- sanitize_node_id(
+      paste0("file_", tools::file_path_sans_ext(basename(file_name)))
+    )
+    subgraph_id <- base_subgraph_id
+    suffix_number <- 2L
+    while (subgraph_id %in% taken_ids) {
+      subgraph_id <- paste0(base_subgraph_id, "_", suffix_number)
+      suffix_number <- suffix_number + 1L
+    }
+    taken_ids <- c(taken_ids, subgraph_id)
 
     # Start subgraph
     safe_file_label <- sanitize_mermaid_label(file_name)

@@ -5,12 +5,6 @@
       "generate"
     ]
   },
-  "subgraph_id_equals_node_id": {
-    "issue": "#45 finding 2: a subgraph id equal to a node id",
-    "problems": [
-      "render"
-    ]
-  },
   "edge_label_parentheses": {
     "issue": "#45 finding 3: unquoted edge label",
     "problems": [
@@ -21,12 +15,6 @@
     "issue": "#45 finding 4: unquoted frontmatter title",
     "problems": [
       "parse"
-    ]
-  },
-  "same_file_name_in_two_folders": {
-    "issue": "#46 finding 3: two files get one subgraph id",
-    "problems": [
-      "subgraphs"
     ]
   }
 }
