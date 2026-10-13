@@ -67,7 +67,10 @@ one per node type), suitable for passing to
 
 Each node type accepts a named character vector with keys `fill`,
 `stroke`, and `color` (text color). All values must be valid hex colors
-(e.g., `"#1a5276"`).
+(e.g., `"#1a5276"`). Keys you leave out keep the `base` theme's value
+for that node type, and so does the border width (3px for start and end
+nodes, 1px for artifacts in most themes). If you change how light `fill`
+is, set `color` as well, so the label stays readable.
 
 ## See also
 

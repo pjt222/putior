@@ -156,7 +156,14 @@
   accepts `putior_theme` objects
 - Override individual node types (input, process, output, decision,
   artifact, start, end)
-- Base theme inheritance — customize only what you need
+- Base theme inheritance — customize only what you need. An override
+  keeps every key it does not set from the `base` theme’s style for that
+  node type, including the text color and the border width (3px for
+  start and end nodes, 1px for artifacts); earlier development versions
+  dropped the unset keys and forced a 2px border
+  ([\#61](https://github.com/pjt222/putior/issues/61)). If an override
+  changes how light `fill` is, set `color` too, so the label stays
+  readable
 
 #### Block Comment Annotations
 

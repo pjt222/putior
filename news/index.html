@@ -241,7 +241,7 @@
 <ul><li>Added <code><a href="../reference/put_theme.html">put_theme()</a></code> for creating custom color palettes (<a href="https://github.com/pjt222/putior/issues/39" class="external-link">#39</a>)</li>
 <li>New <code>palette</code> parameter on <code><a href="../reference/put_diagram.html">put_diagram()</a></code> accepts <code>putior_theme</code> objects</li>
 <li>Override individual node types (input, process, output, decision, artifact, start, end)</li>
-<li>Base theme inheritance — customize only what you need</li>
+<li>Base theme inheritance — customize only what you need. An override keeps every key it does not set from the <code>base</code> theme’s style for that node type, including the text color and the border width (3px for start and end nodes, 1px for artifacts); earlier development versions dropped the unset keys and forced a 2px border (<a href="https://github.com/pjt222/putior/issues/61" class="external-link">#61</a>). If an override changes how light <code>fill</code> is, set <code>color</code> too, so the label stays readable</li>
 </ul></div>
 <div class="section level4">
 <h4 id="block-comment-annotations-0-2-0">Block Comment Annotations<a class="anchor" aria-label="anchor" href="#block-comment-annotations-0-2-0"></a></h4>
