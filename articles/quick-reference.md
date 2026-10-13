@@ -164,6 +164,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 4 steps and 4 data files.
     load(["input"])
     transform["process"]
     export[["output"]]

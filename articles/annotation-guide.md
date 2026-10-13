@@ -87,6 +87,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 3 steps and 3 data files.
     load_data(["Load Customer Data"])
     clean_data["Clean and Validate"]
     analyze_sales["Sales Analysis"]
@@ -346,6 +347,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 4 steps and 4 data files.
     load(["Load Data (input)"])
     transform["Transform (process)"]
     export[["Export (output)"]]

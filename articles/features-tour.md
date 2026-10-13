@@ -89,6 +89,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 3 steps and 3 data files.
     load_data_R_1["load_data.R"]
     process_R_1["process.R"]
     report_R_1["report.R"]
@@ -243,6 +244,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 2 steps.
     extract(["Extract Data"])
     load[["Load to DB"]]
 
@@ -265,6 +267,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 3 steps and 3 data files.
     extract(["Extract Data"])
     transform["etl.R"]
     load[["Load to DB"]]
@@ -337,6 +340,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 2 steps and 2 data files.
     load(["Load Data<br/>(01_load.R)"])
     process["Process<br/>(02_process.R)"]
 
@@ -373,6 +377,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 2 steps and 2 data files.
     subgraph file_01_load ["01_load.R"]
         load(["Load Data"])
     end

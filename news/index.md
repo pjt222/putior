@@ -39,6 +39,25 @@
   to parse, so use `mermaid_config` instead, or `"none"` for such hosts.
   ([\#54](https://github.com/pjt222/putior/issues/54))
 
+- [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  output now also carries accessibility metadata for screen readers,
+  right after the `flowchart` line: `accTitle` with the `title`, if one
+  is given, and `accDescr` with a summary such as “Workflow with 4 steps
+  and 3 data files.” (`.internal` variables are not counted as files).
+  Mermaid puts them into the SVG’s `<title>` and `<desc>`; the
+  frontmatter title alone does not (Mermaid 10.5.0 and later). The title
+  is escaped so that Mermaid shows it as written: like labels, plus `<`
+  and `%%{`, which Mermaid’s sanitizer and directive handling would
+  change. Mermaid reads these lines from 9.1.0 on; for an older renderer
+  use `accessibility = FALSE` together with `mermaid_config = "none"`.
+  The MCP `put_diagram` tool has the same argument.
+  [`?put_diagram`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  and `GUIDE.md` now list the Mermaid versions that putior supports and
+  that its CI tests. A decision node with the id `accDescr` is now
+  written as `node_accDescr`: `accDescr{` started an accDescr block, and
+  the node lost its shape and label.
+  ([\#50](https://github.com/pjt222/putior/issues/50))
+
 ### Bug Fixes
 
 - Fixed `show_source_info = TRUE` using `<small>` HTML tags that are

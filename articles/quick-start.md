@@ -51,6 +51,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 3 steps and 3 data files.
     load(["Load Data"])
     clean["Clean Data"]
     report[["Generate Report"]]
@@ -105,13 +106,14 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
-    b3f044e3_c67d_45d3_b842_ce236e08ef2e["Extract"]
-    f57c5c8b_c87b_4880_a0c6_2dd378920dec["Transform"]
-    node_14c5faee_d2c9_4400_b4d8_8edf275f7f19["Load"]
+    accDescr: Workflow with 3 steps and 3 data files.
+    d1e6da0e_f587_4a9c_b579_c7f171a6d9a5["Extract"]
+    node_9e14042e_b908_4cd3_9ea7_4d4698167cd4["Transform"]
+    c2a0bf61_1038_4ce1_820d_23ffa827e679["Load"]
 
     %% Connections
-    b3f044e3_c67d_45d3_b842_ce236e08ef2e --> f57c5c8b_c87b_4880_a0c6_2dd378920dec
-    f57c5c8b_c87b_4880_a0c6_2dd378920dec --> node_14c5faee_d2c9_4400_b4d8_8edf275f7f19
+    d1e6da0e_f587_4a9c_b579_c7f171a6d9a5 --> node_9e14042e_b908_4cd3_9ea7_4d4698167cd4
+    node_9e14042e_b908_4cd3_9ea7_4d4698167cd4 --> c2a0bf61_1038_4ce1_820d_23ffa827e679
 ```
 
 ------------------------------------------------------------------------

@@ -651,7 +651,68 @@ PHP, WGSL</td>
 <span><span class="co"># Mermaid configuration in the diagram's frontmatter</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, mermaid_config <span class="op">=</span> <span class="st">"classic"</span><span class="op">)</span>  <span class="co"># Default: Mermaid 11's look, also on GitHub's Mermaid 12</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, mermaid_config <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span>     <span class="co"># No configuration</span></span>
-<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, mermaid_config <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>look <span class="op">=</span> <span class="st">"neo"</span><span class="op">)</span><span class="op">)</span>  <span class="co"># Your own; a theme key is left out</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, mermaid_config <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>look <span class="op">=</span> <span class="st">"neo"</span><span class="op">)</span><span class="op">)</span>  <span class="co"># Your own; a theme key is left out</span></span>
+<span></span>
+<span><span class="co"># Screen reader text: accTitle (from title) and accDescr (a summary) are on by default</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, title <span class="op">=</span> <span class="st">"Sales Pipeline"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, accessibility <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>       <span class="co"># Leave them out</span></span></code></pre></div>
+<div class="section level5">
+<h5 id="mermaid-versions">Mermaid versions<a class="anchor" aria-label="anchor" href="#mermaid-versions"></a>
+</h5>
+<p>putior writes classic Mermaid syntax only. The frontmatter (title and
+<code>mermaid_config</code>) needs Mermaid 9.3.0 or later,
+<code>accTitle</code>/<code>accDescr</code> 9.1.0 or later; for older
+renderers use <code>mermaid_config = "none"</code> and
+<code>accessibility = FALSE</code>.</p>
+<table class="table">
+<colgroup>
+<col width="25%">
+<col width="55%">
+<col width="20%">
+</colgroup>
+<thead><tr class="header">
+<th>Renderer</th>
+<th>Mermaid (2026-10-12)</th>
+<th>Source</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>GitHub</td>
+<td>12.1.0</td>
+<td>measured on github.com</td>
+</tr>
+<tr class="even">
+<td>pkgdown site, sandbox</td>
+<td>12.2.0</td>
+<td>putior’s pin</td>
+</tr>
+<tr class="odd">
+<td>Quarto 1.10, 1.11</td>
+<td>11.12.0</td>
+<td>bundle (RStudio’s Quarto 1.9.38 ships it too, measured)</td>
+</tr>
+<tr class="even">
+<td>VS Code</td>
+<td>11.17.0</td>
+<td>package lock</td>
+</tr>
+<tr class="odd">
+<td>GitLab</td>
+<td>11.16.1</td>
+<td>package.json</td>
+</tr>
+<tr class="even">
+<td>Positron</td>
+<td>11.15.0</td>
+<td>package lock</td>
+</tr>
+</tbody>
+</table>
+<p>CI draws every diagram option on Mermaid 11.12.0, 11.17.2, 12.1.0 and
+12.2.0 (<code>tests/mermaid/</code>). Newer syntax such as
+<code>@{ shape: ... }</code> (Mermaid 11.3+) is not used while Quarto
+ships 11.12.0.</p>
+</div>
 </div>
 <div class="section level4">
 <h4 id="put_auto---auto-detect-workflow">

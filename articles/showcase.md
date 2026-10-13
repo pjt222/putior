@@ -35,6 +35,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 3 steps and 2 data files.
     extract(["Extract Data"])
     transform["Transform Data"]
     load[["Load to Database"]]
@@ -80,6 +81,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 3 steps and 3 data files.
     fetch(["Fetch Metrics"])
     analyze["Analyze Trends"]
     report[["Generate Report"]]
@@ -151,6 +153,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 10 steps and 10 data files.
     collect(["Collect Raw Data"])
     clean["Clean Data"]
     feature["Feature Engineering"]
@@ -239,6 +242,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 9 steps and 9 data files.
     sales_api(["Fetch Sales API"])
     inv_db(["Fetch Inventory DB"])
     cust_crm(["Fetch Customer CRM"])
@@ -467,6 +471,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 5 steps and 5 data files.
     sql(["SQL Extract"])
     python_transform["Python Transform"]
     r_stats["R Statistical Analysis"]
@@ -535,6 +540,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 7 steps and 8 data files.
     fetch(["Fetch FASTA Sequences"])
     qc["Quality Control"]
     blast["BLAST Alignment"]
@@ -606,6 +612,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 7 steps and 8 data files.
     market(["Fetch Market Data"])
     holdings(["Load Portfolio Holdings"])
     returns["Calculate Returns"]
@@ -679,6 +686,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 7 steps and 6 data files.
     urls(["Fetch URL List"])
     scrape["Scrape Web Pages"]
     parse["Parse HTML Content"]
@@ -758,6 +766,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 10 steps and 14 data files.
     load(["Load Raw Data - R"])
     eda["Exploratory Analysis - R"]
     features["Feature Engineering - R"]
@@ -854,6 +863,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 3 steps and 1 data file.
     step1["step1"]
     node_2["2"]
     final_step_1["final step"]
@@ -940,6 +950,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 4 steps and 2 data files.
     extract_sales(["Load Sales Data"])
     clean_data["Clean & Validate"]
     aggregate_regions["Aggregate by Region"]

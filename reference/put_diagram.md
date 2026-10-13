@@ -24,6 +24,7 @@ put_diagram(
   enable_clicks = FALSE,
   click_protocol = "vscode",
   mermaid_config = "classic",
+  accessibility = TRUE,
   log_level = NULL
 )
 ```
@@ -176,6 +177,17 @@ put_diagram(
     warning, because a theme in the diagram overrides the host's light
     or dark theme; use `theme` or `palette` for node colors.
 
+- accessibility:
+
+  Logical. When TRUE (default), the diagram carries accessibility
+  metadata that screen readers announce: `accTitle` with the `title` (if
+  one is given) and `accDescr` with a one-line summary, such as
+  "Workflow with 4 steps and 3 data files." Mermaid puts them into the
+  SVG's `<title>` and `<desc>`; a frontmatter title alone does not
+  (Mermaid 10.5.0 and later). Mermaid reads these lines from 9.1.0 on;
+  for an older renderer, set `accessibility = FALSE` and
+  `mermaid_config = "none"`.
+
 - log_level:
 
   Character string specifying log verbosity for this call. Overrides the
@@ -210,6 +222,18 @@ gets a `node_` prefix. Ids that only differ in punctuation (`a-b` and
 already valid (`a_b`) keeps its form. With
 `source_info_style = "subgraph"`, each source file becomes a subgraph
 with the id `file_<name>`.
+
+## Mermaid versions
+
+The output uses only classic Mermaid syntax, so that every current
+renderer draws it. The frontmatter (title and `mermaid_config`) needs
+Mermaid 9.3.0 or later, `accTitle`/`accDescr` 9.1.0 or later (measured).
+CI draws every diagram option on Mermaid 11.12.0, 11.17.2, 12.1.0 and
+12.2.0; 10.9.8 was checked once. Renderers (2026-10-12): GitHub 12.1.0
+(measured), Quarto 1.10 and 1.11 11.12.0, GitLab 11.16.1, VS Code
+11.17.0, Positron 11.15.0; the pkgdown site and the sandbox load 12.2.0.
+Newer syntax such as `@{ shape: ... }` needs Mermaid 11.3 or later and
+is not used while Quarto ships 11.12.0.
 
 ## See also
 
