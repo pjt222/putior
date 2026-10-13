@@ -20,7 +20,7 @@
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Quick Start">
 <!-- Keep this Mermaid pin and its integrity hash in sync with
-     inst/shiny/putior-sandbox/app.R. --><script src="https://cdn.jsdelivr.net/npm/mermaid@12.1.0/dist/mermaid.min.js" integrity="sha384-EbBpjO7rlR6eqZEcG7GaPpyk9H9WrMyPWX4d3KvPYltgt8Z8l0z6R56B1qP40pR4" crossorigin="anonymous"></script><script>
+     inst/shiny/putior-sandbox/app.R. --><script src="https://cdn.jsdelivr.net/npm/mermaid@12.2.0/dist/mermaid.min.js" integrity="sha384-8xUhuLNMjW/cI2Dacg3DR4WliYznvIg0LVG1stctThKD/YVrJFI9TNCFxft5NYgp" crossorigin="anonymous"></script><script>
   // Stop Mermaid from rendering the <pre class="mermaid"> blocks by itself
   // on page load; they are rendered below with the site's theme.
   mermaid.initialize({ startOnLoad: false });
@@ -272,13 +272,13 @@
 <span><span class="co"># Visualize</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"```mermaid\n"</span>, <span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span>, <span class="st">"\n```\n"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
 <pre class="mermaid"><code>flowchart TD
-    fe67ff1f_f6af_4574_80e9_2c244022c739["Extract"]
-    node_809969e4_e389_4eeb_9e03_25883ab3e548["Transform"]
-    node_52edddf5_824d_4235_8e62_c6a4373a8991["Load"]
+    node_85550f05_c74a_4e25_ac05_a06ca0a38132["Extract"]
+    b0d13b6d_a1eb_49e9_ab07_348101a1f2cf["Transform"]
+    node_6d526602_ce44_4dc7_a8d1_e6cae139a9ca["Load"]
 
     %% Connections
-    fe67ff1f_f6af_4574_80e9_2c244022c739 --&gt; node_809969e4_e389_4eeb_9e03_25883ab3e548
-    node_809969e4_e389_4eeb_9e03_25883ab3e548 --&gt; node_52edddf5_824d_4235_8e62_c6a4373a8991</code></pre>
+    node_85550f05_c74a_4e25_ac05_a06ca0a38132 --&gt; b0d13b6d_a1eb_49e9_ab07_348101a1f2cf
+    b0d13b6d_a1eb_49e9_ab07_348101a1f2cf --&gt; node_6d526602_ce44_4dc7_a8d1_e6cae139a9ca</code></pre>
 <hr>
 </div>
 <div class="section level2">
