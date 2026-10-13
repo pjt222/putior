@@ -153,6 +153,21 @@
   tool except `set_putior_log_level` is read-only. The `put_diagram`
   tool scans a `path` and returns the Mermaid code.
   ([\#65](https://github.com/pjt222/putior/issues/65))
+- The `put_diagram` tool takes a `source` argument: `annotations` (the
+  default) scans with
+  [`put()`](https://pjt222.github.io/putior/reference/put.md), `auto`
+  draws the workflow that
+  [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md)
+  detects, and `merge` combines both like
+  [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md),
+  with `merge_strategy`. When a scan finds nothing and R warned (the
+  directory is empty, no file matches `pattern`, a file cannot be read),
+  the scan tools now fail with R’s warnings instead of returning `[]` or
+  empty text: the warnings never reached the client. When nothing
+  warned, `put_diagram` says what is missing for its `source`: no
+  annotations (and it suggests `source = "auto"`), or no file that
+  [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md)
+  can analyze. ([\#73](https://github.com/pjt222/putior/issues/73))
 
 #### ACP Server Integration
 
