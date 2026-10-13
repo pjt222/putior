@@ -105,11 +105,13 @@
 * The `put_diagram` tool takes a `source` argument: `annotations` (the
   default) scans with `put()`, `auto` draws the workflow that `put_auto()`
   detects, and `merge` combines both like `put_merge()`, with
-  `merge_strategy`. When a scan finds no files, because the directory is
-  empty or no file matches `pattern`, the scan tools now fail with R's
-  explanation instead of returning `[]` or empty text: the warning never
-  reached the client. `put_diagram` on files without annotations now says
-  so and suggests `source = "auto"`. (#73)
+  `merge_strategy`. When a scan finds nothing and R warned (the directory
+  is empty, no file matches `pattern`, a file cannot be read), the scan
+  tools now fail with R's warnings instead of returning `[]` or empty text:
+  the warnings never reached the client. When nothing warned,
+  `put_diagram` says what is missing for its `source`: no annotations
+  (and it suggests `source = "auto"`), or no file that `put_auto()` can
+  analyze. (#73)
 
 ### ACP Server Integration
 * Added `putior_acp_server()` to expose putior as an ACP agent for inter-agent

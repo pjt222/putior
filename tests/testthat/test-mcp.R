@@ -516,20 +516,83 @@ test_that("MCP put_diagram draws put_auto() and put_merge() results", {
     tools$put_diagram(path = project_dir, source = "auto", show_artifacts = TRUE),
     put_diagram(put_auto(project_dir), output = "raw", show_artifacts = TRUE)
   )
-  for (strategy in c("manual_priority", "supplement", "union")) {
-    expect_identical(
-      tools$put_diagram(path = project_dir, source = "merge", merge_strategy = strategy),
-      put_diagram(put_merge(project_dir, merge_strategy = strategy), output = "raw"),
-      label = strategy
-    )
-  }
   # Click links get line numbers from every source
   expect_identical(
     tools$put_diagram(path = project_dir, source = "auto", enable_clicks = TRUE),
     put_diagram(put_auto(project_dir, include_line_numbers = TRUE), output = "raw",
                 enable_clicks = TRUE)
   )
-  expect_error(mcp_put_diagram(project_dir, source = "files"), "should be one of")
+  expect_error(mcp_put_diagram(project_dir, source = "files"), 'source must be "annotations"')
+  # Clients may send null for arguments they leave out
+  expect_identical(mcp_put_diagram(project_dir, source = NULL), tools$put_diagram(path = project_dir))
+})
+
+test_that("MCP put_diagram draws each merge strategy", {
+  skip_if_not_installed("ellmer")
+  # One annotated file and one unannotated file, on which the annotations
+  # and the merge strategies all give different diagrams
+  merge_dir <- file.path(tempdir(), "putior_mcp_merge_test")
+  unlink(merge_dir, recursive = TRUE)
+  dir.create(merge_dir)
+  on.exit(unlink(merge_dir, recursive = TRUE), add = TRUE)
+  writeLines(c('# put id:"load", label:"Load"', 'd <- read.csv("in.csv")',
+               'write.csv(d, "out.csv")'), file.path(merge_dir, "load.R"))
+  writeLines(c('d <- read.csv("out.csv")', 'saveRDS(d, "final.rds")'),
+             file.path(merge_dir, "report.R"))
+  tools <- putior_mcp_tools()
+
+  strategies <- c("manual_priority", "supplement", "union")
+  diagrams <- lapply(strategies, function(strategy) {
+    tools$put_diagram(path = merge_dir, source = "merge", merge_strategy = strategy)
+  })
+  for (strategy_index in seq_along(strategies)) {
+    expect_identical(
+      diagrams[[strategy_index]],
+      put_diagram(put_merge(merge_dir, merge_strategy = strategies[strategy_index]), output = "raw"),
+      label = strategies[strategy_index]
+    )
+  }
+  expect_false(identical(diagrams[[1]], tools$put_diagram(path = merge_dir)))
+  expect_false(identical(diagrams[[1]], diagrams[[2]]))
+  expect_false(identical(diagrams[[1]], diagrams[[3]]))
+  # null strategy means the default
+  expect_identical(mcp_put_diagram(merge_dir, source = "merge", merge_strategy = NULL), diagrams[[1]])
+})
+
+test_that("MCP put_diagram names the cause for each source", {
+  skip_if_not_installed("ellmer")
+  text_dir <- file.path(tempdir(), "putior_mcp_text_only")
+  unlink(text_dir, recursive = TRUE)
+  dir.create(text_dir)
+  on.exit(unlink(text_dir, recursive = TRUE), add = TRUE)
+  writeLines("Some notes", file.path(text_dir, "notes.txt"))
+  tools <- putior_mcp_tools()
+
+  # put() reads any file the pattern matches; put_auto() only languages
+  # with auto-detection, so .txt files give no nodes and no warning
+  expect_error(tools$put_diagram(path = text_dir, pattern = "\\.txt$"),
+               'use source = "auto"', fixed = TRUE)
+  for (source in c("auto", "merge")) {
+    diagram_error <- tryCatch(
+      tools$put_diagram(path = text_dir, pattern = "\\.txt$", source = source),
+      error = conditionMessage
+    )
+    expect_match(diagram_error, "put_auto() found no file to analyze", fixed = TRUE, label = source)
+    expect_no_match(diagram_error, 'use source = "auto"', fixed = TRUE)
+  }
+})
+
+test_that("mcp_scan() drops only repeated warnings", {
+  scan_with_warnings <- function() {
+    warning("A\nhint")
+    warning("A")        # the first line of the warning above
+    warning("B\nx")
+    warning("B\ny")     # same first line, different text
+    warning("B\nx")     # an exact repeat
+    data.frame()
+  }
+  scan_error <- tryCatch(mcp_scan(scan_with_warnings()), error = conditionMessage)
+  expect_equal(scan_error, "The scan found nothing.\nA\nhint\nB\nx\nB\ny")
 })
 
 test_that("MCP scans still raise warnings when they find something", {

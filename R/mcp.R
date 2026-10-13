@@ -235,8 +235,9 @@ mcp_json <- function(x) {
 #' top level, where deferred warnings would print. So a scan of an empty
 #' directory, or with a pattern that matches no file, returned \code{[]} with
 #' no hint why (#73). This runs the scan with its warnings held back. If the
-#' result is empty and there were warnings, they become an error, which
-#' mcptools sends to the client. Otherwise the warnings are raised again.
+#' result is empty and R warned (no file matches, a file cannot be read, an
+#' annotation is invalid, ...), the warnings become an error, which mcptools
+#' sends to the client. Otherwise the warnings are raised again.
 #' @param scan A call that returns a data frame or a character vector
 #' @return The value of \code{scan}
 #' @noRd
@@ -247,9 +248,13 @@ mcp_scan <- function(scan) {
     invokeRestart("muffleWarning")
   })
   # put_merge() runs put() and put_auto(), which both warn about missing
-  # files; keep the first warning for each first line (put() adds hints)
-  first_lines <- sub("(?s)\n.*", "", warning_messages, perl = TRUE)
-  warning_messages <- warning_messages[!duplicated(first_lines)]
+  # files; put_auto()'s one-line warning is the first line of put()'s. Drop
+  # exact repeats and one-line warnings that another warning starts with.
+  multi_line <- grepl("\n", warning_messages, fixed = TRUE)
+  first_lines <- sub("(?s)\n.*", "", warning_messages[multi_line], perl = TRUE)
+  is_redundant <- duplicated(warning_messages) |
+    (!multi_line & warning_messages %in% first_lines)
+  warning_messages <- warning_messages[!is_redundant]
   is_empty <- if (is.data.frame(result)) nrow(result) == 0 else !any(nzchar(result))
   if (is_empty && length(warning_messages) > 0) {
     stop(paste(c("The scan found nothing.", warning_messages), collapse = "\n"), call. = FALSE)
@@ -277,7 +282,7 @@ mcp_put <- function(path, pattern = NULL, recursive = TRUE,
 #' \code{put_auto()} for a workflow detected from the code, or
 #' \code{put_merge()} for both (#73).
 #' @noRd
-mcp_put_diagram <- function(path, source = c("annotations", "auto", "merge"),
+mcp_put_diagram <- function(path, source = "annotations",
                             merge_strategy = "manual_priority",
                             pattern = NULL, recursive = TRUE,
                             exclude = NULL, title = NULL, direction = "TD",
@@ -289,7 +294,13 @@ mcp_put_diagram <- function(path, source = c("annotations", "auto", "merge"),
                             source_info_style = "inline",
                             enable_clicks = FALSE, click_protocol = "vscode",
                             log_level = NULL) {
-  source <- match.arg(source)
+  # Clients may send null for an argument they leave out
+  source <- source %||% "annotations"
+  merge_strategy <- merge_strategy %||% "manual_priority"
+  if (length(source) != 1 || !source %in% c("annotations", "auto", "merge")) {
+    stop('source must be "annotations", "auto" or "merge", not ',
+         deparse(source), call. = FALSE)
+  }
   # Click links include line numbers when the workflow has them
   include_line_numbers <- isTRUE(enable_clicks)
   workflow <- mcp_scan(switch(source,
@@ -310,13 +321,27 @@ mcp_put_diagram <- function(path, source = c("annotations", "auto", "merge"),
       log_level = log_level
     )
   ))
-  # Files were found but hold no annotations: put_diagram() would only say
-  # that the workflow is empty
+  # Files were found, but the scan made no nodes and raised no warning:
+  # put_diagram() would only say that the workflow is empty
   if (nrow(workflow) == 0) {
-    stop("No PUT annotations were found in '", path, "'. ",
-         "To draw the workflow detected from the code instead, use ",
-         "source = \"auto\", or source = \"merge\" to combine both.",
-         call. = FALSE)
+    auto_detection_note <- paste0(
+      "put_auto() reads only files in languages with auto-detection ",
+      "(see list_supported_languages(detection_only = TRUE)); check pattern and exclude."
+    )
+    stop(switch(source,
+      annotations = paste0(
+        "No PUT annotations were found in '", path, "'. ",
+        "To draw the workflow detected from the code instead, use ",
+        "source = \"auto\", or source = \"merge\" to combine both."
+      ),
+      auto = paste0(
+        "put_auto() found no file to analyze in '", path, "'. ", auto_detection_note
+      ),
+      merge = paste0(
+        "No workflow was found in '", path, "': the files hold no PUT ",
+        "annotations, and put_auto() found no file to analyze. ", auto_detection_note
+      )
+    ), call. = FALSE)
   }
   put_diagram(
     workflow, output = "raw", title = title, direction = direction,
@@ -363,7 +388,7 @@ mcp_put_merge <- function(path, pattern = NULL, recursive = TRUE,
                           log_level = NULL) {
   mcp_json(mcp_scan(put_merge(
     path, pattern = pattern, recursive = recursive,
-    merge_strategy = merge_strategy,
+    merge_strategy = merge_strategy %||% "manual_priority",
     include_line_numbers = include_line_numbers, exclude = exclude,
     log_level = log_level
   )))
@@ -422,7 +447,8 @@ make_tool_put <- function() {
       "inputs, outputs, and metadata from source code comments. ",
       "Supports 30+ programming languages with automatic comment syntax detection. ",
       "Returns the nodes as JSON, one object per node, or [] when the scanned ",
-      "files hold no annotations; when no file matches, the call fails with the reason. ",
+      "files hold no annotations. When the scan finds nothing and R warned ",
+      "(for example, no file matches the pattern), the call fails with the warnings. ",
       "To draw them, call put_diagram with the same path."
     ),
     name = "put",
@@ -586,8 +612,9 @@ make_tool_put_auto <- function() {
       "Analyzes source files to detect file inputs, outputs, and dependencies ",
       "based on function calls like read_csv(), write.csv(), etc. ",
       "Similar to how roxygen2 auto-generates documentation skeletons. ",
-      "Returns the detected nodes as JSON, one object per node; ",
-      "when no file matches, the call fails with the reason."
+      "Returns the detected nodes as JSON, one object per node. ",
+      "When the scan finds nothing and R warned (for example, no file matches ",
+      "the pattern), the call fails with the warnings."
     ),
     name = "put_auto",
     annotations = list(
@@ -644,7 +671,8 @@ make_tool_put_generate <- function() {
       "Generate suggested PUT annotation comments based on code analysis. ",
       "Analyzes source files and returns annotation text that can be copied ",
       "into source files; the files themselves are not changed. ",
-      "When no file matches, the call fails with the reason. ",
+      "When the scan finds nothing and R warned (for example, no file matches ",
+      "the pattern), the call fails with the warnings. ",
       "Similar to how roxygen2 generates documentation skeletons. ",
       "Supports single-line and multiline annotation styles."
     ),
@@ -692,8 +720,9 @@ make_tool_put_merge <- function() {
       "Combine manually written PUT annotations with auto-detected workflow elements. ",
       "Supports flexible strategies: manual_priority (manual overrides auto), ",
       "supplement (auto fills in missing fields), union (combine all detected I/O). ",
-      "Returns the merged nodes as JSON, one object per node; ",
-      "when no file matches, the call fails with the reason."
+      "Returns the merged nodes as JSON, one object per node. ",
+      "When the scan finds nothing and R warned (for example, no file matches ",
+      "the pattern), the call fails with the warnings."
     ),
     name = "put_merge",
     annotations = list(
