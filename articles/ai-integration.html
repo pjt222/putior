@@ -645,8 +645,13 @@ PHP, WGSL</td>
 <span></span>
 <span><span class="co"># Output options</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"clipboard"</span><span class="op">)</span>        <span class="co"># Copy to clipboard</span></span>
-<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"workflow.md"</span><span class="op">)</span>      <span class="co"># Save to file</span></span>
-<span><span class="va">mermaid_code</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span>  <span class="co"># Return as string</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"file"</span>, file <span class="op">=</span> <span class="st">"workflow.md"</span><span class="op">)</span>  <span class="co"># Save to file</span></span>
+<span><span class="va">mermaid_code</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span>  <span class="co"># Return as string</span></span>
+<span></span>
+<span><span class="co"># Mermaid configuration in the diagram's frontmatter</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, mermaid_config <span class="op">=</span> <span class="st">"classic"</span><span class="op">)</span>  <span class="co"># Default: Mermaid 11's look, also on GitHub's Mermaid 12</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, mermaid_config <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span>     <span class="co"># No configuration</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, mermaid_config <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>look <span class="op">=</span> <span class="st">"neo"</span><span class="op">)</span><span class="op">)</span>  <span class="co"># Your own; a theme key is left out</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="put_auto---auto-detect-workflow">
@@ -860,7 +865,7 @@ transformers, litellm, vllm, groq</p>
 </h4>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Save Mermaid diagram to markdown file</span></span>
-<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"docs/workflow.md"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"file"</span>, file <span class="op">=</span> <span class="st">"docs/workflow.md"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Get raw Mermaid code for embedding</span></span>
 <span><span class="va">mermaid_code</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span></span></code></pre></div>

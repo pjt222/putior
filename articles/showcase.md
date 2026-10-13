@@ -26,6 +26,14 @@ A basic extract-transform-load workflow:
 **Generated Diagram:**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     extract(["Extract Data"])
     transform["Transform Data"]
@@ -63,6 +71,14 @@ A simple report generation workflow:
 **Generated Diagram:**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     fetch(["Fetch Metrics"])
     analyze["Analyze Trends"]
@@ -126,6 +142,14 @@ A complete ML workflow from data collection to model deployment:
 **Generated Diagram:**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     collect(["Collect Raw Data"])
     clean["Clean Data"]
@@ -206,6 +230,14 @@ Combining data from multiple sources:
 **Generated Diagram:**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     sales_api(["Fetch Sales API"])
     inv_db(["Fetch Inventory DB"])
@@ -426,6 +458,14 @@ data <- read_parquet("transformed.parquet")
 **Generated Diagram:**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     sql(["SQL Extract"])
     python_transform["Python Transform"]
@@ -486,6 +526,14 @@ A genomics analysis workflow processing FASTA sequences:
 **Generated Diagram:**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     fetch(["Fetch FASTA Sequences"])
     qc["Quality Control"]
@@ -549,6 +597,14 @@ Portfolio analysis and risk assessment workflow:
 **Generated Diagram:**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     market(["Fetch Market Data"])
     holdings(["Load Portfolio Holdings"])
@@ -614,6 +670,14 @@ Data extraction from web sources:
 **Generated Diagram:**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     urls(["Fetch URL List"])
     scrape["Scrape Web Pages"]
@@ -685,6 +749,14 @@ R for reporting:
 **Generated Diagram:**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     load(["Load Raw Data - R"])
     eda["Exploratory Analysis - R"]
@@ -773,6 +845,14 @@ write.csv(aggregated, "regional_sales.csv")
 **Resulting diagram (disconnected, unclear):**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     step1["step1"]
     node_2["2"]
@@ -851,6 +931,14 @@ write.csv(aggregated, "regional_sales.csv")
 **Resulting diagram (connected, clear flow):**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     extract_sales(["Load Sales Data"])
     clean_data["Clean & Validate"]

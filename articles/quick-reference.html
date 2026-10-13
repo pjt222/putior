@@ -537,7 +537,15 @@ continuation.</p>
 </tr>
 </tbody>
 </table>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     load(["input"])
     transform["process"]
     export[["output"]]

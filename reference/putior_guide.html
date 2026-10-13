@@ -419,8 +419,13 @@ which provides 6 skills for the complete putior workflow.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # Output options</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> put_diagram(workflow, output = "clipboard")        # Copy to clipboard</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> put_diagram(workflow, output = "workflow.md")      # Save to file</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> put_diagram(workflow, output = "file", file = "workflow.md")  # Save to file</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> mermaid_code &lt;- put_diagram(workflow, output = "raw")  # Return as string</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # Mermaid configuration in the diagram's frontmatter</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> put_diagram(workflow, mermaid_config = "classic")  # Default: Mermaid 11's look, also on GitHub's Mermaid 12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> put_diagram(workflow, mermaid_config = "none")     # No configuration</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> put_diagram(workflow, mermaid_config = list(look = "neo"))  # Your own; a theme key is left out</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ### `put_auto()` - Auto-Detect Workflow</span>
@@ -550,7 +555,7 @@ which provides 6 skills for the complete putior workflow.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```r</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # Save Mermaid diagram to markdown file</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> put_diagram(workflow, output = "docs/workflow.md")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> put_diagram(workflow, output = "file", file = "docs/workflow.md")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # Get raw Mermaid code for embedding</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> mermaid_code &lt;- put_diagram(workflow, output = "raw")</span>

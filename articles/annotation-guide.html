@@ -295,7 +295,15 @@ sales_summary = {
 with open("sales_report.json", "w") as f:
     json.dump(sales_summary, f)</code></pre>
 <p><strong>Resulting diagram from both files:</strong></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     load_data(["Load Customer Data"])
     clean_data["Clean and Validate"]
     analyze_sales["Sales Analysis"]
@@ -666,7 +674,15 @@ for data files referenced in <code>input</code>/<code>output</code>
 fields. You don’t set <code>node_type:"artifact"</code> manually.</p>
 </blockquote>
 <p><strong>Visual representation of node types:</strong></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     load(["Load Data (input)"])
     transform["Transform (process)"]
     export[["Export (output)"]]

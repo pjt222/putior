@@ -42,6 +42,14 @@ put_diagram(put("./"), show_artifacts = TRUE)
 See result
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     node_1["Load Data"]
     artifact_clean_csv[("clean.csv")]
@@ -132,6 +140,14 @@ put_diagram(workflow, theme = "github")
 **Result:**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     fetch(["Fetch Sales Data"])
     clean["Clean and Validate"]
@@ -216,6 +232,12 @@ on putior’s own source code produces this diagram:
 ``` mermaid
 ---
 title: "putior Package Internals"
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
 ---
 flowchart TD
     diagram_gen["Generate Mermaid Diagram"]

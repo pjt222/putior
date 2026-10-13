@@ -217,6 +217,7 @@ the flow of data through your analysis pipeline.</p>
 <span>  source_info_style <span class="op">=</span> <span class="st">"inline"</span>,</span>
 <span>  enable_clicks <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  click_protocol <span class="op">=</span> <span class="st">"vscode"</span>,</span>
+<span>  mermaid_config <span class="op">=</span> <span class="st">"classic"</span>,</span>
 <span>  log_level <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -320,6 +321,26 @@ Default is FALSE for backward compatibility.</p></dd>
 </ul></dd>
 
 
+<dt id="arg-mermaid-config">mermaid_config<a class="anchor" aria-label="anchor" href="#arg-mermaid-config"></a></dt>
+<dd><p>Mermaid configuration to write into the diagram's
+frontmatter, next to the title:</p><ul><li><p>"classic" - Mermaid 11's drawing on Mermaid 12 (default): the
+dagre layout, the classic look, labels wrapped at 200px and no
+minimum node width. Without it, Mermaid 12, which GitHub uses, draws
+the "neo" look and wraps labels at 120px. Where the page sets a
+theme, as GitHub does, the result matches Mermaid 11; without one,
+Mermaid 12's default font is smaller. Mermaid 9.3.0 and later read
+the frontmatter, which must be the first thing in the diagram code:
+to change the configuration, use this argument rather than a
+<code>%%{init}%%</code> line in front.</p></li>
+<li><p>"none" - No configuration; the renderer's defaults apply</p></li>
+<li><p>A named list, written as YAML (nested lists become nested
+keys), such as <code>list(look = "neo")</code>. A <code>theme</code> key is left
+out with a warning, because a theme in the diagram overrides the
+host's light or dark theme; use <code>theme</code> or <code>palette</code> for
+node colors.</p></li>
+</ul></dd>
+
+
 <dt id="arg-log-level">log_level<a class="anchor" aria-label="anchor" href="#arg-log-level"></a></dt>
 <dd><p>Character string specifying log verbosity for this call.
 Overrides the global option <code>putior.log_level</code> when specified.
@@ -394,7 +415,8 @@ with the id <code>file_&lt;name&gt;</code>.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># For use in knitr/pkgdown - returns raw mermaid code</span></span></span>
 <span class="r-in"><span><span class="co"># Use within a code chunk with results='asis'</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"```mermaid\n"</span>, <span class="fu">put_diagram</span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span>, <span class="st">"\n```\n"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># (sep = "": Mermaid reads the frontmatter only at the very start)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"```mermaid\n"</span>, <span class="fu">put_diagram</span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span>, <span class="st">"\n```\n"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Show source file info inline in nodes</span></span></span>
 <span class="r-in"><span><span class="fu">put_diagram</span><span class="op">(</span><span class="va">workflow</span>, show_source_info <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>

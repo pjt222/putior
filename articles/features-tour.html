@@ -387,7 +387,15 @@ docs</a>)</em></p>
 <span><span class="co"># Generate diagram</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Example Auto-Detection Result:</strong></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     load_data_R_1["load_data.R"]
     process_R_1["process.R"]
     report_R_1["report.R"]
@@ -523,7 +531,15 @@ docs</a>)</em></p>
 </table>
 <p><strong>Before/After Merge Example:</strong></p>
 <p><em>Manual annotations only (sparse):</em></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     extract(["Extract Data"])
     load[["Load to DB"]]
 
@@ -534,7 +550,15 @@ docs</a>)</em></p>
     class load outputStyle</code></pre>
 <p><em>After merge with <code>supplement</code> strategy (auto-detected
 I/O added):</em></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     extract(["Extract Data"])
     transform["etl.R"]
     load[["Load to DB"]]
@@ -590,7 +614,15 @@ Reference</a>)</em></p>
 <span><span class="co"># Inline style - shows file name below node label</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_source_info <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Output:</strong></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     load(["Load Data&lt;br/&gt;(01_load.R)"])
     process["Process&lt;br/&gt;(02_process.R)"]
 
@@ -609,7 +641,15 @@ Reference</a>)</em></p>
 <span>            show_source_info <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>            source_info_style <span class="op">=</span> <span class="st">"subgraph"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Output:</strong></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     subgraph file_01_load ["01_load.R"]
         load(["Load Data"])
     end

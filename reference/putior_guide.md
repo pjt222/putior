@@ -223,8 +223,13 @@ putior_guide()
 #> 
 #> # Output options
 #> put_diagram(workflow, output = "clipboard")        # Copy to clipboard
-#> put_diagram(workflow, output = "workflow.md")      # Save to file
+#> put_diagram(workflow, output = "file", file = "workflow.md")  # Save to file
 #> mermaid_code <- put_diagram(workflow, output = "raw")  # Return as string
+#> 
+#> # Mermaid configuration in the diagram's frontmatter
+#> put_diagram(workflow, mermaid_config = "classic")  # Default: Mermaid 11's look, also on GitHub's Mermaid 12
+#> put_diagram(workflow, mermaid_config = "none")     # No configuration
+#> put_diagram(workflow, mermaid_config = list(look = "neo"))  # Your own; a theme key is left out
 #> ```
 #> 
 #> ### `put_auto()` - Auto-Detect Workflow
@@ -354,7 +359,7 @@ putior_guide()
 #> 
 #> ```r
 #> # Save Mermaid diagram to markdown file
-#> put_diagram(workflow, output = "docs/workflow.md")
+#> put_diagram(workflow, output = "file", file = "docs/workflow.md")
 #> 
 #> # Get raw Mermaid code for embedding
 #> mermaid_code <- put_diagram(workflow, output = "raw")

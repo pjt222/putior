@@ -80,6 +80,14 @@ put_diagram(workflow)
 **Example Auto-Detection Result:**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     load_data_R_1["load_data.R"]
     process_R_1["process.R"]
@@ -226,6 +234,14 @@ workflow <- put_merge("./src/", merge_strategy = "union")
 *Manual annotations only (sparse):*
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     extract(["Extract Data"])
     load[["Load to DB"]]
@@ -240,6 +256,14 @@ flowchart TD
 *After merge with `supplement` strategy (auto-detected I/O added):*
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     extract(["Extract Data"])
     transform["etl.R"]
@@ -304,6 +328,14 @@ put_diagram(workflow, show_source_info = TRUE)
 **Output:**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     load(["Load Data<br/>(01_load.R)"])
     process["Process<br/>(02_process.R)"]
@@ -332,6 +364,14 @@ put_diagram(workflow,
 **Output:**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     subgraph file_01_load ["01_load.R"]
         load(["Load Data"])

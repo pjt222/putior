@@ -245,7 +245,15 @@
 <span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./"</span><span class="op">)</span>, show_artifacts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <details><summary>
 See result
-</summary><!-- putior-diagram: tldr --><pre class="mermaid"><code>flowchart TD
+</summary><!-- putior-diagram: tldr --><pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     node_1["Load Data"]
     artifact_clean_csv[("clean.csv")]
 
@@ -314,7 +322,15 @@ See result
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./pipeline/"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"github"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Result:</strong> <!-- putior-diagram: pipeline --></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     fetch(["Fetch Sales Data"])
     clean["Clean and Validate"]
     report[["Generate Summary"]]
@@ -531,6 +547,12 @@ See result
 <!-- putior-diagram: self-documentation -->
 <pre class="mermaid"><code>---
 title: "putior Package Internals"
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
 ---
 flowchart TD
     diagram_gen["Generate Mermaid Diagram"]

@@ -42,6 +42,14 @@ put_diagram(workflow)
 That’s it! You’ll see a flowchart like this:
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     load(["Load Data"])
     clean["Clean Data"]
@@ -88,14 +96,22 @@ cat("```mermaid\n", put_diagram(workflow, output = "raw"), "\n```\n", sep = "")
 ```
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
-    node_61c2a931_de4a_48ab_b349_5fa6c7452c63["Extract"]
-    b2a67cd3_89f6_480e_9fbb_190fa21e1415["Transform"]
-    node_867f052e_bbaf_4305_8bff_6f3bf115f670["Load"]
+    b3f044e3_c67d_45d3_b842_ce236e08ef2e["Extract"]
+    f57c5c8b_c87b_4880_a0c6_2dd378920dec["Transform"]
+    node_14c5faee_d2c9_4400_b4d8_8edf275f7f19["Load"]
 
     %% Connections
-    node_61c2a931_de4a_48ab_b349_5fa6c7452c63 --> b2a67cd3_89f6_480e_9fbb_190fa21e1415
-    b2a67cd3_89f6_480e_9fbb_190fa21e1415 --> node_867f052e_bbaf_4305_8bff_6f3bf115f670
+    b3f044e3_c67d_45d3_b842_ce236e08ef2e --> f57c5c8b_c87b_4880_a0c6_2dd378920dec
+    f57c5c8b_c87b_4880_a0c6_2dd378920dec --> node_14c5faee_d2c9_4400_b4d8_8edf275f7f19
 ```
 
 ------------------------------------------------------------------------

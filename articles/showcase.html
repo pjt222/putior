@@ -249,7 +249,15 @@ simple workflows to complex multi-file pipelines.</p>
 <span><span class="co"># 03_load.R</span></span>
 <span><span class="co"># put label:"Load to Database", node_type:"output", input:"clean_data.csv"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     extract(["Extract Data"])
     transform["Transform Data"]
     load[["Load to Database"]]
@@ -280,7 +288,15 @@ simple workflows to complex multi-file pipelines.</p>
 <span><span class="co"># report.R</span></span>
 <span><span class="co"># put label:"Generate Report", node_type:"output", input:"analysis.rds", output:"report.html"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     fetch(["Fetch Metrics"])
     analyze["Analyze Trends"]
     report[["Generate Report"]]
@@ -338,7 +354,15 @@ stages.</p>
 <span><span class="co"># 10_deploy.sh</span></span>
 <span><span class="co"># put label:"Deploy Model", node_type:"output", input:"final_model.pkl, validation_report.html"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     collect(["Collect Raw Data"])
     clean["Clean Data"]
     feature["Feature Engineering"]
@@ -412,7 +436,15 @@ stages.</p>
 <span><span class="co"># report/dashboard.R</span></span>
 <span><span class="co"># put label:"Generate Dashboard", node_type:"output", input:"metrics.rds", output:"dashboard.html"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     sales_api(["Fetch Sales API"])
     inv_db(["Fetch Inventory DB"])
     cust_crm(["Fetch Customer CRM"])
@@ -643,7 +675,15 @@ languages.</p>
 <span><span class="co"># report.py</span></span>
 <span><span class="co"># put label:"Python Report Gen", node_type:"output", input:"stats.rds, plots.pdf", output:"final_report.html"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     sql(["SQL Extract"])
     python_transform["Python Transform"]
     r_stats["R Statistical Analysis"]
@@ -698,7 +738,15 @@ languages.</p>
 <span><span class="co"># report/bioinformatics_report.R</span></span>
 <span><span class="co"># put label:"Generate Report", node_type:"output", input:"de_results.rds, pathways.csv, qc_report.html", output:"analysis_report.html"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     fetch(["Fetch FASTA Sequences"])
     qc["Quality Control"]
     blast["BLAST Alignment"]
@@ -755,7 +803,15 @@ languages.</p>
 <span><span class="co"># report/risk_dashboard.R</span></span>
 <span><span class="co"># put label:"Risk Dashboard", node_type:"output", input:"var_results.rds, sharpe_ratios.csv, attribution.json, optimal_weights.csv", output:"risk_report.html"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     market(["Fetch Market Data"])
     holdings(["Load Portfolio Holdings"])
     returns["Calculate Returns"]
@@ -814,7 +870,15 @@ languages.</p>
 <span><span class="co"># load/save_to_db.py</span></span>
 <span><span class="co"># put label:"Load to Database", node_type:"output", input:"unique_entities.csv"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     urls(["Fetch URL List"])
     scrape["Scrape Web Pages"]
     parse["Parse HTML Content"]
@@ -879,7 +943,15 @@ and R for reporting:</p>
 <span><span class="co"># deployment/export_model.py</span></span>
 <span><span class="co"># put label:"Export for Production (Python)", node_type:"output", input:"final_model.pkl", output:"model_artifact.tar.gz"</span></span></code></pre></div>
 <p><strong>Generated Diagram:</strong></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     load(["Load Raw Data - R"])
     eda["Exploratory Analysis - R"]
     features["Feature Engineering - R"]
@@ -960,7 +1032,15 @@ how to clean them up.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">aggregated</span>, <span class="st">"regional_sales.csv"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Resulting diagram (disconnected, unclear):</strong></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     step1["step1"]
     node_2["2"]
     final_step_1["final step"]
@@ -1049,7 +1129,15 @@ how to clean them up.</p>
 <span><span class="co">#     node_type:"output", input:"aggregated.internal", output:"regional_sales.csv"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">aggregated</span>, <span class="st">"regional_sales.csv"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Resulting diagram (connected, clear flow):</strong></p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
+flowchart TD
     extract_sales(["Load Sales Data"])
     clean_data["Clean &amp; Validate"]
     aggregate_regions["Aggregate by Region"]

@@ -155,6 +155,14 @@ put("./", log_level = "DEBUG")
 | `artifact` | Cylinder   | Data files (auto-created) |
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     load(["input"])
     transform["process"]

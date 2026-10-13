@@ -78,6 +78,14 @@ That’s all you need! putior will: - Auto-generate a unique ID - Default
 **Resulting diagram from both files:**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     load_data(["Load Customer Data"])
     clean_data["Clean and Validate"]
@@ -329,6 +337,14 @@ For consistency across projects, use these standard node types:
 **Visual representation of node types:**
 
 ``` mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     load(["Load Data (input)"])
     transform["Transform (process)"]
