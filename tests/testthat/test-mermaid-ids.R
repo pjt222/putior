@@ -221,6 +221,7 @@ test_that("the title is a quoted YAML string (#45)", {
   expect_equal(yaml_quote('Say "hi"'), '"Say \\"hi\\""')
   expect_equal(yaml_quote("C:\\data"), '"C:\\\\data"')
   expect_equal(yaml_quote("two\nlines"), '"two lines"')
+  expect_equal(yaml_quote("tab\there\001bell"), '"tab here bell"')
 
   workflow <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
   diagram <- put_diagram(workflow, title = "ETL: stage 1 # first", output = "raw")

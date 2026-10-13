@@ -677,10 +677,12 @@ resolve_label <- function(node, node_labels, suffix = NULL) {
 #' Quote a string as a double-quoted YAML scalar
 #' @param text Character string
 #' @return The string in double quotes, with backslashes and quotes escaped
-#'   and line breaks replaced by spaces
+#'   and line breaks and other control characters replaced by spaces
 #' @noRd
 yaml_quote <- function(text) {
-  text <- gsub("[\r\n]+", " ", as.character(text))
+  # Mermaid's frontmatter parser rejects control characters ("expected valid
+  # JSON character"), and line breaks would end the YAML line
+  text <- gsub("[[:cntrl:]]+", " ", as.character(text))
   text <- gsub("\\", "\\\\", text, fixed = TRUE)
   text <- gsub('"', '\\"', text, fixed = TRUE)
   paste0('"', text, '"')

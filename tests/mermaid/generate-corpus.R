@@ -157,7 +157,7 @@ add_case("edge_labels_special_characters", scan_fixture("edge_label_chars", list
 )), show_files = TRUE, show_artifacts = TRUE)
 add_case("title_with_colon", pipeline, title = "ETL: stage 1")
 add_case("title_special_characters", pipeline,
-         title = 'Say "hi" # not a comment: C:\\data\\in [v2] | {x}')
+         title = 'Say "hi" # not a comment: C:\\data\\in [v2] | {x}\t\001end')
 add_case("subgraph_keyword_and_digit_files", scan_fixture("subgraph_names", list(
   "end.R" = '# put id:"finish", label:"Finish", input:"x.csv"',
   "01_load.R" = '# put id:"load", label:"Load", output:"x.csv"'
