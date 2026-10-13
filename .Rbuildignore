@@ -50,5 +50,6 @@
 ^CRAN_REVIEW\.md$
 ^\.cran_check_ground_truth\.md$
 ^\.gitattributes$
+^\.git-blame-ignore-revs$
 ^dev$
 ^dev/

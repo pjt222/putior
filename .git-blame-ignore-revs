@@ -1,0 +1,5 @@
+# Commits that git blame should skip (git config blame.ignoreRevsFile .git-blame-ignore-revs).
+# GitHub reads this file automatically.
+
+# chore: renormalize 39 files from CRLF to LF (#75)
+e49ac6c881d703538b9ee1295885f8c9bcf325f8
