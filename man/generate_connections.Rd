@@ -4,7 +4,12 @@
 \alias{generate_connections}
 \title{Generate connections between nodes}
 \usage{
-generate_connections(workflow, show_files = FALSE, show_artifacts = FALSE)
+generate_connections(
+  workflow,
+  show_files = FALSE,
+  show_artifacts = FALSE,
+  artifact_edges = "replace"
+)
 }
 \arguments{
 \item{workflow}{Workflow data frame with combined script and artifact nodes}
@@ -12,6 +17,9 @@ generate_connections(workflow, show_files = FALSE, show_artifacts = FALSE)
 \item{show_files}{Whether to show file-based connections}
 
 \item{show_artifacts}{Whether artifacts are included in the workflow}
+
+\item{artifact_edges}{"replace" to leave out a direct script-to-script
+edge for a file that has an artifact node, "both" to keep it}
 }
 \value{
 Character vector of connection definitions

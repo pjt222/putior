@@ -21,8 +21,12 @@
 #'   "name" (node IDs), "label" (descriptions), "both" (ID: label)
 #' @param show_files Logical indicating whether to show file connections
 #' @param show_artifacts Logical indicating whether to show data files as nodes.
-#'   When TRUE, creates nodes for all input/output files, not just script connections.
-#'   This provides a complete view of the data flow including terminal outputs.
+#'   When TRUE, every input and output file that is not itself one of the
+#'   workflow's scripts gets a node, and each script connects to the files
+#'   it writes and reads (\code{script --> file --> script}), so that the
+#'   diagram also shows terminal outputs. Scripts that read another script
+#'   (such as \code{utils.R}) stay connected directly. See
+#'   \code{artifact_edges}.
 #' @param show_workflow_boundaries Logical indicating whether to apply special styling
 #'   to nodes with node_type "start" and "end". When TRUE, these nodes get distinctive
 #'   workflow boundary styling (icons, colors). When FALSE, they render as regular nodes.
@@ -60,6 +64,11 @@
 #'     \item "file" - Standard file:// protocol
 #'     \item "rstudio" - RStudio IDE (rstudio://open-file?path=)
 #'   }
+#' @param artifact_edges With \code{show_artifacts = TRUE}, how two scripts
+#'   that a data file connects are drawn: "replace" (default) draws only the
+#'   path through the file's node; "both" also draws the direct
+#'   script-to-script edge, as putior did before 0.2.0, which shows every
+#'   hop twice. Has no effect with \code{show_artifacts = FALSE}.
 #' @param mermaid_config Mermaid configuration to write into the diagram's
 #'   frontmatter, next to the title:
 #'   \itemize{
@@ -193,6 +202,7 @@ put_diagram <- function(workflow,
                         source_info_style = "inline",
                         enable_clicks = FALSE,
                         click_protocol = "vscode",
+                        artifact_edges = c("replace", "both"),
                         mermaid_config = "classic",
                         accessibility = TRUE,
                         log_level = NULL) {
@@ -205,6 +215,7 @@ put_diagram <- function(workflow,
   # Validate direction parameter
   # Mermaid treats TB as a synonym of TD (#79)
   direction <- match.arg(direction, c("TD", "TB", "LR", "BT", "RL"))
+  artifact_edges <- match.arg(artifact_edges)
 
   putior_log("DEBUG", "Diagram parameters: direction='{direction}', theme='{theme}', show_artifacts={show_artifacts}")
 
@@ -409,7 +420,8 @@ put_diagram <- function(workflow,
 
   # Generate connections
   putior_log("DEBUG", "Generating connections between nodes")
-  connections <- generate_connections(combined_workflow, show_files, show_artifacts)
+  connections <- generate_connections(combined_workflow, show_files, show_artifacts,
+                                      artifact_edges)
   if (length(connections) > 0) {
     mermaid_lines <- c(mermaid_lines, "", "    %% Connections", connections)
     putior_log("DEBUG", "Created {length(connections)} connection(s)")
@@ -1490,9 +1502,12 @@ create_artifact_nodes <- function(workflow) {
 #' @param workflow Workflow data frame with combined script and artifact nodes
 #' @param show_files Whether to show file-based connections
 #' @param show_artifacts Whether artifacts are included in the workflow
+#' @param artifact_edges "replace" to leave out a direct script-to-script
+#'   edge for a file that has an artifact node, "both" to keep it
 #' @return Character vector of connection definitions
 #' @keywords internal
-generate_connections <- function(workflow, show_files = FALSE, show_artifacts = FALSE) {
+generate_connections <- function(workflow, show_files = FALSE, show_artifacts = FALSE,
+                                 artifact_edges = "replace") {
   connections <- character()
   workflow <- ensure_mermaid_ids(workflow)
 
@@ -1512,13 +1527,20 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
     unique(artifact_nodes$mermaid_id[artifact_nodes$file_name == file])
   }
 
-  # Script-to-script connections (always generated)
+  # Script-to-script connections. With artifacts drawn, a file that has an
+  # artifact node already connects the two scripts through it, and a direct
+  # edge would draw that hop twice (#55); files without one, such as a
+  # script that another script reads, keep the direct edge.
   source_pool <- if (show_artifacts) script_nodes else workflow
   for (i in seq_len(nrow(script_nodes))) {
     node <- script_nodes[i, ]
     target_id <- node$mermaid_id
 
     for (input_file in parse_file_list(node$input)) {
+      if (show_artifacts && artifact_edges == "replace" &&
+          length(artifact_id_for(input_file)) > 0) {
+        next
+      }
       source_nodes <- find_nodes_outputting(source_pool, input_file)
       for (j in seq_len(nrow(source_nodes))) {
         source_id <- source_nodes[j, ]$mermaid_id

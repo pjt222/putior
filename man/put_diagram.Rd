@@ -21,6 +21,7 @@ put_diagram(
   source_info_style = "inline",
   enable_clicks = FALSE,
   click_protocol = "vscode",
+  artifact_edges = c("replace", "both"),
   mermaid_config = "classic",
   accessibility = TRUE,
   log_level = NULL
@@ -51,8 +52,12 @@ put_diagram(
 \item{show_files}{Logical indicating whether to show file connections}
 
 \item{show_artifacts}{Logical indicating whether to show data files as nodes.
-When TRUE, creates nodes for all input/output files, not just script connections.
-This provides a complete view of the data flow including terminal outputs.}
+When TRUE, every input and output file that is not itself one of the
+workflow's scripts gets a node, and each script connects to the files
+it writes and reads (\code{script --> file --> script}), so that the
+diagram also shows terminal outputs. Scripts that read another script
+(such as \code{utils.R}) stay connected directly. See
+\code{artifact_edges}.}
 
 \item{show_workflow_boundaries}{Logical indicating whether to apply special styling
 to nodes with node_type "start" and "end". When TRUE, these nodes get distinctive
@@ -98,6 +103,12 @@ Default is FALSE for backward compatibility.}
 \item "file" - Standard file:// protocol
 \item "rstudio" - RStudio IDE (rstudio://open-file?path=)
 }}
+
+\item{artifact_edges}{With \code{show_artifacts = TRUE}, how two scripts
+that a data file connects are drawn: "replace" (default) draws only the
+path through the file's node; "both" also draws the direct
+script-to-script edge, as putior did before 0.2.0, which shows every
+hop twice. Has no effect with \code{show_artifacts = FALSE}.}
 
 \item{mermaid_config}{Mermaid configuration to write into the diagram's
 frontmatter, next to the title:

@@ -293,6 +293,7 @@ mcp_put_diagram <- function(path, source = "annotations",
                             show_source_info = FALSE,
                             source_info_style = "inline",
                             enable_clicks = FALSE, click_protocol = "vscode",
+                            artifact_edges = "replace",
                             mermaid_config = "classic",
                             accessibility = TRUE,
                             log_level = NULL) {
@@ -354,7 +355,8 @@ mcp_put_diagram <- function(path, source = "annotations",
     style_nodes = style_nodes, theme = theme,
     show_source_info = show_source_info,
     source_info_style = source_info_style, enable_clicks = enable_clicks,
-    click_protocol = click_protocol, mermaid_config = mermaid_config,
+    click_protocol = click_protocol, artifact_edges = artifact_edges %||% "replace",
+    mermaid_config = mermaid_config,
     accessibility = !isFALSE(accessibility), log_level = log_level
   )
 }
@@ -596,6 +598,14 @@ make_tool_put_diagram <- function() {
       click_protocol = ellmer::type_enum(
         description = "URL protocol for clickable nodes: vscode, file, rstudio (default: vscode)",
         values = c("vscode", "file", "rstudio"),
+        required = FALSE
+      ),
+      artifact_edges = ellmer::type_enum(
+        description = paste0(
+          "With show_artifacts: replace draws scripts connected only through the ",
+          "data file's node, both also draws the direct edge (default: replace)"
+        ),
+        values = c("replace", "both"),
         required = FALSE
       ),
       mermaid_config = ellmer::type_enum(

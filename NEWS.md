@@ -44,6 +44,15 @@
   `accDescr` is now written as `node_accDescr`: `accDescr{` started an
   accDescr block, and the node lost its shape and label. (#50)
 
+* With `show_artifacts = TRUE`, `put_diagram()` now draws each data hop
+  once, through the file's node (`script --> file --> script`). Before, it
+  also drew a direct edge between the two scripts, so every hop appeared
+  twice and the diagram had about 1.5 times the edges it needed, which
+  brings Mermaid's 500-edge limit closer. A script that another script
+  reads (such as `utils.R`) has no file node and keeps its direct edge.
+  `artifact_edges = "both"` draws the direct edges as before; the MCP
+  `put_diagram` tool has the same argument. (#55)
+
 ## Bug Fixes
 
 * Fixed `show_source_info = TRUE` using `<small>` HTML tags that are unsupported

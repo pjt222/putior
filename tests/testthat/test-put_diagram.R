@@ -360,10 +360,13 @@ test_that("show_artifacts creates correct connections", {
   workflow <- create_test_workflow_with_terminal()
   diagram_code <- put_diagram(workflow, show_artifacts = TRUE, output = "raw")
   
-  # Should have BOTH script-to-script AND script-to-artifact connections
-  # Script-to-script connection (preserved from simple mode)
-  expect_true(grepl("load --> process", diagram_code))
-  
+  # The hop through data.csv is drawn once, through the artifact node (#55);
+  # artifact_edges = "both" adds the direct script-to-script edge
+  expect_false(grepl("load --> process", diagram_code))
+  expect_true(grepl("load --> process",
+                    put_diagram(workflow, show_artifacts = TRUE, artifact_edges = "both",
+                                output = "raw")))
+
   # Script-to-artifact and artifact-to-script connections
   expect_true(grepl("load --> artifact_data_csv", diagram_code))
   expect_true(grepl("artifact_data_csv --> process", diagram_code))
@@ -977,3 +980,61 @@ test_that("invalid theme falls back to light with warning", {
   # Should still produce valid diagram
   expect_true(grepl("flowchart", diagram_code))
 })
+
+# Artifact edges (#55)
+
+diagram_edges <- function(diagram) {
+  grep("^    [A-Za-z0-9_]+ -->", strsplit(diagram, "\n", fixed = TRUE)[[1]], value = TRUE)
+}
+
+test_that("show_artifacts draws each data hop once, through the file (#55)", {
+  workflow <- data.frame(
+    id = c("fetch", "clean", "analyze", "report"), label = c("F", "C", "A", "R"),
+    file_name = c("fetch.R", "clean.R", "analyze.R", "report.R"),
+    input = c(NA, "raw.csv", "clean.csv", "results.rds"),
+    output = c("raw.csv", "clean.csv", "results.rds", "report.html"),
+    stringsAsFactors = FALSE
+  )
+  edges <- diagram_edges(put_diagram(workflow, output = "raw", show_artifacts = TRUE))
+  expect_length(edges, 7)
+  expect_false(any(c("    fetch --> clean", "    clean --> analyze", "    analyze --> report") %in% edges))
+  expect_true(all(c("    fetch --> artifact_raw_csv", "    artifact_raw_csv --> clean") %in% edges))
+
+  # "both" keeps the direct edges, as before
+  both_edges <- diagram_edges(put_diagram(workflow, output = "raw", show_artifacts = TRUE,
+                                          artifact_edges = "both"))
+  expect_length(both_edges, 10)
+  expect_true("    fetch --> clean" %in% both_edges)
+  # Without artifacts nothing changes
+  expect_identical(
+    put_diagram(workflow, output = "raw"),
+    put_diagram(workflow, output = "raw", artifact_edges = "both")
+  )
+  expect_error(put_diagram(workflow, output = "raw", artifact_edges = "none"))
+})
+
+test_that("two files from one producer give no direct edge (#55)", {
+  workflow <- data.frame(
+    id = c("a", "b"), label = c("A", "B"), file_name = c("a.R", "b.R"),
+    input = c(NA, "x.csv, y.csv"), output = c("x.csv, y.csv", "z.csv"),
+    stringsAsFactors = FALSE
+  )
+  edges <- diagram_edges(put_diagram(workflow, output = "raw", show_artifacts = TRUE))
+  expect_setequal(edges, c(
+    "    a --> artifact_x_csv", "    a --> artifact_y_csv",
+    "    artifact_x_csv --> b", "    artifact_y_csv --> b", "    b --> artifact_z_csv"
+  ))
+})
+
+test_that("a script that another script reads keeps its direct edge (#55)", {
+  # utils.R is a script of the workflow, so it has no artifact node
+  workflow <- data.frame(
+    id = c("utils", "main"), label = c("U", "M"), file_name = c("utils.R", "main.R"),
+    input = c(NA, "utils.R, data.csv"), output = c("utils.R", "out.csv"),
+    stringsAsFactors = FALSE
+  )
+  edges <- diagram_edges(put_diagram(workflow, output = "raw", show_artifacts = TRUE))
+  expect_true("    utils --> main" %in% edges)
+  expect_true("    main --> artifact_out_csv" %in% edges)
+})
+
