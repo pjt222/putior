@@ -148,7 +148,7 @@
   the workflow diagram update as you edit (needs the shiny package)
 * Added copy-to-clipboard button for quick Mermaid code export
 * Added optional shinyAce syntax highlighting (graceful degradation)
-* The sandbox loads Mermaid 12.1.0 from jsdelivr, pinned with a Subresource
+* The sandbox loads Mermaid 12.2.0 from jsdelivr, pinned with a Subresource
   Integrity hash (#48). It draws diagrams in Mermaid 11's classic style (dagre
   layout, classic look, 200px label wrapping, no minimum node width), which
   putior's themes are made for and which GitLab, Quarto and VS Code show.

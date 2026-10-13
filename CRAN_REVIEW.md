@@ -178,7 +178,7 @@ There is no confirmed finding that would cause an R CMD check ERROR/WARNING, a C
 
 ### T3-6 · mermaid-03 — Confirmation: v11.3+ `A@{ shape: ... }` syntax correctly NOT used (keep it that way)
 - **file:line:** `R/put_diagram.R:598-626`
-- **Evidence:** `get_node_shape()` uses only classic ASCII shapes. The expanded shape catalog requires Mermaid v11.3.0+. The pkgdown site and sandbox now pin `mermaid@12.1.0` (2026-10-12, #48), but Quarto bundles Mermaid 11.12.0, so the floor that matters is the oldest renderer users have (#50).
+- **Evidence:** `get_node_shape()` uses only classic ASCII shapes. The expanded shape catalog requires Mermaid v11.3.0+. The pkgdown site and sandbox now pin `mermaid@12.2.0` (12.1.0 on 2026-10-12, #48; 12.2.0 on 2026-10-13), but Quarto bundles Mermaid 11.12.0, so the floor that matters is the oldest renderer users have (#50).
 - **Action:** Superseded: the site no longer constrains this. Decide in #50 against the renderer matrix (Quarto 11.12.0 is the oldest), and verify GitHub rendering first. No-op now.
 
 ### T3-7 · pkgdown-04 — Redundant Mermaid double-render timers + duplicate `extra.css` @import

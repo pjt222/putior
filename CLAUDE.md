@@ -65,7 +65,7 @@ putior is an R package that extracts structured annotations from source code fil
 - Comprehensive multiline PUT annotation support implemented
 
 ### Mermaid Output Check (`tests/mermaid/`)
-The testthat suite compares strings; it cannot tell whether Mermaid accepts the output. `tests/mermaid/` checks that in headless Chromium, on every Mermaid version in `tests/mermaid/package.json` (11.12.0 = Quarto, the oldest major renderer; 11.17.2; 12.1.0 = GitHub, pkgdown site, sandbox; 12.2.0), with Mermaid's defaults and with the site/sandbox configuration. The `mermaid-check` workflow runs it on pushes to `main` and on pull requests to `main`, and weekly also against npm's newest Mermaid release.
+The testthat suite compares strings; it cannot tell whether Mermaid accepts the output. `tests/mermaid/` checks that in headless Chromium, on every Mermaid version in `tests/mermaid/package.json` (11.12.0 = Quarto 1.10/1.11, the oldest major renderer; 11.17.2; 12.1.0 = GitHub; 12.2.0 = pkgdown site and sandbox), with Mermaid's defaults and with the site/sandbox configuration. The `mermaid-check` workflow runs it on pushes to `main` and on pull requests to `main`, and weekly also against npm's newest Mermaid release.
 
 ```bash
 # from the package root
