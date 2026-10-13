@@ -114,11 +114,15 @@ Labels are quoted, and double quotes, \code{|} and a \code{#} that Mermaid
 would read as a character entity (as in \code{#35;}) are escaped. So is
 text that Mermaid would read as syntax: the space in \code{direction LR}
 (or \code{TB}, \code{BT}, \code{RL}, \code{TD}), which Mermaid takes for a
-direction statement, and a \code{:} in front of an escaped character. The
-escapes are Mermaid entities such as \code{#quot;}, which Mermaid shows as
-the character unless \code{htmlLabels: false} is set at the top level of
-its configuration. Mermaid still interprets HTML tags such as
-\code{<br/>} and \code{$$...$$} (KaTeX math) inside labels.
+direction statement, and, on a line where \code{style} or \code{classDef}
+comes before it, a \code{:} followed by an escaped character, which would
+let Mermaid cut that entity short. An edge to an id that ends in
+\code{direction} ends with \code{;}. The escapes are Mermaid entities such
+as \code{#quot;}. Mermaid shows them as the character in HTML labels;
+where it draws SVG text instead (\code{htmlLabels: false} for all labels,
+or \code{flowchart.htmlLabels: false} for edge labels and subgraph
+titles), it shows the entity as written. Mermaid still interprets HTML
+tags such as \code{<br/>} and \code{$$...$$} (KaTeX math) inside labels.
 
 Node ids are reduced to letters, digits and underscores. An id that starts
 with a digit or is a Mermaid keyword (such as \code{end} or \code{class})

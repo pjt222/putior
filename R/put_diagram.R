@@ -69,11 +69,15 @@
 #' would read as a character entity (as in \code{#35;}) are escaped. So is
 #' text that Mermaid would read as syntax: the space in \code{direction LR}
 #' (or \code{TB}, \code{BT}, \code{RL}, \code{TD}), which Mermaid takes for a
-#' direction statement, and a \code{:} in front of an escaped character. The
-#' escapes are Mermaid entities such as \code{#quot;}, which Mermaid shows as
-#' the character unless \code{htmlLabels: false} is set at the top level of
-#' its configuration. Mermaid still interprets HTML tags such as
-#' \code{<br/>} and \code{$$...$$} (KaTeX math) inside labels.
+#' direction statement, and, on a line where \code{style} or \code{classDef}
+#' comes before it, a \code{:} followed by an escaped character, which would
+#' let Mermaid cut that entity short. An edge to an id that ends in
+#' \code{direction} ends with \code{;}. The escapes are Mermaid entities such
+#' as \code{#quot;}. Mermaid shows them as the character in HTML labels;
+#' where it draws SVG text instead (\code{htmlLabels: false} for all labels,
+#' or \code{flowchart.htmlLabels: false} for edge labels and subgraph
+#' titles), it shows the entity as written. Mermaid still interprets HTML
+#' tags such as \code{<br/>} and \code{$$...$$} (KaTeX math) inside labels.
 #'
 #' Node ids are reduced to letters, digits and underscores. An id that starts
 #' with a digit or is a Mermaid keyword (such as \code{end} or \code{class})
@@ -676,7 +680,7 @@ resolve_label <- function(node, node_labels, suffix = NULL) {
   if (!is.null(suffix) && nzchar(suffix)) {
     raw_label <- paste0(raw_label, suffix)
   }
-  sanitize_mermaid_label(raw_label)
+  sanitize_mermaid_label(raw_label, line_start = node$mermaid_id)
 }
 
 #' Quote a string as a double-quoted YAML scalar
@@ -701,9 +705,12 @@ yaml_quote <- function(text) {
 #' statements and colons that let Mermaid cut an entity short.
 #'
 #' @param label Character string to sanitize
+#' @param line_start The text in front of the label on its line (the node,
+#'   edge source or subgraph id), or NULL if unknown. Colons are escaped only
+#'   where Mermaid would need it, which depends on this text.
 #' @return Sanitized character string safe for Mermaid labels
 #' @noRd
-sanitize_mermaid_label <- function(label) {
+sanitize_mermaid_label <- function(label, line_start = NULL) {
   if (is_empty_string(label)) return(label)
   # Strip newlines/carriage returns that would break Mermaid line structure
   label <- gsub("[\r\n]", " ", label)
@@ -717,9 +724,10 @@ sanitize_mermaid_label <- function(label) {
   label <- gsub('"', "#quot;", label, fixed = TRUE)
   # Escape pipe characters using Mermaid's #124; entity (pipes delimit edge labels)
   label <- gsub("|", "#124;", label, fixed = TRUE)
-  # The next two escapes write entities themselves, so they run last (#89)
+  # The next two escapes write entities themselves, so they run last, and
+  # the colon escape must see the entities of the direction escape (#89)
   label <- escape_direction_words(label)
-  label <- escape_style_colons(label)
+  label <- escape_style_colons(label, line_start)
   paste0('"', label, '"')
 }
 
@@ -749,7 +757,8 @@ escape_direction_words <- function(label) {
   regmatches(label, matches) <- lapply(regmatches(label, matches), function(found) {
     # "direction" has 9 characters; the 10th is the whitespace
     code_points <- vapply(found, function(match) utf8ToInt(substring(match, 10)), integer(1))
-    sprintf("direction#%d;", code_points)
+    # NA for text that is not valid UTF-8; leave such a match as it is
+    ifelse(is.na(code_points), found, sprintf("direction#%d;", code_points))
   })
   label
 }
@@ -759,18 +768,38 @@ escape_direction_words <- function(label) {
 #' Before it reads entities, Mermaid removes the last \code{;} of every line
 #' that matches \code{style.*:\\S*#.*;} or \code{classDef.*:\\S*#.*;}. A
 #' label \code{style:"bold"} is written as \code{style:#quot;bold#quot;} and
-#' would show as \code{style:"bold#quot} (#89). The word can also come from
-#' the node id (\code{lifestyle}), which this function does not see, so every
-#' \code{:} that is followed by non-space characters up to a \code{#} and
-#' then by a \code{;} is written as \code{#58;}. On node, edge and subgraph
-#' lines, a \code{:} occurs only in the label. Measured on Mermaid 11.12.0,
-#' 11.17.2, 12.1.0 and 12.2.0.
+#' would show as \code{style:"bold#quot} (#89). So a \code{:} that is
+#' followed by non-space characters up to a \code{#}, and later by a
+#' \code{;}, is written as \code{#58;} when \code{style} or \code{classDef}
+#' comes before it on the line: in \code{line_start} (the node id
+#' \code{lifestyle}, for example) or earlier in the label. Without
+#' \code{line_start}, every such colon is escaped. On node, edge and
+#' subgraph lines, a \code{:} occurs only in the label. Measured on Mermaid
+#' 11.12.0, 11.17.2, 12.1.0 and 12.2.0.
 #' @param label Label text, already escaped otherwise
+#' @param line_start Text in front of the label on its line, or NULL
 #' @return The label with those colons written as \code{#58;}
 #' @noRd
-escape_style_colons <- function(label) {
+escape_style_colons <- function(label, line_start = NULL) {
+  label <- enc2utf8(label)
   not_whitespace <- paste0("[^", .JS_WHITESPACE, "]")
-  gsub(paste0(":(?=", not_whitespace, "*#.*;)"), "#58;", enc2utf8(label), perl = TRUE)
+  colon_pattern <- paste0(":(?=", not_whitespace, "*#.*;)")
+  if (is.null(line_start)) {
+    return(gsub(colon_pattern, "#58;", label, perl = TRUE))
+  }
+  # Only colons after the first "style" or "classDef" on the line count. A
+  # space keeps the word from running across the id and the label.
+  line_text <- paste0(line_start, " ", label)
+  keyword <- regexpr("style|classDef", line_text, perl = TRUE)
+  if (keyword < 0) {
+    return(label)
+  }
+  keyword_end <- keyword + attr(keyword, "match.length") - 1L - nchar(line_start) - 1L
+  split_at <- max(0L, keyword_end)
+  paste0(
+    substr(label, 1L, split_at),
+    gsub(colon_pattern, "#58;", substr(label, split_at + 1L, nchar(label)), perl = TRUE)
+  )
 }
 
 # Words that Mermaid's flowchart parser rejects as a node id (case-sensitive:
@@ -1151,7 +1180,7 @@ generate_file_subgraphs <- function(workflow, node_labels = "label",
     taken_ids <- c(taken_ids, subgraph_id)
 
     # Start subgraph
-    safe_file_label <- sanitize_mermaid_label(file_label)
+    safe_file_label <- sanitize_mermaid_label(file_label, line_start = subgraph_id)
     subgraph_lines <- c(subgraph_lines,
                        paste0("    subgraph ", subgraph_id, " [", safe_file_label, "]"))
 
@@ -1341,12 +1370,19 @@ find_nodes_outputting <- function(nodes_df, target_file) {
 #' @return Mermaid edge definition string
 #' @noRd
 make_edge <- function(from_id, to_id, label = "", show_label = FALSE) {
+  # Mermaid's lexer reads "direction", whitespace and TB/BT/RL/LR/TD as a
+  # direction statement, and its \s+ also spans line breaks. An edge line
+  # that ends in an id such as "wind_direction" therefore ran into a next
+  # line that starts with "LR_prep", and both edges vanished. A ";" ends
+  # the statement without changing the diagram (#89).
+  line_end <- if (grepl("direction$", to_id)) ";" else ""
   if (show_label && label != "") {
     # Quoted and escaped like node labels: an unquoted label with ( or |
     # does not parse (#45)
-    paste0("    ", from_id, " -->|", sanitize_mermaid_label(label), "| ", to_id)
+    paste0("    ", from_id, " -->|", sanitize_mermaid_label(label, line_start = from_id),
+           "| ", to_id, line_end)
   } else {
-    paste0("    ", from_id, " --> ", to_id)
+    paste0("    ", from_id, " --> ", to_id, line_end)
   }
 }
 

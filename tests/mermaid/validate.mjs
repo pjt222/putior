@@ -10,17 +10,19 @@
 // Mermaid parsed (Mermaid 12 drops some nodes without an error), or when the
 // nodes differ from what putior defined: phantom nodes from an edge to an id
 // that was never defined, two definitions of one id, fewer nodes than the
-// workflow has, or class/click lines aimed at ids that do not exist. A case
-// that lists expected_texts also fails when a label does not show one of
-// them as written (Mermaid can cut the end off an entity without an error).
+// workflow has, or class/click lines aimed at ids that do not exist. It also
+// fails when Mermaid parses fewer edges than the diagram has "-->" lines
+// (its lexer can swallow a line without an error), and, for a case that
+// lists expected_texts, when a label does not show one of them as written
+// (Mermaid can cut the end off an entity without an error).
 //
 // Cases in expected-failures.json are known bugs. Each entry names its issue
 // and the kinds of problem it is known to cause ("generate", "parse",
-// "render", "nodes", "subgraphs", "text"). A listed case counts as a known
-// failure only if all its problems are of those kinds; a problem of a
-// different kind fails the run (a new problem of a listed kind does not). A
-// listed case that passes also fails the run, so the list is kept up to date
-// as the bugs are fixed.
+// "render", "nodes", "edges", "subgraphs", "text"). A listed case counts as
+// a known failure only if all its problems are of those kinds; a problem of
+// a different kind fails the run (a new problem of a listed kind does not).
+// A listed case that passes also fails the run, so the list is kept up to
+// date as the bugs are fixed.
 //
 // MERMAID_EXTRA_ALIASES (comma-separated) adds packages installed in
 // node_modules but not listed in package.json, e.g. the scheduled run's
@@ -84,7 +86,7 @@ const mermaidConfigs = {
 
 const manifest = readJson(path.join(corpusDir, 'manifest.json'));
 const expectedFailures = readJson(path.join(harnessDir, 'expected-failures.json'));
-const problemKinds = ['generate', 'parse', 'render', 'nodes', 'subgraphs', 'text'];
+const problemKinds = ['generate', 'parse', 'render', 'nodes', 'edges', 'subgraphs', 'text'];
 
 for (const [caseName, expected] of Object.entries(expectedFailures)) {
   if (!manifest.some((entry) => entry.name === caseName)) {
@@ -109,7 +111,7 @@ async function checkInPage(code) {
     if (sourceLine) return `${lines[0]} in "${sourceLine.trim()}"`;
     return (lines[0] ?? '').slice(0, 300);
   };
-  const result = { problems: [], vertexIds: null, labelTexts: null };
+  const result = { problems: [], vertexIds: null, edgeCount: null, labelTexts: null };
   try {
     await mermaid.parse(code);
   } catch (error) {
@@ -120,6 +122,7 @@ async function checkInPage(code) {
     const diagram = await mermaid.mermaidAPI.getDiagramFromText(code);
     const vertices = diagram.db.getVertices();
     result.vertexIds = vertices instanceof Map ? [...vertices.keys()] : Object.keys(vertices);
+    result.edgeCount = diagram.db.getEdges().length;
   } catch (error) {
     result.problems.push(`parse: reading the parsed nodes failed: ${summarize(error)}`);
     return result;
@@ -195,6 +198,13 @@ function compareNodes(entry, vertexIds) {
   return problems;
 }
 
+// Every "-->" line of the diagram must be an edge Mermaid parsed
+function compareEdges(entry, edgeCount) {
+  return edgeCount === entry.expected_edge_count
+    ? []
+    : [`edges: the diagram has ${entry.expected_edge_count} edge lines, Mermaid parsed ${edgeCount} edges`];
+}
+
 // Every expected text must be the whole text of one label
 function compareTexts(entry, labelTexts) {
   const notShown = (entry.expected_texts ?? [])
@@ -245,6 +255,7 @@ try {
         } else {
           problems.push(...result.problems);
           if (result.vertexIds) problems.push(...compareNodes(entry, result.vertexIds));
+          if (result.edgeCount !== null) problems.push(...compareEdges(entry, result.edgeCount));
           if (result.labelTexts) problems.push(...compareTexts(entry, result.labelTexts));
         }
         for (const problem of problems) problemsByCase.get(entry.name).push(`${label} ${problem}`);

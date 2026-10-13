@@ -274,14 +274,41 @@ test_that("colons that let Mermaid cut an entity short are escaped (#89)", {
   expect_equal(sanitize_mermaid_label("a|b:c"), '"a#124;b:c"')
 })
 
+test_that("colons are escaped only after style or classDef on the line (#89)", {
+  # With the text in front of the label, only colons that Mermaid's rule can
+  # reach are escaped; without it, all of them
+  expect_equal(sanitize_mermaid_label('Note:"x"', line_start = "plain"), '"Note:#quot;x#quot;"')
+  expect_equal(sanitize_mermaid_label('Note:"x"', line_start = "lifestyle"),
+               '"Note#58;#quot;x#quot;"')
+  expect_equal(sanitize_mermaid_label("key:a|b", line_start = "classDef_step"), '"key#58;a#124;b"')
+  # The word must come before the colon
+  expect_equal(sanitize_mermaid_label('a:"x" style:"y"', line_start = "a"),
+               '"a:#quot;x#quot; style#58;#quot;y#quot;"')
+  # The id and the label are not one word
+  expect_equal(sanitize_mermaid_label('le:"v"', line_start = "sty"), '"le:#quot;v#quot;"')
+  # The colon escape sees the entity that the direction escape writes
+  expect_equal(sanitize_mermaid_label("style:direction LR", line_start = "a"),
+               '"style#58;direction#32;LR"')
+})
+
+test_that("an edge to an id ending in direction ends with a semicolon (#89)", {
+  # Mermaid's \s+ spans line breaks, so "... wind_direction" followed by a
+  # line starting with "LR_prep" read as one direction statement
+  expect_equal(make_edge("LR_prep", "wind_direction"), "    LR_prep --> wind_direction;")
+  expect_equal(make_edge("a", "direction", "f.csv", show_label = TRUE),
+               '    a -->|"f.csv"| direction;')
+  expect_equal(make_edge("wind_direction", "b"), "    wind_direction --> b")
+  expect_equal(make_edge("a", "Direction"), "    a --> Direction")
+})
+
 test_that("no diagram line matches the Mermaid rules that eat labels (#89)", {
   workflow <- data.frame(
-    id = c("lifestyle", "classDef_step", "plot"),
-    label = c('Note:"x"', 'Filter:"a|b"', "Set direction LR"),
-    file_name = c("style:a.R", "direction TB.R", "plot.R"),
-    file_path = c("x/style:a.R", "x/direction TB.R", "y/plot.R"),
-    input = c(NA, "direction RL.csv", 'k:"v".csv'),
-    output = c("direction RL.csv", 'k:"v".csv', NA),
+    id = c("lifestyle", "classDef_step", "plot", "LR_prep", "wind_direction", "report"),
+    label = c('Note:"x"', 'Filter:"a|b"', "Set direction LR", 'k:"v"', "Wind", "Report"),
+    file_name = c("style:a.R", "direction TB.R", "plot.R", "prep.R", "wind.R", "report.R"),
+    file_path = c("x/style:a.R", "x/direction TB.R", "y/plot.R", "prep.R", "wind.R", "report.R"),
+    input = c(NA, "direction RL.csv", 'k:"v".csv', NA, "w.csv", "w.csv"),
+    output = c("direction RL.csv", 'k:"v".csv', NA, "w.csv", NA, NA),
     stringsAsFactors = FALSE
   )
   diagrams <- list(
@@ -293,11 +320,14 @@ test_that("no diagram line matches the Mermaid rules that eat labels (#89)", {
   )
   for (diagram in diagrams) {
     code_lines <- strsplit(diagram, "\n", fixed = TRUE)[[1]]
-    # Mermaid's lexer rule and the two lines of its encodeEntities()
-    expect_false(any(grepl("direction\\s+(TB|BT|RL|LR|TD)", code_lines)))
+    # Mermaid's lexer rule (its \\s+ spans line breaks) and the two lines of
+    # its encodeEntities()
+    expect_false(grepl("direction\\s+(TB|BT|RL|LR|TD)", diagram))
     expect_false(any(grepl("(style|classDef).*:\\S*#.*;", code_lines)))
   }
   expect_match(diagrams[[1]], 'lifestyle["Note#58;#quot;x#quot;"]', fixed = TRUE)
+  # Without style or classDef on the line, the colon stays
+  expect_match(diagrams[[1]], 'LR_prep["k:#quot;v#quot;"]', fixed = TRUE)
   expect_match(diagrams[[1]], '|"direction#32;RL.csv"|', fixed = TRUE)
   expect_match(diagrams[[4]], '["direction#32;TB.R"]', fixed = TRUE)
 })

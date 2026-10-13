@@ -7,7 +7,8 @@
 # the number of distinct ids in the workflow (what the diagram must show) and
 # the node, artifact and subgraph ids, plus the targets of class and click
 # lines, read from the generated text. With these the check can tell phantom,
-# merged or lost nodes from correct ones. A case can also list the texts its
+# merged or lost nodes from correct ones; the number of edge lines lets it
+# tell lost edges. A case can also list the texts its
 # labels must show (expected_texts), for labels that Mermaid could misread.
 # A case whose generation fails in R is recorded with its error instead of a
 # file.
@@ -157,6 +158,16 @@ add_case("direction_words_in_edge_and_subgraph_labels", scan_fixture("syntax_fil
   "use.R" = '# put id:"use", label:"Use", input:"direction TB.csv"'
 )), show_files = TRUE, show_source_info = TRUE, source_info_style = "subgraph",
    expected_texts = c("direction LR.R", "direction TB.csv"))
+# Mermaid's direction rule also spans a line break: an edge line ending in
+# an id such as "wind_direction" followed by a line starting with "LR_prep"
+# lost both edges (#89)
+add_case("edge_target_id_ending_in_direction", scan_fixture("direction_ids", list(
+  "a.R" = c(
+    '# put id:"LR_prep", label:"Prepare", output:"w.csv"',
+    '# put id:"wind_direction", label:"Wind", input:"w.csv"',
+    '# put id:"report", label:"Report", input:"w.csv"'
+  )
+)))
 
 # Edge cases from the Mermaid gap analysis
 add_case("keyword_node_id", scan_fixture("keyword_id", list(
@@ -267,7 +278,9 @@ manifest <- lapply(cases, function(case) {
     mmd_connection <- file(file.path(output_dir, entry$file), open = "wb")
     writeLines(diagram, mmd_connection)
     close(mmd_connection)
-    entry <- c(entry, describe_diagram(strsplit(diagram, "\n", fixed = TRUE)[[1]]))
+    code_lines <- strsplit(diagram, "\n", fixed = TRUE)[[1]]
+    entry$expected_edge_count <- sum(grepl("-->", code_lines, fixed = TRUE))
+    entry <- c(entry, describe_diagram(code_lines))
   }
   entry
 })
