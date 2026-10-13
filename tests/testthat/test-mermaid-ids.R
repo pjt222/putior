@@ -299,6 +299,14 @@ test_that("an edge to an id ending in direction ends with a semicolon (#89)", {
                '    a -->|"f.csv"| direction;')
   expect_equal(make_edge("wind_direction", "b"), "    wind_direction --> b")
   expect_equal(make_edge("a", "Direction"), "    a --> Direction")
+
+  # That ";" can complete Mermaid's colon rule, which would strip it again
+  edge_line <- make_edge("lifestyle", "wind_direction", "k:#1.csv", show_label = TRUE)
+  expect_equal(edge_line, '    lifestyle -->|"k#58;#1.csv"| wind_direction;')
+  expect_false(grepl("(style|classDef).*:\\S*#.*;", edge_line))
+  # Without the ";" the colon stays
+  expect_equal(make_edge("lifestyle", "b", "k:#1.csv", show_label = TRUE),
+               '    lifestyle -->|"k:#1.csv"| b')
 })
 
 test_that("no diagram line matches the Mermaid rules that eat labels (#89)", {

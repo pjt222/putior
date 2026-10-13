@@ -164,10 +164,11 @@ add_case("direction_words_in_edge_and_subgraph_labels", scan_fixture("syntax_fil
 add_case("edge_target_id_ending_in_direction", scan_fixture("direction_ids", list(
   "a.R" = c(
     '# put id:"LR_prep", label:"Prepare", output:"w.csv"',
-    '# put id:"wind_direction", label:"Wind", input:"w.csv"',
-    '# put id:"report", label:"Report", input:"w.csv"'
+    '# put id:"wind_direction", label:"Wind", input:"w.csv, k:#1.csv"',
+    '# put id:"report", label:"Report", input:"w.csv"',
+    '# put id:"lifestyle", label:"Life", output:"k:#1.csv"'
   )
-)))
+)), show_files = TRUE)
 
 # Edge cases from the Mermaid gap analysis
 add_case("keyword_node_id", scan_fixture("keyword_id", list(
@@ -279,7 +280,8 @@ manifest <- lapply(cases, function(case) {
     writeLines(diagram, mmd_connection)
     close(mmd_connection)
     code_lines <- strsplit(diagram, "\n", fixed = TRUE)[[1]]
-    entry$expected_edge_count <- sum(grepl("-->", code_lines, fixed = TRUE))
+    # Edge lines start with an id and " -->"; a label may contain "-->" too
+    entry$expected_edge_count <- sum(grepl("^\\s+[A-Za-z0-9_]+ -->", code_lines))
     entry <- c(entry, describe_diagram(code_lines))
   }
   entry

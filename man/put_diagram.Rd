@@ -118,10 +118,12 @@ direction statement, and, on a line where \code{style} or \code{classDef}
 comes before it, a \code{:} followed by an escaped character, which would
 let Mermaid cut that entity short. An edge to an id that ends in
 \code{direction} ends with \code{;}. The escapes are Mermaid entities such
-as \code{#quot;}. Mermaid shows them as the character in HTML labels;
-where it draws SVG text instead (\code{htmlLabels: false} for all labels,
-or \code{flowchart.htmlLabels: false} for edge labels and subgraph
-titles), it shows the entity as written. Mermaid still interprets HTML
+as \code{#quot;}. Mermaid shows them as the character in HTML labels.
+Where Mermaid 11.17.2 and later draw SVG text instead
+(\code{htmlLabels: false} for all labels, or
+\code{flowchart.htmlLabels: false} for edge labels and subgraph titles),
+they show the entity as written; Mermaid 11.12.0 can garble it there.
+Mermaid still interprets HTML
 tags such as \code{<br/>} and \code{$$...$$} (KaTeX math) inside labels.
 
 Node ids are reduced to letters, digits and underscores. An id that starts

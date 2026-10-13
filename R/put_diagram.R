@@ -73,10 +73,12 @@
 #' comes before it, a \code{:} followed by an escaped character, which would
 #' let Mermaid cut that entity short. An edge to an id that ends in
 #' \code{direction} ends with \code{;}. The escapes are Mermaid entities such
-#' as \code{#quot;}. Mermaid shows them as the character in HTML labels;
-#' where it draws SVG text instead (\code{htmlLabels: false} for all labels,
-#' or \code{flowchart.htmlLabels: false} for edge labels and subgraph
-#' titles), it shows the entity as written. Mermaid still interprets HTML
+#' as \code{#quot;}. Mermaid shows them as the character in HTML labels.
+#' Where Mermaid 11.17.2 and later draw SVG text instead
+#' (\code{htmlLabels: false} for all labels, or
+#' \code{flowchart.htmlLabels: false} for edge labels and subgraph titles),
+#' they show the entity as written; Mermaid 11.12.0 can garble it there.
+#' Mermaid still interprets HTML
 #' tags such as \code{<br/>} and \code{$$...$$} (KaTeX math) inside labels.
 #'
 #' Node ids are reduced to letters, digits and underscores. An id that starts
@@ -708,9 +710,11 @@ yaml_quote <- function(text) {
 #' @param line_start The text in front of the label on its line (the node,
 #'   edge source or subgraph id), or NULL if unknown. Colons are escaped only
 #'   where Mermaid would need it, which depends on this text.
+#' @param line_end The text after the label on its line, or NULL. A \code{;}
+#'   in it can complete Mermaid's rule for colons.
 #' @return Sanitized character string safe for Mermaid labels
 #' @noRd
-sanitize_mermaid_label <- function(label, line_start = NULL) {
+sanitize_mermaid_label <- function(label, line_start = NULL, line_end = NULL) {
   if (is_empty_string(label)) return(label)
   # Strip newlines/carriage returns that would break Mermaid line structure
   label <- gsub("[\r\n]", " ", label)
@@ -727,7 +731,7 @@ sanitize_mermaid_label <- function(label, line_start = NULL) {
   # The next two escapes write entities themselves, so they run last, and
   # the colon escape must see the entities of the direction escape (#89)
   label <- escape_direction_words(label)
-  label <- escape_style_colons(label, line_start)
+  label <- escape_style_colons(label, line_start, line_end)
   paste0('"', label, '"')
 }
 
@@ -775,15 +779,19 @@ escape_direction_words <- function(label) {
 #' \code{lifestyle}, for example) or earlier in the label. Without
 #' \code{line_start}, every such colon is escaped. On node, edge and
 #' subgraph lines, a \code{:} occurs only in the label. Measured on Mermaid
-#' 11.12.0, 11.17.2, 12.1.0 and 12.2.0.
+#' 11.12.0, 11.17.2, 12.1.0 and 12.2.0. The \code{;} can also come after the
+#' label (\code{line_end}), as on an edge to an id that ends in
+#' \code{direction}; then a colon followed by a \code{#} is escaped.
 #' @param label Label text, already escaped otherwise
 #' @param line_start Text in front of the label on its line, or NULL
+#' @param line_end Text after the label on its line, or NULL
 #' @return The label with those colons written as \code{#58;}
 #' @noRd
-escape_style_colons <- function(label, line_start = NULL) {
+escape_style_colons <- function(label, line_start = NULL, line_end = NULL) {
   label <- enc2utf8(label)
   not_whitespace <- paste0("[^", .JS_WHITESPACE, "]")
-  colon_pattern <- paste0(":(?=", not_whitespace, "*#.*;)")
+  semicolon_follows <- !is.null(line_end) && grepl(";", line_end, fixed = TRUE)
+  colon_pattern <- paste0(":(?=", not_whitespace, "*#", if (semicolon_follows) "" else ".*;", ")")
   if (is.null(line_start)) {
     return(gsub(colon_pattern, "#58;", label, perl = TRUE))
   }
@@ -797,8 +805,8 @@ escape_style_colons <- function(label, line_start = NULL) {
   keyword_end <- keyword + attr(keyword, "match.length") - 1L - nchar(line_start) - 1L
   split_at <- max(0L, keyword_end)
   paste0(
-    substr(label, 1L, split_at),
-    gsub(colon_pattern, "#58;", substr(label, split_at + 1L, nchar(label)), perl = TRUE)
+    substring(label, 1L, split_at),
+    gsub(colon_pattern, "#58;", substring(label, split_at + 1L), perl = TRUE)
   )
 }
 
@@ -1379,8 +1387,9 @@ make_edge <- function(from_id, to_id, label = "", show_label = FALSE) {
   if (show_label && label != "") {
     # Quoted and escaped like node labels: an unquoted label with ( or |
     # does not parse (#45)
-    paste0("    ", from_id, " -->|", sanitize_mermaid_label(label, line_start = from_id),
-           "| ", to_id, line_end)
+    label_text <- sanitize_mermaid_label(label, line_start = from_id,
+                                         line_end = paste0(to_id, line_end))
+    paste0("    ", from_id, " -->|", label_text, "| ", to_id, line_end)
   } else {
     paste0("    ", from_id, " --> ", to_id, line_end)
   }
