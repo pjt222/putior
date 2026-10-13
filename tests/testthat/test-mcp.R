@@ -529,8 +529,9 @@ test_that("MCP put_diagram draws put_auto() and put_merge() results", {
 
 test_that("MCP put_diagram draws each merge strategy", {
   skip_if_not_installed("ellmer")
-  # One annotated file and one unannotated file, on which the annotations
-  # and the merge strategies all give different diagrams
+  # One annotated file and one unannotated file: the annotations,
+  # manual_priority and supplement give three different diagrams (union
+  # equals supplement here)
   merge_dir <- file.path(tempdir(), "putior_mcp_merge_test")
   unlink(merge_dir, recursive = TRUE)
   dir.create(merge_dir)
@@ -555,8 +556,10 @@ test_that("MCP put_diagram draws each merge strategy", {
   expect_false(identical(diagrams[[1]], tools$put_diagram(path = merge_dir)))
   expect_false(identical(diagrams[[1]], diagrams[[2]]))
   expect_false(identical(diagrams[[1]], diagrams[[3]]))
-  # null strategy means the default
+  # null strategy means the default, also for the put_merge tool
   expect_identical(mcp_put_diagram(merge_dir, source = "merge", merge_strategy = NULL), diagrams[[1]])
+  expect_identical(tools$put_merge(path = merge_dir, merge_strategy = NULL),
+                   tools$put_merge(path = merge_dir))
 })
 
 test_that("MCP put_diagram names the cause for each source", {
