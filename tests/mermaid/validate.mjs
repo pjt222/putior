@@ -53,9 +53,15 @@ const mermaidVersions = aliases.map((alias) => ({
   script: path.join(harnessDir, 'node_modules', alias, 'dist', 'mermaid.min.js'),
 }));
 
-// The site and the sandbox pin a Mermaid version; it must be one of the
-// tested ones. Each file must have a pin, or the check would switch itself off.
-const pinnedFiles = ['_pkgdown.yml', 'inst/shiny/putior-sandbox/app.R'];
+// The site, the sandbox and the scripts that render the cheatsheet images
+// and the demo GIF pin a Mermaid version; it must be one of the tested ones.
+// Each file must have a pin, or the check would switch itself off.
+const pinnedFiles = [
+  '_pkgdown.yml',
+  'inst/shiny/putior-sandbox/app.R',
+  'inst/cheatsheet/generate-diagrams.R',
+  'inst/examples/create-demo-gif.R',
+];
 const setupProblems = [];
 for (const pinnedFile of pinnedFiles) {
   const text = fs.readFileSync(path.join(repoRoot, pinnedFile), 'utf8');

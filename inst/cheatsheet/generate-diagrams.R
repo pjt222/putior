@@ -2,9 +2,33 @@
 # Generate Mermaid diagram images for cheatsheet using mmdc CLI
 # Run: Rscript inst/cheatsheet/generate-diagrams.R
 #
-# Prerequisites: npm install -g @mermaid-js/mermaid-cli
+# Prerequisites: Node.js with npx (the pinned Mermaid CLI is fetched on first
+# use). Run from the package root.
+
+stopifnot(
+  "Run this script from the package root" =
+    file.exists("DESCRIPTION") && file.exists("inst/cheatsheet/mermaid-config.json")
+)
 
 library(putior)
+
+# Mermaid CLI and Mermaid, both pinned (#57). mermaid-cli 12.0.0 accepts
+# Mermaid ^12.0.0, so Mermaid is pinned next to it, to the version that the
+# pkgdown site and the sandbox use; tests/mermaid/validate.mjs checks that
+# this pin is a tested version. The first run downloads the CLI and a
+# Chrome for puppeteer (about 1.4 GB) and needs Node.js 22.13 or later.
+# mermaid-config.json gives Mermaid 11's drawing (dagre layout, classic
+# look, 200px label wrapping, no minimum node width), which Mermaid 12 does
+# not use by default.
+# PUTIOR_MMDC overrides the command, for example a local install. Put a
+# path with spaces in single quotes; on Windows the command runs inside
+# WSL, so it needs WSL paths:
+#   PUTIOR_MMDC="'/path/to/node_modules/.bin/mmdc' -p puppeteer.json"
+mermaid_cli <- Sys.getenv(
+  "PUTIOR_MMDC",
+  "npx --yes -p @mermaid-js/mermaid-cli@12.0.0 -p mermaid@12.2.0 mmdc"
+)
+mermaid_config_file <- "inst/cheatsheet/mermaid-config.json"
 
 output_dir <- "inst/cheatsheet/diagrams"
 if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
@@ -35,27 +59,29 @@ render_mermaid_diagram <- function(mermaid_code, output_file, bg_color = "white"
     }
     mmd_wsl <- convert_to_wsl(mmd_abs)
     out_wsl <- convert_to_wsl(out_abs)
+    config_wsl <- convert_to_wsl(normalizePath(mermaid_config_file, winslash = "/"))
 
-    # Call mmdc through wsl.exe - source nvm to get node in PATH
+    # Call the Mermaid CLI through wsl.exe - source nvm to get node in PATH
     cmd <- sprintf(
-      'wsl bash -ic "source ~/.nvm/nvm.sh && mmdc -i \\"%s\\" -o \\"%s\\" -b \\"%s\\" -s %d 2>/dev/null"',
-      mmd_wsl, out_wsl, bg_color, scale
+      'wsl bash -ic "source ~/.nvm/nvm.sh && %s -i \\"%s\\" -o \\"%s\\" -b \\"%s\\" -s %d -c \\"%s\\""',
+      mermaid_cli, mmd_wsl, out_wsl, bg_color, scale, config_wsl
     )
   } else {
-    # Native Unix/WSL - use mmdc directly
+    # Native Unix/WSL - call the Mermaid CLI directly
     cmd <- sprintf(
-      'mmdc -i "%s" -o "%s" -b "%s" -s %d 2>/dev/null',
-      mmd_file, output_file, bg_color, scale
+      '%s -i "%s" -o "%s" -b "%s" -s %d -c "%s"',
+      mermaid_cli, mmd_file, output_file, bg_color, scale, mermaid_config_file
     )
   }
 
   cat("Rendering:", basename(output_file), "...\n")
-  result <- system(cmd, intern = FALSE, ignore.stdout = TRUE, ignore.stderr = TRUE)
+  # stderr stays visible, so that a failure shows the CLI's own message
+  result <- system(cmd, intern = FALSE, ignore.stdout = TRUE)
 
   if (result != 0 || !file.exists(output_file)) {
     # Clean up temp file on failure
     unlink(mmd_file)
-    warning("Failed to render diagram. Is mmdc installed? Run: npm install -g @mermaid-js/mermaid-cli")
+    warning("Failed to render diagram with: ", mermaid_cli, " (see the error above)")
     return(FALSE)
   }
 

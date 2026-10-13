@@ -1,0 +1,9 @@
+{
+  "layout": "dagre",
+  "look": "classic",
+  "theme": "default",
+  "flowchart": {
+    "wrappingWidth": 200,
+    "minNodeWidth": 0
+  }
+}
