@@ -460,3 +460,87 @@ test_that("MCP set_putior_log_level and ext_to_language return readable text", {
   expect_equal(tools$ext_to_language(ext = "py"), "python")
   expect_match(tools$ext_to_language(ext = "xyz"), "No language is registered", fixed = TRUE)
 })
+
+# Empty results and the put_diagram source argument (#73)
+
+test_that("MCP scan tools report why a scan found no files", {
+  skip_if_not_installed("ellmer")
+  empty_dir <- file.path(tempdir(), "putior_mcp_empty")
+  unlink(empty_dir, recursive = TRUE)
+  dir.create(empty_dir)
+  on.exit(unlink(empty_dir, recursive = TRUE), add = TRUE)
+  project_dir <- create_mcp_test_project()
+  on.exit(unlink(project_dir, recursive = TRUE), add = TRUE)
+  tools <- putior_mcp_tools()
+
+  for (tool_name in c("put", "put_auto", "put_merge", "put_generate", "put_diagram")) {
+    expect_error(tools[[tool_name]](path = empty_dir), "No files matching pattern",
+                 label = tool_name)
+    # A pattern that matches no file names the pattern
+    expect_error(tools[[tool_name]](path = project_dir, pattern = "\\.py$"),
+                 "No files matching pattern '\\.py$'", fixed = TRUE, label = tool_name)
+  }
+  # put_merge() runs put() and put_auto(), which both warn; report it once
+  merge_error <- tryCatch(tools$put_merge(path = empty_dir), error = conditionMessage)
+  expect_equal(lengths(regmatches(merge_error, gregexpr("No files matching", merge_error))), 1L)
+})
+
+test_that("MCP put returns [] for files without annotations", {
+  skip_if_not_installed("ellmer")
+  plain_dir <- file.path(tempdir(), "putior_mcp_plain")
+  unlink(plain_dir, recursive = TRUE)
+  dir.create(plain_dir)
+  on.exit(unlink(plain_dir, recursive = TRUE), add = TRUE)
+  writeLines('data <- read.csv("in.csv")', file.path(plain_dir, "load.R"))
+  tools <- putior_mcp_tools()
+
+  expect_equal(as.character(tools$put(path = plain_dir)), "[]")
+  # put_diagram names the cause and the way out
+  expect_error(tools$put_diagram(path = plain_dir), 'source = "auto"', fixed = TRUE)
+  expect_match(tools$put_diagram(path = plain_dir, source = "auto"), '["load"]', fixed = TRUE)
+})
+
+test_that("MCP put_diagram draws put_auto() and put_merge() results", {
+  skip_if_not_installed("ellmer")
+  project_dir <- create_mcp_test_project()
+  on.exit(unlink(project_dir, recursive = TRUE), add = TRUE)
+  tools <- putior_mcp_tools()
+
+  expect_true(all(c("source", "merge_strategy") %in%
+                    names(tools$put_diagram@arguments@properties)))
+  expect_identical(
+    tools$put_diagram(path = project_dir, source = "annotations", direction = "LR"),
+    put_diagram(put(project_dir), output = "raw", direction = "LR")
+  )
+  expect_identical(
+    tools$put_diagram(path = project_dir, source = "auto", show_artifacts = TRUE),
+    put_diagram(put_auto(project_dir), output = "raw", show_artifacts = TRUE)
+  )
+  for (strategy in c("manual_priority", "supplement", "union")) {
+    expect_identical(
+      tools$put_diagram(path = project_dir, source = "merge", merge_strategy = strategy),
+      put_diagram(put_merge(project_dir, merge_strategy = strategy), output = "raw"),
+      label = strategy
+    )
+  }
+  # Click links get line numbers from every source
+  expect_identical(
+    tools$put_diagram(path = project_dir, source = "auto", enable_clicks = TRUE),
+    put_diagram(put_auto(project_dir, include_line_numbers = TRUE), output = "raw",
+                enable_clicks = TRUE)
+  )
+  expect_error(mcp_put_diagram(project_dir, source = "files"), "should be one of")
+})
+
+test_that("MCP scans still raise warnings when they find something", {
+  skip_if_not_installed("ellmer")
+  warn_dir <- file.path(tempdir(), "putior_mcp_warn")
+  unlink(warn_dir, recursive = TRUE)
+  dir.create(warn_dir)
+  on.exit(unlink(warn_dir, recursive = TRUE), add = TRUE)
+  writeLines('# put id:"a", label:"A", node_type:"unknown_type"', file.path(warn_dir, "a.R"))
+  tools <- putior_mcp_tools()
+
+  expect_warning(nodes_json <- tools$put(path = warn_dir), "node_type")
+  expect_match(as.character(nodes_json), '"id":"a"', fixed = TRUE)
+})

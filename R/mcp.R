@@ -228,20 +228,58 @@ mcp_json <- function(x) {
   jsonlite::toJSON(x, dataframe = "rows", auto_unbox = TRUE, na = "null", null = "null")
 }
 
+#' Run a scan and report its warnings when it finds nothing
+#'
+#' With the stdio transport, R warnings never reach the MCP client: mcptools
+#' only turns errors into responses, and its server loop never returns to the
+#' top level, where deferred warnings would print. So a scan of an empty
+#' directory, or with a pattern that matches no file, returned \code{[]} with
+#' no hint why (#73). This runs the scan with its warnings held back. If the
+#' result is empty and there were warnings, they become an error, which
+#' mcptools sends to the client. Otherwise the warnings are raised again.
+#' @param scan A call that returns a data frame or a character vector
+#' @return The value of \code{scan}
+#' @noRd
+mcp_scan <- function(scan) {
+  warning_messages <- character()
+  result <- withCallingHandlers(scan, warning = function(warning_condition) {
+    warning_messages <<- c(warning_messages, conditionMessage(warning_condition))
+    invokeRestart("muffleWarning")
+  })
+  # put_merge() runs put() and put_auto(), which both warn about missing
+  # files; keep the first warning for each first line (put() adds hints)
+  first_lines <- sub("(?s)\n.*", "", warning_messages, perl = TRUE)
+  warning_messages <- warning_messages[!duplicated(first_lines)]
+  is_empty <- if (is.data.frame(result)) nrow(result) == 0 else !any(nzchar(result))
+  if (is_empty && length(warning_messages) > 0) {
+    stop(paste(c("The scan found nothing.", warning_messages), collapse = "\n"), call. = FALSE)
+  }
+  for (warning_message in warning_messages) {
+    warning(warning_message, call. = FALSE)
+  }
+  result
+}
+
 #' @noRd
 mcp_put <- function(path, pattern = NULL, recursive = TRUE,
                     include_line_numbers = FALSE, validate = TRUE,
                     exclude = NULL, log_level = NULL) {
-  mcp_json(put(
+  mcp_json(mcp_scan(put(
     path, pattern = pattern, recursive = recursive,
     include_line_numbers = include_line_numbers, validate = validate,
     exclude = exclude, log_level = log_level
-  ))
+  )))
 }
 
 #' Scan a path and return the Mermaid code of its diagram
+#'
+#' \code{source} picks the scan: \code{put()} for annotations,
+#' \code{put_auto()} for a workflow detected from the code, or
+#' \code{put_merge()} for both (#73).
 #' @noRd
-mcp_put_diagram <- function(path, pattern = NULL, recursive = TRUE,
+mcp_put_diagram <- function(path, source = c("annotations", "auto", "merge"),
+                            merge_strategy = "manual_priority",
+                            pattern = NULL, recursive = TRUE,
                             exclude = NULL, title = NULL, direction = "TD",
                             node_labels = "label", show_files = FALSE,
                             show_artifacts = FALSE,
@@ -251,12 +289,35 @@ mcp_put_diagram <- function(path, pattern = NULL, recursive = TRUE,
                             source_info_style = "inline",
                             enable_clicks = FALSE, click_protocol = "vscode",
                             log_level = NULL) {
+  source <- match.arg(source)
   # Click links include line numbers when the workflow has them
-  workflow <- put(
-    path, pattern = pattern, recursive = recursive,
-    include_line_numbers = isTRUE(enable_clicks), exclude = exclude,
-    log_level = log_level
-  )
+  include_line_numbers <- isTRUE(enable_clicks)
+  workflow <- mcp_scan(switch(source,
+    annotations = put(
+      path, pattern = pattern, recursive = recursive,
+      include_line_numbers = include_line_numbers, exclude = exclude,
+      log_level = log_level
+    ),
+    auto = put_auto(
+      path, pattern = pattern, recursive = recursive,
+      include_line_numbers = include_line_numbers, exclude = exclude,
+      log_level = log_level
+    ),
+    merge = put_merge(
+      path, pattern = pattern, recursive = recursive,
+      merge_strategy = merge_strategy,
+      include_line_numbers = include_line_numbers, exclude = exclude,
+      log_level = log_level
+    )
+  ))
+  # Files were found but hold no annotations: put_diagram() would only say
+  # that the workflow is empty
+  if (nrow(workflow) == 0) {
+    stop("No PUT annotations were found in '", path, "'. ",
+         "To draw the workflow detected from the code instead, use ",
+         "source = \"auto\", or source = \"merge\" to combine both.",
+         call. = FALSE)
+  }
   put_diagram(
     workflow, output = "raw", title = title, direction = direction,
     node_labels = node_labels, show_files = show_files,
@@ -275,23 +336,23 @@ mcp_put_auto <- function(path, pattern = NULL, recursive = TRUE,
                          detect_dependencies = TRUE,
                          include_line_numbers = FALSE, exclude = NULL,
                          log_level = NULL) {
-  mcp_json(put_auto(
+  mcp_json(mcp_scan(put_auto(
     path, pattern = pattern, recursive = recursive,
     detect_inputs = detect_inputs, detect_outputs = detect_outputs,
     detect_dependencies = detect_dependencies,
     include_line_numbers = include_line_numbers, exclude = exclude,
     log_level = log_level
-  ))
+  )))
 }
 
 #' @noRd
 mcp_put_generate <- function(path, pattern = NULL, recursive = TRUE,
                              style = "multiline", exclude = NULL,
                              log_level = NULL) {
-  annotations <- put_generate(
+  annotations <- mcp_scan(put_generate(
     path, pattern = pattern, recursive = recursive, output = "raw",
     insert = FALSE, style = style, exclude = exclude, log_level = log_level
-  )
+  ))
   paste(annotations, collapse = "\n\n")
 }
 
@@ -300,12 +361,12 @@ mcp_put_merge <- function(path, pattern = NULL, recursive = TRUE,
                           merge_strategy = "manual_priority",
                           include_line_numbers = FALSE, exclude = NULL,
                           log_level = NULL) {
-  mcp_json(put_merge(
+  mcp_json(mcp_scan(put_merge(
     path, pattern = pattern, recursive = recursive,
     merge_strategy = merge_strategy,
     include_line_numbers = include_line_numbers, exclude = exclude,
     log_level = log_level
-  ))
+  )))
 }
 
 #' @noRd
@@ -360,7 +421,8 @@ make_tool_put <- function() {
       "Extracts structured annotations that define workflow nodes, ",
       "inputs, outputs, and metadata from source code comments. ",
       "Supports 30+ programming languages with automatic comment syntax detection. ",
-      "Returns the nodes as JSON, one object per node. ",
+      "Returns the nodes as JSON, one object per node, or [] when the scanned ",
+      "files hold no annotations; when no file matches, the call fails with the reason. ",
       "To draw them, call put_diagram with the same path."
     ),
     name = "put",
@@ -407,8 +469,10 @@ make_tool_put_diagram <- function() {
   ellmer::tool(
     fun = mcp_put_diagram,
     description = paste0(
-      "Scan source files for PUT annotations and return the Mermaid flowchart ",
-      "code of the workflow. Shows data flows and processing steps. ",
+      "Scan source files and return the Mermaid flowchart code of the workflow. ",
+      "With source = annotations (the default) the workflow comes from PUT annotations, ",
+      "with auto it is detected from the code (as by put_auto), and with merge ",
+      "both are combined (as by put_merge). Shows data flows and processing steps. ",
       "Supports multiple themes, node styling, and interactive features."
     ),
     name = "put_diagram",
@@ -418,10 +482,29 @@ make_tool_put_diagram <- function() {
     ),
     arguments = list(
       path = ellmer::type_string(
-        description = "Path to directory or file to scan for PUT annotations"
+        description = "Path to directory or file to scan"
+      ),
+      source = ellmer::type_enum(
+        description = paste0(
+          "Where the workflow comes from: annotations (PUT annotations), ",
+          "auto (detected from the code), or merge (both) (default: annotations)"
+        ),
+        values = c("annotations", "auto", "merge"),
+        required = FALSE
+      ),
+      merge_strategy = ellmer::type_enum(
+        description = paste0(
+          "With source = merge: manual_priority, supplement, or union ",
+          "(default: manual_priority)"
+        ),
+        values = c("manual_priority", "supplement", "union"),
+        required = FALSE
       ),
       pattern = ellmer::type_string(
-        description = "File pattern regex (default: all supported extensions)",
+        description = paste0(
+          "File pattern regex (default: all supported extensions; with auto ",
+          "or merge, the languages with auto-detection)"
+        ),
         required = FALSE
       ),
       recursive = ellmer::type_boolean(
@@ -503,7 +586,8 @@ make_tool_put_auto <- function() {
       "Analyzes source files to detect file inputs, outputs, and dependencies ",
       "based on function calls like read_csv(), write.csv(), etc. ",
       "Similar to how roxygen2 auto-generates documentation skeletons. ",
-      "Returns the detected nodes as JSON, one object per node."
+      "Returns the detected nodes as JSON, one object per node; ",
+      "when no file matches, the call fails with the reason."
     ),
     name = "put_auto",
     annotations = list(
@@ -560,6 +644,7 @@ make_tool_put_generate <- function() {
       "Generate suggested PUT annotation comments based on code analysis. ",
       "Analyzes source files and returns annotation text that can be copied ",
       "into source files; the files themselves are not changed. ",
+      "When no file matches, the call fails with the reason. ",
       "Similar to how roxygen2 generates documentation skeletons. ",
       "Supports single-line and multiline annotation styles."
     ),
@@ -607,7 +692,8 @@ make_tool_put_merge <- function() {
       "Combine manually written PUT annotations with auto-detected workflow elements. ",
       "Supports flexible strategies: manual_priority (manual overrides auto), ",
       "supplement (auto fills in missing fields), union (combine all detected I/O). ",
-      "Returns the merged nodes as JSON, one object per node."
+      "Returns the merged nodes as JSON, one object per node; ",
+      "when no file matches, the call fails with the reason."
     ),
     name = "put_merge",
     annotations = list(

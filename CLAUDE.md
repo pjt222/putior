@@ -177,7 +177,7 @@ Add to `%APPDATA%\Claude\claude_desktop_config.json`:
 | Tool | Description |
 |------|-------------|
 | `put` | Scan files for PUT annotations |
-| `put_diagram` | Scan a path and return its Mermaid diagram |
+| `put_diagram` | Scan a path and return its Mermaid diagram (`source`: annotations, auto or merge) |
 | `put_auto` | Auto-detect workflow from code |
 | `put_generate` | Generate annotation suggestions |
 | `put_merge` | Merge manual + auto annotations |
