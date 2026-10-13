@@ -134,8 +134,9 @@ put_auto <- function(path,
     df <- do.call(rbind, lapply(results, as.data.frame, stringsAsFactors = FALSE))
     rownames(df) <- NULL
     # Ids come from file names, so a-b.R and a_b.R, a.R and a.py, or two
-    # load.R in different folders would share one id and one node (#46)
-    df$id <- make_unique_ids(df$id)
+    # load.R in different folders would share one id and one node (#46);
+    # compare them in their Mermaid form, where a--b and a_b are equal too
+    df$id <- make_unique_ids(df$id, key = sanitize_node_id)
     putior_log("INFO", "Auto-detection complete: found {nrow(df)} workflow node(s)")
     return(as_putior_workflow(df))
   } else {
@@ -267,15 +268,28 @@ put_generate <- function(path,
     return(invisible(character(0)))
   }
 
+  # Detect each file once. Number only the files that give an annotation,
+  # as put_auto() does, so both suggest the same ids, and keep the ids
+  # distinct in their Mermaid form too (a--b and a_b would merge there)
+  elements_by_file <- lapply(files, detect_workflow_elements, include_line_numbers = FALSE)
+  has_elements <- !vapply(elements_by_file, is.null, logical(1))
+  node_ids <- rep(NA_character_, length(files))
+  node_ids[has_elements] <- make_unique_ids(
+    vapply(files[has_elements], auto_node_id, character(1), USE.NAMES = FALSE),
+    key = sanitize_node_id
+  )
+
   # Generate annotations for each file, with ids that differ between files
   all_annotations <- character()
-  node_ids <- make_unique_ids(vapply(files, auto_node_id, character(1), USE.NAMES = FALSE))
+  annotated_files <- character()
 
-  for (file_index in seq_along(files)) {
+  for (file_index in which(has_elements)) {
     file <- files[[file_index]]
-    annotation <- generate_annotation_for_file(file, style, node_id = node_ids[file_index])
+    annotation <- generate_annotation_for_file(file, style, node_id = node_ids[file_index],
+                                               elements = elements_by_file[[file_index]])
     if (!is.null(annotation) && nchar(annotation) > 0) {
       all_annotations <- c(all_annotations, annotation)
+      annotated_files <- c(annotated_files, file)
 
       if (insert) {
         insert_annotation_into_file(file, annotation)
@@ -300,13 +314,12 @@ put_generate <- function(path,
       )
     },
     "file" = {
-      # Write to a .put file alongside each source file
-      for (i in seq_along(files)) {
-        if (i <= length(all_annotations)) {
-          put_file <- paste0(files[i], ".put")
-          writeLines(all_annotations[i], put_file)
-          message("Annotations written to: ", put_file)
-        }
+      # Write each annotation to a .put file next to the file it belongs to
+      # (files without an annotation are skipped, so index by annotated file)
+      for (i in seq_along(annotated_files)) {
+        put_file <- paste0(annotated_files[i], ".put")
+        writeLines(all_annotations[i], put_file)
+        message("Annotations written to: ", put_file)
       }
     }
   )
@@ -644,11 +657,16 @@ infer_node_type <- function(inputs, outputs) {
 #' @param file Path to source file
 #' @param style Annotation style ("single" or "multiline")
 #' @param node_id Id to use instead of the one derived from the file name
+#' @param elements Result of \code{detect_workflow_elements()} for the file,
+#'   if already known; detected here when \code{NULL}
 #' @return Annotation string
 #' @keywords internal
-generate_annotation_for_file <- function(file, style = "multiline", node_id = NULL) {
+generate_annotation_for_file <- function(file, style = "multiline", node_id = NULL,
+                                         elements = NULL) {
   # Detect workflow elements
-  elements <- detect_workflow_elements(file, include_line_numbers = FALSE)
+  if (is.null(elements)) {
+    elements <- detect_workflow_elements(file, include_line_numbers = FALSE)
+  }
 
   if (is.null(elements)) {
     return(NULL)
@@ -915,21 +933,28 @@ auto_node_id <- function(file) {
 #' Make ids unique by adding a numeric suffix to repeats
 #'
 #' The first occurrence keeps its id; later ones get \code{_2}, \code{_3}, ...,
-#' skipping any id that another element already has.
+#' skipping any id that another element already has. Ids are compared by
+#' \code{key(id)}, so with \code{key = sanitize_node_id} two ids that become
+#' the same Mermaid id count as repeats.
 #' @param ids Character vector of ids
+#' @param key Function that maps an id to the form in which ids are compared
 #' @return Character vector of the same length without duplicates
 #' @noRd
-make_unique_ids <- function(ids) {
+make_unique_ids <- function(ids, key = identity) {
   unique_ids <- ids
+  id_keys <- vapply(ids, key, character(1), USE.NAMES = FALSE)
+  assigned_keys <- id_keys[seq_len(min(1L, length(ids)))]
   for (id_index in seq_along(ids)[-1]) {
-    earlier_ids <- unique_ids[seq_len(id_index - 1)]
-    if (ids[id_index] %in% earlier_ids) {
+    if (id_keys[id_index] %in% assigned_keys) {
       suffix_number <- 2L
-      while (paste0(ids[id_index], "_", suffix_number) %in% c(earlier_ids, ids)) {
+      repeat {
+        candidate <- paste0(ids[id_index], "_", suffix_number)
+        if (!key(candidate) %in% c(assigned_keys, id_keys)) break
         suffix_number <- suffix_number + 1L
       }
-      unique_ids[id_index] <- paste0(ids[id_index], "_", suffix_number)
+      unique_ids[id_index] <- candidate
     }
+    assigned_keys <- c(assigned_keys, key(unique_ids[id_index]))
   }
   unique_ids
 }

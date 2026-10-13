@@ -498,3 +498,18 @@ test_that("put_auto() to put_diagram() integration works", {
   expect_true(grepl("flowchart", diagram))
   expect_true(grepl("01_clean", diagram))
 })
+
+test_that("put_generate(output = 'file') writes each annotation next to its own file", {
+  generate_dir <- tempfile("putior_generate_files_")
+  dir.create(generate_dir)
+  on.exit(unlink(generate_dir, recursive = TRUE), add = TRUE)
+  # a.txt sorts first and gives no annotation; b.R gives one
+  writeLines("plain text", file.path(generate_dir, "a.txt"))
+  writeLines('d <- read.csv("in.csv")', file.path(generate_dir, "b.R"))
+
+  suppressMessages(put_generate(generate_dir, pattern = "\\.(R|txt)$", output = "file"))
+
+  expect_false(file.exists(file.path(generate_dir, "a.txt.put")))
+  expect_true(file.exists(file.path(generate_dir, "b.R.put")))
+  expect_match(paste(readLines(file.path(generate_dir, "b.R.put")), collapse = "\n"), 'id:"b"', fixed = TRUE)
+})

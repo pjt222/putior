@@ -286,3 +286,36 @@ test_that("put_generate() suggests different ids for files with the same name", 
   expect_match(annotations, 'id:"load"', fixed = TRUE)
   expect_match(annotations, 'id:"load_2"', fixed = TRUE)
 })
+
+test_that("labels show as much folder as it takes to tell files apart", {
+  workflow <- subgraph_workflow(c("one", "two", "three"),
+                                c("/p/a/x/load.R", "/p/b/x/load.R", "/p/c/run.R"))
+
+  diagram <- put_diagram(workflow, show_source_info = TRUE,
+                         source_info_style = "subgraph", output = "raw")
+
+  expect_match(diagram, '["a/x/load.R"]', fixed = TRUE)
+  expect_match(diagram, '["b/x/load.R"]', fixed = TRUE)
+  expect_match(diagram, '["run.R"]', fixed = TRUE)
+})
+
+test_that("make_unique_ids() can compare ids in their Mermaid form", {
+  expect_equal(make_unique_ids(c("a__b", "a_b"), key = sanitize_node_id), c("a__b", "a_b_2"))
+  expect_equal(make_unique_ids(c("end", "node_end"), key = sanitize_node_id), c("end", "node_end_2"))
+  expect_equal(make_unique_ids(c("a__b", "a_b")), c("a__b", "a_b"))
+})
+
+test_that("put_auto() ids stay distinct after Mermaid sanitizing", {
+  auto_dir <- tempfile("putior_auto_mermaid_ids_")
+  dir.create(auto_dir)
+  on.exit(unlink(auto_dir, recursive = TRUE), add = TRUE)
+  for (file_name in c("a--b.R", "a_b.R", "end.R", "node_end.R")) {
+    writeLines('d <- read.csv("in.csv")', file.path(auto_dir, file_name))
+  }
+
+  workflow <- put_auto(auto_dir)
+  mermaid_ids <- vapply(workflow$id, sanitize_node_id, character(1))
+
+  expect_false(anyDuplicated(mermaid_ids) > 0)
+  expect_no_warning(put_diagram(workflow, output = "raw"))
+})

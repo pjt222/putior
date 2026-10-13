@@ -111,8 +111,7 @@ the flow of data through your analysis pipeline.
 \section{Labels and ids}{
 
 Labels are quoted, and double quotes, \code{|} and a \code{#} that Mermaid
-would read as a character entity (as in \code{#35;}) are escaped, so they
-appear as written. Mermaid still interprets HTML tags such as
+would read as a character entity (as in \code{#35;}) are escaped. Mermaid still interprets HTML tags such as
 \code{<br/>} and \code{$$...$$} (KaTeX math) inside labels.
 
 Node ids are reduced to letters, digits and underscores. An id that starts

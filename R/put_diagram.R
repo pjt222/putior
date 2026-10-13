@@ -66,8 +66,7 @@
 #'
 #' @section Labels and ids:
 #' Labels are quoted, and double quotes, \code{|} and a \code{#} that Mermaid
-#' would read as a character entity (as in \code{#35;}) are escaped, so they
-#' appear as written. Mermaid still interprets HTML tags such as
+#' would read as a character entity (as in \code{#35;}) are escaped. Mermaid still interprets HTML tags such as
 #' \code{<br/>} and \code{$$...$$} (KaTeX math) inside labels.
 #'
 #' Node ids are reduced to letters, digits and underscores. An id that starts
@@ -768,9 +767,10 @@ sanitize_node_id <- function(node_id) {
 #' annotation ids this gives a warning. Rows with the same raw id share one
 #' Mermaid id.
 #'
-#' Which id keeps the plain form does not depend on row order: ids that are
-#' already valid Mermaid ids come first, then other annotation ids, then
-#' artifacts, so a script node is never renamed because of an artifact.
+#' Ids that are already valid Mermaid ids keep their form whatever the row
+#' order; among the others, the first row keeps the plain form. Annotation ids
+#' come before artifacts, so a script node is never renamed because of an
+#' artifact.
 #' @param workflow Workflow data frame, optionally with artifact rows
 #'   (\code{is_artifact = TRUE})
 #' @param warn Whether to warn when annotation ids collide
@@ -1024,14 +1024,29 @@ generate_file_subgraphs <- function(workflow, node_labels = "label",
   # Mermaid nests a node in itself (#45)
   taken_ids <- unique(workflow$mermaid_id)
 
-  # The file name shown for each file; files with the same name in different
-  # folders also show their folder, so their subgraphs can be told apart
+  # The file name shown for each file. Files with the same name in different
+  # folders also show as much of their folder path as it takes to tell them
+  # apart ("x/load.R" and "y/load.R", or "a/x/load.R" and "b/x/load.R")
   key_file_names <- vapply(script_file_keys, function(file_key) {
     key_rows <- which(!is.na(file_keys) & file_keys == file_key & !artifact_indicator)
     key_name <- workflow$file_name[key_rows[1]]
     if (is_empty_string(key_name)) basename(file_key) else key_name
   }, character(1), USE.NAMES = FALSE)
-  repeated_file_names <- unique(key_file_names[duplicated(key_file_names)])
+  file_labels <- key_file_names
+  for (repeated_name in unique(key_file_names[duplicated(key_file_names)])) {
+    group <- which(key_file_names == repeated_name)
+    # Folder names from the innermost outwards
+    folder_parts <- lapply(script_file_keys[group], function(file_key) {
+      parts <- strsplit(gsub("\\\\", "/", dirname(file_key)), "/", fixed = TRUE)[[1]]
+      rev(parts[nzchar(parts) & parts != "."])
+    })
+    for (depth in seq_len(max(lengths(folder_parts), 0L))) {
+      file_labels[group] <- vapply(folder_parts, function(parts) {
+        paste(c(rev(parts[seq_len(min(depth, length(parts)))]), repeated_name), collapse = "/")
+      }, character(1))
+      if (!anyDuplicated(file_labels[group])) break
+    }
+  }
 
   # Process artifact nodes first (they go outside subgraphs)
   artifact_nodes <- workflow[artifact_indicator, ]
@@ -1060,11 +1075,7 @@ generate_file_subgraphs <- function(workflow, node_labels = "label",
     if (nrow(file_nodes) == 0) next
 
     file_name <- key_file_names[key_index]
-    file_label <- if (file_name %in% repeated_file_names && dirname(file_key) != ".") {
-      paste0(basename(dirname(file_key)), "/", file_name)
-    } else {
-      file_name
-    }
+    file_label <- file_labels[key_index]
 
     # Subgraph id: file_<name>, with a suffix if that id is taken
     base_subgraph_id <- sanitize_node_id(

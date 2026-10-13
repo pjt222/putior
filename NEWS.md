@@ -46,8 +46,11 @@
   `a_b_2`) and `put_diagram()` warns. Two data files whose names differ only
   in punctuation get two artifact nodes. `put_auto()` and `put_generate()`,
   which derive ids from file names, now give files that would share an id
-  (`a-b.R` and `a_b.R`, or `load.R` in two folders) distinct ids (`load`,
-  `load_2`). (#46)
+  (`a-b.R` and `a_b.R`, `end.R` and `node_end.R`, or `load.R` in two
+  folders) distinct ids (`load`, `load_2`). `put_generate(output = "file")`
+  now writes each annotation next to the file it belongs to; when a file in
+  between gave no annotation, the next one went into the wrong `.put` file.
+  (#46)
 * Node ids that are Mermaid keywords (`end`, `graph`, `flowchart`,
   `subgraph`, `style`, `class`, `classDef`, `click`, `linkStyle`, `call`,
   `href`, `interpolate`, and the link targets `_self`, `_blank`, `_parent`,
@@ -59,7 +62,8 @@
   failed to render ("would create a cycle") on Mermaid 11, and on Mermaid 12,
   which GitHub uses, the node silently disappeared. Files with the same name
   in different folders now get one subgraph each instead of sharing one, and
-  the subgraph label then includes the folder (`x/load.R`). (#45, #46)
+  the subgraph label then includes as much of the folder path as it takes
+  to tell them apart (`x/load.R`, `a/x/load.R`). (#45, #46)
 * With `show_files = TRUE`, edge labels are now quoted and escaped like node
   labels (`-->|"raw data (v2).csv"|`). A file name with parentheses or other
   special characters made the diagram fail to parse. (#45)
