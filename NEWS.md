@@ -56,6 +56,12 @@
   property. `put_generate()` wraps a value that contains a double quote
   in single quotes, so that `put()` reads its suggestions back unchanged.
   (#91)
+* A comment may now follow the values of an annotation, as the `put()` help
+  page, the vignettes and the cheatsheet have always shown
+  (`# put id:"a", label:"Load"   # first step`). Before, the comment made
+  the last property unreadable, and it was dropped. Outside quotes,
+  whitespace followed by `#`, `--`, `//` or `%` after a value starts the
+  comment. (#91)
 * `put_diagram()` gives every node one Mermaid id and uses it in the node
   definition, edges, `class` lines and click directives. Before, edges to an
   artifact whose path has two punctuation characters in a row (such as

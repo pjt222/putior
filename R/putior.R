@@ -551,6 +551,9 @@ parse_put_annotation <- function(line) {
   # A single-line block comment (/* put ... */) also ends with "*/". Strip it,
   # or the last pair fails to parse and is dropped (#72).
   cleaned <- sub("\\s*\\*/\\s*$", "", cleaned)
+  # The help page and the vignettes write a comment after the last value
+  # (# put id:"a", label:"B"   # note), which made that property unreadable
+  cleaned <- strip_trailing_comment(cleaned)
 
   # Handle edge case of empty annotation
   if (is.null(cleaned) || length(cleaned) == 0 || nchar(trimws(cleaned)) == 0) {
@@ -600,6 +603,36 @@ parse_put_annotation <- function(line) {
     }
     properties
   }
+}
+
+#' Remove a comment that follows the values of an annotation
+#'
+#' Outside quotes, whitespace followed by \code{#}, \code{--}, \code{//} or
+#' \code{\%} after at least one quoted value starts a comment, which runs to
+#' the end of the line. It is cut before the pairs are split, so a comment
+#' may contain commas and quotes.
+#' @param text Annotation text after the \code{put} prefix
+#' @return The text without the comment
+#' @noRd
+strip_trailing_comment <- function(text) {
+  characters <- strsplit(text, "", fixed = TRUE)[[1]]
+  quote_char <- ""
+  after_value <- FALSE
+  for (char_index in seq_along(characters)) {
+    char <- characters[char_index]
+    if (nzchar(quote_char)) {
+      if (char == quote_char) {
+        quote_char <- ""
+        after_value <- TRUE
+      }
+    } else if (char == '"' || char == "'") {
+      quote_char <- char
+    } else if (after_value && grepl("^\\s$", char) &&
+               grepl("^\\s*(#|--|//|%)", substring(text, char_index + 1L))) {
+      return(substring(text, 1L, char_index - 1L))
+    }
+  }
+  text
 }
 
 #' Parse comma-separated pairs while respecting quotes

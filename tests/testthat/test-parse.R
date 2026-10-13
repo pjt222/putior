@@ -75,6 +75,28 @@ test_that("parse_put_annotation() lists the pairs it cannot read (#91)", {
   expect_equal(parse_put_annotation("#put id:\"a\", label:'A\"")$label, "A")
 })
 
+test_that("a comment may follow the values of an annotation (#91)", {
+  # The help page, the guide and the cheatsheet write annotations like these
+  expect_equal(parse_put_annotation('#put id:"a", label:"B"   # note, with a comma')$label, "B")
+  expect_equal(parse_put_annotation('# put id:"step1", output:"data.csv"      # Outputs "data.csv"')$output,
+               "data.csv")
+  expect_equal(
+    parse_put_annotation('    # put id:"my_node", label:"Don\'t panic"         # The other quote inside a value')$label,
+    "Don't panic"
+  )
+  expect_equal(parse_put_annotation('# put id:"a", label:"x", # after a comma')$label, "x")
+  for (prefix in c("#", "--", "//", "%")) {
+    result <- parse_put_annotation(paste0(prefix, ' put id:"a", label:"x"  ', prefix, " note"))
+    expect_equal(result$label, "x", label = prefix)
+    expect_null(attr(result, "unparsed"))
+  }
+  expect_equal(parse_put_annotation(' * put id:"a", label:"x"  // note')$label, "x")
+
+  # Inside quotes, or without whitespace before it, it is not a comment
+  expect_equal(parse_put_annotation('# put id:"a", label:"C # D -- E"')$label, "C # D -- E")
+  expect_equal(attr(parse_put_annotation('# put id:"a", label:"x"#c'), "unparsed"), 'label:"x"#c')
+})
+
 test_that("put() warns about the properties it ignores (#91)", {
   test_dir <- tempfile("putior_quotes_")
   dir.create(test_dir)
