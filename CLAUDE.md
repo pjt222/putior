@@ -64,6 +64,21 @@ putior is an R package that extracts structured annotations from source code fil
 - All tests pass: 4649 expectations in 529 tests (Windows R 4.6.1 with all Suggests, 2026-10-13)
 - Comprehensive multiline PUT annotation support implemented
 
+### Mermaid Output Check (`tests/mermaid/`)
+The testthat suite compares strings; it cannot tell whether Mermaid accepts the output. `tests/mermaid/` checks that in headless Chromium, on every Mermaid version in `tests/mermaid/package.json` (11.12.0 = Quarto, the oldest major renderer; 11.17.2; 12.1.0 = GitHub, pkgdown site, sandbox), with Mermaid's defaults and with the site/sandbox configuration. The `mermaid-check` workflow runs it on every push and pull request.
+
+```bash
+# from the package root
+Rscript tests/mermaid/generate-corpus.R tests/mermaid/corpus   # writes .mmd files + manifest.json
+(cd tests/mermaid && npm ci && npx playwright-core install --only-shell chromium)
+node tests/mermaid/validate.mjs tests/mermaid/corpus
+```
+
+- A case fails on an R error while generating it, a parse or render error, an SVG with fewer nodes than Mermaid parsed, or nodes that differ from the ids putior defined (phantom or merged nodes).
+- Known bugs are listed in `tests/mermaid/expected-failures.json` with their issue. When a fix makes a listed case pass, the check fails until the entry is removed, so a fix PR removes its entries.
+- Add a case for every diagram option or edge case that changes the generated Mermaid. The whole directory is in `.Rbuildignore` (no Node.js on CRAN).
+- From WSL, run the generator with Windows `Rscript.exe --no-init-file` (it uses `pkgload::load_all()` when pkgload is installed) and the checker with WSL's Node.
+
 ### Documentation Quality
 - Vignette rating: **9.2/10** - Exceptional quality
 - **8 vignettes**:
