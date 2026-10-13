@@ -1038,3 +1038,46 @@ test_that("a script that another script reads keeps its direct edge (#55)", {
   expect_true("    main --> artifact_out_csv" %in% edges)
 })
 
+# Mermaid's size limits (#56)
+
+chain_workflow <- function(step_count) {
+  data.frame(
+    id = paste0("s", seq_len(step_count)), label = paste("Step", seq_len(step_count)),
+    file_name = paste0("s", seq_len(step_count), ".R"),
+    input = c(NA, paste0("f", seq_len(step_count - 1), ".csv")),
+    output = paste0("f", seq_len(step_count), ".csv"),
+    stringsAsFactors = FALSE
+  )
+}
+
+test_that("put_diagram() warns above Mermaid's 500 edges (#56)", {
+  # 501 steps give 500 edges, which Mermaid draws; 502 give 501
+  expect_no_warning(put_diagram(chain_workflow(501), output = "raw"))
+  expect_warning(put_diagram(chain_workflow(502), output = "raw"),
+                 "The diagram has 501 edges, more than the 500", fixed = TRUE)
+  # With artifacts, the warning suggests leaving them out
+  expect_warning(put_diagram(chain_workflow(300), output = "raw", show_artifacts = TRUE),
+                 "show_artifacts = FALSE", fixed = TRUE)
+})
+
+test_that("mermaid_text_size() measures what Mermaid compares (#56)", {
+  # Frontmatter and %% comment lines are not counted; a directive is
+  expect_equal(mermaid_text_size("---\ntitle: x\n---\nflowchart TD\n    %% c\n    a --> b"),
+               nchar("flowchart TD\n    a --> b"))
+  expect_equal(mermaid_text_size("%%{init: {}}%%\nflowchart TD"), nchar("%%{init: {}}%%\nflowchart TD"))
+  # A character outside the BMP is two UTF-16 code units, as in JavaScript
+  expect_equal(mermaid_text_size("a\U0001F600b"), 4)
+})
+
+test_that("put_diagram() warns above Mermaid's 50,000 characters (#56)", {
+  one_step <- function(label) {
+    data.frame(id = "a", label = label, file_name = "a.R", stringsAsFactors = FALSE)
+  }
+  base_size <- mermaid_text_size(put_diagram(one_step("x"), output = "raw"))
+  at_limit <- strrep("x", 50000 - base_size + 1)
+  expect_equal(mermaid_text_size(put_diagram(one_step(at_limit), output = "raw")), 50000)
+  expect_no_warning(put_diagram(one_step(at_limit), output = "raw"))
+  expect_warning(put_diagram(one_step(paste0(at_limit, "x")), output = "raw"),
+                 "The diagram has 50001 characters", fixed = TRUE)
+})
+

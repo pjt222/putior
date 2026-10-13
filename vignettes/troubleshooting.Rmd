@@ -549,6 +549,32 @@ put_diagram(workflow, show_artifacts = TRUE)
 # They're hidden by default for cleaner diagrams
 ```
 
+### Large Diagram Shows an Error or a Placeholder
+
+**Problem**: A large workflow's diagram is replaced by "Edge limit
+exceeded", "Syntax error in text" or a one-node "Maximum text size in
+diagram exceeded" placeholder.
+
+Mermaid draws at most 500 edges and 50,000 characters by default
+(`maxEdges`, `maxTextSize`). Both are settings that only the page can
+change (`mermaid.initialize()`); a diagram cannot raise them, and GitHub,
+GitLab and Quarto keep the defaults. `put_diagram()` warns when its output
+is over either limit.
+
+**Solutions**:
+
+```{r}
+# Fewer edges: leave out the file nodes
+put_diagram(workflow, show_artifacts = FALSE)
+
+# A smaller workflow: skip files, or draw a subset of the steps
+workflow <- put("./src/", exclude = "legacy/")
+put_diagram(workflow[workflow$file_name %in% c("load.R", "clean.R"), ])
+
+# Less text: shorter labels, no styling lines
+put_diagram(workflow, node_labels = "name", style_nodes = FALSE)
+```
+
 ---
 
 ## Multi-Language Support Issues

@@ -125,6 +125,15 @@
 #' \code{source_info_style = "subgraph"}, each source file becomes a subgraph
 #' with the id \code{file_<name>}.
 #'
+#' @section Size limits:
+#' Mermaid draws at most 500 edges and 50,000 characters (not counting the
+#' frontmatter and \code{\%\%} comments) by default, and shows an error or a
+#' placeholder instead. Only the page that renders the diagram can raise
+#' these limits (\code{maxEdges}, \code{maxTextSize} in
+#' \code{mermaid.initialize()}); GitHub, GitLab and Quarto keep the
+#' defaults. \code{put_diagram()} warns when its output is over either
+#' limit.
+#'
 #' @section Mermaid versions:
 #' The output uses only classic Mermaid syntax, so that every current
 #' renderer draws it. The frontmatter (title and \code{mermaid_config})
@@ -446,6 +455,7 @@ put_diagram <- function(workflow,
 
   # Combine into final diagram
   mermaid_code <- paste(mermaid_lines, collapse = "\n")
+  warn_about_mermaid_limits(mermaid_code, show_artifacts)
 
   putior_log("INFO", "Diagram generation complete: {nrow(combined_workflow)} node(s), {length(connections)} connection(s)")
   putior_log("DEBUG", "Output format: '{output}'")
@@ -858,6 +868,66 @@ yaml_mapping_lines <- function(mapping, indent, config_error) {
     }
     paste0(indent, key, ": ", scalar)
   }), use.names = FALSE)
+}
+
+# Mermaid's default limits (#56). A host can raise them with
+# mermaid.initialize(); a diagram cannot, because both are secure keys.
+# Measured on Mermaid 10.9.8 to 12.2.0: 500 edges draw and 501 give "Edge
+# limit exceeded"; 50,000 characters draw and 50,001 give the "Maximum
+# text size in diagram exceeded" placeholder.
+.MERMAID_MAX_EDGES <- 500
+.MERMAID_MAX_TEXT_SIZE <- 50000
+
+#' Size of a diagram as Mermaid measures it against maxTextSize
+#'
+#' Mermaid compares the length of the diagram text after it has removed the
+#' frontmatter and the \code{\%\%} comment lines, in UTF-16 code units
+#' (JavaScript string length).
+#' @param mermaid_code Diagram code as put_diagram() writes it
+#' @return Number of UTF-16 code units
+#' @noRd
+mermaid_text_size <- function(mermaid_code) {
+  body <- sub("^---\n.*?\n---\n", "", mermaid_code, perl = TRUE)
+  body <- gsub("(?m)^[ \t]*%%(?!\\{)[^\n]*(\n|$)", "", body, perl = TRUE)
+  code_points <- utf8ToInt(enc2utf8(body))
+  length(code_points) + sum(code_points > 65535)
+}
+
+#' Warn when a diagram is over Mermaid's default limits
+#' @param mermaid_code Diagram code
+#' @param show_artifacts Whether the diagram draws artifact nodes
+#' @return NULL, invisibly; called for its warnings
+#' @noRd
+warn_about_mermaid_limits <- function(mermaid_code, show_artifacts) {
+  code_lines <- strsplit(mermaid_code, "\n", fixed = TRUE)[[1]]
+  edge_count <- sum(grepl("^    [A-Za-z0-9_]+ -->", code_lines))
+  text_size <- mermaid_text_size(mermaid_code)
+  options_text <- paste0(
+    "Options: ",
+    if (show_artifacts) "show_artifacts = FALSE, " else "",
+    "a smaller workflow (the exclude argument of put(), or a subset of its rows), ",
+    "or a page whose Mermaid setup raises the limit in mermaid.initialize(); ",
+    "the diagram itself cannot raise it."
+  )
+  if (edge_count > .MERMAID_MAX_EDGES) {
+    warning(
+      "The diagram has ", edge_count, " edges, more than the ", .MERMAID_MAX_EDGES,
+      " that Mermaid draws by default (maxEdges): GitHub, GitLab, Quarto and ",
+      "VS Code show an error instead. ", options_text,
+      call. = FALSE
+    )
+  }
+  if (text_size > .MERMAID_MAX_TEXT_SIZE) {
+    warning(
+      "The diagram has ", text_size, " characters (without frontmatter and comments), ",
+      "more than the ", format(.MERMAID_MAX_TEXT_SIZE, big.mark = ","),
+      " that Mermaid draws by default (maxTextSize): it shows a placeholder ",
+      "instead. Shorter labels (node_labels = \"name\") or style_nodes = FALSE ",
+      "also help. ", options_text,
+      call. = FALSE
+    )
+  }
+  invisible(NULL)
 }
 
 #' Sanitize a label string for safe embedding in Mermaid syntax
@@ -1532,6 +1602,12 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
   # edge would draw that hop twice (#55); files without one, such as a
   # script that another script reads, keep the direct edge.
   source_pool <- if (show_artifacts) script_nodes else workflow
+  # Rows of source_pool that write each file, built once: looking them up
+  # for every input made large workflows quadratic (a 500-step chain took
+  # about two minutes; #56)
+  output_lists <- lapply(source_pool$output, parse_file_list)
+  producer_rows <- split(rep(seq_along(output_lists), lengths(output_lists)),
+                         unlist(output_lists))
   for (i in seq_len(nrow(script_nodes))) {
     node <- script_nodes[i, ]
     target_id <- node$mermaid_id
@@ -1541,9 +1617,7 @@ generate_connections <- function(workflow, show_files = FALSE, show_artifacts = 
           length(artifact_id_for(input_file)) > 0) {
         next
       }
-      source_nodes <- find_nodes_outputting(source_pool, input_file)
-      for (j in seq_len(nrow(source_nodes))) {
-        source_id <- source_nodes[j, ]$mermaid_id
+      for (source_id in source_pool$mermaid_id[producer_rows[[input_file]]]) {
         connections <- c(connections,
                          make_edge(source_id, target_id, input_file, show_files))
       }
@@ -1588,20 +1662,6 @@ parse_file_list <- function(file_string) {
   files <- strsplit(trimws(file_string), ",")[[1]]
   files <- trimws(files)
   files[files != ""]
-}
-
-#' Find nodes in a data frame whose output column contains a given file
-#' @param nodes_df Data frame with an output column
-#' @param target_file File name to search for
-#' @return Subset of nodes_df where output contains target_file
-#' @noRd
-find_nodes_outputting <- function(nodes_df, target_file) {
-  nodes_df[
-    !is.na(nodes_df$output) &
-      vapply(nodes_df$output, function(x) {
-        target_file %in% parse_file_list(x)
-      }, logical(1)),
-  ]
 }
 
 #' Create a Mermaid edge string between two nodes

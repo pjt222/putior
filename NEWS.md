@@ -55,6 +55,16 @@
 
 ## Bug Fixes
 
+* `put_diagram()` warns when a diagram is over Mermaid's default limits
+  of 500 edges (`maxEdges`) or 50,000 characters (`maxTextSize`, counted
+  without the frontmatter and comments). Renderers such as GitHub, GitLab
+  and Quarto then show an error or an empty placeholder, and the diagram
+  cannot raise either limit itself. The warning names the options.
+  `?put_diagram` and the troubleshooting vignette describe both limits.
+  Large diagrams are also much faster to generate: a 500-step chain took
+  about two minutes, because every input looked through every step's
+  outputs, and now takes about two seconds. (#56)
+
 * Fixed `show_source_info = TRUE` using `<small>` HTML tags that are unsupported
   by GitHub's Mermaid renderer. Source file names are now shown without HTML
   formatting tags. (#32)

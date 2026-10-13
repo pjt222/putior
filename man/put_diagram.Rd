@@ -177,6 +177,17 @@ that is already valid (\code{a_b}) keeps its form. With
 with the id \code{file_<name>}.
 }
 
+\section{Size limits}{
+
+Mermaid draws at most 500 edges and 50,000 characters (not counting the
+frontmatter and \code{\%\%} comments) by default, and shows an error or a
+placeholder instead. Only the page that renders the diagram can raise
+these limits (\code{maxEdges}, \code{maxTextSize} in
+\code{mermaid.initialize()}); GitHub, GitLab and Quarto keep the
+defaults. \code{put_diagram()} warns when its output is over either
+limit.
+}
+
 \section{Mermaid versions}{
 
 The output uses only classic Mermaid syntax, so that every current
