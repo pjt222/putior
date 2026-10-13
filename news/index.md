@@ -54,6 +54,17 @@
 - Fixed single-line block comment annotations (`/* put ... */`) silently
   losing their last property, which could drop an output and its edge.
   ([\#72](https://github.com/pjt222/putior/issues/72))
+- [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md)
+  no longer merges a manual annotation and an auto-detected file into
+  one node when their ids meet: auto-detected rows get a suffix when
+  their id (also in its Mermaid form, where `1` is `node_1`) is already
+  used, so an unannotated `node_1.R` next to an annotation with the
+  fallback id `node_1` stays separate. It also matches manual and
+  auto-detected rows by file path, so an annotated `x/load.R` no longer
+  hides an unannotated `y/load.R`, and with
+  `merge_strategy = "supplement"` or `"union"` no longer takes the
+  inputs and outputs detected in the other file.
+  ([\#74](https://github.com/pjt222/putior/issues/74))
 - [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
   gives every node one Mermaid id and uses it in the node definition,
   edges, `class` lines and click directives. Before, edges to an
