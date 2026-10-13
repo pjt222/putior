@@ -45,6 +45,11 @@
   merged into one node with a self-loop; they now stay two nodes (`a_b`,
   `a_b_2`) and `put_diagram()` warns. Two data files whose names differ only
   in punctuation get two artifact nodes. (#46)
+* Node ids that are Mermaid keywords (`end`, `graph`, `flowchart`,
+  `subgraph`, `style`, `class`, `classDef`, `click`, `linkStyle`, `call`,
+  `href`, `interpolate`) made the whole diagram fail to parse. They are now
+  written as `node_end` and so on. `id:"end"` is a natural name for a
+  pipeline's last step. (#45)
 
 ## New Features
 

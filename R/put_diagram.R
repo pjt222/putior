@@ -676,6 +676,14 @@ sanitize_mermaid_label <- function(label) {
   paste0('"', label, '"')
 }
 
+# Words that Mermaid's flowchart parser rejects as a node id (case-sensitive:
+# "End" and "END" work). Measured on Mermaid 11.12.0, 11.17.2 and 12.1.0;
+# "direction" and "default" parse, so they are not listed. (#45)
+.MERMAID_KEYWORD_IDS <- c(
+  "end", "graph", "flowchart", "subgraph", "style", "class", "classDef",
+  "click", "linkStyle", "call", "href", "interpolate"
+)
+
 #' Sanitize node ID for mermaid compatibility (IMPROVED VERSION)
 #' @param node_id Raw node identifier
 #' @return Sanitized identifier safe for mermaid
@@ -702,6 +710,11 @@ sanitize_node_id <- function(node_id) {
   # Ensure it's not empty after cleaning
   if (sanitized == "" || sanitized == "_") {
     sanitized <- "unnamed_node"
+  }
+
+  # Mermaid keywords cannot be node ids
+  if (sanitized %in% .MERMAID_KEYWORD_IDS) {
+    sanitized <- paste0("node_", sanitized)
   }
 
   return(sanitized)

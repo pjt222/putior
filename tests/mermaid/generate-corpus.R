@@ -135,6 +135,12 @@ add_case("keyword_node_id", scan_fixture("keyword_id", list(
     '# put id:"end", label:"Finish", input:"a.csv"'
   )
 )))
+keyword_ids <- c("end", "graph", "flowchart", "subgraph", "style", "class",
+                 "classDef", "click", "linkStyle", "call", "href", "interpolate")
+add_case("keyword_node_ids_all", scan_fixture("keyword_ids_all", list(
+  "k.R" = sprintf('# put id:"%s", label:"Step %s", input:"%s.csv", output:"%s.csv"',
+                  keyword_ids, keyword_ids, c("start", head(keyword_ids, -1)), keyword_ids)
+)), enable_clicks = TRUE)
 add_case("subgraph_id_equals_node_id", scan_fixture("subgraph_clash", list(
   "load.R" = '# put id:"load", label:"Load", output:"data.csv"',
   "use.R" = '# put id:"use", label:"Use", input:"data.csv"'

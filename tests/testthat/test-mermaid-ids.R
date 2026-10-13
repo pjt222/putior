@@ -119,3 +119,26 @@ test_that("ids that sanitize to the same id stay two nodes in the diagram (#46)"
   expect_match(diagram, "click a_b_2 ", fixed = TRUE)
   expect_true(all(ids$used %in% ids$defined))
 })
+
+test_that("a Mermaid keyword as id is written as node_<keyword> everywhere (#45)", {
+  workflow <- data.frame(
+    id = c("begin", "end"),
+    label = c("Begin", "Finish"),
+    node_type = c("start", "end"),
+    input = c(NA, "a.csv"),
+    output = c("a.csv", NA),
+    file_name = c("a.R", "a.R"),
+    line_number = c(1, 2),
+    stringsAsFactors = FALSE
+  )
+
+  diagram <- put_diagram(workflow, enable_clicks = TRUE, output = "raw")
+  ids <- diagram_ids(diagram)
+
+  expect_true("node_end" %in% ids$defined)
+  expect_false("end" %in% ids$defined)
+  expect_match(diagram, "begin --> node_end", fixed = TRUE)
+  expect_match(diagram, "class node_end endStyle", fixed = TRUE)
+  expect_match(diagram, "click node_end ", fixed = TRUE)
+  expect_true(all(ids$used %in% ids$defined))
+})

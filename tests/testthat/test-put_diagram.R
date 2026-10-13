@@ -183,6 +183,16 @@ test_that("sanitize_node_id() works correctly", {
 
   # Test special characters
   expect_equal(sanitize_node_id("load@data#1"), "load_data_1")
+
+  # Mermaid keywords get a prefix; other spellings are left alone (#45)
+  for (keyword in c("end", "graph", "flowchart", "subgraph", "style", "class",
+                    "classDef", "click", "linkStyle", "call", "href", "interpolate")) {
+    expect_equal(sanitize_node_id(keyword), paste0("node_", keyword))
+  }
+  expect_equal(sanitize_node_id("End"), "End")
+  expect_equal(sanitize_node_id("END"), "END")
+  expect_equal(sanitize_node_id("direction"), "direction")
+  expect_equal(sanitize_node_id("endpoint"), "endpoint")
 })
 
 test_that("split_file_list() handles various inputs", {

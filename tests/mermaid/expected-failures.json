@@ -5,12 +5,6 @@
       "generate"
     ]
   },
-  "keyword_node_id": {
-    "issue": "#45 finding 1: a Mermaid keyword as node id",
-    "problems": [
-      "parse"
-    ]
-  },
   "subgraph_id_equals_node_id": {
     "issue": "#45 finding 2: a subgraph id equal to a node id",
     "problems": [
