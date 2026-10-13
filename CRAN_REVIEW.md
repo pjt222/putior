@@ -173,7 +173,7 @@ There is no confirmed finding that would cause an R CMD check ERROR/WARNING, a C
 
 ### T3-5 · mermaid-02 — No accessibility directives (`accTitle`/`accDescr`) emitted
 - **file:line:** `R/put_diagram.R:253-261`
-- **Evidence:** No `accTitle`/`accDescr`/`aria` anywhere in `R/`. Package markets 4 colorblind-safe themes but emits no machine-readable accessible title/description. `accTitle`/`accDescr` shipped in Mermaid v9.0.0 (2022) — safe under the pinned 12.1.0 (since 2026-10-12, #48) and on GitHub.
+- **Evidence:** No `accTitle`/`accDescr`/`aria` anywhere in `R/`. Package markets 4 colorblind-safe themes but emits no machine-readable accessible title/description. `accTitle`/`accDescr` shipped in Mermaid v9.0.0 (2022) — safe under the pinned 12.2.0 (12.1.0 since 2026-10-12, #48; 12.2.0 since 2026-10-13) and on GitHub.
 - **Fix (optional, additive):** When `title` is supplied, also emit `accTitle: <title>` and an `accDescr:` after the `flowchart <direction>` line. Optional `acc_descr` param.
 
 ### T3-6 · mermaid-03 — Confirmation: v11.3+ `A@{ shape: ... }` syntax correctly NOT used (keep it that way)
