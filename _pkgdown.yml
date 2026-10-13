@@ -13,7 +13,13 @@ template:
       <!-- Mermaid is loaded only on pages that have a diagram (#63). Keep
            this pin and its integrity hash in sync with
            inst/shiny/putior-sandbox/app.R. -->
+      <style>
+        /* While Mermaid loads, show nothing rather than the diagram source */
+        html.mermaid-loading pre.mermaid { display: none; }
+      </style>
       <script>
+        document.documentElement.classList.add('mermaid-loading');
+
         var mermaidScript = {
           src: 'https://cdn.jsdelivr.net/npm/mermaid@12.2.0/dist/mermaid.min.js',
           integrity: 'sha384-8xUhuLNMjW/cI2Dacg3DR4WliYznvIg0LVG1stctThKD/YVrJFI9TNCFxft5NYgp'
@@ -117,10 +123,11 @@ template:
 
         // Only a few pages have diagrams, and the Mermaid bundle is large
         // (1.57 MB gzipped), so load it only where it is needed, with the
-        // same integrity check as a <script> tag. If it cannot be loaded,
-        // the diagram source stays visible as code.
+        // same integrity check as a <script> tag. The diagram source is
+        // hidden while it loads; if it cannot be loaded, the source is shown.
         function setUpMermaidDiagrams() {
           if (!document.querySelector('pre.mermaid')) {
+            document.documentElement.classList.remove('mermaid-loading');
             return;
           }
           var script = document.createElement('script');
@@ -132,11 +139,13 @@ template:
             // itself on page load; they are rendered here with the site's theme.
             mermaid.initialize({ startOnLoad: false });
             collectMermaidBlocks();
+            document.documentElement.classList.remove('mermaid-loading');
             renderMermaidDiagrams();
             watchThemeChanges();
           };
           script.onerror = function() {
             console.error('Mermaid could not be loaded from ' + mermaidScript.src);
+            document.documentElement.classList.remove('mermaid-loading');
           };
           document.head.appendChild(script);
         }
