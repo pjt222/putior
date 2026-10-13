@@ -63,6 +63,18 @@
 #'   Overrides the global option \code{putior.log_level} when specified.
 #'   Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.
 #'
+#' @section Labels and ids:
+#' Labels are quoted, and double quotes, \code{|} and \code{#} are escaped, so
+#' they appear as written. Mermaid still interprets HTML tags such as
+#' \code{<br/>} and \code{$$...$$} (KaTeX math) inside labels.
+#'
+#' Node ids are reduced to letters, digits and underscores. An id that starts
+#' with a digit or is a Mermaid keyword (such as \code{end} or \code{class})
+#' gets a \code{node_} prefix. Ids that only differ in punctuation (\code{a-b}
+#' and \code{a_b}) are kept apart with a numeric suffix and a warning. With
+#' \code{source_info_style = "subgraph"}, each source file becomes a subgraph
+#' with the id \code{file_<name>}.
+#'
 #' @return Character string containing the mermaid diagram code
 #' @family core-workflow
 #' @export
@@ -682,6 +694,10 @@ sanitize_mermaid_label <- function(label) {
   if (is_empty_string(label)) return(label)
   # Strip newlines/carriage returns that would break Mermaid line structure
   label <- gsub("[\r\n]", " ", label)
+  # Escape # first: Mermaid decodes #<name>; and #<digits>; as entities, so
+  # "Step #35;" would show as "Step #" (#45). Must run before the escapes
+  # below, which themselves write #...; entities.
+  label <- gsub("#", "#35;", label, fixed = TRUE)
   # Wrap in quotes and escape internal quotes using Mermaid's #quot; entity
   label <- gsub('"', "#quot;", label, fixed = TRUE)
   # Escape pipe characters using Mermaid's #124; entity (pipes delimit edge labels)

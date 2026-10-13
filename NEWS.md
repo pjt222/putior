@@ -62,6 +62,10 @@
 * The `title` of `put_diagram()` is now written as a quoted YAML string.
   A title with `: ` (such as `"ETL: stage 1"`) made the diagram fail to
   parse, and text after ` #` was dropped as a YAML comment. (#45)
+* `#` in labels is now escaped as `#35;`. Mermaid decodes `#<name>;` and
+  `#<digits>;` as character entities, so a label such as `Step #35;` was
+  shown as `Step #`. `?put_diagram` now describes how labels and ids are
+  written. (#45)
 
 ## New Features
 

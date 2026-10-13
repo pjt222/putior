@@ -221,3 +221,10 @@ test_that("the title is a quoted YAML string (#45)", {
   diagram <- put_diagram(workflow, title = "ETL: stage 1 # first", output = "raw")
   expect_match(diagram, '^---\ntitle: "ETL: stage 1 # first"\n---\nflowchart TD')
 })
+
+test_that("# in labels is escaped so Mermaid does not decode entities (#45)", {
+  expect_equal(sanitize_mermaid_label("Step #35; done"), '"Step #35;35; done"')
+  expect_equal(sanitize_mermaid_label("C# code"), '"C#35; code"')
+  # The # escape runs first, so putior's own entities stay intact
+  expect_equal(sanitize_mermaid_label('a "b" | #1'), '"a #quot;b#quot; #124; #35;1"')
+})

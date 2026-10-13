@@ -107,6 +107,20 @@ Character string containing the mermaid diagram code
 Generates a Mermaid flowchart diagram from putior workflow data, showing
 the flow of data through your analysis pipeline.
 }
+\section{Labels and ids}{
+
+Labels are quoted, and double quotes, \code{|} and \code{#} are escaped, so
+they appear as written. Mermaid still interprets HTML tags such as
+\code{<br/>} and \code{$$...$$} (KaTeX math) inside labels.
+
+Node ids are reduced to letters, digits and underscores. An id that starts
+with a digit or is a Mermaid keyword (such as \code{end} or \code{class})
+gets a \code{node_} prefix. Ids that only differ in punctuation (\code{a-b}
+and \code{a_b}) are kept apart with a numeric suffix and a warning. With
+\code{source_info_style = "subgraph"}, each source file becomes a subgraph
+with the id \code{file_<name>}.
+}
+
 \examples{
 \dontrun{
 # Basic usage - shows only script connections

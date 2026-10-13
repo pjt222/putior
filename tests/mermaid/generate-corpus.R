@@ -124,7 +124,8 @@ add_case("missing_ids", scan_fixture("missing_ids", list(
 add_case("label_special_characters", scan_fixture("special_labels", list(
   "a.R" = c(
     '# put id:"quote", label:"Say \\"hi\\" | pipe", output:"x.csv"',
-    '# put id:"unicode", label:"Größe – naïve ✓", input:"x.csv"'
+    '# put id:"unicode", label:"Größe – naïve ✓", input:"x.csv", output:"y.csv"',
+    '# put id:"hash", label:"Step #35; in C# at 100%", input:"y.csv"'
   )
 )))
 
