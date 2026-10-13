@@ -300,8 +300,12 @@ put_diagram <- function(workflow,
 
   config_lines <- mermaid_config_lines(mermaid_config)
 
-  if (!is.null(title) && !(is.character(title) && length(title) == 1)) {
-    stop("title must be a single string or NULL", call. = FALSE)
+  if (!is.null(title)) {
+    if (length(title) != 1 || is.na(title)) {
+      stop("title must be a single string or NULL", call. = FALSE)
+    }
+    # A number or factor worked before and still does
+    title <- as.character(title)
   }
   if (!(is.logical(accessibility) && length(accessibility) == 1 && !is.na(accessibility))) {
     stop("accessibility must be TRUE or FALSE", call. = FALSE)

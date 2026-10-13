@@ -308,6 +308,8 @@ test_that("the accTitle text is escaped like a label, but keeps quotes (#50)", {
   expect_equal(title_line("Input < 5 & ok"), "    accTitle: Input #60; 5 & ok")
   expect_equal(title_line("50%%{x: y"), "    accTitle: 50#37;%{x: y")
   expect_equal(title_line("50%% done"), "    accTitle: 50%% done")
+  # The colon escape runs last, so that it sees the ";" of "#60;"
+  expect_equal(title_line("style a:<b"), "    accTitle: style a#58;#60;b")
 })
 
 test_that("accDescr counts unique steps and data files only (#50)", {
@@ -327,6 +329,9 @@ test_that("put_diagram() checks title and accessibility (#50)", {
   workflow <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
   expect_error(put_diagram(workflow, output = "raw", title = c("A", "B")),
                "title must be a single string")
+  expect_error(put_diagram(workflow, output = "raw", title = NA), "title must be a single string")
+  # A number is written as text, as before
+  expect_match(put_diagram(workflow, output = "raw", title = 2026), 'title: "2026"', fixed = TRUE)
   for (bad_value in list(NA, 1, "yes", NULL, c(TRUE, FALSE))) {
     expect_error(put_diagram(workflow, output = "raw", accessibility = bad_value),
                  "accessibility must be TRUE or FALSE")
