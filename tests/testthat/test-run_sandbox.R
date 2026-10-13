@@ -169,6 +169,42 @@ test_that("sandbox parser needs three = and a real name for a marker (#53)", {
   expect_length(attr(files, "notes"), 0)
 })
 
+test_that("sandbox parser makes file names safe to write on Windows", {
+  sandbox_env <- load_sandbox_definitions("parse_code_to_files")
+  code <- paste0(
+    "# ===== File: a.R =====\none\n",
+    "# ===== File: a.R. =====\ntwo\n",
+    "# ===== File: C:x.R =====\nthree\n",
+    "# ===== File: x<y?.R =====\nfour"
+  )
+  files <- sandbox_env$parse_code_to_files(code)
+
+  expect_equal(file_field(files, "name"), c("a.R", "a.R", "C_x.R", "x_y_.R"))
+  expect_equal(file_field(files, "folder"), c("", "copy_2", "", ""))
+  expect_true(any(grepl("C:x.R has characters", attr(files, "notes"), fixed = TRUE)))
+  expect_true(any(grepl("used as x_y_.R", attr(files, "notes"), fixed = TRUE)))
+})
+
+test_that("sandbox copy folders never take the name of a file", {
+  sandbox_env <- load_sandbox_definitions("parse_code_to_files")
+  code <- paste0(
+    "# ===== File: copy_2 =====\nplain file\n",
+    "# ===== File: a.R =====\none\n",
+    "# ===== File: a.R =====\ntwo"
+  )
+  files <- sandbox_env$parse_code_to_files(code)
+
+  expect_equal(file_field(files, "folder"), c("", "", "copy_2_"))
+})
+
+test_that("sandbox parser splits CR-only line endings", {
+  sandbox_env <- load_sandbox_definitions("parse_code_to_files")
+  files <- sandbox_env$parse_code_to_files("# ===== File: a.R =====\rx <- 1\r# ===== File: b.R =====\ry <- 2")
+
+  expect_equal(file_field(files, "name"), c("a.R", "b.R"))
+  expect_equal(file_field(files, "content"), c("x <- 1", "y <- 2"))
+})
+
 test_that("sandbox parser notes text before the first marker", {
   sandbox_env <- load_sandbox_definitions("parse_code_to_files")
   files <- sandbox_env$parse_code_to_files("x <- 1\n# ===== File: a.R =====\ny <- 2")
@@ -307,5 +343,30 @@ test_that("sandbox status lists repeated file names and keeps both files", {
     expect_match(output$status, "Found 2 workflow node(s)", fixed = TRUE)
     expect_match(output$status, "Repeated file name a.R: the later file is kept as copy_2/a.R.",
                  fixed = TRUE)
+  })
+})
+
+test_that("sandbox leaves out a file it cannot write and keeps the others", {
+  skip_on_cran()
+  skip_if_not_installed("shiny")
+
+  app_file <- system.file("shiny", "putior-sandbox", "app.R", package = "putior")
+  app_env <- new.env()
+  sys.source(app_file, envir = app_env)
+  long_name <- paste0(strrep("x", 300), ".R")
+
+  shiny::testServer(app_env$server, {
+    session$setInputs(
+      template = "multi",
+      code = paste0(
+        "# ===== File: a.R =====\n# put id:\"one\", label:\"One\"\n",
+        "# ===== File: ", long_name, " =====\n# put id:\"two\", label:\"Two\"\n"
+      ),
+      direction = "TD", theme = "github", show_artifacts = FALSE,
+      show_files = FALSE, style_nodes = TRUE, show_boundaries = TRUE
+    )
+
+    expect_match(output$status, "Found 1 workflow node(s)", fixed = TRUE)
+    expect_match(output$status, "could not be written and is left out", fixed = TRUE)
   })
 })

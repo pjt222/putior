@@ -67,18 +67,24 @@ rmarkdown::render("template.Rmd", output_file = "report.html")
 # an optional closing run of "=", with any spaces or tabs in between (#53). A
 # name that is empty, ".", ".." or only "=" does not make a marker. Text
 # before the first marker is ignored (with a note); text without any marker
-# is one script. Each file gets a `folder`: "" normally, or "copy_2",
-# "copy_3", ... when its name repeats an earlier one (ignoring case, as the
-# Windows and macOS file systems do), so that the server writes both files
-# and put(), which scans subfolders, finds both under their own names. The
-# "notes" attribute lists these cases for the status line.
+# is one script.
+#
+# Names are made safe to write on Windows too: trailing dots and spaces are
+# dropped (Windows drops them) and the characters < > : " | ? * and control
+# characters become "_" (a ":" would otherwise write an NTFS stream). Each
+# file gets a `folder`: "" normally, or "copy_2", "copy_3", ... when its name
+# repeats an earlier one (ignoring case, as Windows and macOS do), so that the
+# server writes both files and put(), which scans subfolders, finds both under
+# their own names. The "notes" attribute lists these cases for the status line.
 parse_code_to_files <- function(code) {
-  code_lines <- strsplit(code, "\r?\n")[[1]]
+  code_lines <- strsplit(code, "\r\n|\r|\n")[[1]]
   marker_pattern <- "^[ \t]*#[ \t]*={3,}[ \t]*File:[ \t]*(.+?)(?:[ \t]*=+)?[ \t]*$"
   marker_matches <- regmatches(code_lines, regexec(marker_pattern, code_lines, perl = TRUE))
   marker_names <- vapply(marker_matches, function(match) {
     if (length(match) == 0) NA_character_ else basename(trimws(match[2]))
   }, character(1))
+  # Windows drops trailing dots and spaces, so "a.R." would be written as "a.R"
+  marker_names <- sub("[. ]+$", "", marker_names)
   is_marker <- !is.na(marker_names) & nzchar(marker_names) &
     !marker_names %in% c(".", "..") & !grepl("^=+$", marker_names)
   marker_rows <- which(is_marker)
@@ -94,7 +100,6 @@ parse_code_to_files <- function(code) {
   }
 
   last_rows <- c(marker_rows[-1] - 1, length(code_lines))
-  seen_names <- character()
   files <- lapply(seq_along(marker_rows), function(file_index) {
     body_rows <- marker_rows[file_index] + seq_len(last_rows[file_index] - marker_rows[file_index])
     list(
@@ -105,16 +110,35 @@ parse_code_to_files <- function(code) {
   })
 
   for (file_index in seq_along(files)) {
+    typed_name <- files[[file_index]]$name
+    safe_name <- gsub("[<>:\"|?*[:cntrl:]]", "_", typed_name)
+    if (!identical(safe_name, typed_name)) {
+      notes <- c(notes, paste0(
+        "File name ", typed_name, " has characters that file names cannot ",
+        "contain; it is used as ", safe_name, "."
+      ))
+      files[[file_index]]$name <- safe_name
+    }
+  }
+
+  all_names <- tolower(vapply(files, function(file) file$name, character(1)))
+  seen_names <- character()
+  for (file_index in seq_along(files)) {
     file_name <- files[[file_index]]$name
-    repeat_count <- sum(tolower(seen_names) == tolower(file_name))
+    repeat_count <- sum(seen_names == tolower(file_name))
     if (repeat_count > 0) {
-      files[[file_index]]$folder <- paste0("copy_", repeat_count + 1)
+      # A folder name that no file uses
+      folder <- paste0("copy_", repeat_count + 1)
+      while (tolower(folder) %in% all_names) {
+        folder <- paste0(folder, "_")
+      }
+      files[[file_index]]$folder <- folder
       notes <- c(notes, paste0(
         "Repeated file name ", file_name, ": the later file is kept as ",
-        files[[file_index]]$folder, "/", file_name, "."
+        folder, "/", file_name, "."
       ))
     }
-    seen_names <- c(seen_names, file_name)
+    seen_names <- c(seen_names, tolower(file_name))
   }
 
   attr(files, "notes") <- notes
@@ -232,15 +256,27 @@ ui <- fluidPage(
       // render it once the preview is visible again.
       var pendingMermaidCode = null;
 
+      // Draw in the next frame, not inside the ResizeObserver callback, so the
+      // size change it causes is not reported as a resize loop. The pending
+      // code is read and cleared only in that frame, and only if the preview
+      // is still visible, so a newer diagram is never replaced by an older
+      // one and a preview hidden again before the frame keeps its code.
+      var renderFrameRequested = false;
+
       function renderPendingMermaidCode() {
-        var container = document.getElementById('mermaid-container');
-        if (pendingMermaidCode !== null && container && container.offsetParent !== null) {
-          var code = pendingMermaidCode;
-          pendingMermaidCode = null;
-          // Draw in the next frame, not inside the ResizeObserver callback,
-          // so the size change it causes is not reported as a resize loop.
-          window.requestAnimationFrame(function() { renderMermaidCode(code); });
+        if (pendingMermaidCode === null || renderFrameRequested) {
+          return;
         }
+        renderFrameRequested = true;
+        window.requestAnimationFrame(function() {
+          renderFrameRequested = false;
+          var container = document.getElementById('mermaid-container');
+          if (pendingMermaidCode !== null && container && container.offsetParent !== null) {
+            var code = pendingMermaidCode;
+            pendingMermaidCode = null;
+            renderMermaidCode(code);
+          }
+        });
       }
 
       Shiny.addCustomMessageHandler('renderMermaid', function(code) {
@@ -475,11 +511,14 @@ server <- function(input, output, session) {
     parse_code_to_files(input$code)
   })
 
-  # Extract workflow from code
-  workflow_data <- reactive({
+  # Write the simulated files and scan them. A file that cannot be written
+  # (a name or path that the file system rejects) is left out with a note,
+  # instead of emptying the whole workflow.
+  workflow_result <- reactive({
     files <- parsed_files()
+    write_notes <- character()
 
-    tryCatch({
+    workflow <- tryCatch({
 
       # Create temp directory with files
       temp_dir <- tempdir()
@@ -492,22 +531,33 @@ server <- function(input, output, session) {
       # Write each file. Names are base names and folders are copy_<n>, so
       # nothing is written outside sandbox_dir.
       for (f in files) {
-        file_dir <- file.path(sandbox_dir, f$folder)
-        dir.create(file_dir, showWarnings = FALSE, recursive = TRUE)
-        writeLines(f$content, file.path(file_dir, basename(f$name)))
+        written <- tryCatch({
+          file_dir <- file.path(sandbox_dir, f$folder)
+          dir.create(file_dir, showWarnings = FALSE, recursive = TRUE)
+          writeLines(f$content, file.path(file_dir, basename(f$name)))
+          TRUE
+        }, warning = function(w) FALSE, error = function(e) FALSE)
+        if (!written) {
+          write_notes <- c(write_notes, paste0(
+            "File ", f$name, " could not be written and is left out."
+          ))
+        }
       }
 
       # Extract workflow
-      workflow <- put(sandbox_dir, validate = FALSE)
+      scanned_workflow <- put(sandbox_dir, validate = FALSE)
 
       # Cleanup
       unlink(sandbox_dir, recursive = TRUE)
 
-      return(workflow)
+      scanned_workflow
     }, error = function(e) {
-      return(NULL)
+      NULL
     })
+
+    list(workflow = workflow, notes = write_notes)
   })
+  workflow_data <- reactive(workflow_result()$workflow)
 
   # Generate mermaid code. Keep the error message, if there is one, so the
   # status line can say why no diagram appears instead of leaving it blank.
@@ -557,8 +607,8 @@ server <- function(input, output, session) {
         status <- paste0(status, ", but the diagram could not be drawn:\n", diagram_error)
       }
     }
-    # Renamed duplicate file names (#53)
-    file_notes <- attr(parsed_files(), "notes")
+    # Repeated, renamed or unwritable file names (#53)
+    file_notes <- c(attr(parsed_files(), "notes"), workflow_result()$notes)
     if (length(file_notes) > 0) {
       status <- paste(c(status, file_notes), collapse = "\n")
     }

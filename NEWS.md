@@ -167,7 +167,10 @@
   and a name containing `=` is recognized. When two simulated files have the
   same name (ignoring case), both are kept, the later one in a `copy_2/`
   folder, and the status line says so; so does text before the first marker,
-  which is ignored (#53)
+  which is ignored. File names are made safe to write on Windows (trailing
+  dots dropped, characters such as `:` or `?` replaced), and a file that still
+  cannot be written is left out with a note instead of emptying the whole
+  diagram (#53)
 * If Mermaid cannot be loaded from jsdelivr (no network, a blocked CDN), the
   preview says so instead of staying blank, and the copy button and the
   Mermaid Code tab still work. A diagram that changes while the preview is
