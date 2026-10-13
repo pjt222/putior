@@ -42,7 +42,8 @@
   used, so an unannotated `node_1.R` next to an annotation with the fallback
   id `node_1` stays separate. It also matches manual and auto-detected rows
   by file path, so an annotated `x/load.R` no longer hides an unannotated
-  `y/load.R`. (#74)
+  `y/load.R`, and with `merge_strategy = "supplement"` or `"union"` no
+  longer takes the inputs and outputs detected in the other file. (#74)
 * `put_diagram()` gives every node one Mermaid id and uses it in the node
   definition, edges, `class` lines and click directives. Before, edges to an
   artifact whose path has two punctuation characters in a row (such as

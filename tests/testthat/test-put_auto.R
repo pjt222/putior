@@ -370,6 +370,19 @@ test_that("merge_annotations() gives auto rows ids no manual row uses", {
   }
 })
 
+test_that("merge_annotations() renames only the auto rows that clash", {
+  manual <- merge_rows("a", "/p/a.R", FALSE)
+  # put_auto() gives x/a.R and y/a.R the ids a and a_2
+  auto <- merge_rows(c("a", "a_2"), c("/p/x/a.R", "/p/y/a.R"), TRUE)
+
+  merged <- merge_annotations(manual, auto, "manual_priority")
+
+  # x/a.R clashes with the manual id and skips a_2, which y/a.R keeps
+  expect_equal(merged$id[merged$file_path == "/p/x/a.R"], "a_3")
+  expect_equal(merged$id[merged$file_path == "/p/y/a.R"], "a_2")
+  expect_equal(merged$id[!merged$auto_detected], "a")
+})
+
 test_that("merge_annotations() matches files by path, not only by name", {
   manual <- merge_rows("load_x", "/p/x/load.R", FALSE, output = "x.csv")
   auto <- merge_rows(c("load", "load_2"), c("/p/x/load.R", "/p/y/load.R"), TRUE,
@@ -390,6 +403,24 @@ test_that("merge_annotations() falls back to file names without file_path", {
 
   merged <- merge_annotations(manual, auto, "manual_priority")
 
+  expect_equal(sort(merged$file_name), c("a.R", "b.R"))
+})
+
+test_that("merge_annotations() matches by file name if one side lacks paths", {
+  with_path <- merge_rows("step", "/p/a.R", FALSE)
+  without_path <- merge_rows(c("a", "b"), c("a.R", "b.R"), TRUE)
+  without_path$file_path <- NULL
+
+  for (strategy in c("manual_priority", "supplement", "union")) {
+    merged <- merge_annotations(with_path, without_path, strategy)
+    expect_equal(sort(merged$file_name), c("a.R", "b.R"), label = strategy)
+  }
+
+  # The same with the path missing on the manual side
+  without_manual_path <- with_path
+  without_manual_path$file_path <- NA
+  with_auto_path <- merge_rows(c("a", "b"), c("/p/a.R", "/p/b.R"), TRUE)
+  merged <- merge_annotations(without_manual_path, with_auto_path, "manual_priority")
   expect_equal(sort(merged$file_name), c("a.R", "b.R"))
 })
 

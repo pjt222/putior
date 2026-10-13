@@ -809,19 +809,16 @@ merge_annotations <- function(manual, auto, strategy) {
   manual <- manual[, all_cols]
   auto <- auto[, all_cols]
 
-  # Match manual and auto rows by file path when it is known, so that two
-  # files with the same name in different folders are not mixed up; fall back
-  # to the file name for workflows without a file_path column
-  file_key <- function(rows) {
-    keys <- rows$file_name
-    if ("file_path" %in% names(rows)) {
-      has_path <- !is.na(rows$file_path) & rows$file_path != ""
-      keys[has_path] <- rows$file_path[has_path]
-    }
-    keys
+  # Match manual and auto rows by file path, so that two files with the same
+  # name in different folders are not mixed up. put() and put_auto() always
+  # set file_path; if either side lacks a path for any row, both sides are
+  # matched by file name, because a path never equals a bare file name
+  has_all_paths <- function(rows) {
+    "file_path" %in% names(rows) && !any(is.na(rows$file_path) | rows$file_path == "")
   }
-  manual_keys <- file_key(manual)
-  auto_keys <- file_key(auto)
+  key_column <- if (has_all_paths(manual) && has_all_paths(auto)) "file_path" else "file_name"
+  manual_keys <- manual[[key_column]]
+  auto_keys <- auto[[key_column]]
 
   switch(strategy,
     "manual_priority" = {
@@ -914,25 +911,27 @@ merge_annotations <- function(manual, auto, strategy) {
 #' and put_auto() derives ids from file names, so a file named node_1.R (or
 #' 1.R, which becomes node_1 in Mermaid) would share an id with a manual
 #' annotation and the diagram would merge them (#74). Auto rows whose id is
-#' already used, also in its Mermaid form, get a suffix; manual ids never
-#' change.
+#' already used, also in its Mermaid form, get a suffix that no other row
+#' uses; manual ids and auto ids without a clash never change.
 #' @param result Merged workflow with an \code{auto_detected} column
 #' @return The workflow with unique auto-detected ids
 #' @noRd
 dedupe_auto_ids <- function(result) {
   is_auto <- !is.na(result$auto_detected) & result$auto_detected
-  taken_keys <- vapply(as.character(result$id[!is_auto]), sanitize_node_id, character(1),
-                       USE.NAMES = FALSE)
+  id_keys <- vapply(as.character(result$id), sanitize_node_id, character(1),
+                    USE.NAMES = FALSE)
+  taken_keys <- id_keys[!is_auto]
   for (row_index in which(is_auto)) {
-    base_id <- result$id[row_index]
-    candidate <- base_id
-    suffix_number <- 2L
-    while (sanitize_node_id(candidate) %in% taken_keys) {
-      candidate <- paste0(base_id, "_", suffix_number)
-      suffix_number <- suffix_number + 1L
+    if (id_keys[row_index] %in% taken_keys) {
+      suffix_number <- 2L
+      repeat {
+        candidate <- paste0(result$id[row_index], "_", suffix_number)
+        if (!sanitize_node_id(candidate) %in% c(taken_keys, id_keys)) break
+        suffix_number <- suffix_number + 1L
+      }
+      result$id[row_index] <- candidate
     }
-    result$id[row_index] <- candidate
-    taken_keys <- c(taken_keys, sanitize_node_id(candidate))
+    taken_keys <- c(taken_keys, sanitize_node_id(result$id[row_index]))
   }
   result
 }
