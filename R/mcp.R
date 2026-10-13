@@ -293,8 +293,10 @@ mcp_put_diagram <- function(path, source = "annotations",
                             show_source_info = FALSE,
                             source_info_style = "inline",
                             enable_clicks = FALSE, click_protocol = "vscode",
+                            mermaid_config = "classic",
                             log_level = NULL) {
   # Clients may send null for an argument they leave out
+  mermaid_config <- mermaid_config %||% "classic"
   source <- source %||% "annotations"
   merge_strategy <- merge_strategy %||% "manual_priority"
   if (length(source) != 1 || !source %in% c("annotations", "auto", "merge")) {
@@ -351,7 +353,8 @@ mcp_put_diagram <- function(path, source = "annotations",
     style_nodes = style_nodes, theme = theme,
     show_source_info = show_source_info,
     source_info_style = source_info_style, enable_clicks = enable_clicks,
-    click_protocol = click_protocol, log_level = log_level
+    click_protocol = click_protocol, mermaid_config = mermaid_config,
+    log_level = log_level
   )
 }
 
@@ -592,6 +595,15 @@ make_tool_put_diagram <- function() {
       click_protocol = ellmer::type_enum(
         description = "URL protocol for clickable nodes: vscode, file, rstudio (default: vscode)",
         values = c("vscode", "file", "rstudio"),
+        required = FALSE
+      ),
+      mermaid_config = ellmer::type_enum(
+        description = paste0(
+          "Mermaid configuration in the diagram's frontmatter: classic keeps ",
+          "Mermaid 11's look on Mermaid 12 renderers such as GitHub, none writes ",
+          "no configuration (default: classic)"
+        ),
+        values = c("classic", "none"),
         required = FALSE
       ),
       log_level = ellmer::type_enum(

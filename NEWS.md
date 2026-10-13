@@ -13,6 +13,18 @@
   subdirectories by default. Pass `recursive = FALSE` for the old behavior.
   (#34)
 
+* `put_diagram()` output now starts with a frontmatter block that keeps
+  Mermaid 11's drawing on Mermaid 12 renderers: GitHub has drawn Mermaid
+  12's "neo" look, with labels wrapped at 120px, since it moved to Mermaid
+  12.1.0 in October 2026. The block sets the dagre layout, the classic
+  look, a 200px wrapping width and no minimum node width; it sets no
+  theme, so the page's light or dark theme still applies. Mermaid 10.9.8
+  to 11.17.2 draw the same with or without it. The new argument
+  `mermaid_config` takes `"classic"` (the default), `"none"` for the
+  previous output, or a named list written as the configuration. The
+  title, if any, shares the frontmatter. The MCP `put_diagram` tool has the
+  same argument. (#54)
+
 ## Bug Fixes
 
 * Fixed `show_source_info = TRUE` using `<small>` HTML tags that are unsupported

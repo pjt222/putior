@@ -31,6 +31,14 @@ put_diagram(put("./"), show_artifacts = TRUE)
 
 <!-- putior-diagram: tldr -->
 ```mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     node_1["Load Data"]
     artifact_clean_csv[("clean.csv")]
@@ -106,6 +114,14 @@ put_diagram(workflow, theme = "github")
 **Result:**
 <!-- putior-diagram: pipeline -->
 ```mermaid
+---
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
+---
 flowchart TD
     fetch(["Fetch Sales Data"])
     clean["Clean and Validate"]
@@ -184,6 +200,12 @@ putior uses its own annotation system to document its internal workflow -- a rea
 ```mermaid
 ---
 title: "putior Package Internals"
+config:
+  layout: "dagre"
+  look: "classic"
+  flowchart:
+    wrappingWidth: 200
+    minNodeWidth: 0
 ---
 flowchart TD
     diagram_gen["Generate Mermaid Diagram"]

@@ -226,8 +226,62 @@ test_that("the title is a quoted YAML string (#45)", {
   expect_equal(yaml_quote("tab\there\001bell"), '"tab here bell"')
 
   workflow <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
-  diagram <- put_diagram(workflow, title = "ETL: stage 1 # first", output = "raw")
+  diagram <- put_diagram(workflow, title = "ETL: stage 1 # first", output = "raw",
+                         mermaid_config = "none")
   expect_match(diagram, '^---\ntitle: "ETL: stage 1 # first"\n---\nflowchart TD')
+})
+
+test_that("put_diagram() writes the classic Mermaid configuration by default (#54)", {
+  workflow <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
+  classic_block <- paste(
+    "---", "config:", '  layout: "dagre"', '  look: "classic"', "  flowchart:",
+    "    wrappingWidth: 200", "    minNodeWidth: 0", "---", "flowchart TD",
+    sep = "\n"
+  )
+  expect_true(startsWith(put_diagram(workflow, output = "raw"), classic_block))
+  # The title shares the frontmatter
+  expect_true(startsWith(
+    put_diagram(workflow, output = "raw", title = "ETL"),
+    paste0('---\ntitle: "ETL"\nconfig:\n  layout: "dagre"')
+  ))
+  # "none" gives the old output, without frontmatter
+  expect_true(startsWith(put_diagram(workflow, output = "raw", mermaid_config = "none"),
+                         "flowchart TD\n"))
+  # The classic block never sets a theme, which would override the host's
+  expect_false(grepl("theme", put_diagram(workflow, output = "raw"), fixed = TRUE))
+})
+
+test_that("put_diagram() writes a named list as the Mermaid configuration (#54)", {
+  workflow <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
+  diagram <- put_diagram(workflow, output = "raw", mermaid_config = list(
+    look = "neo", flowchart = list(curve = "basis", htmlLabels = TRUE, wrappingWidth = 150)
+  ))
+  expect_true(startsWith(diagram, paste(
+    "---", "config:", '  look: "neo"', "  flowchart:", '    curve: "basis"',
+    "    htmlLabels: true", "    wrappingWidth: 150", "---", sep = "\n"
+  )))
+  # A theme is left out with a warning
+  expect_warning(
+    themed <- put_diagram(workflow, output = "raw", mermaid_config = list(theme = "dark", look = "neo")),
+    "'theme' is left out"
+  )
+  expect_false(grepl("theme", themed, fixed = TRUE))
+  # Only the theme: no configuration is left
+  expect_warning(only_theme <- put_diagram(workflow, output = "raw", mermaid_config = list(theme = "dark")))
+  expect_true(startsWith(only_theme, "flowchart TD"))
+  expect_true(startsWith(put_diagram(workflow, output = "raw", mermaid_config = list()), "flowchart TD"))
+})
+
+test_that("put_diagram() rejects a mermaid_config it cannot write (#54)", {
+  workflow <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
+  for (bad_config in list("neo", 3, c("classic", "none"), list(1), list("a b" = 1))) {
+    expect_error(put_diagram(workflow, output = "raw", mermaid_config = bad_config),
+                 "mermaid_config must be")
+  }
+  expect_error(put_diagram(workflow, output = "raw", mermaid_config = list(look = c("a", "b"))),
+               "the value of 'look'")
+  expect_error(put_diagram(workflow, output = "raw", mermaid_config = list(look = NA)),
+               "the value of 'look'")
 })
 
 test_that("a # that starts an entity is escaped, a plain # is not (#45)", {

@@ -75,9 +75,9 @@ Rscript tests/mermaid/generate-corpus.R tests/mermaid/corpus   # writes .mmd fil
 node tests/mermaid/validate.mjs tests/mermaid/corpus
 ```
 
-- A case fails on an R error while generating it, a parse or render error, an SVG that does not draw exactly the nodes Mermaid parsed, or nodes that differ from what putior defined (phantom, merged or lost nodes, `class`/`click` lines for undefined ids, duplicate subgraph ids), fewer parsed edges than `-->` lines, or when no HTML label shows one of the case's `expected_texts` as written.
+- A case fails on an R error while generating it, a parse or render error, an SVG that does not draw exactly the nodes Mermaid parsed, or nodes that differ from what putior defined (phantom, merged or lost nodes, `class`/`click` lines for undefined ids, duplicate subgraph ids), fewer parsed edges than `-->` lines, nodes drawn in another look than the frontmatter sets (Mermaid 11.17.2 and later record it in `data-look`), or when no HTML label shows one of the case's `expected_texts` as written.
 - Give a case `expected_texts` (an `add_case()` argument) when its labels could be misread: the node checks do not notice a changed label, and a node whose definition Mermaid drops still appears through its edges, with its id as label (#89). A label with a double quote goes in single quotes in its annotation, as `chain_fixture()` writes them (#91).
-- Known bugs are listed in `tests/mermaid/expected-failures.json` with their issue and the problem kinds they cause (`generate`, `parse`, `render`, `nodes`, `edges`, `subgraphs`, `text`). A problem of another kind in a listed case still fails. When a fix makes a listed case pass, the check fails until the entry is removed, so a fix PR removes its entries.
+- Known bugs are listed in `tests/mermaid/expected-failures.json` with their issue and the problem kinds they cause (`generate`, `parse`, `render`, `nodes`, `edges`, `subgraphs`, `text`, `look`). A problem of another kind in a listed case still fails. When a fix makes a listed case pass, the check fails until the entry is removed, so a fix PR removes its entries.
 - The Mermaid pins of the site, the sandbox and the asset scripts (`inst/cheatsheet/generate-diagrams.R`, `inst/examples/create-demo-gif.R`, which run a pinned mermaid-cli through `npx`) must be versions in `package.json`; the check fails otherwise.
 - Add a case for every diagram option or edge case that changes the generated Mermaid. The whole directory is in `.Rbuildignore` (no Node.js on CRAN).
 - From WSL, run the generator with Windows `Rscript.exe` from the package root, so that renv's project library is used (it calls `pkgload::load_all()` when pkgload is installed), and the checker with WSL's Node.
@@ -746,6 +746,9 @@ get_diagram_themes()
 - All viridis themes tested for deuteranopia, protanopia, and tritanopia
 - Cividis avoids red-green entirely, making it optimal for red-green colorblindness
 - Artifact nodes use neutral gray across all themes for consistency
+
+### Mermaid Configuration (#54)
+`put_diagram()` writes a `config:` block into the diagram's frontmatter by default (`mermaid_config = "classic"`): dagre layout, classic look, `flowchart.wrappingWidth: 200`, `flowchart.minNodeWidth: 0`. It keeps Mermaid 11's drawing on Mermaid 12 renderers such as GitHub (12.1.0 since 2026-10-07), which otherwise draw the "neo" look with 120px label wrapping. It never sets `theme`: a frontmatter theme overrides the host's light/dark theme. `mermaid_config = "none"` gives the old output; a named list is written as given (minus `theme`).
 
 ### Reference
 - **Example**: `inst/examples/theme-examples.R`

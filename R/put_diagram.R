@@ -60,6 +60,20 @@
 #'     \item "file" - Standard file:// protocol
 #'     \item "rstudio" - RStudio IDE (rstudio://open-file?path=)
 #'   }
+#' @param mermaid_config Mermaid configuration to write into the diagram's
+#'   frontmatter, next to the title:
+#'   \itemize{
+#'     \item "classic" - Mermaid 11's drawing on every renderer (default):
+#'       the dagre layout, the classic look, labels wrapped at 200px and no
+#'       minimum node width. Without it, Mermaid 12, which GitHub uses, draws
+#'       the "neo" look and wraps labels at 120px.
+#'     \item "none" - No configuration; the renderer's defaults apply
+#'     \item A named list, written as YAML (nested lists become nested
+#'       keys), such as \code{list(look = "neo")}. A \code{theme} key is left
+#'       out with a warning, because a theme in the diagram overrides the
+#'       host's light or dark theme; use \code{theme} or \code{palette} for
+#'       node colors.
+#'   }
 #' @param log_level Character string specifying log verbosity for this call.
 #'   Overrides the global option \code{putior.log_level} when specified.
 #'   Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.
@@ -154,6 +168,7 @@ put_diagram <- function(workflow,
                         source_info_style = "inline",
                         enable_clicks = FALSE,
                         click_protocol = "vscode",
+                        mermaid_config = "classic",
                         log_level = NULL) {
   # Set log level for this call if specified
   restore_log_level <- with_log_level(log_level)
@@ -257,6 +272,8 @@ put_diagram <- function(workflow,
     click_protocol <- "vscode"
   }
 
+  config_lines <- mermaid_config_lines(mermaid_config)
+
   # Clean the workflow data
   workflow <- workflow[!is.na(workflow$id) & workflow$id != "", ]
   if (nrow(workflow) == 0) {
@@ -277,10 +294,14 @@ put_diagram <- function(workflow,
   # Start building the mermaid diagram
   mermaid_lines <- character()
 
-  # Add title if provided, as a quoted YAML string: an unquoted title with
-  # ": " or " #" does not parse (#45)
-  if (!is.null(title)) {
-    mermaid_lines <- c(mermaid_lines, paste0("---\ntitle: ", yaml_quote(title), "\n---"))
+  # Frontmatter: the title, as a quoted YAML string (an unquoted title with
+  # ": " or " #" does not parse, #45), and the Mermaid configuration (#54)
+  frontmatter <- c(
+    if (!is.null(title)) paste0("title: ", yaml_quote(title)),
+    config_lines
+  )
+  if (length(frontmatter) > 0) {
+    mermaid_lines <- c(mermaid_lines, paste(c("---", frontmatter, "---"), collapse = "\n"))
   }
 
   # Add flowchart declaration
@@ -697,6 +718,84 @@ yaml_quote <- function(text) {
   text <- gsub("\\", "\\\\", text, fixed = TRUE)
   text <- gsub('"', '\\"', text, fixed = TRUE)
   paste0('"', text, '"')
+}
+
+# The configuration that put_diagram() writes by default (#54). Mermaid 12
+# draws the "neo" look with the ELK layout, wraps labels at 120px and makes
+# every node at least 120px wide; GitHub uses Mermaid 12.1.0 since
+# 2026-10-07. These keys give Mermaid 11's drawing on Mermaid 12, and
+# Mermaid 11.12.0 to 11.17.2 draw the same with or without them. They are
+# not secure (host-only) keys, so hosts such as GitHub honour them. theme
+# is left out on purpose: a theme in the diagram overrides the host's light
+# or dark theme.
+.MERMAID_CLASSIC_CONFIG <- list(
+  layout = "dagre",
+  look = "classic",
+  flowchart = list(wrappingWidth = 200, minNodeWidth = 0)
+)
+
+#' The config: lines of a diagram's frontmatter
+#' @param mermaid_config "classic", "none", NULL or a named list
+#' @return Character vector of YAML lines, empty for no configuration
+#' @noRd
+mermaid_config_lines <- function(mermaid_config) {
+  config_error <- paste0(
+    'mermaid_config must be "classic", "none" or a named list such as ',
+    'list(look = "neo")'
+  )
+  if (is.character(mermaid_config)) {
+    if (length(mermaid_config) != 1 || !mermaid_config %in% c("classic", "none")) {
+      stop(config_error, call. = FALSE)
+    }
+    mermaid_config <- if (mermaid_config == "classic") .MERMAID_CLASSIC_CONFIG else NULL
+  } else if (!is.null(mermaid_config) && !is.list(mermaid_config)) {
+    stop(config_error, call. = FALSE)
+  }
+  if (length(mermaid_config) == 0) {
+    return(character())
+  }
+  if ("theme" %in% names(mermaid_config)) {
+    warning(
+      "mermaid_config: 'theme' is left out, because a theme in the diagram ",
+      "overrides the light or dark theme of the page that shows it. ",
+      "Use the theme or palette argument for node colors.",
+      call. = FALSE
+    )
+    mermaid_config$theme <- NULL
+    if (length(mermaid_config) == 0) {
+      return(character())
+    }
+  }
+  c("config:", yaml_mapping_lines(mermaid_config, "  ", config_error))
+}
+
+#' YAML lines for a named list of scalars and nested named lists
+#' @noRd
+yaml_mapping_lines <- function(mapping, indent, config_error) {
+  keys <- names(mapping)
+  if (length(mapping) > 0 &&
+      (is.null(keys) || !all(grepl("^[A-Za-z_][A-Za-z0-9_-]*$", keys)))) {
+    stop(config_error, call. = FALSE)
+  }
+  unlist(lapply(keys, function(key) {
+    value <- mapping[[key]]
+    if (is.list(value)) {
+      return(c(paste0(indent, key, ":"), yaml_mapping_lines(value, paste0(indent, "  "), config_error)))
+    }
+    if (length(value) != 1 || is.na(value) ||
+        !(is.character(value) || is.numeric(value) || is.logical(value))) {
+      stop("mermaid_config: the value of '", key, "' must be one string, ",
+           "number or logical value, or a named list", call. = FALSE)
+    }
+    scalar <- if (is.logical(value)) {
+      if (value) "true" else "false"
+    } else if (is.numeric(value)) {
+      as.character(value)
+    } else {
+      yaml_quote(value)
+    }
+    paste0(indent, key, ": ", scalar)
+  }), use.names = FALSE)
 }
 
 #' Sanitize a label string for safe embedding in Mermaid syntax

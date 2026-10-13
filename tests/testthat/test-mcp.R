@@ -429,6 +429,12 @@ test_that("MCP put_diagram passes its arguments through unchanged", {
     put_diagram(put(project_dir), output = "raw", theme = "dark",
                 direction = "LR", show_artifacts = TRUE, title = "ETL")
   )
+  # The Mermaid configuration in the frontmatter (#54)
+  expect_identical(
+    tools$put_diagram(path = project_dir, mermaid_config = "none"),
+    put_diagram(put(project_dir), output = "raw", mermaid_config = "none")
+  )
+  expect_true(startsWith(tools$put_diagram(path = project_dir), "---\nconfig:"))
   # Click links need line numbers, which the tool asks put() for.
   expect_identical(
     tools$put_diagram(path = project_dir, enable_clicks = TRUE, click_protocol = "file"),

@@ -14,15 +14,17 @@
 // fails when Mermaid parses fewer edges than the diagram has "-->" lines
 // (its lexer can swallow a line without an error), and, for a case that
 // lists expected_texts, when a label does not show one of them as written
-// (Mermaid can cut the end off an entity without an error).
+// (Mermaid can cut the end off an entity without an error). When the
+// diagram's frontmatter sets a look, every node that carries a data-look
+// attribute (Mermaid 11.17.2 and later) must have it.
 //
 // Cases in expected-failures.json are known bugs. Each entry names its issue
 // and the kinds of problem it is known to cause ("generate", "parse",
-// "render", "nodes", "edges", "subgraphs", "text"). A listed case counts as
-// a known failure only if all its problems are of those kinds; a problem of
-// a different kind fails the run (a new problem of a listed kind does not).
-// A listed case that passes also fails the run, so the list is kept up to
-// date as the bugs are fixed.
+// "render", "nodes", "edges", "subgraphs", "text", "look"). A listed case
+// counts as a known failure only if all its problems are of those kinds; a
+// problem of a different kind fails the run (a new problem of a listed kind
+// does not). A listed case that passes also fails the run, so the list is
+// kept up to date as the bugs are fixed.
 //
 // MERMAID_EXTRA_ALIASES (comma-separated) adds packages installed in
 // node_modules but not listed in package.json, e.g. the scheduled run's
@@ -92,7 +94,7 @@ const mermaidConfigs = {
 
 const manifest = readJson(path.join(corpusDir, 'manifest.json'));
 const expectedFailures = readJson(path.join(harnessDir, 'expected-failures.json'));
-const problemKinds = ['generate', 'parse', 'render', 'nodes', 'edges', 'subgraphs', 'text'];
+const problemKinds = ['generate', 'parse', 'render', 'nodes', 'edges', 'subgraphs', 'text', 'look'];
 
 for (const [caseName, expected] of Object.entries(expectedFailures)) {
   if (!manifest.some((entry) => entry.name === caseName)) {
@@ -117,7 +119,7 @@ async function checkInPage(code) {
     if (sourceLine) return `${lines[0]} in "${sourceLine.trim()}"`;
     return (lines[0] ?? '').slice(0, 300);
   };
-  const result = { problems: [], vertexIds: null, edgeCount: null, labelTexts: null };
+  const result = { problems: [], vertexIds: null, edgeCount: null, labelTexts: null, looks: null };
   try {
     await mermaid.parse(code);
   } catch (error) {
@@ -159,6 +161,10 @@ async function checkInPage(code) {
       if (notDrawn.length > 0) result.problems.push(`render: parsed but not drawn: ${notDrawn.join(', ')}`);
       if (notParsed.length > 0) result.problems.push(`render: drawn but not parsed: ${notParsed.join(', ')}`);
       if (drawnIds.length !== new Set(drawnIds).size) result.problems.push('render: a node is drawn twice');
+      // The look each node was drawn in; Mermaid 11.12.0 does not record it
+      result.looks = [...new Set([...svgRoot.querySelectorAll('g.node')]
+        .map((nodeElement) => nodeElement.getAttribute('data-look'))
+        .filter((look) => look !== null))];
       // The text of every HTML label (nodes, edge labels, subgraph titles).
       // Both configurations draw labels as HTML; SVG text labels (and the
       // title) are not collected.
@@ -209,6 +215,15 @@ function compareEdges(entry, edgeCount) {
   return edgeCount === entry.expected_edge_count
     ? []
     : [`edges: the diagram has ${entry.expected_edge_count} edge lines, Mermaid parsed ${edgeCount} edges`];
+}
+
+// The look set in the frontmatter must be the look Mermaid drew
+function compareLook(entry, looks) {
+  if (!entry.expected_look) return [];
+  const otherLooks = looks.filter((look) => look !== entry.expected_look);
+  return otherLooks.length > 0
+    ? [`look: the frontmatter sets "${entry.expected_look}", Mermaid drew ${otherLooks.map((look) => `"${look}"`).join(', ')}`]
+    : [];
 }
 
 // Every expected text must be the whole text of one label
@@ -263,6 +278,7 @@ try {
           if (result.vertexIds) problems.push(...compareNodes(entry, result.vertexIds));
           if (result.edgeCount !== null) problems.push(...compareEdges(entry, result.edgeCount));
           if (result.labelTexts) problems.push(...compareTexts(entry, result.labelTexts));
+          if (result.looks) problems.push(...compareLook(entry, result.looks));
         }
         for (const problem of problems) problemsByCase.get(entry.name).push(`${label} ${problem}`);
       }

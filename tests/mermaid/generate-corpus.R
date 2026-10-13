@@ -92,6 +92,11 @@ for (protocol in c("vscode", "file", "rstudio")) {
   add_case(paste0("clicks_", protocol), pipeline, enable_clicks = TRUE, click_protocol = protocol)
 }
 add_case("title", pipeline, title = "Sales Pipeline")
+# The classic configuration is the default (#54); without it, or with
+# another look
+add_case("mermaid_config_none", pipeline, mermaid_config = "none")
+add_case("mermaid_config_list", pipeline, title = "Sales Pipeline",
+         mermaid_config = list(look = "neo", flowchart = list(curve = "basis")))
 add_case("custom_palette", pipeline, palette = put_theme(
   base = "dark",
   input = c(fill = "#1b4332", stroke = "#95d5b2", color = "#ffffff"),
@@ -279,6 +284,12 @@ manifest <- lapply(cases, function(case) {
     code_lines <- strsplit(diagram, "\n", fixed = TRUE)[[1]]
     # Edge lines start with an id and " -->"; a label may contain "-->" too
     entry$expected_edge_count <- sum(grepl("^\\s+[A-Za-z0-9_]+ -->", code_lines))
+    # The look that the frontmatter sets, if any (#54)
+    frontmatter_end <- if (code_lines[1] == "---") match("---", code_lines[-1]) else NA
+    if (!is.na(frontmatter_end)) {
+      look_line <- grep('^\\s+look: "', code_lines[seq_len(frontmatter_end)], value = TRUE)
+      if (length(look_line) == 1) entry$expected_look <- sub('^\\s+look: "([^"]*)".*$', "\\1", look_line)
+    }
     entry <- c(entry, describe_diagram(code_lines))
   }
   entry

@@ -21,6 +21,7 @@ put_diagram(
   source_info_style = "inline",
   enable_clicks = FALSE,
   click_protocol = "vscode",
+  mermaid_config = "classic",
   log_level = NULL
 )
 }
@@ -95,6 +96,21 @@ Default is FALSE for backward compatibility.}
 \item "vscode" - VS Code editor (vscode://file/path:line) (default)
 \item "file" - Standard file:// protocol
 \item "rstudio" - RStudio IDE (rstudio://open-file?path=)
+}}
+
+\item{mermaid_config}{Mermaid configuration to write into the diagram's
+frontmatter, next to the title:
+\itemize{
+\item "classic" - Mermaid 11's drawing on every renderer (default):
+the dagre layout, the classic look, labels wrapped at 200px and no
+minimum node width. Without it, Mermaid 12, which GitHub uses, draws
+the "neo" look and wraps labels at 120px.
+\item "none" - No configuration; the renderer's defaults apply
+\item A named list, written as YAML (nested lists become nested
+keys), such as \code{list(look = "neo")}. A \code{theme} key is left
+out with a warning, because a theme in the diagram overrides the
+host's light or dark theme; use \code{theme} or \code{palette} for
+node colors.
 }}
 
 \item{log_level}{Character string specifying log verbosity for this call.
