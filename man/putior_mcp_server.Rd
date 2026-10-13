@@ -83,11 +83,11 @@ putior_mcp_server(type = "http", port = 8080)
 \seealso{
 \code{\link{putior_mcp_tools}} for accessing the tool definitions
 
-Other integration: 
-\code{\link{putior_acp_manifest}()},
-\code{\link{putior_acp_server}()},
-\code{\link{putior_guide}()},
-\code{\link{putior_help}()},
-\code{\link{putior_mcp_tools}()}
+Other integration:
+\code{\link[=putior_acp_manifest]{putior_acp_manifest()}},
+\code{\link[=putior_acp_server]{putior_acp_server()}},
+\code{\link[=putior_guide]{putior_guide()}},
+\code{\link[=putior_help]{putior_help()}},
+\code{\link[=putior_mcp_tools]{putior_mcp_tools()}}
 }
 \concept{integration}

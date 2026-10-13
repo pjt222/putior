@@ -18,11 +18,11 @@ The object, invisibly.
 Print a putior_theme Object
 }
 \seealso{
-Other core-workflow: 
-\code{\link{print.putior_workflow}()},
-\code{\link{put}()},
-\code{\link{put_diagram}()},
-\code{\link{put_theme}()},
-\code{\link{summary.putior_workflow}()}
+Other core-workflow:
+\code{\link[=print.putior_workflow]{print.putior_workflow()}},
+\code{\link[=put]{put()}},
+\code{\link[=put_diagram]{put_diagram()}},
+\code{\link[=put_theme]{put_theme()}},
+\code{\link[=summary.putior_workflow]{summary.putior_workflow()}}
 }
 \concept{core-workflow}

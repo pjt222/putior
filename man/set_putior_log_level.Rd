@@ -30,7 +30,7 @@ getOption("putior.log_level")
 set_putior_log_level(old_level)
 }
 \seealso{
-Other interactive: 
-\code{\link{run_sandbox}()}
+Other interactive:
+\code{\link[=run_sandbox]{run_sandbox()}}
 }
 \concept{interactive}

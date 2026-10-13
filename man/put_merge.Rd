@@ -65,8 +65,8 @@ workflow <- put_merge("./analysis/", merge_strategy = "union")
 \code{\link{put}} for manual annotation extraction,
 \code{\link{put_auto}} for auto-detection
 
-Other auto-annotation: 
-\code{\link{put_auto}()},
-\code{\link{put_generate}()}
+Other auto-annotation:
+\code{\link[=put_auto]{put_auto()}},
+\code{\link[=put_generate]{put_generate()}}
 }
 \concept{auto-annotation}

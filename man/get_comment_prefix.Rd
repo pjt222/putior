@@ -24,10 +24,10 @@ get_comment_prefix("tex")  # Returns "\%"
 get_comment_prefix("xyz")  # Returns "#" (fallback)
 }
 \seealso{
-Other language-support: 
-\code{\link{ext_to_language}()},
-\code{\link{get_detection_patterns}()},
-\code{\link{get_supported_extensions}()},
-\code{\link{list_supported_languages}()}
+Other language-support:
+\code{\link[=ext_to_language]{ext_to_language()}},
+\code{\link[=get_detection_patterns]{get_detection_patterns()}},
+\code{\link[=get_supported_extensions]{get_supported_extensions()}},
+\code{\link[=list_supported_languages]{list_supported_languages()}}
 }
 \concept{language-support}

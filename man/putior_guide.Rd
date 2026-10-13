@@ -37,11 +37,11 @@ putior_guide("quick-start")
 guide_md <- putior_guide(output = "raw")
 }
 \seealso{
-Other integration: 
-\code{\link{putior_acp_manifest}()},
-\code{\link{putior_acp_server}()},
-\code{\link{putior_help}()},
-\code{\link{putior_mcp_server}()},
-\code{\link{putior_mcp_tools}()}
+Other integration:
+\code{\link[=putior_acp_manifest]{putior_acp_manifest()}},
+\code{\link[=putior_acp_server]{putior_acp_server()}},
+\code{\link[=putior_help]{putior_help()}},
+\code{\link[=putior_mcp_server]{putior_mcp_server()}},
+\code{\link[=putior_mcp_tools]{putior_mcp_tools()}}
 }
 \concept{integration}

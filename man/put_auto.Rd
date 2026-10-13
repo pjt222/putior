@@ -83,8 +83,8 @@ outputs_only <- put_auto("./analysis/", detect_inputs = FALSE)
 \code{\link{put_generate}} for generating annotation comments,
 \code{\link{put_merge}} for combining manual and auto-detected annotations
 
-Other auto-annotation: 
-\code{\link{put_generate}()},
-\code{\link{put_merge}()}
+Other auto-annotation:
+\code{\link[=put_generate]{put_generate()}},
+\code{\link[=put_merge]{put_merge()}}
 }
 \concept{auto-annotation}

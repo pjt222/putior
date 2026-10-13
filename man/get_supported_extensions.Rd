@@ -17,10 +17,10 @@ annotation parsing system.
 get_supported_extensions()
 }
 \seealso{
-Other language-support: 
-\code{\link{ext_to_language}()},
-\code{\link{get_comment_prefix}()},
-\code{\link{get_detection_patterns}()},
-\code{\link{list_supported_languages}()}
+Other language-support:
+\code{\link[=ext_to_language]{ext_to_language()}},
+\code{\link[=get_comment_prefix]{get_comment_prefix()}},
+\code{\link[=get_detection_patterns]{get_detection_patterns()}},
+\code{\link[=list_supported_languages]{list_supported_languages()}}
 }
 \concept{language-support}

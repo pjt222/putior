@@ -24,10 +24,10 @@ ext_to_language("js")    # Returns "javascript"
 ext_to_language("xyz")   # Returns NULL
 }
 \seealso{
-Other language-support: 
-\code{\link{get_comment_prefix}()},
-\code{\link{get_detection_patterns}()},
-\code{\link{get_supported_extensions}()},
-\code{\link{list_supported_languages}()}
+Other language-support:
+\code{\link[=get_comment_prefix]{get_comment_prefix()}},
+\code{\link[=get_detection_patterns]{get_detection_patterns()}},
+\code{\link[=get_supported_extensions]{get_supported_extensions()}},
+\code{\link[=list_supported_languages]{list_supported_languages()}}
 }
 \concept{language-support}

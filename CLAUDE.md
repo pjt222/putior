@@ -16,6 +16,7 @@ putior is an R package that extracts structured annotations from source code fil
 - **NEVER delete these files** - they are essential for development workflow
 
 ### Key Commands
+- `devtools::document()` - Regenerate `man/*.Rd` and `NAMESPACE` from the roxygen comments. Use roxygen2 8.1.1 or later (`Config/roxygen2/version` in DESCRIPTION); an older roxygen2 rewrites every family link and the DESCRIPTION field. Never edit `man/*.Rd` by hand.
 - `devtools::check()` - Full package check (requires Pandoc configured)
 - `R CMD check putior_X.X.X.tar.gz` - Check built package tarball  
 - `devtools::spell_check()` - Spell checking (uses inst/WORDLIST)

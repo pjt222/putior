@@ -77,8 +77,8 @@ put_generate("./new_script.R", insert = TRUE)
 \code{\link{put_auto}} for direct workflow detection,
 \code{\link{put}} for extracting existing annotations
 
-Other auto-annotation: 
-\code{\link{put_auto}()},
-\code{\link{put_merge}()}
+Other auto-annotation:
+\code{\link[=put_auto]{put_auto()}},
+\code{\link[=put_merge]{put_merge()}}
 }
 \concept{auto-annotation}

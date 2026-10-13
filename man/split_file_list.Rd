@@ -21,8 +21,8 @@ split_file_list("data.csv, results.rds, plot.png")
 split_file_list("")
 }
 \seealso{
-Other utilities: 
-\code{\link{get_diagram_themes}()},
-\code{\link{is_valid_put_annotation}()}
+Other utilities:
+\code{\link[=get_diagram_themes]{get_diagram_themes()}},
+\code{\link[=is_valid_put_annotation]{is_valid_put_annotation()}}
 }
 \concept{utilities}

@@ -39,11 +39,11 @@ tools <- putior_mcp_tools(exclude = c("run_sandbox", "putior_help"))
 \seealso{
 \code{\link{putior_mcp_server}} for starting the MCP server
 
-Other integration: 
-\code{\link{putior_acp_manifest}()},
-\code{\link{putior_acp_server}()},
-\code{\link{putior_guide}()},
-\code{\link{putior_help}()},
-\code{\link{putior_mcp_server}()}
+Other integration:
+\code{\link[=putior_acp_manifest]{putior_acp_manifest()}},
+\code{\link[=putior_acp_server]{putior_acp_server()}},
+\code{\link[=putior_guide]{putior_guide()}},
+\code{\link[=putior_help]{putior_help()}},
+\code{\link[=putior_mcp_server]{putior_mcp_server()}}
 }
 \concept{integration}

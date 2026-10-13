@@ -52,11 +52,11 @@ putior_help("examples")
 putior_help("guide")
 }
 \seealso{
-Other integration: 
-\code{\link{putior_acp_manifest}()},
-\code{\link{putior_acp_server}()},
-\code{\link{putior_guide}()},
-\code{\link{putior_mcp_server}()},
-\code{\link{putior_mcp_tools}()}
+Other integration:
+\code{\link[=putior_acp_manifest]{putior_acp_manifest()}},
+\code{\link[=putior_acp_server]{putior_acp_server()}},
+\code{\link[=putior_guide]{putior_guide()}},
+\code{\link[=putior_mcp_server]{putior_mcp_server()}},
+\code{\link[=putior_mcp_tools]{putior_mcp_tools()}}
 }
 \concept{integration}

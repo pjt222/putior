@@ -21,11 +21,11 @@ print(manifest$name)
 print(manifest$description)
 }
 \seealso{
-Other integration: 
-\code{\link{putior_acp_server}()},
-\code{\link{putior_guide}()},
-\code{\link{putior_help}()},
-\code{\link{putior_mcp_server}()},
-\code{\link{putior_mcp_tools}()}
+Other integration:
+\code{\link[=putior_acp_server]{putior_acp_server()}},
+\code{\link[=putior_guide]{putior_guide()}},
+\code{\link[=putior_help]{putior_help()}},
+\code{\link[=putior_mcp_server]{putior_mcp_server()}},
+\code{\link[=putior_mcp_tools]{putior_mcp_tools()}}
 }
 \concept{integration}
