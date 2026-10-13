@@ -63,10 +63,15 @@
 #' @param mermaid_config Mermaid configuration to write into the diagram's
 #'   frontmatter, next to the title:
 #'   \itemize{
-#'     \item "classic" - Mermaid 11's drawing on every renderer (default):
-#'       the dagre layout, the classic look, labels wrapped at 200px and no
+#'     \item "classic" - Mermaid 11's drawing on Mermaid 12 (default): the
+#'       dagre layout, the classic look, labels wrapped at 200px and no
 #'       minimum node width. Without it, Mermaid 12, which GitHub uses, draws
-#'       the "neo" look and wraps labels at 120px.
+#'       the "neo" look and wraps labels at 120px. Where the page sets a
+#'       theme, as GitHub does, the result matches Mermaid 11; without one,
+#'       Mermaid 12's default font is smaller. Mermaid 9.3.0 and later read
+#'       the frontmatter, which must be the first thing in the diagram code:
+#'       to change the configuration, use this argument rather than a
+#'       \code{\%\%\{init\}\%\%} line in front.
 #'     \item "none" - No configuration; the renderer's defaults apply
 #'     \item A named list, written as YAML (nested lists become nested
 #'       keys), such as \code{list(look = "neo")}. A \code{theme} key is left
@@ -133,7 +138,8 @@
 #'
 #' # For use in knitr/pkgdown - returns raw mermaid code
 #' # Use within a code chunk with results='asis'
-#' cat("```mermaid\n", put_diagram(workflow, output = "raw"), "\n```\n")
+#' # (sep = "": Mermaid reads the frontmatter only at the very start)
+#' cat("```mermaid\n", put_diagram(workflow, output = "raw"), "\n```\n", sep = "")
 #'
 #' # Show source file info inline in nodes
 #' put_diagram(workflow, show_source_info = TRUE)
@@ -777,13 +783,21 @@ yaml_mapping_lines <- function(mapping, indent, config_error) {
       (is.null(keys) || !all(grepl("^[A-Za-z_][A-Za-z0-9_-]*$", keys)))) {
     stop(config_error, call. = FALSE)
   }
+  # Mermaid's YAML parser rejects a key that appears twice in a mapping
+  if (anyDuplicated(keys)) {
+    stop("mermaid_config: '", keys[anyDuplicated(keys)], "' is given more than once",
+         call. = FALSE)
+  }
   unlist(lapply(keys, function(key) {
     value <- mapping[[key]]
     if (is.list(value)) {
+      # An empty list would be a key without a value; leave it out
+      if (length(value) == 0) return(character())
       return(c(paste0(indent, key, ":"), yaml_mapping_lines(value, paste0(indent, "  "), config_error)))
     }
     if (length(value) != 1 || is.na(value) ||
-        !(is.character(value) || is.numeric(value) || is.logical(value))) {
+        !(is.character(value) || is.numeric(value) || is.logical(value)) ||
+        (is.numeric(value) && !is.finite(value))) {
       stop("mermaid_config: the value of '", key, "' must be one string, ",
            "number or logical value, or a named list", call. = FALSE)
     }

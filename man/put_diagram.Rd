@@ -101,10 +101,15 @@ Default is FALSE for backward compatibility.}
 \item{mermaid_config}{Mermaid configuration to write into the diagram's
 frontmatter, next to the title:
 \itemize{
-\item "classic" - Mermaid 11's drawing on every renderer (default):
-the dagre layout, the classic look, labels wrapped at 200px and no
+\item "classic" - Mermaid 11's drawing on Mermaid 12 (default): the
+dagre layout, the classic look, labels wrapped at 200px and no
 minimum node width. Without it, Mermaid 12, which GitHub uses, draws
-the "neo" look and wraps labels at 120px.
+the "neo" look and wraps labels at 120px. Where the page sets a
+theme, as GitHub does, the result matches Mermaid 11; without one,
+Mermaid 12's default font is smaller. Mermaid 9.3.0 and later read
+the frontmatter, which must be the first thing in the diagram code:
+to change the configuration, use this argument rather than a
+\code{\%\%\{init\}\%\%} line in front.
 \item "none" - No configuration; the renderer's defaults apply
 \item A named list, written as YAML (nested lists become nested
 keys), such as \code{list(look = "neo")}. A \code{theme} key is left
@@ -177,7 +182,8 @@ put_diagram(workflow, show_artifacts = TRUE, output = "file", file = "workflow.m
 
 # For use in knitr/pkgdown - returns raw mermaid code
 # Use within a code chunk with results='asis'
-cat("```mermaid\n", put_diagram(workflow, output = "raw"), "\n```\n")
+# (sep = "": Mermaid reads the frontmatter only at the very start)
+cat("```mermaid\n", put_diagram(workflow, output = "raw"), "\n```\n", sep = "")
 
 # Show source file info inline in nodes
 put_diagram(workflow, show_source_info = TRUE)

@@ -282,6 +282,18 @@ test_that("put_diagram() rejects a mermaid_config it cannot write (#54)", {
                "the value of 'look'")
   expect_error(put_diagram(workflow, output = "raw", mermaid_config = list(look = NA)),
                "the value of 'look'")
+  # Mermaid rejects a key given twice, and reads Inf as a string
+  expect_error(put_diagram(workflow, output = "raw",
+                           mermaid_config = list(look = "neo", look = "classic")),
+               "'look' is given more than once")
+  expect_error(put_diagram(workflow, output = "raw",
+                           mermaid_config = list(flowchart = list(wrappingWidth = Inf))),
+               "the value of 'wrappingWidth'")
+  # An empty nested list writes nothing
+  expect_true(startsWith(
+    put_diagram(workflow, output = "raw", mermaid_config = list(look = "neo", flowchart = list())),
+    '---\nconfig:\n  look: "neo"\n---'
+  ))
 })
 
 test_that("a # that starts an entity is escaped, a plain # is not (#45)", {

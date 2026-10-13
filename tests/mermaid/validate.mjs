@@ -16,15 +16,16 @@
 // lists expected_texts, when a label does not show one of them as written
 // (Mermaid can cut the end off an entity without an error). When the
 // diagram's frontmatter sets a look, every node that carries a data-look
-// attribute (Mermaid 11.17.2 and later) must have it.
+// attribute (Mermaid 11.17.2 and later) must have it, and labels listed in
+// wide_texts must be drawn wider than Mermaid 12's 120px wrapping width.
 //
 // Cases in expected-failures.json are known bugs. Each entry names its issue
 // and the kinds of problem it is known to cause ("generate", "parse",
-// "render", "nodes", "edges", "subgraphs", "text", "look"). A listed case
-// counts as a known failure only if all its problems are of those kinds; a
-// problem of a different kind fails the run (a new problem of a listed kind
-// does not). A listed case that passes also fails the run, so the list is
-// kept up to date as the bugs are fixed.
+// "render", "nodes", "edges", "subgraphs", "text", "look", "wrap"). A
+// listed case counts as a known failure only if all its problems are of
+// those kinds; a problem of a different kind fails the run (a new problem
+// of a listed kind does not). A listed case that passes also fails the
+// run, so the list is kept up to date as the bugs are fixed.
 //
 // MERMAID_EXTRA_ALIASES (comma-separated) adds packages installed in
 // node_modules but not listed in package.json, e.g. the scheduled run's
@@ -94,7 +95,7 @@ const mermaidConfigs = {
 
 const manifest = readJson(path.join(corpusDir, 'manifest.json'));
 const expectedFailures = readJson(path.join(harnessDir, 'expected-failures.json'));
-const problemKinds = ['generate', 'parse', 'render', 'nodes', 'edges', 'subgraphs', 'text', 'look'];
+const problemKinds = ['generate', 'parse', 'render', 'nodes', 'edges', 'subgraphs', 'text', 'look', 'wrap'];
 
 for (const [caseName, expected] of Object.entries(expectedFailures)) {
   if (!manifest.some((entry) => entry.name === caseName)) {
@@ -119,7 +120,7 @@ async function checkInPage(code) {
     if (sourceLine) return `${lines[0]} in "${sourceLine.trim()}"`;
     return (lines[0] ?? '').slice(0, 300);
   };
-  const result = { problems: [], vertexIds: null, edgeCount: null, labelTexts: null, looks: null };
+  const result = { problems: [], vertexIds: null, edgeCount: null, labelTexts: null, labelWidths: null, looks: null };
   try {
     await mermaid.parse(code);
   } catch (error) {
@@ -168,8 +169,9 @@ async function checkInPage(code) {
       // The text of every HTML label (nodes, edge labels, subgraph titles).
       // Both configurations draw labels as HTML; SVG text labels (and the
       // title) are not collected.
-      result.labelTexts = [...svgRoot.querySelectorAll('foreignObject')]
-        .map((label) => label.textContent.replace(/\s+/g, ' ').trim());
+      const htmlLabels = [...svgRoot.querySelectorAll('foreignObject')];
+      result.labelTexts = htmlLabels.map((label) => label.textContent.replace(/\s+/g, ' ').trim());
+      result.labelWidths = htmlLabels.map((label) => Number(label.getAttribute('width')));
     }
   } catch (error) {
     result.problems.push(`render: ${summarize(error)}`);
@@ -226,6 +228,18 @@ function compareLook(entry, looks) {
     : [];
 }
 
+// Labels that the frontmatter's wrapping width keeps on one line must be
+// wider than the 120px at which Mermaid 12 would wrap them
+function compareWidths(entry, labelTexts, labelWidths) {
+  const narrow = (entry.wide_texts ?? []).filter((text) => {
+    const index = labelTexts.indexOf(text.replace(/\s+/g, ' ').trim());
+    return index >= 0 && !(labelWidths[index] > 120);
+  });
+  return narrow.length > 0
+    ? [`wrap: drawn 120px wide or less: ${narrow.map((text) => JSON.stringify(text)).join(', ')}`]
+    : [];
+}
+
 // Every expected text must be the whole text of one label
 function compareTexts(entry, labelTexts) {
   const notShown = (entry.expected_texts ?? [])
@@ -278,6 +292,7 @@ try {
           if (result.vertexIds) problems.push(...compareNodes(entry, result.vertexIds));
           if (result.edgeCount !== null) problems.push(...compareEdges(entry, result.edgeCount));
           if (result.labelTexts) problems.push(...compareTexts(entry, result.labelTexts));
+          if (result.labelTexts) problems.push(...compareWidths(entry, result.labelTexts, result.labelWidths));
           if (result.looks) problems.push(...compareLook(entry, result.looks));
         }
         for (const problem of problems) problemsByCase.get(entry.name).push(`${label} ${problem}`);

@@ -65,9 +65,10 @@ pipeline <- scan_fixture("pipeline", list(
 self_workflow <- suppressWarnings(put("R"))
 
 cases <- list()
-add_case <- function(case_name, workflow, ..., expected_texts = NULL) {
+add_case <- function(case_name, workflow, ..., expected_texts = NULL, wide_texts = NULL) {
   cases[[length(cases) + 1]] <<- list(
-    name = case_name, workflow = workflow, args = list(...), expected_texts = expected_texts
+    name = case_name, workflow = workflow, args = list(...), expected_texts = expected_texts,
+    wide_texts = wide_texts
   )
 }
 
@@ -97,6 +98,16 @@ add_case("title", pipeline, title = "Sales Pipeline")
 add_case("mermaid_config_none", pipeline, mermaid_config = "none")
 add_case("mermaid_config_list", pipeline, title = "Sales Pipeline",
          mermaid_config = list(look = "neo", flowchart = list(curve = "basis")))
+# Labels wider than Mermaid 12's 120px wrapping width, on a stadium, a
+# rectangle and a diamond: the classic block's 200px must keep them on one
+# line (#54, #50)
+long_labels <- c(fetch = "Fetch the Monthly Sales", clean = "Clean and Validate Rows",
+                 check = "Is the quality good enough?")
+add_case("long_labels", scan_fixture("long_labels", list("a.R" = c(
+  '# put id:"fetch", label:"Fetch the Monthly Sales", node_type:"input", output:"s.csv"',
+  '# put id:"clean", label:"Clean and Validate Rows", input:"s.csv", output:"c.csv"',
+  '# put id:"check", label:"Is the quality good enough?", node_type:"decision", input:"c.csv"'
+))), expected_texts = unname(long_labels), wide_texts = unname(long_labels))
 add_case("custom_palette", pipeline, palette = put_theme(
   base = "dark",
   input = c(fill = "#1b4332", stroke = "#95d5b2", color = "#ffffff"),
@@ -287,8 +298,16 @@ manifest <- lapply(cases, function(case) {
     # The look that the frontmatter sets, if any (#54)
     frontmatter_end <- if (code_lines[1] == "---") match("---", code_lines[-1]) else NA
     if (!is.na(frontmatter_end)) {
-      look_line <- grep('^\\s+look: "', code_lines[seq_len(frontmatter_end)], value = TRUE)
-      if (length(look_line) == 1) entry$expected_look <- sub('^\\s+look: "([^"]*)".*$', "\\1", look_line)
+      # The top-level look; flowchart.look would override it on Mermaid 12
+      frontmatter <- code_lines[seq_len(frontmatter_end)]
+      look_line <- grep('^  look: "', frontmatter, value = TRUE)
+      if (length(look_line) == 1 && !any(grepl('^    look: ', frontmatter))) {
+        entry$expected_look <- sub('^  look: "([^"]*)".*$', "\\1", look_line)
+      }
+      # Labels that a 200px wrapping width keeps wider than 120px
+      if (!is.null(case$wide_texts) && any(grepl("^    wrappingWidth: 200$", frontmatter))) {
+        entry$wide_texts <- I(case$wide_texts)
+      }
     }
     entry <- c(entry, describe_diagram(code_lines))
   }
