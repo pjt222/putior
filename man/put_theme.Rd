@@ -47,7 +47,9 @@ from the \code{base} theme.
 \details{
 Each node type accepts a named character vector with keys \code{fill},
 \code{stroke}, and \code{color} (text color). All values must be valid
-hex colors (e.g., \code{"#1a5276"}).
+hex colors (e.g., \code{"#1a5276"}). Keys you leave out keep the
+\code{base} theme's value for that node type, and so does the border
+width (3px for start and end nodes, 1px for artifacts in most themes).
 }
 \examples{
 # Override only input node colors, inherit rest from dark theme

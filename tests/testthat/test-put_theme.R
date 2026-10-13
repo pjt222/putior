@@ -245,3 +245,43 @@ test_that("put_theme() with 8-digit hex colors (with alpha)", {
   theme <- put_theme(input = c(fill = "#aabbccdd", stroke = "#11223344", color = "#ffffff"))
   expect_match(theme$input, "fill:#aabbccdd")
 })
+
+# =============================================================================
+# Partial overrides keep the base style (#61)
+# =============================================================================
+
+test_that("a fill-only override keeps the base stroke, width and text color", {
+  theme <- put_theme(base = "light", input = c(fill = "#00ff00"))
+
+  expect_equal(theme$input, "fill:#00ff00,stroke:#01579b,stroke-width:2px,color:#000000")
+})
+
+test_that("overrides keep each node type's base border width", {
+  theme <- put_theme(
+    base = "light",
+    start = c(fill = "#ff0000", stroke = "#990000", color = "#ffffff"),
+    end = c(stroke = "#123456"),
+    artifact = c(fill = "#eeeeee")
+  )
+
+  expect_equal(theme$start, "fill:#ff0000,stroke:#990000,stroke-width:3px,color:#ffffff")
+  expect_equal(theme$end, "fill:#e8f5e8,stroke:#123456,stroke-width:3px,color:#1b5e20")
+  expect_equal(theme$artifact, "fill:#eeeeee,stroke:#666666,stroke-width:1px,color:#333333")
+})
+
+test_that("overrides inherit from the chosen base theme", {
+  minimal <- get_theme_colors("minimal")
+  theme <- put_theme(base = "minimal", start = c(fill = "#abcdef"))
+
+  expected <- sub("^fill:[^,]+", "fill:#abcdef", minimal$start)
+  expect_equal(theme$start, expected)
+  expect_match(theme$start, "stroke-width:2px", fixed = TRUE)
+})
+
+test_that("parse_style_string() splits a style into named properties", {
+  expect_equal(
+    parse_style_string("fill:#fff,stroke:#000,stroke-width:2px"),
+    list(fill = "#fff", stroke = "#000", `stroke-width` = "2px")
+  )
+  expect_equal(parse_style_string(""), list())
+})

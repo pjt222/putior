@@ -6,7 +6,9 @@
 #'
 #' Each node type accepts a named character vector with keys \code{fill},
 #' \code{stroke}, and \code{color} (text color). All values must be valid
-#' hex colors (e.g., \code{"#1a5276"}).
+#' hex colors (e.g., \code{"#1a5276"}). Keys you leave out keep the
+#' \code{base} theme's value for that node type, and so does the border
+#' width (3px for start and end nodes, 1px for artifacts in most themes).
 #'
 #' @param base Character string naming the base theme to inherit from.
 #'   Must be one of the valid themes returned by \code{\link{get_diagram_themes}()}.
@@ -70,7 +72,7 @@ put_theme <- function(base = "light",
   for (node_type in names(overrides)) {
     override <- overrides[[node_type]]
     if (!is.null(override)) {
-      colors[[node_type]] <- apply_color_override(override, node_type)
+      colors[[node_type]] <- apply_color_override(override, node_type, colors[[node_type]])
     }
   }
 
@@ -79,15 +81,19 @@ put_theme <- function(base = "light",
 
 #' Apply a color override for a single node type
 #'
-#' Validates and converts a named character vector of hex colors into a
-#' Mermaid CSS style string.
+#' Validates a named character vector of hex colors and merges it into the
+#' base theme's Mermaid style string for the node type: the given keys replace
+#' the base values, every other base property (such as \code{stroke-width})
+#' is kept (#61).
 #'
 #' @param override Named character vector with keys from \code{fill},
 #'   \code{stroke}, \code{color}.
 #' @param node_type Character string naming the node type (for error messages).
+#' @param base_style The base theme's style string for this node type, such as
+#'   \code{"fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000000"}.
 #' @return Single CSS style string.
 #' @noRd
-apply_color_override <- function(override, node_type) {
+apply_color_override <- function(override, node_type, base_style = "") {
   if (!is.character(override) || is.null(names(override))) {
     stop(
       "'", node_type, "' must be a named character vector ",
@@ -119,20 +125,34 @@ apply_color_override <- function(override, node_type) {
     }
   }
 
-  # Build CSS string
-  parts <- character()
-  if ("fill" %in% names(override)) {
-    parts <- c(parts, paste0("fill:", override[["fill"]]))
+  # Start from the base style's properties, in their order
+  style <- parse_style_string(base_style)
+  for (key in valid_keys) {
+    if (key %in% names(override)) {
+      style[[key]] <- override[[key]]
+    }
   }
-  if ("stroke" %in% names(override)) {
-    parts <- c(parts, paste0("stroke:", override[["stroke"]]))
-  }
-  parts <- c(parts, "stroke-width:2px")
-  if ("color" %in% names(override)) {
-    parts <- c(parts, paste0("color:", override[["color"]]))
+  # A base style without a stroke width gets the usual 2px
+  if (is.null(style[["stroke-width"]])) {
+    style[["stroke-width"]] <- "2px"
   }
 
-  paste(parts, collapse = ",")
+  paste0(names(style), ":", unlist(style), collapse = ",")
+}
+
+#' Split a Mermaid style string into a named list of properties
+#' @param style_string Such as \code{"fill:#fff,stroke:#000,stroke-width:2px"}
+#' @return Named list, in the order of the string (empty list for "")
+#' @noRd
+parse_style_string <- function(style_string) {
+  if (is_empty_string(style_string)) {
+    return(list())
+  }
+  parts <- strsplit(style_string, ",", fixed = TRUE)[[1]]
+  parts <- parts[grepl(":", parts, fixed = TRUE)]
+  style <- as.list(sub("^[^:]*:", "", parts))
+  names(style) <- sub(":.*$", "", parts)
+  style
 }
 
 #' Print a putior_theme Object

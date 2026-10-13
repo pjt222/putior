@@ -36,6 +36,11 @@
 * Fixed single-line block comment annotations (`/* put ... */`) silently
   losing their last property, which could drop an output and its edge.
   (#72)
+* `put_theme()` overrides now keep everything from the `base` theme that
+  they do not set. A partial override such as `input = c(fill = "#00ff00")`
+  dropped the base stroke and text color, and every override forced a 2px
+  border, so start and end nodes lost their 3px border and artifacts their
+  1px border. (#61)
 
 ## New Features
 
