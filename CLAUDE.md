@@ -62,7 +62,7 @@ putior is an R package that extracts structured annotations from source code fil
 - **Win-builder (0.2.0)**: pending. The 0.1.0 results ("1 NOTE, new submission") are out of date; 0.2.0 is an update.
 - **R-hub**: no result for 0.2.0. Both `rhub.yaml` runs (22953633249, 22950885436) were cancelled on 2026-03-11.
 - All vignettes build successfully with Pandoc
-- All tests pass: 4649 expectations in 529 tests (Windows R 4.6.1 with all Suggests, 2026-10-13)
+- All tests pass: 4659 expectations in 533 tests (Windows R 4.6.1 inside renv, all Suggests, 2026-10-13)
 - Comprehensive multiline PUT annotation support implemented
 
 ### Mermaid Output Check (`tests/mermaid/`)
@@ -96,19 +96,19 @@ node tests/mermaid/validate.mjs tests/mermaid/corpus
 - README with auto-generated examples capability
 
 ### CI/CD Considerations
-- GitHub Actions may fail if development dependencies (like `mcptools`) aren't available
-- Solution: Use conditional loading with `requireNamespace()` in `.Rprofile`
+- GitHub Actions does not use renv: `r-lib/actions/setup-r-dependencies` installs DESCRIPTION's dependencies from CRAN (all of them, mcptools included, are on CRAN)
+- `.Rprofile` loads the development-only `acquaint` MCP session only if it is installed, so it never breaks a session that lacks it
 - Spell check passes cleanly with comprehensive WORDLIST
 
 ## Development Dependencies vs Package Dependencies
 
 ### Package Dependencies (in DESCRIPTION & renv.lock)
-- Only packages required for putior to function
-- Listed in Imports/Suggests in DESCRIPTION  
-- Included in renv.lock for reproducible installation, together with the development tools the repo uses (roxygen2, devtools, rcmdcheck, pkgdown, testthat)
+- DESCRIPTION lists only what putior needs (Imports) or can use (Suggests)
+- renv.lock is wider: renv's implicit snapshot also records the development tools the repo uses (roxygen2, devtools, rcmdcheck, pkgdown, testthat) and the packages that the scripts in `inst/` (examples, hex sticker) use, such as magick and showtext
 - All dependencies are from CRAN (no GitHub packages), including mcptools
 - renv.lock is for **Windows R 4.6.1** (the R that RStudio uses) and renv 1.3.1, refreshed 2026-10-13. After pulling a lockfile change, run `renv::restore()` in RStudio. Keep it current: `renv::update()`, then `renv::snapshot()`, from Windows R in the project (not with `--no-init-file`, which bypasses renv)
 - WSL's R (`/opt/R/<version>` via rig) is not used for renv, docs or checks; it only serves Linux-side probes
+- If a fresh checkout stops with "Failed to find an renv installation", look at renv's own entry in the global cache (`C:/Users/<you>/AppData/Local/R/cache/R/renv/cache/v5/windows/R-4.6/x86_64-w64-mingw32/renv/<version>/`). An empty entry, as `renv::upgrade()` left on 2026-10-13, makes the bootstrap copy nothing; delete it and renv downloads itself instead
 
 ### Development-Only Tools (NOT in renv.lock)
 - **acquaint**: MCP session for AI-assisted development, loaded conditionally in `.Rprofile` if installed
