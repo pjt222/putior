@@ -304,6 +304,39 @@ test_that("the accTitle text is escaped like a label, but keeps quotes (#50)", {
   # Control characters become spaces; a blank title gives no accTitle
   expect_equal(title_line("tab\there\001bell"), "    accTitle: tab here bell")
   expect_length(title_line("   "), 0)
+  # "<" would go through DOMPurify, "%%{" would start a directive
+  expect_equal(title_line("Input < 5 & ok"), "    accTitle: Input #60; 5 & ok")
+  expect_equal(title_line("50%%{x: y"), "    accTitle: 50#37;%{x: y")
+  expect_equal(title_line("50%% done"), "    accTitle: 50%% done")
+})
+
+test_that("accDescr counts unique steps and data files only (#50)", {
+  workflow <- data.frame(
+    id = c("a", "a", "b", "c"), label = c("A", "A2", "B", "C"),
+    file_name = c("a.R", "a2.R", "utils.R", "c.R"),
+    input = c(NA, NA, NA, "utils.R, x.csv, y.internal"),
+    output = c("x.csv", "x.csv", "utils.R", "y.internal"),
+    stringsAsFactors = FALSE
+  )
+  diagram <- suppressWarnings(put_diagram(workflow, output = "raw"))
+  # Three ids; utils.R is a script and y.internal a variable, so one file
+  expect_match(diagram, "accDescr: Workflow with 3 steps and 1 data file.", fixed = TRUE)
+})
+
+test_that("put_diagram() checks title and accessibility (#50)", {
+  workflow <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
+  expect_error(put_diagram(workflow, output = "raw", title = c("A", "B")),
+               "title must be a single string")
+  for (bad_value in list(NA, 1, "yes", NULL, c(TRUE, FALSE))) {
+    expect_error(put_diagram(workflow, output = "raw", accessibility = bad_value),
+                 "accessibility must be TRUE or FALSE")
+  }
+})
+
+test_that("a decision node with the id accDescr keeps its shape (#50)", {
+  workflow <- data.frame(id = "accDescr", label = "Decide", node_type = "decision",
+                         file_name = "a.R", stringsAsFactors = FALSE)
+  expect_match(put_diagram(workflow, output = "raw"), 'node_accDescr{"Decide"}', fixed = TRUE)
 })
 
 test_that("put_diagram() rejects a mermaid_config it cannot write (#54)", {

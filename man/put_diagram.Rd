@@ -124,7 +124,9 @@ accessibility metadata that screen readers announce: \code{accTitle}
 with the \code{title} (if one is given) and \code{accDescr} with a
 one-line summary, such as "Workflow with 4 steps and 3 data files."
 Mermaid puts them into the SVG's \code{<title>} and \code{<desc>}; a
-frontmatter title alone does not.}
+frontmatter title alone does not (Mermaid 10.5.0 and later). Mermaid
+reads these lines from 9.1.0 on; for an older renderer, set
+\code{accessibility = FALSE} and \code{mermaid_config = "none"}.}
 
 \item{log_level}{Character string specifying log verbosity for this call.
 Overrides the global option \code{putior.log_level} when specified.
@@ -168,8 +170,8 @@ with the id \code{file_<name>}.
 
 The output uses only classic Mermaid syntax, so that every current
 renderer draws it. The frontmatter (title and \code{mermaid_config})
-needs Mermaid 9.3.0 or later, \code{accTitle}/\code{accDescr} 9.0 or
-later. CI draws every diagram option on Mermaid 11.12.0, 11.17.2, 12.1.0
+needs Mermaid 9.3.0 or later, \code{accTitle}/\code{accDescr} 9.1.0 or
+later (measured). CI draws every diagram option on Mermaid 11.12.0, 11.17.2, 12.1.0
 and 12.2.0; 10.9.8 was checked once. Renderers (2026-10-12): GitHub
 12.1.0 (measured), Quarto 1.10 and 1.11 11.12.0, GitLab 11.16.1, VS Code
 11.17.0, Positron 11.15.0; the pkgdown site and the sandbox load 12.2.0.

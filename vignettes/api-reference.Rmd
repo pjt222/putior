@@ -117,19 +117,22 @@ Converts workflow data into Mermaid flowchart syntax.
 put_diagram(
   workflow,
   output = "console",
-  file = NULL,
-  direction = "TD",
-  theme = "github",
-  show_artifacts = FALSE,
-  show_files = FALSE,
-  style_nodes = TRUE,
-  show_workflow_boundaries = TRUE,
-  node_labels = "label",
+  file = "workflow_diagram.md",
   title = NULL,
+  direction = "TD",
+  node_labels = "label",
+  show_files = FALSE,
+  show_artifacts = FALSE,
+  show_workflow_boundaries = TRUE,
+  style_nodes = TRUE,
+  theme = "light",
+  palette = NULL,
   show_source_info = FALSE,
   source_info_style = "inline",
   enable_clicks = FALSE,
   click_protocol = "vscode",
+  mermaid_config = "classic",
+  accessibility = TRUE,
   log_level = NULL
 )
 ```
@@ -140,9 +143,10 @@ put_diagram(
 |-----------|------|---------|-------------|
 | `workflow` | data.frame | (required) | Workflow data from `put()` |
 | `output` | character | `"console"` | Output mode: "console", "file", "clipboard", "raw" |
-| `file` | character | `NULL` | Output file path (when output = "file") |
-| `direction` | character | `"TD"` | Flow direction: "TD", "LR", "BT", "RL" |
-| `theme` | character | `"github"` | Theme: "github", "light", "dark", "auto", "minimal", "viridis", "magma", "plasma", "cividis" (colorblind-safe) |
+| `file` | character | `"workflow_diagram.md"` | Output file path (when output = "file") |
+| `direction` | character | `"TD"` | Flow direction: "TD" (or "TB"), "LR", "BT", "RL" |
+| `theme` | character | `"light"` | Theme: "light", "dark", "auto", "minimal", "github", "viridis", "magma", "plasma", "cividis" (colorblind-safe) |
+| `palette` | putior_theme | `NULL` | Custom node colors from `put_theme()`; overrides `theme` |
 | `show_artifacts` | logical | `FALSE` | Show data file nodes |
 | `show_files` | logical | `FALSE` | Show file names on connections |
 | `style_nodes` | logical | `TRUE` | Apply color styling to nodes |
@@ -153,6 +157,8 @@ put_diagram(
 | `source_info_style` | character | `"inline"` | Source info style: "inline", "subgraph" |
 | `enable_clicks` | logical | `FALSE` | Make nodes clickable. See [Features Tour](features-tour.html#enable_clicks---clickable-nodes) |
 | `click_protocol` | character | `"vscode"` | Click protocol: "vscode", "rstudio", "file" |
+| `mermaid_config` | character or list | `"classic"` | Mermaid configuration in the frontmatter: "classic", "none" or a named list |
+| `accessibility` | logical | `TRUE` | Write `accTitle` (from `title`) and `accDescr` for screen readers |
 | `log_level` | character | `NULL` | Override log level. See [Features Tour](features-tour.html#debugging-with-logging) |
 
 **Returns:**

@@ -190,13 +190,13 @@ put_diagram(workflow, accessibility = FALSE)       # Leave them out
 
 #### Mermaid versions
 
-putior writes classic Mermaid syntax only. The frontmatter (title and `mermaid_config`) needs Mermaid 9.3.0 or later.
+putior writes classic Mermaid syntax only. The frontmatter (title and `mermaid_config`) needs Mermaid 9.3.0 or later, `accTitle`/`accDescr` 9.1.0 or later; for older renderers use `mermaid_config = "none"` and `accessibility = FALSE`.
 
 | Renderer | Mermaid (2026-10-12) | Source |
 |----------|----------------------|--------|
 | GitHub | 12.1.0 | measured on github.com |
 | pkgdown site, sandbox | 12.2.0 | putior's pin |
-| Quarto 1.10, 1.11 | 11.12.0 | bundle; 1.9.38 measured |
+| Quarto 1.10, 1.11 | 11.12.0 | bundle (RStudio's Quarto 1.9.38 ships it too, measured) |
 | VS Code | 11.17.0 | package lock |
 | GitLab | 11.16.1 | package.json |
 | Positron | 11.15.0 | package lock |

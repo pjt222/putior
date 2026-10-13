@@ -84,7 +84,9 @@
 #'   with the \code{title} (if one is given) and \code{accDescr} with a
 #'   one-line summary, such as "Workflow with 4 steps and 3 data files."
 #'   Mermaid puts them into the SVG's \code{<title>} and \code{<desc>}; a
-#'   frontmatter title alone does not.
+#'   frontmatter title alone does not (Mermaid 10.5.0 and later). Mermaid
+#'   reads these lines from 9.1.0 on; for an older renderer, set
+#'   \code{accessibility = FALSE} and \code{mermaid_config = "none"}.
 #' @param log_level Character string specifying log verbosity for this call.
 #'   Overrides the global option \code{putior.log_level} when specified.
 #'   Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.
@@ -117,8 +119,8 @@
 #' @section Mermaid versions:
 #' The output uses only classic Mermaid syntax, so that every current
 #' renderer draws it. The frontmatter (title and \code{mermaid_config})
-#' needs Mermaid 9.3.0 or later, \code{accTitle}/\code{accDescr} 9.0 or
-#' later. CI draws every diagram option on Mermaid 11.12.0, 11.17.2, 12.1.0
+#' needs Mermaid 9.3.0 or later, \code{accTitle}/\code{accDescr} 9.1.0 or
+#' later (measured). CI draws every diagram option on Mermaid 11.12.0, 11.17.2, 12.1.0
 #' and 12.2.0; 10.9.8 was checked once. Renderers (2026-10-12): GitHub
 #' 12.1.0 (measured), Quarto 1.10 and 1.11 11.12.0, GitLab 11.16.1, VS Code
 #' 11.17.0, Positron 11.15.0; the pkgdown site and the sandbox load 12.2.0.
@@ -297,6 +299,13 @@ put_diagram <- function(workflow,
   }
 
   config_lines <- mermaid_config_lines(mermaid_config)
+
+  if (!is.null(title) && !(is.character(title) && length(title) == 1)) {
+    stop("title must be a single string or NULL", call. = FALSE)
+  }
+  if (!(is.logical(accessibility) && length(accessibility) == 1 && !is.na(accessibility))) {
+    stop("accessibility must be TRUE or FALSE", call. = FALSE)
+  }
 
   # Clean the workflow data
   workflow <- workflow[!is.na(workflow$id) & workflow$id != "", ]
@@ -892,8 +901,8 @@ escape_mermaid_syntax <- function(text, line_start = NULL, line_end = NULL) {
 #'
 #' accTitle comes from the title, if there is one; accDescr summarises the
 #' workflow. Mermaid decodes entities in both, as in labels, but quotes and
-#' pipes need no escape there. Measured on Mermaid 10.9.8, 11.12.0,
-#' 11.17.2, 12.1.0 and 12.2.0.
+#' pipes need no escape there; "<" and "%%{" do. Measured on Mermaid
+#' 10.9.8, 11.12.0, 11.17.2, 12.1.0 and 12.2.0.
 #' @param workflow The workflow being drawn, without artifact nodes
 #' @param title The diagram title, or NULL
 #' @return Character vector of indented diagram lines
@@ -903,12 +912,23 @@ accessibility_lines <- function(workflow, title) {
   if (!is_empty_string(title)) {
     title_text <- trimws(gsub("[[:cntrl:]]+", " ", as.character(title)))
     if (nzchar(title_text)) {
-      title_text <- escape_mermaid_syntax(escape_entity_hashes(title_text), "    accTitle")
+      title_text <- escape_entity_hashes(title_text)
+      # Mermaid passes accTitle text through DOMPurify, which turns the text
+      # around a "<" into entities that the SVG <title> then shows as
+      # written; and it removes "%%{...}%%" directives from the whole
+      # diagram text, so "%%{" in the title can swallow the lines after it
+      title_text <- gsub("<", "#60;", title_text, fixed = TRUE)
+      title_text <- gsub("%(?=%\\{)", "#37;", title_text, perl = TRUE)
+      # Runs last: the colon escape must see every ";" written above
+      title_text <- escape_mermaid_syntax(title_text, "    accTitle")
       lines <- c(lines, paste0("    accTitle: ", title_text))
     }
   }
   step_count <- length(unique(workflow$id))
-  file_count <- nrow(create_artifact_nodes(workflow))
+  # The files that show_artifacts = TRUE draws, without .internal
+  # variables, which are not files
+  data_files <- create_artifact_nodes(workflow)$file_name
+  file_count <- sum(!grepl("\\.internal$", data_files))
   summary_text <- paste0(
     "Workflow with ", step_count, if (step_count == 1) " step" else " steps",
     if (file_count > 0) {
@@ -1001,7 +1021,11 @@ escape_style_colons <- function(label, line_start = NULL, line_end = NULL) {
 .MERMAID_KEYWORD_IDS <- c(
   "end", "graph", "flowchart", "subgraph", "style", "class", "classDef",
   "click", "linkStyle", "call", "href", "interpolate",
-  "_self", "_blank", "_parent", "_top"
+  "_self", "_blank", "_parent", "_top",
+  # accDescr{...} starts an accDescr block, so a decision node with this id
+  # lost its shape and label; measured on Mermaid 10.9.8 to 12.2.0, where
+  # accTitle works as an id with every shape (#50)
+  "accDescr"
 )
 
 #' Sanitize node ID for mermaid compatibility (IMPROVED VERSION)

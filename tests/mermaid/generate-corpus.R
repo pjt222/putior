@@ -192,7 +192,7 @@ add_case("keyword_node_id", scan_fixture("keyword_id", list(
 )))
 keyword_ids <- c("end", "graph", "flowchart", "subgraph", "style", "class",
                  "classDef", "click", "linkStyle", "call", "href", "interpolate",
-                 "_self", "_blank", "_parent", "-top")
+                 "_self", "_blank", "_parent", "-top", "accDescr")
 add_case("keyword_node_ids_all", scan_fixture("keyword_ids_all", list(
   "k.R" = sprintf('# put id:"%s", label:"Step %s", input:"%s.csv", output:"%s.csv"',
                   keyword_ids, keyword_ids, c("start", head(keyword_ids, -1)), keyword_ids)
@@ -213,6 +213,14 @@ add_case("title_with_colon", pipeline, title = "ETL: stage 1")
 # A title with Mermaid syntax, for the accTitle line (#50)
 add_case("title_mermaid_syntax", pipeline,
          title = 'Step #35; with direction LR, Lifestyle:#quot;x#quot; and "quotes" | pipes')
+# "<" makes Mermaid's DOMPurify step write entities into the SVG title, and
+# "%%{" starts a directive that can swallow the lines after it (#50)
+add_case("title_html_and_directive", pipeline, title = "Input < 5 MB & <draft> at 50%%{x: (y)")
+# A decision node whose id starts an accDescr block (#50)
+add_case("accdescr_decision_id", scan_fixture("accdescr_id", list(
+  "a.R" = c('# put id:"accDescr", label:"Decide", node_type:"decision", output:"x.csv"',
+            '# put id:"next", label:"Next", input:"x.csv"')
+)), expected_texts = c("Decide", "Next"))
 add_case("title_special_characters", pipeline,
          title = 'Say "hi" # not a comment: C:\\data\\in [v2] | {x}\t\001end')
 add_case("subgraph_keyword_and_digit_files", scan_fixture("subgraph_names", list(
