@@ -1,208 +1,107 @@
 #!/usr/bin/env Rscript
-# Update README.md with current putior-generated examples
-# This ensures documentation always reflects current styling and features
+# Regenerate the Mermaid diagrams in README.md from current putior output.
+#
+# Run from the package root: Rscript inst/examples/update-readme.R
+# The update-readme workflow runs it on every push to main that changes R/.
+#
+# Each diagram in README.md is marked by an HTML comment on the line right
+# before its ```mermaid fence:
+#
+#   <!-- putior-diagram: tldr -->
+#   <!-- putior-diagram: pipeline -->
+#   <!-- putior-diagram: self-documentation -->
+#
+# The script replaces the fenced block after each marker. A missing marker, or
+# a marker that is not followed by a ```mermaid block, stops the script with an
+# error, so the workflow fails instead of silently leaving a diagram stale.
 
 library(putior)
 
-cat("📝 Updating README.md with current putior examples...\n")
-
-# Read current README
 readme_path <- "README.md"
-if (!file.exists(readme_path)) {
-  stop("README.md not found. Run from project root directory.")
+if (!file.exists(readme_path) || !file.exists("DESCRIPTION")) {
+  stop("Run this script from the package root (README.md not found).", call. = FALSE)
+}
+readme_lines <- readLines(readme_path, encoding = "UTF-8")
+
+# Write files into a fresh directory and scan it with put()
+scan_files <- function(files) {
+  fixture_dir <- tempfile("putior_readme_")
+  dir.create(fixture_dir)
+  for (file_name in names(files)) {
+    writeLines(files[[file_name]], file.path(fixture_dir, file_name))
+  }
+  workflow <- put(fixture_dir, validate = FALSE)
+  unlink(fixture_dir, recursive = TRUE)
+  workflow
 }
 
-readme_lines <- readLines(readme_path)
-
-# =============================================================================
-# Helper function to replace mermaid blocks
-# =============================================================================
-replace_mermaid_block <- function(lines, start_pattern, new_content, context = "") {
-  # Find the start line
-  start_idx <- grep(start_pattern, lines, fixed = TRUE)
-  
-  if (length(start_idx) == 0) {
-    cat("⚠️  Could not find pattern:", start_pattern, "\n")
-    return(lines)
-  }
-  
-  if (length(start_idx) > 1) {
-    cat("⚠️  Multiple matches for pattern. Using first:", start_pattern, "\n")
-    start_idx <- start_idx[1]
-  }
-  
-  # Find the mermaid block after the start pattern
-  mermaid_start <- which(grepl("```mermaid", lines[start_idx:length(lines)]))[1]
-  if (is.na(mermaid_start)) {
-    cat("⚠️  No mermaid block found after pattern:", start_pattern, "\n")
-    return(lines)
-  }
-  mermaid_start <- start_idx + mermaid_start - 1
-  
-  # Find the end of the mermaid block
-  mermaid_end <- which(grepl("```$", lines[mermaid_start:length(lines)]))[1]
-  if (is.na(mermaid_end)) {
-    cat("⚠️  No mermaid block end found after start\n")
-    return(lines)
-  }
-  mermaid_end <- mermaid_start + mermaid_end - 1
-  
-  cat("🔄 Updating", context, "at lines", mermaid_start, "-", mermaid_end, "\n")
-  
-  # Replace the content
-  new_lines <- c(
-    lines[1:(mermaid_start)],  # Keep up to and including ```mermaid
-    new_content,               # Insert new mermaid content  
-    lines[mermaid_end:length(lines)]  # Keep from ``` onward
-  )
-  
-  return(new_lines)
+# Annotations without an id get a random UUID when the uuid package is
+# installed. Use putior's own fallback ids (node_1, node_2, ...) instead, so
+# the README only changes when the diagram itself changes.
+stable_ids <- function(workflow) {
+  uuid_pattern <- "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+  is_uuid <- grepl(uuid_pattern, workflow$id)
+  workflow$id[is_uuid] <- paste0("node_", seq_len(sum(is_uuid)))
+  workflow
 }
 
-# =============================================================================
-# Generate updated examples
-# =============================================================================
+# The code blocks of the README's pipeline example: a line such as
+# **`01_fetch.R`** followed by a fenced code block with the file's content.
+readme_example_files <- function(lines) {
+  heading_rows <- grep("^\\*\\*`[^`]+`\\*\\*$", lines)
+  files <- list()
+  for (heading_row in heading_rows) {
+    fence_start <- heading_row + 1
+    if (fence_start > length(lines) || !grepl("^```[a-z]+$", lines[fence_start])) next
+    fence_end <- fence_start + match(TRUE, lines[(fence_start + 1):length(lines)] == "```")
+    file_name <- sub("^\\*\\*`([^`]+)`\\*\\*$", "\\1", lines[heading_row])
+    files[[file_name]] <- lines[(fence_start + 1):(fence_end - 1)]
+  }
+  if (length(files) == 0) {
+    stop("README.md: no example files (**`name`** followed by a code block) found.", call. = FALSE)
+  }
+  files
+}
 
-# 1. Basic Quick Start Example
-cat("📊 Updating basic workflow example...\n")
-basic_workflow <- data.frame(
-  file_name = c("01_fetch_data.R", "02_clean_data.py"),
-  id = c("fetch_sales", "clean_data"), 
-  label = c("Fetch Sales Data", "Clean and Process"),
-  node_type = c("input", "process"),
-  input = c(NA, "sales_data.csv"),
-  output = c("sales_data.csv", "clean_sales.csv"),
-  stringsAsFactors = FALSE
-)
+# Replace the ```mermaid block that follows the marker line
+replace_diagram <- function(lines, marker_name, diagram) {
+  marker <- paste0("<!-- putior-diagram: ", marker_name, " -->")
+  marker_row <- which(lines == marker)
+  if (length(marker_row) != 1) {
+    stop("README.md: expected one '", marker, "' line, found ", length(marker_row), ".",
+         call. = FALSE)
+  }
+  if (marker_row == length(lines) || lines[marker_row + 1] != "```mermaid") {
+    stop("README.md: '", marker, "' must be followed by a ```mermaid line.", call. = FALSE)
+  }
+  fence_end <- marker_row + 1 + match(TRUE, lines[(marker_row + 2):length(lines)] == "```")
+  if (is.na(fence_end)) {
+    stop("README.md: the ```mermaid block after '", marker, "' is not closed.", call. = FALSE)
+  }
+  c(lines[seq_len(marker_row + 1)], strsplit(diagram, "\n", fixed = TRUE)[[1]],
+    lines[fence_end:length(lines)])
+}
 
-basic_mermaid <- put_diagram(basic_workflow, theme = "github", output = "none")
-readme_lines <- replace_mermaid_block(readme_lines, "**Result:**", basic_mermaid, "Quick Start example")
+# TL;DR: the one-line annotation shown above the diagram
+tldr_workflow <- stable_ids(scan_files(list(
+  "script.R" = '# put label:"Load Data", output:"clean.csv"'
+)))
+readme_lines <- replace_diagram(readme_lines, "tldr",
+  put_diagram(tldr_workflow, show_artifacts = TRUE, output = "raw"))
 
-# 2. Workflow Boundaries Demo
-cat("⚡ Updating workflow boundaries examples...\n")
-boundary_workflow <- data.frame(
-  file_name = c("start.R", "extract.R", "transform.R", "end.R"),
-  id = c("pipeline_start", "extract_data", "transform_data", "pipeline_end"),
-  label = c("Data Pipeline Start", "Extract Raw Data", "Transform Data", "Pipeline Complete"),
-  node_type = c("start", "process", "process", "end"),
-  input = c(NA, "raw_config.json", "raw_data.csv", "clean_data.csv"),
-  output = c("raw_config.json", "raw_data.csv", "clean_data.csv", NA),
-  stringsAsFactors = FALSE
-)
+# Multi-language pipeline: the example files shown in the README itself
+pipeline_workflow <- stable_ids(scan_files(readme_example_files(readme_lines)))
+readme_lines <- replace_diagram(readme_lines, "pipeline",
+  put_diagram(pipeline_workflow, theme = "github", output = "raw"))
 
-# Update the workflow boundaries with boundaries example
-boundary_with_mermaid <- put_diagram(boundary_workflow, 
-                                   show_workflow_boundaries = TRUE, 
-                                   theme = "github", 
-                                   output = "none")
-readme_lines <- replace_mermaid_block(readme_lines, "**Pipeline with Boundaries (Default):**", 
-                                    boundary_with_mermaid, "Workflow boundaries enabled")
+# Self-documentation: putior's own annotated source
+self_workflow <- put("R/", validate = FALSE)
+readme_lines <- replace_diagram(readme_lines, "self-documentation",
+  put_diagram(self_workflow, theme = "github", title = "putior Package Internals",
+              output = "raw"))
 
-# Update the workflow boundaries without boundaries example  
-boundary_without_mermaid <- put_diagram(boundary_workflow, 
-                                      show_workflow_boundaries = FALSE, 
-                                      theme = "github", 
-                                      output = "none")
-readme_lines <- replace_mermaid_block(readme_lines, "**Same Pipeline without Boundaries:**", 
-                                    boundary_without_mermaid, "Workflow boundaries disabled")
-
-# 3. Data Science Pipeline
-cat("📈 Updating data science pipeline example...\n")
-datascience_workflow <- data.frame(
-  file_name = c("01_fetch_sales.R", "02_fetch_customers.R", "03_clean_sales.py", 
-                "04_merge_data.R", "05_analyze.py", "06_report.R"),
-  id = c("fetch_sales", "fetch_customers", "clean_sales", "merge_data", "analyze", "report"),
-  label = c("Fetch Sales Data", "Fetch Customer Data", "Clean Sales Data", 
-            "Merge Datasets", "Statistical Analysis", "Generate Final Report"),
-  node_type = c("input", "input", "process", "process", "process", "output"),
-  input = c(NA, NA, "sales_data.csv", "customers.csv,clean_sales.csv", "merged_data.csv", "analysis_results.csv"),
-  output = c("sales_data.csv", "customers.csv", "clean_sales.csv", "merged_data.csv", "analysis_results.csv", "final_report.pdf"),
-  stringsAsFactors = FALSE
-)
-
-datascience_mermaid <- put_diagram(datascience_workflow, theme = "github", output = "none")
-readme_lines <- replace_mermaid_block(readme_lines, "**Generated Workflow:**", 
-                                    datascience_mermaid, "Data science pipeline")
-
-# 4. Modular Workflow Examples
-cat("📦 Updating modular workflow examples...\n")
-modular_workflow <- data.frame(
-  file_name = c("utils.R", "analysis.R", "main.R"),
-  id = c("utils", "analysis", "main"),
-  label = c("Data Utilities", "Statistical Analysis", "Main Analysis Pipeline"),
-  node_type = c("input", "process", "process"),
-  input = c(NA, "utils.R", "utils.R,analysis.R"),
-  output = c("utils.R", "analysis.R", "results.csv"),
-  stringsAsFactors = FALSE
-)
-
-# Simple modular workflow
-modular_simple_mermaid <- put_diagram(modular_workflow, theme = "github", output = "none")
-readme_lines <- replace_mermaid_block(readme_lines, "**Generated Workflow (Simple):**", 
-                                    modular_simple_mermaid, "Modular workflow simple")
-
-# Artifact modular workflow  
-modular_artifacts_mermaid <- put_diagram(modular_workflow, 
-                                       show_artifacts = TRUE, 
-                                       theme = "github", 
-                                       output = "none")
-readme_lines <- replace_mermaid_block(readme_lines, "**Generated Workflow (With Data Artifacts):**", 
-                                    modular_artifacts_mermaid, "Modular workflow with artifacts")
-
-# 5. Theme Examples
-cat("🎨 Updating theme examples...\n")
-theme_workflow <- data.frame(
-  file_name = c("fetch.R", "process.R", "report.R"),
-  id = c("fetch_data", "clean_data", "generate_report"),
-  label = c("Fetch API Data", "Clean and Validate", "Generate Final Report"),
-  node_type = c("input", "process", "output"),
-  input = c(NA, "raw_data.csv", "clean_data.csv"),
-  output = c("raw_data.csv", "clean_data.csv", "final_report.html"),
-  stringsAsFactors = FALSE
-)
-
-# Light theme
-light_mermaid <- put_diagram(theme_workflow, theme = "light", output = "none")
-readme_lines <- replace_mermaid_block(readme_lines, "**Light Theme**", 
-                                    light_mermaid, "Light theme example")
-
-# Dark theme
-dark_mermaid <- put_diagram(theme_workflow, theme = "dark", output = "none")
-readme_lines <- replace_mermaid_block(readme_lines, "**Dark Theme**", 
-                                    dark_mermaid, "Dark theme example")
-
-# Auto theme
-auto_mermaid <- put_diagram(theme_workflow, theme = "auto", output = "none")
-readme_lines <- replace_mermaid_block(readme_lines, "**Auto Theme (GitHub Adaptive)**", 
-                                    auto_mermaid, "Auto theme example")
-
-# GitHub theme
-github_mermaid <- put_diagram(theme_workflow, theme = "github", output = "none")
-readme_lines <- replace_mermaid_block(readme_lines, "**GitHub Theme (Maximum Compatibility)**", 
-                                    github_mermaid, "GitHub theme example")
-
-# Minimal theme
-minimal_mermaid <- put_diagram(theme_workflow, theme = "minimal", output = "none")
-readme_lines <- replace_mermaid_block(readme_lines, "**Minimal Theme**", 
-                                    minimal_mermaid, "Minimal theme example")
-
-# 6. Self-Documentation (putior documents itself)
-cat("🔄 Updating self-documentation example...\n")
-self_workflow <- put("./R/")
-self_mermaid <- put_diagram(self_workflow,
-                            theme = "github",
-                            title = "putior Package Internals",
-                            show_workflow_boundaries = TRUE,
-                            output = "none")
-readme_lines <- replace_mermaid_block(readme_lines, "**putior's Own Workflow:**",
-                                      self_mermaid, "Self-documentation")
-
-# =============================================================================
-# Write updated README
-# =============================================================================
-writeLines(readme_lines, readme_path)
-
-cat("\n✅ README.md updated with current putior examples!\n")
-cat("🎨 All Mermaid diagrams now show current theme colors and styling\n")
-cat("⚡ Workflow boundaries show new orange start / green end scheme\n")
-cat("📊 Examples generated with putior version:", as.character(packageVersion("putior")), "\n")
+# A binary connection writes LF line endings on Windows too
+readme_connection <- file(readme_path, open = "wb")
+writeLines(enc2utf8(readme_lines), readme_connection, useBytes = TRUE)
+close(readme_connection)
+cat("README.md diagrams regenerated: tldr, pipeline, self-documentation\n")

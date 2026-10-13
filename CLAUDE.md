@@ -93,7 +93,7 @@ node tests/mermaid/validate.mjs tests/mermaid/corpus
   - `troubleshooting.Rmd` - Common problems and their fixes
   - `ai-integration.Rmd` - Using putior from AI assistants (guide, MCP, ACP)
 - Complete self-documentation workflow
-- README with auto-generated examples capability
+- README diagrams are generated: `inst/examples/update-readme.R` replaces the ```` ```mermaid ```` block after each `<!-- putior-diagram: <name> -->` marker (`tldr`, `pipeline`, `self-documentation`); the pipeline diagram is built from the example files shown in the README itself. The `update-readme` workflow runs it on pushes to `main` that change `R/` and commits README.md if it changed; a missing marker fails the workflow. A PR that changes diagram output should run it too (inside renv: `pkgload::load_all(); source("inst/examples/update-readme.R")`), so README.md changes in the same PR
 
 ### CI/CD Considerations
 - GitHub Actions does not use renv: `r-lib/actions/setup-r-dependencies` installs DESCRIPTION's dependencies from CRAN (all of them, mcptools included, are on CRAN)

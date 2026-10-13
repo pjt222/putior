@@ -23,20 +23,23 @@
 
 # 2. Generate diagram
 library(putior)
-put_diagram(put("./"))
+put_diagram(put("./"), show_artifacts = TRUE)
 ```
 
 <details>
 <summary>See result</summary>
 
+<!-- putior-diagram: tldr -->
 ```mermaid
 flowchart TD
-    node1[Load Data]
-    artifact_clean_csv[(clean.csv)]
-    node1 --> artifact_clean_csv
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class node1 processStyle
-    classDef artifactStyle fill:#f3f4f6,stroke:#6b7280,stroke-width:1px,color:#374151
+    node_1["Load Data"]
+    artifact_clean_csv[("clean.csv")]
+
+    %% Connections
+    node_1 --> artifact_clean_csv
+
+    %% Styling
+    classDef artifactStyle fill:#f9f9f9,stroke:#666666,stroke-width:1px,color:#333333
     class artifact_clean_csv artifactStyle
 ```
 
@@ -101,19 +104,22 @@ put_diagram(workflow, theme = "github")
 ```
 
 **Result:**
+<!-- putior-diagram: pipeline -->
 ```mermaid
 flowchart TD
-    fetch_sales(["Fetch Sales Data"])
-    clean_data["Clean and Process"]
+    fetch(["Fetch Sales Data"])
+    clean["Clean and Validate"]
+    report[["Generate Summary"]]
 
     %% Connections
-    fetch_sales --> clean_data
+    fetch --> clean
+    clean --> report
 
     %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    class fetch_sales inputStyle
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class clean_data processStyle
+    class fetch inputStyle
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class report outputStyle
 ```
 
 ## Learn More
@@ -174,21 +180,22 @@ putior *documents* workflows; targets/drake/Airflow *execute* them. They are com
 
 putior uses its own annotation system to document its internal workflow -- a real demonstration of the package in action. Running `put("./R/")` on putior's own source code produces this diagram:
 
+<!-- putior-diagram: self-documentation -->
 ```mermaid
 ---
 title: putior Package Internals
 ---
 flowchart TD
-    diagram_gen[Generate Mermaid Diagram]
-    styling[Apply Theme Styling]
-    node_defs[Create Node Definitions]
-    connections[Generate Node Connections]
-    output_handler([Output Final Diagram])
-    put_entry([Entry Point - Scan Files])
-    process_file[Process Single File]
-    validate[Validate Annotations]
-    parser[Parse Annotation Syntax]
-    convert_df[Convert to Data Frame]
+    diagram_gen["Generate Mermaid Diagram"]
+    styling["Apply Theme Styling"]
+    node_defs["Create Node Definitions"]
+    connections["Generate Node Connections"]
+    output_handler(["Output Final Diagram"])
+    put_entry(["Entry Point - Scan Files"])
+    process_file["Process Single File"]
+    validate["Validate Annotations"]
+    parser["Parse Annotation Syntax"]
+    convert_df["Convert to Data Frame"]
 
     %% Connections
     put_entry --> diagram_gen
