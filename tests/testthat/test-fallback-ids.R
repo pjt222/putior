@@ -59,12 +59,18 @@ test_that("explicit numeric ids and a missing id give distinct diagram nodes", {
     '# put label:"No id step", input:"b.csv", output:"c.csv"'
   ), "b.R", test_dir)
 
-  diagram <- put_diagram(put(test_dir), output = "raw")
+  workflow <- put(test_dir)
 
+  # put_diagram() draws each annotation under its sanitized id, so those
+  # must be distinct. (A substring check on the edges is not enough: a UUID
+  # starting with "1" becomes "node_1...", which contains "node_1".)
+  sanitized_ids <- vapply(workflow$id, sanitize_node_id, character(1))
+  expect_false(anyDuplicated(sanitized_ids) > 0)
+
+  diagram <- put_diagram(workflow, output = "raw")
   for (node_label in c("Step One", "Step Two", "No id step")) {
     expect_match(diagram, paste0('"', node_label, '"'), fixed = TRUE)
   }
-  expect_false(grepl("node_2 --> node_1", diagram, fixed = TRUE))
 })
 
 test_that("fill_missing_ids() keeps explicit ids, including empty ones", {
