@@ -242,16 +242,18 @@
 <span></span>
 <span><span class="co"># 2. Generate diagram</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pjt222.github.io/putior/">putior</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./"</span><span class="op">)</span>, show_artifacts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <details><summary>
 See result
-</summary><pre class="mermaid"><code>flowchart TD
-    node1[Load Data]
-    artifact_clean_csv[(clean.csv)]
-    node1 --&gt; artifact_clean_csv
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class node1 processStyle
-    classDef artifactStyle fill:#f3f4f6,stroke:#6b7280,stroke-width:1px,color:#374151
+</summary><!-- putior-diagram: tldr --><pre class="mermaid"><code>flowchart TD
+    node_1["Load Data"]
+    artifact_clean_csv[("clean.csv")]
+
+    %% Connections
+    node_1 --&gt; artifact_clean_csv
+
+    %% Styling
+    classDef artifactStyle fill:#f9f9f9,stroke:#666666,stroke-width:1px,color:#333333
     class artifact_clean_csv artifactStyle</code></pre>
 </details>
 </div>
@@ -311,19 +313,21 @@ See result
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pjt222.github.io/putior/">putior</a></span><span class="op">)</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/put.html">put</a></span><span class="op">(</span><span class="st">"./pipeline/"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"github"</span><span class="op">)</span></span></code></pre></div>
-<p><strong>Result:</strong></p>
+<p><strong>Result:</strong> <!-- putior-diagram: pipeline --></p>
 <pre class="mermaid"><code>flowchart TD
-    fetch_sales(["Fetch Sales Data"])
-    clean_data["Clean and Process"]
+    fetch(["Fetch Sales Data"])
+    clean["Clean and Validate"]
+    report[["Generate Summary"]]
 
     %% Connections
-    fetch_sales --&gt; clean_data
+    fetch --&gt; clean
+    clean --&gt; report
 
     %% Styling
     classDef inputStyle fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
-    class fetch_sales inputStyle
-    classDef processStyle fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#5b21b6
-    class clean_data processStyle</code></pre>
+    class fetch inputStyle
+    classDef outputStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#15803d
+    class report outputStyle</code></pre>
 </div>
 <div class="section level2">
 <h2 id="learn-more">Learn More<a class="anchor" aria-label="anchor" href="#learn-more"></a>
@@ -524,20 +528,21 @@ See result
 <h2 id="self-documentation">Self-Documentation<a class="anchor" aria-label="anchor" href="#self-documentation"></a>
 </h2>
 <p>putior uses its own annotation system to document its internal workflow – a real demonstration of the package in action. Running <code>put("./R/")</code> on putior’s own source code produces this diagram:</p>
+<!-- putior-diagram: self-documentation -->
 <pre class="mermaid"><code>---
 title: putior Package Internals
 ---
 flowchart TD
-    diagram_gen[Generate Mermaid Diagram]
-    styling[Apply Theme Styling]
-    node_defs[Create Node Definitions]
-    connections[Generate Node Connections]
-    output_handler([Output Final Diagram])
-    put_entry([Entry Point - Scan Files])
-    process_file[Process Single File]
-    validate[Validate Annotations]
-    parser[Parse Annotation Syntax]
-    convert_df[Convert to Data Frame]
+    diagram_gen["Generate Mermaid Diagram"]
+    styling["Apply Theme Styling"]
+    node_defs["Create Node Definitions"]
+    connections["Generate Node Connections"]
+    output_handler(["Output Final Diagram"])
+    put_entry(["Entry Point - Scan Files"])
+    process_file["Process Single File"]
+    validate["Validate Annotations"]
+    parser["Parse Annotation Syntax"]
+    convert_df["Convert to Data Frame"]
 
     %% Connections
     put_entry --&gt; diagram_gen
