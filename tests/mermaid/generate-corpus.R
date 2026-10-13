@@ -125,22 +125,19 @@ add_case("missing_ids", scan_fixture("missing_ids", list(
   )
 )))
 
-# A workflow of chained steps in one file, built without put(): put() drops
-# annotation values that contain a quote character (#91)
-chain_workflow <- function(labels) {
-  data.frame(
-    file_name = "a.R", file_path = "a.R", file_type = "r",
-    id = names(labels), label = unname(labels),
-    input = paste0(c("start", head(names(labels), -1)), ".csv"),
-    output = paste0(names(labels), ".csv"),
-    stringsAsFactors = FALSE
-  )
+# Chained steps in one file, one annotation each. The labels go in single
+# quotes, so they may contain double quotes (#91).
+chain_fixture <- function(fixture_name, labels) {
+  scan_fixture(fixture_name, list("a.R" = sprintf(
+    "# put id:\"%s\", label:'%s', input:\"%s.csv\", output:\"%s.csv\"",
+    names(labels), labels, c("start", head(names(labels), -1)), names(labels)
+  )))
 }
 
 # Labels with characters that need escaping (#33)
 special_labels <- c(quote = 'Say "hi" | pipe', unicode = "Größe – naïve ✓",
                     hash = "Step #35; in C# at 100%")
-add_case("label_special_characters", chain_workflow(special_labels),
+add_case("label_special_characters", chain_fixture("special_labels", special_labels),
          expected_texts = unname(special_labels))
 
 # Labels with words that Mermaid reads as syntax (#89): a direction
@@ -151,7 +148,7 @@ syntax_labels <- c(
   bold = 'style:"bold"', life = 'Lifestyle:"x"', cdef = 'classDef a:"x"',
   lifestyle = 'Note:"x"', keyed = "key:a|b", keep = "Direction LR stays"
 )
-add_case("labels_mermaid_reads_as_syntax", chain_workflow(syntax_labels),
+add_case("labels_mermaid_reads_as_syntax", chain_fixture("syntax_labels", syntax_labels),
          expected_texts = unname(syntax_labels))
 add_case("direction_words_in_edge_and_subgraph_labels", scan_fixture("syntax_file_names", list(
   "direction LR.R" = '# put id:"make", label:"Make", output:"direction TB.csv"',
