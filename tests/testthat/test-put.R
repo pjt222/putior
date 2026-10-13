@@ -492,6 +492,26 @@ test_that("put() handles edge cases in multiline annotations", {
   expect_equal(edge5$label, "End of File")
 })
 
+test_that("a comment before a continuation backslash keeps the next lines (#91)", {
+  test_dir <- tempfile("putior_multiline_comments_")
+  dir.create(test_dir)
+  on.exit(unlink(test_dir, recursive = TRUE), add = TRUE)
+  create_test_file(c(
+    '# put id:"a", label:"L",   # main step \\',
+    '#   input:"raw.csv", \\',
+    '#   output:"out.csv"',
+    '',
+    '# put id:"b", label:"M"  # first \\',
+    '#   output:"o.csv"   # last'
+  ), "multi.R", test_dir)
+
+  expect_no_warning(result <- put(test_dir))
+  step_a <- result[result$id == "a", ]
+  expect_equal(c(step_a$label, step_a$input, step_a$output), c("L", "raw.csv", "out.csv"))
+  step_b <- result[result$id == "b", ]
+  expect_equal(c(step_b$label, step_b$output), c("M", "o.csv"))
+})
+
 test_that("put() preserves line numbers with multiline annotations", {
   temp_dir <- tempdir()
   test_dir <- file.path(temp_dir, "putior_test_multiline_lines")

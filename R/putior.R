@@ -240,7 +240,7 @@ put <- function(path,
 collect_multiline_annotation <- function(lines, start_idx, escaped_prefix,
                                          comment_pattern, put_pattern,
                                          file_label = "") {
-  full_content <- lines[start_idx]
+  full_content <- strip_comment_before_continuation(lines[start_idx])
 
   if (!grepl("\\\\\\s*$", full_content)) {
     return(full_content)
@@ -260,7 +260,9 @@ collect_multiline_annotation <- function(lines, start_idx, escaped_prefix,
     continuation_line <- lines[current_idx]
     if (!grepl(comment_pattern, continuation_line)) break
 
-    continuation <- sub(sprintf("^\\s*%s\\s*", escaped_prefix), "", continuation_line)
+    continuation <- strip_comment_before_continuation(
+      sub(sprintf("^\\s*%s\\s*", escaped_prefix), "", continuation_line)
+    )
 
     if (nchar(trimws(continuation)) > 0) {
       if (!grepl("^\\s*,", continuation)) {
@@ -278,6 +280,23 @@ collect_multiline_annotation <- function(lines, start_idx, escaped_prefix,
   # A backslash on the file's last line continues into nothing; left in
   # place, it made the last property unreadable (#91)
   sub("\\\\\\s*$", "", full_content)
+}
+
+#' Remove a comment between the values and the continuation backslash
+#'
+#' The lines of a multiline annotation are joined before they are parsed, so
+#' a comment on a line that ends with a continuation \code{\\} would cut all
+#' the lines after it (#91). The comment is cut here, line by line, and the
+#' backslash is kept. A comment on the last line is cut by
+#' \code{parse_put_annotation()}.
+#' @param text One line of an annotation
+#' @return The line without a comment before its trailing backslash
+#' @noRd
+strip_comment_before_continuation <- function(text) {
+  if (!grepl("\\\\\\s*$", text)) {
+    return(text)
+  }
+  paste0(strip_trailing_comment(sub("\\s*\\\\\\s*$", "", text)), " \\")
 }
 
 #' Find PUT annotations inside block comments
@@ -438,9 +457,9 @@ process_single_file <- function(file, include_line_numbers, validate) {
             validation_issues <- c(
               if (length(unparsed_pairs) > 0) {
                 paste0(
-                  "Ignored ", unparsed_pairs, ": not readable as key:\"value\" or ",
+                  "Ignored `", unparsed_pairs, "`: not readable as key:\"value\" or ",
                   "key:'value'. A value may contain the other kind of quote but not ",
-                  "its own, and only a comment may follow it."
+                  "its own, and only a comment (after whitespace) may follow it."
                 )
               },
               validate_annotation(properties, full_content)
@@ -549,12 +568,14 @@ parse_put_annotation <- function(line) {
   # - Block open: /** put, /* put (on opening line of block comment)
   # - Block line: * put (inside block comment body)
   cleaned <- sub("^\\s*(/\\*\\*?\\s*|\\*\\s*|#|--|//|%)\\s*put(\\||\\s+|:)\\s*", "", line, ignore.case = FALSE)
+  # The help page and the vignettes write a comment after the last value
+  # (# put id:"a", label:"B"   # note), which made that property unreadable
+  # (#91). Cut it first, so that "/* put ... */ // note" keeps its "*/" at
+  # the end for the next step.
+  cleaned <- strip_trailing_comment(cleaned)
   # A single-line block comment (/* put ... */) also ends with "*/". Strip it,
   # or the last pair fails to parse and is dropped (#72).
   cleaned <- sub("\\s*\\*/\\s*$", "", cleaned)
-  # The help page and the vignettes write a comment after the last value
-  # (# put id:"a", label:"B"   # note), which made that property unreadable
-  cleaned <- strip_trailing_comment(cleaned)
 
   # Handle edge case of empty annotation
   if (is.null(cleaned) || length(cleaned) == 0 || nchar(trimws(cleaned)) == 0) {
@@ -873,7 +894,9 @@ summary.putior_workflow <- function(object, ...) {
 #' is_valid_put_annotation('# put id:"test", label:"Test"') # TRUE
 #' is_valid_put_annotation("# put invalid syntax") # FALSE
 is_valid_put_annotation <- function(line) {
-  result <- parse_put_annotation(line)
+  # The first line of a multiline annotation ends with a continuation
+  # backslash, which put() does not read as a property
+  result <- parse_put_annotation(sub("\\s*\\\\\\s*$", "", line))
   # put() ignores the pairs it cannot read, so they make the line invalid
   !is.null(result) && length(result) > 0 && is.null(attr(result, "unparsed"))
 }

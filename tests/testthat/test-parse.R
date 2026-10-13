@@ -77,20 +77,26 @@ test_that("parse_put_annotation() lists the pairs it cannot read (#91)", {
 
 test_that("a comment may follow the values of an annotation (#91)", {
   # The help page, the guide and the cheatsheet write annotations like these
-  expect_equal(parse_put_annotation('#put id:"a", label:"B"   # note, with a comma')$label, "B")
+  with_comma <- parse_put_annotation('#put id:"a", label:"B"   # note, with a comma')
+  expect_equal(with_comma$label, "B")
+  expect_null(attr(with_comma, "unparsed"))
   expect_equal(parse_put_annotation('# put id:"step1", output:"data.csv"      # Outputs "data.csv"')$output,
                "data.csv")
   expect_equal(
     parse_put_annotation('    # put id:"my_node", label:"Don\'t panic"         # The other quote inside a value')$label,
     "Don't panic"
   )
-  expect_equal(parse_put_annotation('# put id:"a", label:"x", # after a comma')$label, "x")
+  after_comma <- parse_put_annotation('# put id:"a", label:"x", # after a comma')
+  expect_equal(after_comma$label, "x")
+  expect_null(attr(after_comma, "unparsed"))
   for (prefix in c("#", "--", "//", "%")) {
     result <- parse_put_annotation(paste0(prefix, ' put id:"a", label:"x"  ', prefix, " note"))
     expect_equal(result$label, "x", label = prefix)
     expect_null(attr(result, "unparsed"))
   }
   expect_equal(parse_put_annotation(' * put id:"a", label:"x"  // note')$label, "x")
+  # The comment is cut before the "*/" of a single-line block comment
+  expect_equal(parse_put_annotation('/* put id:"a", output:"o.csv" */ // note')$output, "o.csv")
 
   # Inside quotes, or without whitespace before it, it is not a comment
   expect_equal(parse_put_annotation('# put id:"a", label:"C # D -- E"')$label, "C # D -- E")
@@ -103,7 +109,7 @@ test_that("put() warns about the properties it ignores (#91)", {
   on.exit(unlink(test_dir, recursive = TRUE), add = TRUE)
   create_test_file('# put id:"a", label:"Say "hi"", output:"x.csv"', "a.R", test_dir)
 
-  expect_warning(workflow <- put(test_dir), 'Ignored label:"Say "hi"": not readable', fixed = TRUE)
+  expect_warning(workflow <- put(test_dir), 'Ignored `label:"Say "hi""`: not readable', fixed = TRUE)
   expect_equal(workflow$id, "a")
   expect_false("label" %in% names(workflow))
   # Like the other validation warnings, it needs validate = TRUE
@@ -375,6 +381,9 @@ test_that("is_valid_put_annotation() correctly identifies valid annotations", {
   expect_false(is_valid_put_annotation('# put id:"a", step:43'))
   expect_false(is_valid_put_annotation('# put id:"a", label:"Say "hi""'))
   expect_true(is_valid_put_annotation('# put id:"a", label:"Say \'hi\'"  # note'))
+  # The first line of a multiline annotation is valid
+  expect_true(is_valid_put_annotation('# put id:"a", label:"b", \\'))
+  expect_true(is_valid_put_annotation('-- put id:"a", label:"b" \\'))
 })
 
 # Test error handling in parsing
