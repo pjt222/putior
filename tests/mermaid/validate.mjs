@@ -15,9 +15,10 @@
 // Cases in expected-failures.json are known bugs. Each entry names its issue
 // and the kinds of problem it is known to cause ("generate", "parse",
 // "render", "nodes", "subgraphs"). A listed case counts as a known failure
-// only if all its problems are of those kinds; a problem of another kind
-// fails the run. A listed case that passes also fails the run, so the list
-// is kept up to date as the bugs are fixed.
+// only if all its problems are of those kinds; a problem of a different kind
+// fails the run (a new problem of a listed kind does not). A listed case that
+// passes also fails the run, so the list is kept up to date as the bugs are
+// fixed.
 //
 // MERMAID_EXTRA_ALIASES (comma-separated) adds packages installed in
 // node_modules but not listed in package.json, e.g. the scheduled run's
@@ -134,9 +135,9 @@ async function checkInPage(code) {
     } else if (svg.includes('Maximum text size in diagram exceeded')) {
       result.problems.push('render: text is over maxTextSize, Mermaid drew a placeholder');
     } else {
-      // Node elements are <g class="node" id="<svg id>-flowchart-<node id>-<n>">
-      // on 11.x and 12.x. Mermaid 12 can draw a subgraph box in place of a
-      // node, so compare the ids, not only the count.
+      // Node elements have ids ending in "flowchart-<node id>-<n>" on 11.x
+      // and 12.x (12.x puts the SVG id in front). Mermaid 12 can draw a
+      // subgraph box in place of a node, so compare the ids, not the count.
       const drawnIds = [];
       for (const nodeElement of svgRoot.querySelectorAll('g.node')) {
         const match = (nodeElement.id ?? '').match(/flowchart-(.+)-\d+$/);
@@ -156,24 +157,34 @@ async function checkInPage(code) {
 
 const duplicatesOf = (ids) => [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))];
 
-// Compare the nodes Mermaid parsed with the ids putior defined (from the manifest)
-function compareNodes(entry, vertexIds) {
+const definedIdsOf = (entry) => [...entry.defined_node_ids, ...entry.defined_artifact_ids];
+
+// Checks that need only the manifest, not Mermaid: they run once per case,
+// also for cases that Mermaid cannot parse.
+function checkManifest(entry) {
   const problems = [];
-  const definedIds = [...entry.defined_node_ids, ...entry.defined_artifact_ids];
+  const definedIds = definedIdsOf(entry);
   const duplicates = duplicatesOf(definedIds);
   if (duplicates.length > 0) problems.push(`nodes: defined more than once: ${duplicates.join(', ')}`);
   const shownNodeCount = new Set(entry.defined_node_ids).size;
   if (shownNodeCount !== entry.expected_node_count) {
     problems.push(`nodes: the workflow has ${entry.expected_node_count} distinct ids, the diagram defines ${shownNodeCount} nodes`);
   }
-  const phantoms = vertexIds.filter((id) => !definedIds.includes(id));
-  if (phantoms.length > 0) problems.push(`nodes: used but never defined: ${phantoms.join(', ')}`);
-  const missing = [...new Set(definedIds.filter((id) => !vertexIds.includes(id)))];
-  if (missing.length > 0) problems.push(`nodes: defined but not parsed: ${missing.join(', ')}`);
   const strayReferences = [...new Set(entry.referenced_ids.filter((id) => !definedIds.includes(id)))];
   if (strayReferences.length > 0) problems.push(`nodes: class or click line for an undefined id: ${strayReferences.join(', ')}`);
   const duplicateSubgraphs = duplicatesOf(entry.defined_subgraph_ids);
   if (duplicateSubgraphs.length > 0) problems.push(`subgraphs: defined more than once: ${duplicateSubgraphs.join(', ')}`);
+  return problems;
+}
+
+// Compare the nodes Mermaid parsed with the ids putior defined
+function compareNodes(entry, vertexIds) {
+  const problems = [];
+  const definedIds = definedIdsOf(entry);
+  const phantoms = vertexIds.filter((id) => !definedIds.includes(id));
+  if (phantoms.length > 0) problems.push(`nodes: used but never defined: ${phantoms.join(', ')}`);
+  const missing = [...new Set(definedIds.filter((id) => !vertexIds.includes(id)))];
+  if (missing.length > 0) problems.push(`nodes: defined but not parsed: ${missing.join(', ')}`);
   return problems;
 }
 
@@ -188,7 +199,11 @@ async function openPage(browser, mermaidVersion, config) {
 
 const problemsByCase = new Map(manifest.map((entry) => [entry.name, []]));
 for (const entry of manifest) {
-  if (entry.error) problemsByCase.get(entry.name).push(`R generate: ${entry.error}`);
+  if (entry.error) {
+    problemsByCase.get(entry.name).push(`R generate: ${entry.error}`);
+  } else {
+    for (const problem of checkManifest(entry)) problemsByCase.get(entry.name).push(`corpus ${problem}`);
+  }
 }
 
 const browser = await chromium.launch();

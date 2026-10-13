@@ -188,9 +188,12 @@ describe_diagram <- function(code_lines) {
 }
 
 manifest <- lapply(cases, function(case) {
+  # put_diagram() drops rows without an id; every other distinct id is a node
+  workflow_ids <- case$workflow$id
+  workflow_ids <- workflow_ids[!is.na(workflow_ids) & workflow_ids != ""]
   entry <- list(
     name = case$name,
-    expected_node_count = length(unique(case$workflow$id))
+    expected_node_count = length(unique(workflow_ids))
   )
   warning_messages <- character()
   diagram <- tryCatch(
