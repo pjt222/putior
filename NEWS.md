@@ -66,6 +66,9 @@
   `#<digits>;` as character entities, so a label such as `Step #35;` was
   shown as `Step #`. `?put_diagram` now describes how labels and ids are
   written. (#45)
+* `put_diagram()` and the MCP and ACP servers accept `direction = "TB"`,
+  Mermaid's synonym for `"TD"`. GUIDE.md named `TB` as the default, but
+  `"TB"` was rejected with an error. (#79)
 
 ## New Features
 

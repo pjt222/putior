@@ -15,7 +15,8 @@
 #' @param file Character string specifying output file path (used when output = "file")
 #' @param title Character string for diagram title (optional)
 #' @param direction Character string specifying diagram direction. Options:
-#'   "TD" (top-down), "LR" (left-right), "BT" (bottom-top), "RL" (right-left)
+#'   "TD" (top-down; "TB" is a synonym), "LR" (left-right), "BT" (bottom-top),
+#'   "RL" (right-left)
 #' @param node_labels Character string specifying what to show in nodes:
 #'   "name" (node IDs), "label" (descriptions), "both" (ID: label)
 #' @param show_files Logical indicating whether to show file connections
@@ -148,7 +149,8 @@ put_diagram <- function(workflow,
   putior_log("INFO", "Starting diagram generation")
 
   # Validate direction parameter
-  direction <- match.arg(direction, c("TD", "LR", "BT", "RL"))
+  # Mermaid treats TB as a synonym of TD (#79)
+  direction <- match.arg(direction, c("TD", "TB", "LR", "BT", "RL"))
 
   putior_log("DEBUG", "Diagram parameters: direction='{direction}', theme='{theme}', show_artifacts={show_artifacts}")
 

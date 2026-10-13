@@ -220,10 +220,10 @@ extract_parameters <- function(content) {
   # Extract direction if mentioned (case insensitive)
   dir_match <- regmatches(
     content,
-    regexpr("[Dd][Ii][Rr][Ee][Cc][Tt][Ii][Oo][Nn][=: ]*(TD|LR|BT|RL|td|lr|bt|rl)", content)
+    regexpr("[Dd][Ii][Rr][Ee][Cc][Tt][Ii][Oo][Nn][=: ]*(TD|TB|LR|BT|RL|td|tb|lr|bt|rl)", content)
   )
   if (length(dir_match) > 0 && nchar(dir_match[1]) > 0) {
-    # Extract just the direction value (TD, LR, BT, RL)
+    # Extract just the direction value (TD, TB, LR, BT, RL)
     params$direction <- toupper(gsub(".*[=: ]+", "", dir_match[1]))
   }
 

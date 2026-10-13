@@ -1,8 +1,1 @@
-{
-  "direction_TB": {
-    "issue": "#79: put_diagram() rejects direction = \"TB\"",
-    "problems": [
-      "generate"
-    ]
-  }
-}
+{}

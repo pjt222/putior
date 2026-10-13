@@ -228,3 +228,10 @@ test_that("# in labels is escaped so Mermaid does not decode entities (#45)", {
   # The # escape runs first, so putior's own entities stay intact
   expect_equal(sanitize_mermaid_label('a "b" | #1'), '"a #quot;b#quot; #124; #35;1"')
 })
+
+test_that("direction = \"TB\" is accepted (#79)", {
+  workflow <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
+
+  expect_match(put_diagram(workflow, direction = "TB", output = "raw"), "flowchart TB", fixed = TRUE)
+  expect_error(put_diagram(workflow, direction = "XY", output = "raw"))
+})

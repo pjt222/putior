@@ -437,8 +437,8 @@ make_tool_put_diagram <- function() {
         required = FALSE
       ),
       direction = ellmer::type_enum(
-        description = "Diagram direction: TD, LR, BT, or RL (default: TD)",
-        values = c("TD", "LR", "BT", "RL"),
+        description = "Diagram direction: TD (or its synonym TB), LR, BT, or RL (default: TD)",
+        values = c("TD", "TB", "LR", "BT", "RL"),
         required = FALSE
       ),
       node_labels = ellmer::type_enum(

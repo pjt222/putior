@@ -154,7 +154,7 @@ put_diagram(workflow)
 
 # Customize appearance
 put_diagram(workflow,
-  direction = "LR",           # Left-to-right (default: TB top-bottom)
+  direction = "LR",           # Left-to-right (default: "TD", top-down)
   theme = "github",           # Theme: github, light, dark, auto, minimal
   show_artifacts = TRUE       # Show data files as nodes
 )

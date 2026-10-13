@@ -40,7 +40,8 @@ put_diagram(
 \item{title}{Character string for diagram title (optional)}
 
 \item{direction}{Character string specifying diagram direction. Options:
-"TD" (top-down), "LR" (left-right), "BT" (bottom-top), "RL" (right-left)}
+"TD" (top-down; "TB" is a synonym), "LR" (left-right), "BT" (bottom-top),
+"RL" (right-left)}
 
 \item{node_labels}{Character string specifying what to show in nodes:
 "name" (node IDs), "label" (descriptions), "both" (ID: label)}

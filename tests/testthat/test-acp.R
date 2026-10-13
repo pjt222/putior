@@ -161,6 +161,9 @@ test_that("extract_parameters extracts theme", {
 test_that("extract_parameters extracts direction", {
   params <- putior:::extract_parameters("direction=LR")
   expect_equal(params$direction, "LR")
+
+  # TB is Mermaid's synonym of TD (#79)
+  expect_equal(putior:::extract_parameters("direction: tb")$direction, "TB")
 })
 
 test_that("extract_parameters extracts recursive flag", {
