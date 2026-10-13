@@ -494,6 +494,13 @@ nodes:</p>
 </tr>
 </tbody>
 </table>
+<p>Values go in double or single quotes. A value may contain the other
+kind of quote (<code>label:"Don't panic"</code>,
+<code>label:'Say "hi"'</code>) but not its own; there are no escapes, so
+backslashes in Windows paths stay as they are. A comment may follow the
+last value (<code># put id:"a", label:"Load"   # first step</code>).
+With <code>validate = TRUE</code> (the default), <code><a href="../reference/put.html">put()</a></code>
+warns about each property it cannot read.</p>
 </div>
 <div class="section level4">
 <h4 id="multiline-annotations">Multiline Annotations<a class="anchor" aria-label="anchor" href="#multiline-annotations"></a>
@@ -511,12 +518,12 @@ nodes:</p>
 <p>Languages using <code>//</code> comments also support PUT annotations
 inside <code>/* */</code> and <code>/** */</code> blocks:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">/**</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co"> * put id:"handler", label:"Request Handler", \</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co"> *     input:"request.json", output:"response.json"</span></span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"> */</span></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="kw">function</span> <span class="fu">handleRequest</span>(req<span class="op">,</span> res) { <span class="op">...</span> }</span></code></pre></div>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co"> * put id:"handler", label:"Request Handler", input:"request.json", output:"response.json"</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co"> */</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="kw">function</span> <span class="fu">handleRequest</span>(req<span class="op">,</span> res) { <span class="op">...</span> }</span></code></pre></div>
 <p>Use <code>* put</code> as the line prefix inside block comment
-bodies.</p>
+bodies. Backslash continuation does not work inside block comments, so
+keep each annotation on one line.</p>
 </div>
 </div>
 <div class="section level3">

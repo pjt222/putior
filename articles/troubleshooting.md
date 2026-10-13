@@ -217,7 +217,16 @@ workflow <- put("./src/")  # Now shows detailed output
 
 # CORRECT - Mixed (but consistent per value)
 # put id:"my_node", label:'My Process'
+
+# CORRECT - The other kind of quote inside a value
+# put id:"my_node", label:"Don't panic"
+# put id:"my_node", label:'Say "hi"'
 ```
+
+A value cannot contain the kind of quote it is wrapped in; there are no
+escapes. [`put()`](https://pjt222.github.io/putior/reference/put.md)
+warns about each property it cannot read (“Ignored label:…”) unless
+`validate = FALSE`.
 
 **Diagnostic**:
 
@@ -490,30 +499,27 @@ cat(mermaid_code)
 
 **Common Causes**:
 
-1.  **Special characters in labels**: Mermaid has reserved characters.
+1.  **Quotes in labels**:
+    [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+    escapes quotes and other characters that Mermaid would misread, so a
+    label may contain them. In the annotation, wrap such a label in the
+    other kind of quote.
 
 ``` r
 
-# Problem: Quotes in labels
+# Problem: the label's own quotes end the value, so put() ignores it
 # put id:"step1", label:"Load "raw" data"
 
-# Solution: Use single quotes or escape
+# Solution: wrap the label in the other kind of quote
+# put id:"step1", label:'Load "raw" data'
 # put id:"step1", label:"Load 'raw' data"
-# put id:"step1", label:"Load raw data"
 ```
 
-2.  **Reserved words in IDs**: Some words are reserved in Mermaid.
-
-``` r
-
-# Problem: Reserved word as ID
-# put id:"end", label:"Finish"
-# put id:"class", label:"Classify"
-
-# Solution: Use different IDs
-# put id:"end_step", label:"Finish"
-# put id:"classify", label:"Classify"
-```
+2.  **Mermaid keywords as IDs**: ids such as `end` or `class` are
+    Mermaid keywords.
+    [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+    writes them as `node_end` and `node_class`, so they work; only the
+    id in the Mermaid code differs.
 
 ### Theme Issues
 

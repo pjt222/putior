@@ -140,6 +140,16 @@ PUT annotations support several formats to fit different coding styles:
     # put| id:"my_node", label:"My Process"         # Pipe separator
     # put id:'my_node', label:'Single quotes'       # Single quotes
     # put id:"my_node", label:'Mixed quotes'        # Mixed quote styles
+    # put id:"my_node", label:"Don't panic"         # The other quote inside a value
+
+A value can contain the kind of quote it is not wrapped in, as in
+`label:"Don't panic"` or `label:'Say "hi"'`, but not its own. There are
+no escapes: a backslash stays as it is, so Windows paths such as
+`"C:\data\in.csv"` work. A comment may follow the last value, as in the
+lines above: whitespace and then `#`, `--`, `//` or `%`. With
+`validate = TRUE` (the default),
+[`put()`](https://pjt222.github.io/putior/reference/put.md) warns about
+each property it cannot read.
 
 ### Multiline Annotations
 
@@ -184,8 +194,9 @@ SELECT * FROM raw_customers;
 2.  Start continuation lines with the same comment prefix
 3.  Continuation lines can have leading whitespace for readability
 4.  Properties can span multiple lines
-5.  The backslash must be the last character on the line (no trailing
-    spaces)
+5.  Only whitespace may follow the backslash
+6.  A comment may come before the backslash, as in
+    `# label:"Complex ETL Process", # shown in the node \`
 
 **Example with many properties:**
 
@@ -204,8 +215,8 @@ SELECT * FROM raw_customers;
 
 > **When Multiline Annotations Don’t Work:**
 >
-> - **Trailing spaces**: Ensure backslash is the *last* character (no
->   spaces after)
+> - **Backslash**: Only whitespace may follow it; a comment goes before
+>   it
 > - **Missing prefix**: Each continuation line needs the comment prefix
 >   (`#`, `--`, `//`)
 > - **Fallback**: If multiline fails, use a single long line -

@@ -313,6 +313,8 @@ which provides 6 skills for the complete putior workflow.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | `output` | No | Output files/data | `output:"result.rds"` |</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | `node_type` | No | Shape: input, process (default), output, decision, start, end | `node_type:"decision"` |</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Values go in double or single quotes. A value may contain the other kind of quote (`label:"Don't panic"`, `label:'Say "hi"'`) but not its own; there are no escapes, so backslashes in Windows paths stay as they are. A comment may follow the last value (`# put id:"a", label:"Load"   # first step`). With `validate = TRUE` (the default), `put()` warns about each property it cannot read.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ### Multiline Annotations</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Use backslash for continuation:</span>
@@ -330,13 +332,12 @@ which provides 6 skills for the complete putior workflow.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```javascript</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> /**</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  * put id:"handler", label:"Request Handler", \</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  *     input:"request.json", output:"response.json"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  * put id:"handler", label:"Request Handler", input:"request.json", output:"response.json"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  */</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> function handleRequest(req, res) { ... }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Use `* put` as the line prefix inside block comment bodies.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Use `* put` as the line prefix inside block comment bodies. Backslash continuation does not work inside block comments, so keep each annotation on one line.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ## Multi-Language Comment Syntax</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>

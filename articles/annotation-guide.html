@@ -381,7 +381,16 @@ styles:</p>
 <span><span class="co">#put id:"my_node", label:"My Process"           # Also valid (no space)</span></span>
 <span><span class="co"># put| id:"my_node", label:"My Process"         # Pipe separator</span></span>
 <span><span class="co"># put id:'my_node', label:'Single quotes'       # Single quotes</span></span>
-<span><span class="co"># put id:"my_node", label:'Mixed quotes'        # Mixed quote styles</span></span></code></pre>
+<span><span class="co"># put id:"my_node", label:'Mixed quotes'        # Mixed quote styles</span></span>
+<span><span class="co"># put id:"my_node", label:"Don't panic"         # The other quote inside a value</span></span></code></pre>
+<p>A value can contain the kind of quote it is not wrapped in, as in
+<code>label:"Don't panic"</code> or <code>label:'Say "hi"'</code>, but
+not its own. There are no escapes: a backslash stays as it is, so
+Windows paths such as <code>"C:\data\in.csv"</code> work. A comment may
+follow the last value, as in the lines above: whitespace and then
+<code>#</code>, <code>--</code>, <code>//</code> or <code>%</code>. With
+<code>validate = TRUE</code> (the default), <code><a href="../reference/put.html">put()</a></code> warns
+about each property it cannot read.</p>
 </div>
 <div class="section level3">
 <h3 id="multiline-annotations">Multiline Annotations<a class="anchor" aria-label="anchor" href="#multiline-annotations"></a>
@@ -415,8 +424,10 @@ styles:</p>
 <li>Start continuation lines with the same comment prefix</li>
 <li>Continuation lines can have leading whitespace for readability</li>
 <li>Properties can span multiple lines</li>
-<li>The backslash must be the last character on the line (no trailing
-spaces)</li>
+<li>Only whitespace may follow the backslash</li>
+<li>A comment may come before the backslash, as in
+<code>#     label:"Complex ETL Process",   # shown in the node \</code>
+</li>
 </ol>
 <p><strong>Example with many properties:</strong></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
@@ -433,8 +444,8 @@ spaces)</li>
 <p><strong>When Multiline Annotations Don’t Work:</strong></p>
 <ul>
 <li>
-<strong>Trailing spaces</strong>: Ensure backslash is the
-<em>last</em> character (no spaces after)</li>
+<strong>Backslash</strong>: Only whitespace may follow it; a comment
+goes before it</li>
 <li>
 <strong>Missing prefix</strong>: Each continuation line needs the
 comment prefix (<code>#</code>, <code>--</code>, <code>//</code>)</li>

@@ -117,6 +117,8 @@ putior_guide()
 #> | `output` | No | Output files/data | `output:"result.rds"` |
 #> | `node_type` | No | Shape: input, process (default), output, decision, start, end | `node_type:"decision"` |
 #> 
+#> Values go in double or single quotes. A value may contain the other kind of quote (`label:"Don't panic"`, `label:'Say "hi"'`) but not its own; there are no escapes, so backslashes in Windows paths stay as they are. A comment may follow the last value (`# put id:"a", label:"Load"   # first step`). With `validate = TRUE` (the default), `put()` warns about each property it cannot read.
+#> 
 #> ### Multiline Annotations
 #> 
 #> Use backslash for continuation:
@@ -134,13 +136,12 @@ putior_guide()
 #> 
 #> ```javascript
 #> /**
-#>  * put id:"handler", label:"Request Handler", \
-#>  *     input:"request.json", output:"response.json"
+#>  * put id:"handler", label:"Request Handler", input:"request.json", output:"response.json"
 #>  */
 #> function handleRequest(req, res) { ... }
 #> ```
 #> 
-#> Use `* put` as the line prefix inside block comment bodies.
+#> Use `* put` as the line prefix inside block comment bodies. Backslash continuation does not work inside block comments, so keep each annotation on one line.
 #> 
 #> ## Multi-Language Comment Syntax
 #> 

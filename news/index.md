@@ -65,6 +65,35 @@
   `merge_strategy = "supplement"` or `"union"` no longer takes the
   inputs and outputs detected in the other file.
   ([\#74](https://github.com/pjt222/putior/issues/74))
+- Annotation values may now contain the other kind of quote:
+  `label:"Don't panic"` and `label:'Say "hi"'` keep their labels.
+  Before, [`put()`](https://pjt222.github.io/putior/reference/put.md)
+  dropped any value with a quote character in it, without a warning, and
+  the node showed its id instead; the troubleshooting vignette even
+  recommended `label:"Load 'raw' data"`. There are still no escapes, so
+  a value cannot contain its own kind of quote, and backslashes in
+  Windows paths stay as they are. A property that
+  [`put()`](https://pjt222.github.io/putior/reference/put.md) cannot
+  read is now named in its validation warning (with `validate = TRUE`,
+  the default) instead of being dropped silently, and
+  [`is_valid_put_annotation()`](https://pjt222.github.io/putior/reference/is_valid_put_annotation.md)
+  returns `FALSE` for such a line. An annotation that ends with a
+  continuation `\` (without a comma before it) on the last line of the
+  file no longer loses its last property.
+  [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md)
+  wraps a value that contains a double quote in single quotes, so that
+  [`put()`](https://pjt222.github.io/putior/reference/put.md) reads its
+  suggestions back unchanged.
+  ([\#91](https://github.com/pjt222/putior/issues/91))
+- A comment may now follow the values of an annotation, as the
+  [`put()`](https://pjt222.github.io/putior/reference/put.md) help page,
+  the vignettes and the cheatsheet have always shown
+  (`# put id:"a", label:"Load" # first step`). Before, the comment made
+  the last property unreadable, and it was dropped. Outside quotes,
+  whitespace followed by `#`, `--`, `//` or `%` after a value starts the
+  comment. In a multiline annotation, a comment may also come before the
+  continuation `\` of a line.
+  ([\#91](https://github.com/pjt222/putior/issues/91))
 - [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
   gives every node one Mermaid id and uses it in the node definition,
   edges, `class` lines and click directives. Before, edges to an
