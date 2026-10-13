@@ -164,6 +164,9 @@ test_that("extract_parameters extracts direction", {
 
   # TB is Mermaid's synonym of TD (#79)
   expect_equal(putior:::extract_parameters("direction: tb")$direction, "TB")
+  # Only a whole word counts as a direction
+  expect_null(putior:::extract_parameters("direction TBD")$direction)
+  expect_null(putior:::extract_parameters("direction rlx")$direction)
 })
 
 test_that("extract_parameters extracts recursive flag", {
