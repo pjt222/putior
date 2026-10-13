@@ -261,7 +261,8 @@ collect_multiline_annotation <- function(lines, start_idx, escaped_prefix,
     if (!grepl(comment_pattern, continuation_line)) break
 
     continuation <- strip_comment_before_continuation(
-      sub(sprintf("^\\s*%s\\s*", escaped_prefix), "", continuation_line)
+      sub(sprintf("^\\s*%s\\s*", escaped_prefix), "", continuation_line),
+      after_value = TRUE
     )
     # A line that is only a comment is skipped when it continues, and ends
     # the annotation otherwise, as before (#91). Joined in, it would start a
@@ -297,13 +298,16 @@ collect_multiline_annotation <- function(lines, start_idx, escaped_prefix,
 #' backslash is kept. A comment on the last line is cut by
 #' \code{parse_put_annotation()}.
 #' @param text One line of an annotation
+#' @param after_value TRUE for a continuation line: a comment is cut even if
+#'   no quoted value comes before it on that line, so that a malformed pair
+#'   before it (\code{step:43   # order}) loses only itself
 #' @return The line without a comment before its trailing backslash
 #' @noRd
-strip_comment_before_continuation <- function(text) {
+strip_comment_before_continuation <- function(text, after_value = FALSE) {
   if (!grepl("\\\\\\s*$", text)) {
     return(text)
   }
-  paste0(strip_trailing_comment(sub("\\s*\\\\\\s*$", "", text)), " \\")
+  paste0(strip_trailing_comment(sub("\\s*\\\\\\s*$", "", text), after_value), " \\")
 }
 
 #' Find PUT annotations inside block comments
@@ -641,12 +645,13 @@ parse_put_annotation <- function(line) {
 #' the end of the line. It is cut before the pairs are split, so a comment
 #' may contain commas and quotes.
 #' @param text Annotation text after the \code{put} prefix
+#' @param after_value TRUE to cut a comment even before the first quoted
+#'   value, for a continuation line, whose values follow the first line's
 #' @return The text without the comment
 #' @noRd
-strip_trailing_comment <- function(text) {
+strip_trailing_comment <- function(text, after_value = FALSE) {
   characters <- strsplit(text, "", fixed = TRUE)[[1]]
   quote_char <- ""
-  after_value <- FALSE
   for (char_index in seq_along(characters)) {
     char <- characters[char_index]
     if (nzchar(quote_char)) {

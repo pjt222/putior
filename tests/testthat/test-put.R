@@ -510,8 +510,13 @@ test_that("a comment before a continuation backslash keeps the next lines (#91)"
     '',
     '# put id:"d", \\',
     '#   # a line that is only a comment \\',
+    '#   -- and one with another marker \\',
     '#   label:"L", \\',
-    '#   output:"o.csv"'
+    '#   output:"o.csv"',
+    '',
+    '# put id:"e", label:"E", \\',
+    '#   # this comment ends the annotation',
+    '# Prose after it is not read: stage:"x"'
   ), "multi.R", test_dir)
 
   expect_no_warning(result <- put(test_dir))
@@ -523,6 +528,21 @@ test_that("a comment before a continuation backslash keeps the next lines (#91)"
   expect_equal(c(step_c$label, step_c$input), c("ETL", "raw.csv"))
   step_d <- result[result$id == "d", ]
   expect_equal(c(step_d$label, step_d$output), c("L", "o.csv"))
+  expect_false("stage" %in% names(result))
+})
+
+test_that("a malformed pair before a comment loses only itself (#91)", {
+  test_dir <- tempfile("putior_multiline_malformed_")
+  dir.create(test_dir)
+  on.exit(unlink(test_dir, recursive = TRUE), add = TRUE)
+  create_test_file(c(
+    '# put id:"a", label:"L", \\',
+    '#   step:43   # order \\',
+    '#   output:"o.csv"'
+  ), "malformed.R", test_dir)
+
+  expect_warning(result <- put(test_dir), "Ignored `step:43`", fixed = TRUE)
+  expect_equal(c(result$label, result$output), c("L", "o.csv"))
 })
 
 test_that("put() preserves line numbers with multiline annotations", {
