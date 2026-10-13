@@ -809,21 +809,33 @@ merge_annotations <- function(manual, auto, strategy) {
   manual <- manual[, all_cols]
   auto <- auto[, all_cols]
 
+  # Match manual and auto rows by file path when it is known, so that two
+  # files with the same name in different folders are not mixed up; fall back
+  # to the file name for workflows without a file_path column
+  file_key <- function(rows) {
+    keys <- rows$file_name
+    if ("file_path" %in% names(rows)) {
+      has_path <- !is.na(rows$file_path) & rows$file_path != ""
+      keys[has_path] <- rows$file_path[has_path]
+    }
+    keys
+  }
+  manual_keys <- file_key(manual)
+  auto_keys <- file_key(auto)
+
   switch(strategy,
     "manual_priority" = {
       # Keep manual annotations, add auto-detected for files without manual annotations
-      manual_files <- manual$file_name
-      auto_new <- auto[!auto$file_name %in% manual_files, ]
+      manual_files <- manual_keys
+      auto_new <- auto[!auto_keys %in% manual_files, ]
       result <- rbind(manual, auto_new)
     },
     "supplement" = {
       # For files with manual annotations, fill in missing input/output from auto
-      manual_files <- manual$file_name
-      auto_lookup <- auto[auto$file_name %in% manual_files, ]
-
+      manual_files <- manual_keys
       for (i in seq_len(nrow(manual))) {
         file_name <- manual$file_name[i]
-        auto_row <- auto_lookup[auto_lookup$file_name == file_name, ]
+        auto_row <- auto[auto_keys == manual_keys[i], ]
 
         if (nrow(auto_row) > 0) {
           # Supplement missing input
@@ -841,16 +853,15 @@ merge_annotations <- function(manual, auto, strategy) {
       }
 
       # Add auto-detected for files without manual annotations
-      auto_new <- auto[!auto$file_name %in% manual_files, ]
+      auto_new <- auto[!auto_keys %in% manual_files, ]
       result <- rbind(manual, auto_new)
     },
     "union" = {
       # Combine all I/O from both sources
-      manual_files <- manual$file_name
+      manual_files <- manual_keys
 
       for (i in seq_len(nrow(manual))) {
-        file_name <- manual$file_name[i]
-        auto_row <- auto[auto$file_name == file_name, ]
+        auto_row <- auto[auto_keys == manual_keys[i], ]
 
         if (nrow(auto_row) > 0) {
           # Union inputs
@@ -888,13 +899,42 @@ merge_annotations <- function(manual, auto, strategy) {
       }
 
       # Add auto-detected for files without manual annotations
-      auto_new <- auto[!auto$file_name %in% manual_files, ]
+      auto_new <- auto[!auto_keys %in% manual_files, ]
       result <- rbind(manual, auto_new)
     }
   )
 
   rownames(result) <- NULL
-  return(result)
+  dedupe_auto_ids(result)
+}
+
+#' Give auto-detected rows ids that no manual row uses
+#'
+#' put() gives annotations without an id the fallback ids node_1, node_2, ...,
+#' and put_auto() derives ids from file names, so a file named node_1.R (or
+#' 1.R, which becomes node_1 in Mermaid) would share an id with a manual
+#' annotation and the diagram would merge them (#74). Auto rows whose id is
+#' already used, also in its Mermaid form, get a suffix; manual ids never
+#' change.
+#' @param result Merged workflow with an \code{auto_detected} column
+#' @return The workflow with unique auto-detected ids
+#' @noRd
+dedupe_auto_ids <- function(result) {
+  is_auto <- !is.na(result$auto_detected) & result$auto_detected
+  taken_keys <- vapply(as.character(result$id[!is_auto]), sanitize_node_id, character(1),
+                       USE.NAMES = FALSE)
+  for (row_index in which(is_auto)) {
+    base_id <- result$id[row_index]
+    candidate <- base_id
+    suffix_number <- 2L
+    while (sanitize_node_id(candidate) %in% taken_keys) {
+      candidate <- paste0(base_id, "_", suffix_number)
+      suffix_number <- suffix_number + 1L
+    }
+    result$id[row_index] <- candidate
+    taken_keys <- c(taken_keys, sanitize_node_id(candidate))
+  }
+  result
 }
 
 #' Create empty result data frame for put_auto

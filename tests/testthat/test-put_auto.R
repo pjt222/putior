@@ -345,3 +345,65 @@ test_that("ext_to_language() maps extensions correctly", {
   expect_equal(putior:::ext_to_language("jl"), "julia")
   expect_null(putior:::ext_to_language("xyz"))
 })
+
+# put_merge() ids and file matching (#74)
+
+merge_rows <- function(id, file_path, auto_detected, input = NA, output = NA) {
+  data.frame(
+    id = id, label = id, file_name = basename(file_path), file_path = file_path,
+    input = input, output = output, auto_detected = auto_detected,
+    stringsAsFactors = FALSE
+  )
+}
+
+test_that("merge_annotations() gives auto rows ids no manual row uses", {
+  manual <- merge_rows("node_1", "/p/a.R", FALSE, output = "m.csv")
+  auto <- merge_rows(c("node_1", "1", "a"), c("/p/node_1.R", "/p/1.R", "/p/a.R"), TRUE)
+
+  for (strategy in c("manual_priority", "supplement", "union")) {
+    merged <- merge_annotations(manual, auto, strategy)
+    mermaid_ids <- vapply(merged$id, sanitize_node_id, character(1))
+    expect_false(anyDuplicated(mermaid_ids) > 0, label = strategy)
+    expect_equal(merged$id[!merged$auto_detected], "node_1")
+    # "1" is node_1 in Mermaid, and its first suffix (node_1_2) is taken too
+    expect_setequal(merged$id[merged$auto_detected], c("node_1_2", "1_3"))
+  }
+})
+
+test_that("merge_annotations() matches files by path, not only by name", {
+  manual <- merge_rows("load_x", "/p/x/load.R", FALSE, output = "x.csv")
+  auto <- merge_rows(c("load", "load_2"), c("/p/x/load.R", "/p/y/load.R"), TRUE,
+                     input = c(NA, "in.csv"))
+
+  merged <- merge_annotations(manual, auto, "manual_priority")
+
+  # The manual annotation replaces x/load.R's auto row, but not y/load.R's
+  expect_equal(nrow(merged), 2)
+  expect_equal(sort(merged$file_path), c("/p/x/load.R", "/p/y/load.R"))
+})
+
+test_that("merge_annotations() falls back to file names without file_path", {
+  manual <- merge_rows("step", "a.R", FALSE)
+  manual$file_path <- NULL
+  auto <- merge_rows(c("a", "b"), c("a.R", "b.R"), TRUE)
+  auto$file_path <- NULL
+
+  merged <- merge_annotations(manual, auto, "manual_priority")
+
+  expect_equal(sort(merged$file_name), c("a.R", "b.R"))
+})
+
+test_that("put_merge() keeps same-named files in two folders apart (#74)", {
+  merge_dir <- tempfile("putior_merge_ids_")
+  dir.create(file.path(merge_dir, "x"), recursive = TRUE)
+  dir.create(file.path(merge_dir, "y"))
+  on.exit(unlink(merge_dir, recursive = TRUE), add = TRUE)
+  writeLines('# put id:"load_x", label:"Load X", output:"x.csv"', file.path(merge_dir, "x", "load.R"))
+  writeLines('d <- read.csv("x.csv")', file.path(merge_dir, "y", "load.R"))
+
+  merged <- put_merge(merge_dir)
+
+  expect_equal(nrow(merged), 2)
+  expect_false(anyDuplicated(vapply(merged$id, sanitize_node_id, character(1))) > 0)
+  expect_true("load_x" %in% merged$id)
+})
