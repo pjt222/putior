@@ -30,15 +30,18 @@ jobs:
           extra-packages: any::pkgdown, local::.
           needs: website
 
-      # pkgdown renders every .md file in the package root as a page. Only
-      # the files listed here belong on the site; the others (CLAUDE.md,
+      # pkgdown renders every .md file in the package root and in .github/
+      # as a page. Only the files listed here belong on the site (or are
+      # used by pkgdown itself, like 404.md); the others (CLAUDE.md,
       # CRAN_REVIEW.md, ...) are development notes. The checkout is thrown
       # away after the job, so removing them here changes nothing else.
       - name: Keep development notes off the site
         run: |
-          for md_file in *.md; do
-            case "$md_file" in
-              README.md|NEWS.md|LICENSE.md|CODE_OF_CONDUCT.md|CONTRIBUTING.md|cran-comments.md) ;;
+          shopt -s nullglob
+          for md_file in *.md .github/*.md; do
+            case "$(basename -- "$md_file")" in
+              README.md|NEWS.md|LICENSE.md|LICENCE.md|cran-comments.md|404.md) ;;
+              CODE_OF_CONDUCT.md|CONTRIBUTING.md|SUPPORT.md|SECURITY.md) ;;
               *) echo "Not publishing $md_file"; rm -- "$md_file" ;;
             esac
           done
