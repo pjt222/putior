@@ -66,9 +66,10 @@
 * The `title` of `put_diagram()` is now written as a quoted YAML string.
   A title with `: ` (such as `"ETL: stage 1"`) made the diagram fail to
   parse, and text after ` #` was dropped as a YAML comment. (#45)
-* `#` in labels is now escaped as `#35;`. Mermaid decodes `#<name>;` and
-  `#<digits>;` as character entities, so a label such as `Step #35;` was
-  shown as `Step #`. `?put_diagram` now describes how labels and ids are
+* A `#` in a label that Mermaid would read as a character entity is now
+  escaped as `#35;`. Mermaid decodes `#<name>;` and `#<digits>;`, so a label
+  such as `Step #35;` was shown as `Step #`. A plain `#` (`C#`, `item #1`)
+  is left alone. `?put_diagram` now describes how labels and ids are
   written. (#45)
 * `put_diagram()` and the MCP and ACP servers accept `direction = "TB"`,
   Mermaid's synonym for `"TD"`. GUIDE.md named `TB` as the default, but

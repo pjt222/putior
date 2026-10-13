@@ -227,11 +227,13 @@ test_that("the title is a quoted YAML string (#45)", {
   expect_match(diagram, '^---\ntitle: "ETL: stage 1 # first"\n---\nflowchart TD')
 })
 
-test_that("# in labels is escaped so Mermaid does not decode entities (#45)", {
+test_that("a # that starts an entity is escaped, a plain # is not (#45)", {
   expect_equal(sanitize_mermaid_label("Step #35; done"), '"Step #35;35; done"')
-  expect_equal(sanitize_mermaid_label("C# code"), '"C#35; code"')
+  expect_equal(sanitize_mermaid_label("say #quot;hi"), '"say #35;quot;hi"')
+  # A plain # stays: escaping it would show "&#35;" with htmlLabels off
+  expect_equal(sanitize_mermaid_label("C# code, item #1"), '"C# code, item #1"')
   # The # escape runs first, so putior's own entities stay intact
-  expect_equal(sanitize_mermaid_label('a "b" | #1'), '"a #quot;b#quot; #124; #35;1"')
+  expect_equal(sanitize_mermaid_label('a "b" | #1'), '"a #quot;b#quot; #124; #1"')
 })
 
 test_that("direction = \"TB\" is accepted (#79)", {

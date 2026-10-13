@@ -65,8 +65,9 @@
 #'   Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.
 #'
 #' @section Labels and ids:
-#' Labels are quoted, and double quotes, \code{|} and \code{#} are escaped, so
-#' they appear as written. Mermaid still interprets HTML tags such as
+#' Labels are quoted, and double quotes, \code{|} and a \code{#} that Mermaid
+#' would read as a character entity (as in \code{#35;}) are escaped, so they
+#' appear as written. Mermaid still interprets HTML tags such as
 #' \code{<br/>} and \code{$$...$$} (KaTeX math) inside labels.
 #'
 #' Node ids are reduced to letters, digits and underscores. An id that starts
@@ -697,10 +698,12 @@ sanitize_mermaid_label <- function(label) {
   if (is_empty_string(label)) return(label)
   # Strip newlines/carriage returns that would break Mermaid line structure
   label <- gsub("[\r\n]", " ", label)
-  # Escape # first: Mermaid decodes #<name>; and #<digits>; as entities, so
-  # "Step #35;" would show as "Step #" (#45). Must run before the escapes
-  # below, which themselves write #...; entities.
-  label <- gsub("#", "#35;", label, fixed = TRUE)
+  # Mermaid decodes #<name>; and #<digits>; as entities, so "Step #35;"
+  # would show as "Step #" (#45). Escape only a # that starts such a
+  # sequence: a plain "C#" must stay as it is, because with htmlLabels
+  # turned off Mermaid shows an escaped # as "&#35;". Must run before the
+  # escapes below, which themselves write #...; entities.
+  label <- gsub("#(?=\\w+;)", "#35;", label, perl = TRUE)
   # Wrap in quotes and escape internal quotes using Mermaid's #quot; entity
   label <- gsub('"', "#quot;", label, fixed = TRUE)
   # Escape pipe characters using Mermaid's #124; entity (pipes delimit edge labels)
