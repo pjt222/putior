@@ -210,6 +210,9 @@ add_case("edge_labels_special_characters", scan_fixture("edge_label_chars", list
   "b.R" = '# put id:"use", label:"Use", input:"a|b.csv, data #1.csv, x [y].csv"'
 )), show_files = TRUE, show_artifacts = TRUE)
 add_case("title_with_colon", pipeline, title = "ETL: stage 1")
+# A title with Mermaid syntax, for the accTitle line (#50)
+add_case("title_mermaid_syntax", pipeline,
+         title = 'Step #35; with direction LR, Lifestyle:#quot;x#quot; and "quotes" | pipes')
 add_case("title_special_characters", pipeline,
          title = 'Say "hi" # not a comment: C:\\data\\in [v2] | {x}\t\001end')
 add_case("subgraph_keyword_and_digit_files", scan_fixture("subgraph_names", list(
@@ -295,6 +298,14 @@ manifest <- lapply(cases, function(case) {
     code_lines <- strsplit(diagram, "\n", fixed = TRUE)[[1]]
     # Edge lines start with an id and " -->"; a label may contain "-->" too
     entry$expected_edge_count <- sum(grepl("^\\s+[A-Za-z0-9_]+ -->", code_lines))
+    # Screen reader text (#50): the title as given, with control characters
+    # as spaces, and the summary as written
+    if (!is.null(case$args$title)) {
+      acc_title <- trimws(gsub("[[:cntrl:]]+", " ", case$args$title))
+      if (nzchar(acc_title)) entry$expected_acc_title <- acc_title
+    }
+    acc_descr <- sub("^    accDescr: ", "", grep("^    accDescr: ", code_lines, value = TRUE))
+    if (length(acc_descr) == 1) entry$expected_acc_descr <- acc_descr
     # The look that the frontmatter sets, if any (#54)
     frontmatter_end <- if (code_lines[1] == "---") match("---", code_lines[-1]) else NA
     if (!is.na(frontmatter_end)) {

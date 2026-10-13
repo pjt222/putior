@@ -40,6 +40,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 1 step and 1 data file.
     node_1["Load Data"]
     artifact_clean_csv[("clean.csv")]
 
@@ -123,6 +124,7 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accDescr: Workflow with 3 steps and 2 data files.
     fetch(["Fetch Sales Data"])
     clean["Clean and Validate"]
     report[["Generate Summary"]]
@@ -208,6 +210,8 @@ config:
     minNodeWidth: 0
 ---
 flowchart TD
+    accTitle: putior Package Internals
+    accDescr: Workflow with 10 steps and 9 data files.
     diagram_gen["Generate Mermaid Diagram"]
     styling["Apply Theme Styling"]
     node_defs["Create Node Definitions"]

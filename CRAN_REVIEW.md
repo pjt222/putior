@@ -175,11 +175,13 @@ There is no confirmed finding that would cause an R CMD check ERROR/WARNING, a C
 - **file:line:** `R/put_diagram.R:253-261`
 - **Evidence:** No `accTitle`/`accDescr`/`aria` anywhere in `R/`. Package markets 4 colorblind-safe themes but emits no machine-readable accessible title/description. `accTitle`/`accDescr` shipped in Mermaid v9.0.0 (2022) — safe under the pinned 12.2.0 (12.1.0 since 2026-10-12, #48; 12.2.0 since 2026-10-13) and on GitHub.
 - **Fix (optional, additive):** When `title` is supplied, also emit `accTitle: <title>` and an `accDescr:` after the `flowchart <direction>` line. Optional `acc_descr` param.
+- **Status:** Resolved 2026-10-13 (#50). `put_diagram(accessibility = TRUE)`, the default, writes `accTitle` from the title (when given) and an `accDescr` summary ("Workflow with N steps and M data files.") after the `flowchart` line. The title text is escaped like labels (entity `#`, direction words, colons), but quotes and pipes are kept; measured to round-trip into the SVG `<title>` on Mermaid 10.9.8, 11.12.0, 11.17.2, 12.1.0 and 12.2.0. A frontmatter `title:` alone sets no `<title>`/`aria-labelledby` on any of them.
 
 ### T3-6 · mermaid-03 — Confirmation: v11.3+ `A@{ shape: ... }` syntax correctly NOT used (keep it that way)
 - **file:line:** `R/put_diagram.R:598-626`
 - **Evidence:** `get_node_shape()` uses only classic ASCII shapes. The expanded shape catalog requires Mermaid v11.3.0+. The pkgdown site and sandbox now pin `mermaid@12.2.0` (12.1.0 on 2026-10-12, #48; 12.2.0 on 2026-10-13), but Quarto bundles Mermaid 11.12.0, so the floor that matters is the oldest renderer users have (#50).
 - **Action:** Superseded: the site no longer constrains this. Decide in #50 against the renderer matrix (Quarto 11.12.0 is the oldest), and verify GitHub rendering first. No-op now.
+- **Decision 2026-10-13 (#50):** stay on classic syntax. putior emits no v11-only syntax (`@{ shape: ... }`, edge ids, collapsed subgraphs, `datastore`) while Quarto, the oldest major renderer, ships Mermaid 11.12.0; revisit when Quarto ships 11.15 or later. The supported-renderer matrix and the version floor are documented in `?put_diagram` ("Mermaid versions") and `inst/GUIDE.md`.
 
 ### T3-7 · pkgdown-04 — Redundant Mermaid double-render timers + duplicate `extra.css` @import
 - **file:line:** `_pkgdown.yml:132` (@import). The timers are gone.

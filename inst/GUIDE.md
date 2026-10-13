@@ -182,7 +182,26 @@ mermaid_code <- put_diagram(workflow, output = "raw")  # Return as string
 put_diagram(workflow, mermaid_config = "classic")  # Default: Mermaid 11's look, also on GitHub's Mermaid 12
 put_diagram(workflow, mermaid_config = "none")     # No configuration
 put_diagram(workflow, mermaid_config = list(look = "neo"))  # Your own; a theme key is left out
+
+# Screen reader text: accTitle (from title) and accDescr (a summary) are on by default
+put_diagram(workflow, title = "Sales Pipeline")
+put_diagram(workflow, accessibility = FALSE)       # Leave them out
 ```
+
+#### Mermaid versions
+
+putior writes classic Mermaid syntax only. The frontmatter (title and `mermaid_config`) needs Mermaid 9.3.0 or later.
+
+| Renderer | Mermaid (2026-10-12) | Source |
+|----------|----------------------|--------|
+| GitHub | 12.1.0 | measured on github.com |
+| pkgdown site, sandbox | 12.2.0 | putior's pin |
+| Quarto 1.10, 1.11 | 11.12.0 | bundle; 1.9.38 measured |
+| VS Code | 11.17.0 | package lock |
+| GitLab | 11.16.1 | package.json |
+| Positron | 11.15.0 | package lock |
+
+CI draws every diagram option on Mermaid 11.12.0, 11.17.2, 12.1.0 and 12.2.0 (`tests/mermaid/`). Newer syntax such as `@{ shape: ... }` (Mermaid 11.3+) is not used while Quarto ships 11.12.0.
 
 ### `put_auto()` - Auto-Detect Workflow
 

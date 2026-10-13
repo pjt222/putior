@@ -79,6 +79,12 @@
 #'       host's light or dark theme; use \code{theme} or \code{palette} for
 #'       node colors.
 #'   }
+#' @param accessibility Logical. When TRUE (default), the diagram carries
+#'   accessibility metadata that screen readers announce: \code{accTitle}
+#'   with the \code{title} (if one is given) and \code{accDescr} with a
+#'   one-line summary, such as "Workflow with 4 steps and 3 data files."
+#'   Mermaid puts them into the SVG's \code{<title>} and \code{<desc>}; a
+#'   frontmatter title alone does not.
 #' @param log_level Character string specifying log verbosity for this call.
 #'   Overrides the global option \code{putior.log_level} when specified.
 #'   Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}}.
@@ -107,6 +113,17 @@
 #' that is already valid (\code{a_b}) keeps its form. With
 #' \code{source_info_style = "subgraph"}, each source file becomes a subgraph
 #' with the id \code{file_<name>}.
+#'
+#' @section Mermaid versions:
+#' The output uses only classic Mermaid syntax, so that every current
+#' renderer draws it. The frontmatter (title and \code{mermaid_config})
+#' needs Mermaid 9.3.0 or later, \code{accTitle}/\code{accDescr} 9.0 or
+#' later. CI draws every diagram option on Mermaid 11.12.0, 11.17.2, 12.1.0
+#' and 12.2.0; 10.9.8 was checked once. Renderers (2026-10-12): GitHub
+#' 12.1.0 (measured), Quarto 1.10 and 1.11 11.12.0, GitLab 11.16.1, VS Code
+#' 11.17.0, Positron 11.15.0; the pkgdown site and the sandbox load 12.2.0.
+#' Newer syntax such as \code{@\{ shape: ... \}} needs Mermaid 11.3 or
+#' later and is not used while Quarto ships 11.12.0.
 #'
 #' @return Character string containing the mermaid diagram code
 #' @family core-workflow
@@ -175,6 +192,7 @@ put_diagram <- function(workflow,
                         enable_clicks = FALSE,
                         click_protocol = "vscode",
                         mermaid_config = "classic",
+                        accessibility = TRUE,
                         log_level = NULL) {
   # Set log level for this call if specified
   restore_log_level <- with_log_level(log_level)
@@ -312,6 +330,11 @@ put_diagram <- function(workflow,
 
   # Add flowchart declaration
   mermaid_lines <- c(mermaid_lines, paste0("flowchart ", direction))
+
+  # Accessibility metadata for screen readers (#50)
+  if (isTRUE(accessibility)) {
+    mermaid_lines <- c(mermaid_lines, accessibility_lines(workflow, title))
+  }
 
   # Handle artifacts if requested
   if (show_artifacts) {
@@ -831,21 +854,69 @@ sanitize_mermaid_label <- function(label, line_start = NULL, line_end = NULL) {
   if (is_empty_string(label)) return(label)
   # Strip newlines/carriage returns that would break Mermaid line structure
   label <- gsub("[\r\n]", " ", label)
-  # Mermaid decodes #<name>; and #<digits>; as entities, so "Step #35;"
-  # would show as "Step #" (#45). Escape only a # that starts such a
-  # sequence: a plain "C#" must stay as it is, because with htmlLabels
-  # turned off Mermaid shows an escaped # as "&#35;". Must run before the
-  # escapes below, which themselves write #...; entities.
-  label <- gsub("#(?=\\w+;)", "#35;", label, perl = TRUE)
+  # A # that Mermaid would read as an entity (#45); runs before the escapes
+  # below, which write entities themselves
+  label <- escape_entity_hashes(label)
   # Wrap in quotes and escape internal quotes using Mermaid's #quot; entity
   label <- gsub('"', "#quot;", label, fixed = TRUE)
   # Escape pipe characters using Mermaid's #124; entity (pipes delimit edge labels)
   label <- gsub("|", "#124;", label, fixed = TRUE)
-  # The next two escapes write entities themselves, so they run last, and
-  # the colon escape must see the entities of the direction escape (#89)
-  label <- escape_direction_words(label)
-  label <- escape_style_colons(label, line_start, line_end)
+  # These escapes write entities themselves, so they run last (#89)
+  label <- escape_mermaid_syntax(label, line_start, line_end)
   paste0('"', label, '"')
+}
+
+#' Escape a # that Mermaid would read as the start of an entity
+#'
+#' Mermaid decodes #<name>; and #<digits>; as entities, so "Step #35;" would
+#' show as "Step #" (#45). Only a # that starts such a sequence is escaped:
+#' a plain "C#" stays as it is, because with htmlLabels turned off Mermaid
+#' shows an escaped # as "&#35;". Runs before any escape that writes
+#' entities itself.
+#' @noRd
+escape_entity_hashes <- function(text) {
+  gsub("#(?=\\w+;)", "#35;", text, perl = TRUE)
+}
+
+#' Escape text that Mermaid's lexer would read as syntax (#89)
+#'
+#' Direction words and colons that let Mermaid cut an entity short; see
+#' escape_direction_words() and escape_style_colons(). Both write entities,
+#' and the colon escape must see those of the direction escape.
+#' @noRd
+escape_mermaid_syntax <- function(text, line_start = NULL, line_end = NULL) {
+  escape_style_colons(escape_direction_words(text), line_start, line_end)
+}
+
+#' accTitle and accDescr lines for a diagram (#50)
+#'
+#' accTitle comes from the title, if there is one; accDescr summarises the
+#' workflow. Mermaid decodes entities in both, as in labels, but quotes and
+#' pipes need no escape there. Measured on Mermaid 10.9.8, 11.12.0,
+#' 11.17.2, 12.1.0 and 12.2.0.
+#' @param workflow The workflow being drawn, without artifact nodes
+#' @param title The diagram title, or NULL
+#' @return Character vector of indented diagram lines
+#' @noRd
+accessibility_lines <- function(workflow, title) {
+  lines <- character()
+  if (!is_empty_string(title)) {
+    title_text <- trimws(gsub("[[:cntrl:]]+", " ", as.character(title)))
+    if (nzchar(title_text)) {
+      title_text <- escape_mermaid_syntax(escape_entity_hashes(title_text), "    accTitle")
+      lines <- c(lines, paste0("    accTitle: ", title_text))
+    }
+  }
+  step_count <- length(unique(workflow$id))
+  file_count <- nrow(create_artifact_nodes(workflow))
+  summary_text <- paste0(
+    "Workflow with ", step_count, if (step_count == 1) " step" else " steps",
+    if (file_count > 0) {
+      paste0(" and ", file_count, if (file_count == 1) " data file" else " data files")
+    },
+    "."
+  )
+  c(lines, paste0("    accDescr: ", summary_text))
 }
 
 # The characters that JavaScript's \s matches, for a regex character class.

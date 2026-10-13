@@ -272,6 +272,40 @@ test_that("put_diagram() writes a named list as the Mermaid configuration (#54)"
   expect_true(startsWith(put_diagram(workflow, output = "raw", mermaid_config = list()), "flowchart TD"))
 })
 
+test_that("put_diagram() writes accTitle and accDescr for screen readers (#50)", {
+  workflow <- data.frame(
+    id = c("a", "b"), label = c("A", "B"), file_name = c("a.R", "b.R"),
+    input = c(NA, "x.csv"), output = c("x.csv", "y.csv"), stringsAsFactors = FALSE
+  )
+  diagram <- put_diagram(workflow, output = "raw", mermaid_config = "none", title = "Sales")
+  expect_match(diagram, 'flowchart TD\n    accTitle: Sales\n    accDescr: Workflow with 2 steps and 2 data files.\n',
+               fixed = TRUE)
+  # Without a title only the summary; singular forms; no files
+  single <- put_diagram(workflow[1, ], output = "raw", mermaid_config = "none")
+  expect_match(single, "flowchart TD\n    accDescr: Workflow with 1 step and 1 data file.\n", fixed = TRUE)
+  expect_false(grepl("accTitle", single, fixed = TRUE))
+  no_files <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
+  expect_match(put_diagram(no_files, output = "raw"), "accDescr: Workflow with 1 step.\n", fixed = TRUE)
+  # accessibility = FALSE leaves both out
+  expect_false(grepl("acc(Title|Descr)", put_diagram(workflow, output = "raw", title = "T",
+                                                      accessibility = FALSE)))
+})
+
+test_that("the accTitle text is escaped like a label, but keeps quotes (#50)", {
+  workflow <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
+  title_line <- function(title) {
+    code_lines <- strsplit(put_diagram(workflow, output = "raw", title = title), "\n", fixed = TRUE)[[1]]
+    grep("^    accTitle: ", code_lines, value = TRUE)
+  }
+  expect_equal(title_line('Say "hi" | ok'), '    accTitle: Say "hi" | ok')
+  expect_equal(title_line("Step #35; and C#"), "    accTitle: Step #35;35; and C#")
+  expect_equal(title_line("Set direction LR"), "    accTitle: Set direction#32;LR")
+  expect_equal(title_line('Lifestyle:#quot;x'), "    accTitle: Lifestyle#58;#35;quot;x")
+  # Control characters become spaces; a blank title gives no accTitle
+  expect_equal(title_line("tab\there\001bell"), "    accTitle: tab here bell")
+  expect_length(title_line("   "), 0)
+})
+
 test_that("put_diagram() rejects a mermaid_config it cannot write (#54)", {
   workflow <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
   for (bad_config in list("neo", 3, c("classic", "none"), list(1), list("a b" = 1))) {

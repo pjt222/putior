@@ -28,6 +28,16 @@
   of it, such as an `%%{init}%%` line, makes the diagram fail to parse, so
   use `mermaid_config` instead, or `"none"` for such hosts. (#54)
 
+* `put_diagram()` output now also carries accessibility metadata for
+  screen readers, right after the `flowchart` line: `accTitle` with the
+  `title`, if one is given, and `accDescr` with a summary such as
+  "Workflow with 4 steps and 3 data files." Mermaid puts them into the
+  SVG's `<title>` and `<desc>`; the frontmatter title alone does not. The
+  title is escaped like labels, so that Mermaid shows it as written.
+  `accessibility = FALSE` leaves both lines out; the MCP `put_diagram`
+  tool has the same argument. `?put_diagram` and `GUIDE.md` now list the
+  Mermaid versions that putior supports and that its CI tests. (#50)
+
 ## Bug Fixes
 
 * Fixed `show_source_info = TRUE` using `<small>` HTML tags that are unsupported

@@ -18,6 +18,8 @@
 // diagram's frontmatter sets a look, every node that carries a data-look
 // attribute (Mermaid 11.17.2 and later) must have it, and labels listed in
 // wide_texts must be drawn wider than Mermaid 12's 120px wrapping width.
+// The SVG's <title> and <desc> must show the expected accTitle and
+// accDescr text.
 //
 // Cases in expected-failures.json are known bugs. Each entry names its issue
 // and the kinds of problem it is known to cause ("generate", "parse",
@@ -120,7 +122,10 @@ async function checkInPage(code) {
     if (sourceLine) return `${lines[0]} in "${sourceLine.trim()}"`;
     return (lines[0] ?? '').slice(0, 300);
   };
-  const result = { problems: [], vertexIds: null, edgeCount: null, labelTexts: null, labelWidths: null, looks: null };
+  const result = {
+    problems: [], vertexIds: null, edgeCount: null, labelTexts: null, labelWidths: null, looks: null,
+    accTitle: null, accDescr: null,
+  };
   try {
     await mermaid.parse(code);
   } catch (error) {
@@ -162,6 +167,9 @@ async function checkInPage(code) {
       if (notDrawn.length > 0) result.problems.push(`render: parsed but not drawn: ${notDrawn.join(', ')}`);
       if (notParsed.length > 0) result.problems.push(`render: drawn but not parsed: ${notParsed.join(', ')}`);
       if (drawnIds.length !== new Set(drawnIds).size) result.problems.push('render: a node is drawn twice');
+      // Screen reader text from accTitle and accDescr
+      result.accTitle = svgRoot.querySelector(':scope > title')?.textContent ?? null;
+      result.accDescr = svgRoot.querySelector(':scope > desc')?.textContent ?? null;
       // The look each node was drawn in; Mermaid 11.12.0 does not record it
       result.looks = [...new Set([...svgRoot.querySelectorAll('g.node')]
         .map((nodeElement) => nodeElement.getAttribute('data-look'))
@@ -226,6 +234,19 @@ function compareLook(entry, looks) {
   return otherLooks.length > 0
     ? [`look: the frontmatter sets "${entry.expected_look}", Mermaid drew ${otherLooks.map((look) => `"${look}"`).join(', ')}`]
     : [];
+}
+
+// The SVG's <title> and <desc> must show accTitle and accDescr as written
+function compareAccessibility(entry, result) {
+  const normalize = (text) => (text ?? '').replace(/\s+/g, ' ').trim();
+  const problems = [];
+  for (const [field, element] of [['expected_acc_title', 'accTitle'], ['expected_acc_descr', 'accDescr']]) {
+    if (entry[field] === undefined) continue;
+    if (normalize(result[element]) !== normalize(entry[field])) {
+      problems.push(`text: ${element} shows ${JSON.stringify(result[element])}, expected ${JSON.stringify(entry[field])}`);
+    }
+  }
+  return problems;
 }
 
 // Labels that the frontmatter's wrapping width keeps on one line must be
@@ -294,6 +315,7 @@ try {
           if (result.labelTexts) problems.push(...compareTexts(entry, result.labelTexts));
           if (result.labelTexts) problems.push(...compareWidths(entry, result.labelTexts, result.labelWidths));
           if (result.looks) problems.push(...compareLook(entry, result.looks));
+          if (result.labelTexts) problems.push(...compareAccessibility(entry, result));
         }
         for (const problem of problems) problemsByCase.get(entry.name).push(`${label} ${problem}`);
       }

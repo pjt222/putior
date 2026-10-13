@@ -294,6 +294,7 @@ mcp_put_diagram <- function(path, source = "annotations",
                             source_info_style = "inline",
                             enable_clicks = FALSE, click_protocol = "vscode",
                             mermaid_config = "classic",
+                            accessibility = TRUE,
                             log_level = NULL) {
   # Clients may send null for an argument they leave out
   mermaid_config <- mermaid_config %||% "classic"
@@ -354,7 +355,7 @@ mcp_put_diagram <- function(path, source = "annotations",
     show_source_info = show_source_info,
     source_info_style = source_info_style, enable_clicks = enable_clicks,
     click_protocol = click_protocol, mermaid_config = mermaid_config,
-    log_level = log_level
+    accessibility = !isFALSE(accessibility), log_level = log_level
   )
 }
 
@@ -604,6 +605,13 @@ make_tool_put_diagram <- function() {
           "no configuration (default: classic)"
         ),
         values = c("classic", "none"),
+        required = FALSE
+      ),
+      accessibility = ellmer::type_boolean(
+        description = paste0(
+          "Add accTitle (from the title) and accDescr (a summary) for screen ",
+          "readers (default: TRUE)"
+        ),
         required = FALSE
       ),
       log_level = ellmer::type_enum(
