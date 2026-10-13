@@ -259,6 +259,23 @@
   ([\#54](https://github.com/pjt222/putior/issues/54)). A diagram with a
   syntax error shows Mermaid’s error message. Mermaid 12 needs a current
   browser (ES2024; Safari 17.4 or later)
+- File markers (`# ===== File: name.R =====`) are read one line at a
+  time, with any spaces or tabs around them, at least three `=` and an
+  optional closing run, so an unclosed marker no longer takes the next
+  file with it and a name containing `=` is recognized. When two
+  simulated files have the same name (ignoring case), both are kept, the
+  later one in a `copy_2/` folder, and the status line says so; so does
+  text before the first marker, which is ignored. File names are made
+  safe to write on Windows (trailing dots dropped, characters such as
+  `:` or `?` replaced), and a file that still cannot be written is left
+  out with a note instead of emptying the whole diagram
+  ([\#53](https://github.com/pjt222/putior/issues/53))
+- If Mermaid cannot be loaded from jsdelivr (no network, a blocked CDN),
+  the preview says so instead of staying blank, and the copy button and
+  the Mermaid Code tab still work. A diagram that changes while the
+  preview is hidden is drawn as soon as the preview is visible again,
+  whether its tab is shown or a collapsed pane is opened
+  ([\#64](https://github.com/pjt222/putior/issues/64))
 
 #### Documentation
 

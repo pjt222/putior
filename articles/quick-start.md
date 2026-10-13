@@ -89,13 +89,13 @@ cat("```mermaid\n", put_diagram(workflow, output = "raw"), "\n```\n", sep = "")
 
 ``` mermaid
 flowchart TD
-    node_77195069_6491_4332_a714_1df933c10594["Extract"]
-    c048dcb0_c0ac_4e51_8d93_5449a472243c["Transform"]
-    bf0f7e10_906c_4d32_91fa_26127cc32e38["Load"]
+    node_7e0b41c5_0aa1_46d4_92d2_81667e9d91d3["Extract"]
+    node_6363648e_1567_4e92_a0c5_7f2f9d8a5797["Transform"]
+    node_1f906d24_a70e_48c0_95a5_48ad5220e346["Load"]
 
     %% Connections
-    node_77195069_6491_4332_a714_1df933c10594 --> c048dcb0_c0ac_4e51_8d93_5449a472243c
-    c048dcb0_c0ac_4e51_8d93_5449a472243c --> bf0f7e10_906c_4d32_91fa_26127cc32e38
+    node_7e0b41c5_0aa1_46d4_92d2_81667e9d91d3 --> node_6363648e_1567_4e92_a0c5_7f2f9d8a5797
+    node_6363648e_1567_4e92_a0c5_7f2f9d8a5797 --> node_1f906d24_a70e_48c0_95a5_48ad5220e346
 ```
 
 ------------------------------------------------------------------------
