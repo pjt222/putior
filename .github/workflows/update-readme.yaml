@@ -7,6 +7,7 @@ on:
     paths:
       - 'R/**'
       - 'inst/examples/update-readme.R'
+      - 'README.md'
       - '_pkgdown.yml'
   workflow_dispatch:
 
