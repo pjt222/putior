@@ -105,14 +105,16 @@ node tests/mermaid/validate.mjs tests/mermaid/corpus
 ### Package Dependencies (in DESCRIPTION & renv.lock)
 - Only packages required for putior to function
 - Listed in Imports/Suggests in DESCRIPTION  
-- Included in renv.lock for reproducible installation
-- All dependencies are from CRAN (no GitHub packages)
+- Included in renv.lock for reproducible installation, together with the development tools the repo uses (roxygen2, devtools, rcmdcheck, pkgdown, testthat)
+- All dependencies are from CRAN (no GitHub packages), including mcptools
+- renv.lock is for **Windows R 4.6.1** (the R that RStudio uses) and renv 1.3.1, refreshed 2026-10-13. After pulling a lockfile change, run `renv::restore()` in RStudio. Keep it current: `renv::update()`, then `renv::snapshot()`, from Windows R in the project (not with `--no-init-file`, which bypasses renv)
+- WSL's R (`/opt/R/<version>` via rig) is not used for renv, docs or checks; it only serves Linux-side probes
 
 ### Development-Only Tools (NOT in renv.lock)
 - **acquaint**: MCP session for AI-assisted development, loaded conditionally in `.Rprofile` if installed
 - **btw**: Development helper, not a package dependency
-- **mcptools** is a package dependency (Suggests) and on CRAN: `install.packages("mcptools")`. renv still ignores it from when it was GitHub-only; revisit when renv.lock is next refreshed.
-- renv ignores these via `renv/settings.json` (`ignored.packages`: acquaint, btw, mcptools, rsyslog)
+- **rsyslog**: Linux-only logging backend
+- renv ignores these via `renv/settings.json` (`ignored.packages`: acquaint, btw, rsyslog)
 
 ## Recent Major Accomplishments
 
