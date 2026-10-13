@@ -1,0 +1,55 @@
+# Parse and render put_diagram() output with several real Mermaid versions in
+# headless Chromium. The corpus generator, the checker and the list of known
+# failures live in tests/mermaid/. This is not part of R CMD check, which has
+# no Node.js, and tests/mermaid/ is not in the package tarball.
+
+name: mermaid-check
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mermaid-check:
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      # Only putior's hard dependencies, so that annotations without an id
+      # get putior's own fallback ids rather than random UUIDs
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          dependencies: '"hard"'
+          extra-packages: any::jsonlite, local::.
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tests/mermaid/package-lock.json
+
+      - name: Install Mermaid versions and Chromium
+        working-directory: tests/mermaid
+        run: |
+          npm ci
+          npx playwright-core install --with-deps --only-shell chromium
+
+      - name: Generate the corpus
+        run: Rscript tests/mermaid/generate-corpus.R tests/mermaid/corpus
+
+      - name: Parse and render on every Mermaid version
+        run: node tests/mermaid/validate.mjs tests/mermaid/corpus

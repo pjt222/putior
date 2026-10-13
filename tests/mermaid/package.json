@@ -1,0 +1,12 @@
+{
+  "name": "putior-mermaid-check",
+  "private": true,
+  "description": "Parse and render put_diagram() output on several Mermaid versions (see validate.mjs)",
+  "type": "module",
+  "dependencies": {
+    "mermaid-11.12.0": "npm:mermaid@11.12.0",
+    "mermaid-11.17.2": "npm:mermaid@11.17.2",
+    "mermaid-12.1.0": "npm:mermaid@12.1.0",
+    "playwright-core": "1.64.0"
+  }
+}

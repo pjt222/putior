@@ -137,3 +137,7 @@ CONTINUE_HERE.md
 
 # Local CRAN release tooling output (dev/cran/*.R)
 dev/cran/out/
+
+# Mermaid output check (tests/mermaid/): npm packages and the generated corpus
+tests/mermaid/node_modules/
+tests/mermaid/corpus/

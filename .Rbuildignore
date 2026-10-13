@@ -41,6 +41,8 @@
 ^inst/cheatsheet/diagrams$
 ^inst/cheatsheet/node_modules$
 ^inst/cheatsheet/node_modules/
+^tests/mermaid$
+^tests/mermaid/
 ^inst/cheatsheet/package\.json$
 ^inst/cheatsheet/package-lock\.json$
 ^CONTINUE_HERE\.md$
