@@ -168,26 +168,46 @@ ui <- fluidPage(
       crossorigin = "anonymous"
     ),
     tags$script(HTML("
+      // Mermaid comes from jsdelivr. If it did not load (no network, a
+      // blocked CDN, a wrong integrity hash), the preview says so instead of
+      // staying blank. The copy button has its own script below, so it works
+      // without Mermaid (#64).
+      var mermaidAvailable = typeof mermaid !== 'undefined';
+
       // Mermaid 12 defaults to the ELK layout, the neo look and the
       // redux-color theme, wraps labels at 120px and makes nodes at least
       // 120px wide. Keep Mermaid 11's classic rendering, which putior's
       // themes are made for and which GitLab, Quarto and VS Code still show.
-      mermaid.initialize({
-        startOnLoad: false,
-        layout: 'dagre',
-        look: 'classic',
-        theme: 'default',
-        flowchart: {
-          htmlLabels: true,
-          curve: 'linear',
-          wrappingWidth: 200,
-          minNodeWidth: 0
-        }
-      });
+      if (mermaidAvailable) {
+        mermaid.initialize({
+          startOnLoad: false,
+          layout: 'dagre',
+          look: 'classic',
+          theme: 'default',
+          flowchart: {
+            htmlLabels: true,
+            curve: 'linear',
+            wrappingWidth: 200,
+            minNodeWidth: 0
+          }
+        });
+      } else {
+        console.error('Mermaid did not load from cdn.jsdelivr.net');
+      }
 
       function renderMermaidCode(code) {
         var container = document.getElementById('mermaid-container');
         container.innerHTML = '';
+
+        if (!mermaidAvailable) {
+          var message = document.createElement('p');
+          message.className = 'mermaid-unavailable';
+          message.textContent = 'Could not load Mermaid from cdn.jsdelivr.net, ' +
+            'so the diagram cannot be drawn here. ' +
+            'The Mermaid Code tab and the copy button still work.';
+          container.appendChild(message);
+          return;
+        }
 
         var div = document.createElement('div');
         div.className = 'mermaid';
@@ -203,9 +223,18 @@ ui <- fluidPage(
 
       // Mermaid measures text with the browser's layout, so a diagram
       // rendered while the Diagram tab is hidden collapses to an empty
-      // 16px box. Keep code that arrives while the tab is hidden and render
-      // it when the tab is shown again.
+      // 16px box. Keep code that arrives while the preview is hidden and
+      // render it once the preview is visible again.
       var pendingMermaidCode = null;
+
+      function renderPendingMermaidCode() {
+        var container = document.getElementById('mermaid-container');
+        if (pendingMermaidCode !== null && container && container.offsetParent !== null) {
+          var code = pendingMermaidCode;
+          pendingMermaidCode = null;
+          renderMermaidCode(code);
+        }
+      }
 
       Shiny.addCustomMessageHandler('renderMermaid', function(code) {
         var container = document.getElementById('mermaid-container');
@@ -217,15 +246,18 @@ ui <- fluidPage(
         renderMermaidCode(code);
       });
 
-      $(document).on('shown.bs.tab', function() {
+      // The preview becomes visible when its tab is shown, or when it gets a
+      // size again after being hidden some other way, such as a collapsed
+      // RStudio Viewer pane (#64).
+      $(document).on('shown.bs.tab', renderPendingMermaidCode);
+      $(function() {
         var container = document.getElementById('mermaid-container');
-        if (pendingMermaidCode !== null && container.offsetParent !== null) {
-          var code = pendingMermaidCode;
-          pendingMermaidCode = null;
-          renderMermaidCode(code);
+        if (container && typeof ResizeObserver !== 'undefined') {
+          new ResizeObserver(renderPendingMermaidCode).observe(container);
         }
       });
-
+    ")),
+    tags$script(HTML("
       // Copy to clipboard function
       Shiny.addCustomMessageHandler('copyToClipboard', function(text) {
         navigator.clipboard.writeText(text).then(function() {

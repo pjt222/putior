@@ -167,6 +167,11 @@
   swallows the next file. When two simulated files have the same name, the
   later one is renamed (`a_2.R`) and the status line says so, instead of one
   file silently replacing the other (#53)
+* If Mermaid cannot be loaded from jsdelivr (no network, a blocked CDN), the
+  preview says so instead of staying blank, and the copy button and the
+  Mermaid Code tab still work. A diagram that changes while the preview is
+  hidden is drawn as soon as the preview is visible again, whether its tab is
+  shown or a collapsed pane is opened (#64)
 
 ### Documentation
 * Documented all valid `node_type` values across vignettes and reference (#40)
