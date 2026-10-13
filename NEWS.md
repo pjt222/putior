@@ -162,11 +162,12 @@
   shows Mermaid's error message. Mermaid 12 needs a current browser (ES2024;
   Safari 17.4 or later)
 * File markers (`# ===== File: name.R =====`) are read one line at a time,
-  with any spaces or tabs around them, any number of `=` and an optional
-  closing run, so an unclosed marker or a name containing `=` no longer
-  swallows the next file. When two simulated files have the same name, the
-  later one is renamed (`a_2.R`) and the status line says so, instead of one
-  file silently replacing the other (#53)
+  with any spaces or tabs around them, at least three `=` and an optional
+  closing run, so an unclosed marker no longer takes the next file with it
+  and a name containing `=` is recognized. When two simulated files have the
+  same name (ignoring case), both are kept, the later one in a `copy_2/`
+  folder, and the status line says so; so does text before the first marker,
+  which is ignored (#53)
 * If Mermaid cannot be loaded from jsdelivr (no network, a blocked CDN), the
   preview says so instead of staying blank, and the copy button and the
   Mermaid Code tab still work. A diagram that changes while the preview is

@@ -129,23 +129,52 @@ test_that("sandbox parser accepts extra spaces and tabs in markers (#53)", {
   expect_equal(file_field(files, "content"), c("first", "second"))
 })
 
-test_that("sandbox parser renames repeated file names and says so (#53)", {
+test_that("sandbox parser keeps repeated file names in copy folders (#53)", {
   sandbox_env <- load_sandbox_definitions("parse_code_to_files")
   code <- paste0(
     "# ===== File: a.R =====\nfirst\n",
     "# ===== File: a.R =====\nsecond\n",
-    "# ===== File: sub/a.R =====\nthird\n",
-    "# ===== File: a_2.R =====\nfourth"
+    "# ===== File: sub/A.R =====\nthird\n",
+    "# ===== File: Makefile =====\nfourth\n",
+    "# ===== File: Makefile =====\nfifth"
   )
   files <- sandbox_env$parse_code_to_files(code)
 
-  expect_equal(file_field(files, "name"), c("a.R", "a_3.R", "a_4.R", "a_2.R"))
-  expect_equal(file_field(files, "content"), c("first", "second", "third", "fourth"))
+  expect_equal(file_field(files, "name"), c("a.R", "a.R", "A.R", "Makefile", "Makefile"))
+  expect_equal(file_field(files, "folder"), c("", "copy_2", "copy_3", "", "copy_2"))
+  expect_equal(file_field(files, "content"), c("first", "second", "third", "fourth", "fifth"))
   expect_equal(
     attr(files, "notes"),
-    c("Repeated file name a.R: the later file is used as a_3.R.",
-      "Repeated file name a.R: the later file is used as a_4.R.")
+    c("Repeated file name a.R: the later file is kept as copy_2/a.R.",
+      "Repeated file name A.R: the later file is kept as copy_3/A.R.",
+      "Repeated file name Makefile: the later file is kept as copy_2/Makefile.")
   )
+})
+
+test_that("sandbox parser needs three = and a real name for a marker (#53)", {
+  sandbox_env <- load_sandbox_definitions("parse_code_to_files")
+  code <- paste0(
+    "# ===== File: a.R =====\n",
+    "x <- 1\n",
+    "#= File: notes\n",
+    "# ===== File: \n",
+    "# ===== File: .. =====\n",
+    "y <- 2"
+  )
+  files <- sandbox_env$parse_code_to_files(code)
+
+  expect_equal(file_field(files, "name"), "a.R")
+  expect_match(files[[1]]$content, "#= File: notes", fixed = TRUE)
+  expect_match(files[[1]]$content, "y <- 2", fixed = TRUE)
+  expect_length(attr(files, "notes"), 0)
+})
+
+test_that("sandbox parser notes text before the first marker", {
+  sandbox_env <- load_sandbox_definitions("parse_code_to_files")
+  files <- sandbox_env$parse_code_to_files("x <- 1\n# ===== File: a.R =====\ny <- 2")
+
+  expect_equal(file_field(files, "name"), "a.R")
+  expect_equal(attr(files, "notes"), "Text before the first file marker is ignored.")
 })
 
 test_that("default multi-file example yields all four workflow nodes", {
@@ -253,5 +282,30 @@ test_that("sandbox status has no error when the diagram is drawn", {
 
     expect_equal(output$status, "Found 4 workflow node(s)")
     expect_match(mermaid_code(), "flowchart TD", fixed = TRUE)
+  })
+})
+
+test_that("sandbox status lists repeated file names and keeps both files", {
+  skip_on_cran()
+  skip_if_not_installed("shiny")
+
+  app_file <- system.file("shiny", "putior-sandbox", "app.R", package = "putior")
+  app_env <- new.env()
+  sys.source(app_file, envir = app_env)
+
+  shiny::testServer(app_env$server, {
+    session$setInputs(
+      template = "multi",
+      code = paste0(
+        "# ===== File: a.R =====\n# put id:\"one\", label:\"One\", output:\"x.csv\"\n",
+        "# ===== File: a.R =====\n# put id:\"two\", label:\"Two\", input:\"x.csv\"\n"
+      ),
+      direction = "TD", theme = "github", show_artifacts = FALSE,
+      show_files = FALSE, style_nodes = TRUE, show_boundaries = TRUE
+    )
+
+    expect_match(output$status, "Found 2 workflow node(s)", fixed = TRUE)
+    expect_match(output$status, "Repeated file name a.R: the later file is kept as copy_2/a.R.",
+                 fixed = TRUE)
   })
 })

@@ -63,53 +63,58 @@ rmarkdown::render("template.Rmd", output_file = "report.html")
 # Parse editor text into simulated files, split at "# ===== File: name ====="
 # markers. Defined at top level (not inside server) so tests can evaluate it.
 #
-# A marker is one whole line: "#", a run of "=", "File:", the name, and an
-# optional closing run of "=", with any spaces or tabs in between (#53). Text
-# before the first marker is ignored; text without any marker is one script.
-# The server writes each file to its base name, so a repeated name would
-# overwrite the earlier file; repeats are renamed (a.R, a_2.R) and listed in
-# the "notes" attribute, which the status line shows.
+# A marker is one whole line: "#", at least three "=", "File:", the name, and
+# an optional closing run of "=", with any spaces or tabs in between (#53). A
+# name that is empty, ".", ".." or only "=" does not make a marker. Text
+# before the first marker is ignored (with a note); text without any marker
+# is one script. Each file gets a `folder`: "" normally, or "copy_2",
+# "copy_3", ... when its name repeats an earlier one (ignoring case, as the
+# Windows and macOS file systems do), so that the server writes both files
+# and put(), which scans subfolders, finds both under their own names. The
+# "notes" attribute lists these cases for the status line.
 parse_code_to_files <- function(code) {
   code_lines <- strsplit(code, "\r?\n")[[1]]
-  marker_pattern <- "^[ \t]*#[ \t]*=+[ \t]*File:[ \t]*(.+?)(?:[ \t]*=+)?[ \t]*$"
+  marker_pattern <- "^[ \t]*#[ \t]*={3,}[ \t]*File:[ \t]*(.+?)(?:[ \t]*=+)?[ \t]*$"
   marker_matches <- regmatches(code_lines, regexec(marker_pattern, code_lines, perl = TRUE))
-  marker_rows <- which(lengths(marker_matches) > 0)
+  marker_names <- vapply(marker_matches, function(match) {
+    if (length(match) == 0) NA_character_ else basename(trimws(match[2]))
+  }, character(1))
+  is_marker <- !is.na(marker_names) & nzchar(marker_names) &
+    !marker_names %in% c(".", "..") & !grepl("^=+$", marker_names)
+  marker_rows <- which(is_marker)
 
   if (length(marker_rows) == 0) {
     # No file markers, treat as single file
-    return(list(list(name = "script.R", content = code)))
+    return(list(list(name = "script.R", folder = "", content = code)))
   }
 
-  file_names <- vapply(marker_matches[marker_rows], function(match) match[2], character(1))
+  notes <- character()
+  if (marker_rows[1] > 1 && any(nzchar(trimws(code_lines[seq_len(marker_rows[1] - 1)])))) {
+    notes <- c(notes, "Text before the first file marker is ignored.")
+  }
+
   last_rows <- c(marker_rows[-1] - 1, length(code_lines))
+  seen_names <- character()
   files <- lapply(seq_along(marker_rows), function(file_index) {
     body_rows <- marker_rows[file_index] + seq_len(last_rows[file_index] - marker_rows[file_index])
     list(
-      name = file_names[file_index],
+      name = marker_names[marker_rows[file_index]],
+      folder = "",
       content = trimws(paste(code_lines[body_rows], collapse = "\n"))
     )
   })
 
-  notes <- character()
-  used_names <- character()
   for (file_index in seq_along(files)) {
-    file_name <- basename(files[[file_index]]$name)
-    if (file_name %in% used_names) {
-      name_stem <- tools::file_path_sans_ext(file_name)
-      name_extension <- tools::file_ext(file_name)
-      suffix_number <- 2L
-      repeat {
-        new_name <- paste0(name_stem, "_", suffix_number,
-                           if (nzchar(name_extension)) paste0(".", name_extension) else "")
-        if (!new_name %in% c(used_names, basename(file_names))) break
-        suffix_number <- suffix_number + 1L
-      }
-      notes <- c(notes, paste0("Repeated file name ", file_name,
-                               ": the later file is used as ", new_name, "."))
-      file_name <- new_name
+    file_name <- files[[file_index]]$name
+    repeat_count <- sum(tolower(seen_names) == tolower(file_name))
+    if (repeat_count > 0) {
+      files[[file_index]]$folder <- paste0("copy_", repeat_count + 1)
+      notes <- c(notes, paste0(
+        "Repeated file name ", file_name, ": the later file is kept as ",
+        files[[file_index]]$folder, "/", file_name, "."
+      ))
     }
-    files[[file_index]]$name <- file_name
-    used_names <- c(used_names, file_name)
+    seen_names <- c(seen_names, file_name)
   }
 
   attr(files, "notes") <- notes
@@ -232,7 +237,9 @@ ui <- fluidPage(
         if (pendingMermaidCode !== null && container && container.offsetParent !== null) {
           var code = pendingMermaidCode;
           pendingMermaidCode = null;
-          renderMermaidCode(code);
+          // Draw in the next frame, not inside the ResizeObserver callback,
+          // so the size change it causes is not reported as a resize loop.
+          window.requestAnimationFrame(function() { renderMermaidCode(code); });
         }
       }
 
@@ -482,10 +489,12 @@ server <- function(input, output, session) {
       }
       dir.create(sandbox_dir)
 
-      # Write each file (use basename to prevent path traversal)
+      # Write each file. Names are base names and folders are copy_<n>, so
+      # nothing is written outside sandbox_dir.
       for (f in files) {
-        file_path <- file.path(sandbox_dir, basename(f$name))
-        writeLines(f$content, file_path)
+        file_dir <- file.path(sandbox_dir, f$folder)
+        dir.create(file_dir, showWarnings = FALSE, recursive = TRUE)
+        writeLines(f$content, file.path(file_dir, basename(f$name)))
       }
 
       # Extract workflow
