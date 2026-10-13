@@ -6,14 +6,22 @@
 //   node tests/mermaid/validate.mjs tests/mermaid/corpus
 //
 // A case fails when generating it raised an R error, when Mermaid cannot
-// parse or render it, when the rendered SVG has fewer nodes than Mermaid
-// parsed (Mermaid 12 drops some nodes without an error), or when Mermaid's
-// nodes differ from the node ids putior defined (phantom nodes created by an
-// edge to an id that was never defined, or two definitions of one id).
+// parse or render it, when the rendered SVG does not draw exactly the nodes
+// Mermaid parsed (Mermaid 12 drops some nodes without an error), or when the
+// nodes differ from what putior defined: phantom nodes from an edge to an id
+// that was never defined, two definitions of one id, fewer nodes than the
+// workflow has, or class/click lines aimed at ids that do not exist.
 //
-// Cases in expected-failures.json are known bugs: they are reported but do
-// not fail the run. A listed case that passes does fail the run, so the list
+// Cases in expected-failures.json are known bugs. Each entry names its issue
+// and the kinds of problem it is known to cause ("generate", "parse",
+// "render", "nodes", "subgraphs"). A listed case counts as a known failure
+// only if all its problems are of those kinds; a problem of another kind
+// fails the run. A listed case that passes also fails the run, so the list
 // is kept up to date as the bugs are fixed.
+//
+// MERMAID_EXTRA_ALIASES (comma-separated) adds packages installed in
+// node_modules but not listed in package.json, e.g. the scheduled run's
+// "mermaid-latest".
 
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
@@ -23,26 +31,36 @@ import { fileURLToPath } from 'node:url';
 const harnessDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(harnessDir, '..', '..');
 const corpusDir = path.resolve(process.argv[2] ?? path.join(harnessDir, 'corpus'));
+const caseTimeoutMs = 60_000;
 
 const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
 
 // Every dependency that is an alias of mermaid, e.g. "mermaid-12.1.0": "npm:mermaid@12.1.0"
-const mermaidVersions = Object.entries(readJson(path.join(harnessDir, 'package.json')).dependencies)
+const aliases = Object.entries(readJson(path.join(harnessDir, 'package.json')).dependencies)
   .filter(([, spec]) => spec.startsWith('npm:mermaid@'))
-  .map(([alias]) => ({
-    alias,
-    version: readJson(path.join(harnessDir, 'node_modules', alias, 'package.json')).version,
-    script: path.join(harnessDir, 'node_modules', alias, 'dist', 'mermaid.min.js'),
-  }));
+  .map(([alias]) => alias);
+for (const extraAlias of (process.env.MERMAID_EXTRA_ALIASES ?? '').split(',')) {
+  if (extraAlias.trim() !== '') aliases.push(extraAlias.trim());
+}
+const mermaidVersions = aliases.map((alias) => ({
+  alias,
+  version: readJson(path.join(harnessDir, 'node_modules', alias, 'package.json')).version,
+  script: path.join(harnessDir, 'node_modules', alias, 'dist', 'mermaid.min.js'),
+}));
 
-// The site and the sandbox pin a Mermaid version; it must be one of the tested ones.
+// The site and the sandbox pin a Mermaid version; it must be one of the
+// tested ones. Each file must have a pin, or the check would switch itself off.
 const pinnedFiles = ['_pkgdown.yml', 'inst/shiny/putior-sandbox/app.R'];
 const setupProblems = [];
 for (const pinnedFile of pinnedFiles) {
   const text = fs.readFileSync(path.join(repoRoot, pinnedFile), 'utf8');
-  for (const match of text.matchAll(/mermaid@(\d+\.\d+\.\d+)/g)) {
-    if (!mermaidVersions.some((entry) => entry.version === match[1])) {
-      setupProblems.push(`${pinnedFile} pins mermaid@${match[1]}, which package.json does not test`);
+  const pins = [...text.matchAll(/mermaid@(\d+\.\d+\.\d+)/g)].map((match) => match[1]);
+  if (pins.length === 0) {
+    setupProblems.push(`${pinnedFile} has no exact mermaid@x.y.z pin`);
+  }
+  for (const pin of pins) {
+    if (!mermaidVersions.some((entry) => entry.version === pin)) {
+      setupProblems.push(`${pinnedFile} pins mermaid@${pin}, which package.json does not test`);
     }
   }
 }
@@ -63,18 +81,24 @@ const mermaidConfigs = {
 
 const manifest = readJson(path.join(corpusDir, 'manifest.json'));
 const expectedFailures = readJson(path.join(harnessDir, 'expected-failures.json'));
+const problemKinds = ['generate', 'parse', 'render', 'nodes', 'subgraphs'];
 
-for (const caseName of Object.keys(expectedFailures)) {
+for (const [caseName, expected] of Object.entries(expectedFailures)) {
   if (!manifest.some((entry) => entry.name === caseName)) {
     setupProblems.push(`expected-failures.json lists "${caseName}", which is not in the corpus`);
   }
+  if (!expected.issue || !Array.isArray(expected.problems) ||
+      expected.problems.some((kind) => !problemKinds.includes(kind))) {
+    setupProblems.push(`expected-failures.json entry "${caseName}" needs an "issue" and "problems" from ${problemKinds.join(', ')}`);
+  }
 }
 
-// Runs in the page: parse, collect Mermaid's nodes, render, inspect the SVG.
+// Runs in the page: parse, collect Mermaid's nodes, render, compare the
+// nodes drawn in the SVG with the nodes Mermaid parsed.
 async function checkInPage(code) {
   // One line per error: Mermaid's parse errors end with "Expecting ...,
   // got 'end'", and frontmatter (YAML) errors quote the line as " 1 | title: ...".
-  const firstLine = (error) => {
+  const summarize = (error) => {
     const lines = String(error?.message ?? error).split('\n').filter((line) => line.trim() !== '');
     const unexpectedToken = (lines[lines.length - 1] ?? '').match(/got '[^']*'$/);
     if (lines.length > 1 && unexpectedToken) return `${lines[0]} ${unexpectedToken[0]}`;
@@ -86,12 +110,17 @@ async function checkInPage(code) {
   try {
     await mermaid.parse(code);
   } catch (error) {
-    result.problems.push(`parse: ${firstLine(error)}`);
+    result.problems.push(`parse: ${summarize(error)}`);
     return result;
   }
-  const diagram = await mermaid.mermaidAPI.getDiagramFromText(code);
-  const vertices = diagram.db.getVertices();
-  result.vertexIds = vertices instanceof Map ? [...vertices.keys()] : Object.keys(vertices);
+  try {
+    const diagram = await mermaid.mermaidAPI.getDiagramFromText(code);
+    const vertices = diagram.db.getVertices();
+    result.vertexIds = vertices instanceof Map ? [...vertices.keys()] : Object.keys(vertices);
+  } catch (error) {
+    result.problems.push(`parse: reading the parsed nodes failed: ${summarize(error)}`);
+    return result;
+  }
   try {
     window.renderCounter = (window.renderCounter ?? 0) + 1;
     const { svg } = await mermaid.render(`putior-check-${window.renderCounter}`, code);
@@ -105,52 +134,87 @@ async function checkInPage(code) {
     } else if (svg.includes('Maximum text size in diagram exceeded')) {
       result.problems.push('render: text is over maxTextSize, Mermaid drew a placeholder');
     } else {
-      const svgNodeCount = svgRoot.querySelectorAll('g.node').length;
-      if (svgNodeCount !== result.vertexIds.length) {
-        result.problems.push(`render: SVG has ${svgNodeCount} nodes, Mermaid parsed ${result.vertexIds.length}`);
+      // Node elements are <g class="node" id="<svg id>-flowchart-<node id>-<n>">
+      // on 11.x and 12.x. Mermaid 12 can draw a subgraph box in place of a
+      // node, so compare the ids, not only the count.
+      const drawnIds = [];
+      for (const nodeElement of svgRoot.querySelectorAll('g.node')) {
+        const match = (nodeElement.id ?? '').match(/flowchart-(.+)-\d+$/);
+        drawnIds.push(match ? match[1] : `<element id "${nodeElement.id}">`);
       }
+      const notDrawn = result.vertexIds.filter((id) => !drawnIds.includes(id));
+      const notParsed = drawnIds.filter((id) => !result.vertexIds.includes(id));
+      if (notDrawn.length > 0) result.problems.push(`render: parsed but not drawn: ${notDrawn.join(', ')}`);
+      if (notParsed.length > 0) result.problems.push(`render: drawn but not parsed: ${notParsed.join(', ')}`);
+      if (drawnIds.length !== new Set(drawnIds).size) result.problems.push('render: a node is drawn twice');
     }
   } catch (error) {
-    result.problems.push(`render: ${firstLine(error)}`);
+    result.problems.push(`render: ${summarize(error)}`);
   }
   return result;
 }
 
+const duplicatesOf = (ids) => [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))];
+
+// Compare the nodes Mermaid parsed with the ids putior defined (from the manifest)
 function compareNodes(entry, vertexIds) {
   const problems = [];
-  const definedIds = entry.defined_node_ids;
-  const duplicates = [...new Set(definedIds.filter((id, index) => definedIds.indexOf(id) !== index))];
+  const definedIds = [...entry.defined_node_ids, ...entry.defined_artifact_ids];
+  const duplicates = duplicatesOf(definedIds);
   if (duplicates.length > 0) problems.push(`nodes: defined more than once: ${duplicates.join(', ')}`);
-  const subgraphIds = entry.defined_subgraph_ids;
-  const duplicateSubgraphs = [...new Set(subgraphIds.filter((id, index) => subgraphIds.indexOf(id) !== index))];
-  if (duplicateSubgraphs.length > 0) problems.push(`subgraphs: defined more than once: ${duplicateSubgraphs.join(', ')}`);
+  const shownNodeCount = new Set(entry.defined_node_ids).size;
+  if (shownNodeCount !== entry.expected_node_count) {
+    problems.push(`nodes: the workflow has ${entry.expected_node_count} distinct ids, the diagram defines ${shownNodeCount} nodes`);
+  }
   const phantoms = vertexIds.filter((id) => !definedIds.includes(id));
   if (phantoms.length > 0) problems.push(`nodes: used but never defined: ${phantoms.join(', ')}`);
-  const missing = definedIds.filter((id) => !vertexIds.includes(id));
-  if (missing.length > 0) problems.push(`nodes: defined but not parsed: ${[...new Set(missing)].join(', ')}`);
+  const missing = [...new Set(definedIds.filter((id) => !vertexIds.includes(id)))];
+  if (missing.length > 0) problems.push(`nodes: defined but not parsed: ${missing.join(', ')}`);
+  const strayReferences = [...new Set(entry.referenced_ids.filter((id) => !definedIds.includes(id)))];
+  if (strayReferences.length > 0) problems.push(`nodes: class or click line for an undefined id: ${strayReferences.join(', ')}`);
+  const duplicateSubgraphs = duplicatesOf(entry.defined_subgraph_ids);
+  if (duplicateSubgraphs.length > 0) problems.push(`subgraphs: defined more than once: ${duplicateSubgraphs.join(', ')}`);
   return problems;
+}
+
+// One page per Mermaid version and configuration
+async function openPage(browser, mermaidVersion, config) {
+  const page = await browser.newPage();
+  await page.setContent('<!doctype html><html><body></body></html>');
+  await page.addScriptTag({ path: mermaidVersion.script });
+  await page.evaluate((config) => mermaid.initialize(config), config);
+  return page;
 }
 
 const problemsByCase = new Map(manifest.map((entry) => [entry.name, []]));
 for (const entry of manifest) {
-  if (entry.error) problemsByCase.get(entry.name).push(`generate: ${entry.error}`);
+  if (entry.error) problemsByCase.get(entry.name).push(`R generate: ${entry.error}`);
 }
 
 const browser = await chromium.launch();
 try {
   for (const mermaidVersion of mermaidVersions) {
     for (const [configName, config] of Object.entries(mermaidConfigs)) {
-      const page = await browser.newPage();
-      await page.setContent('<!doctype html><html><body></body></html>');
-      await page.addScriptTag({ path: mermaidVersion.script });
-      await page.evaluate((config) => mermaid.initialize(config), config);
       const label = `${mermaidVersion.version}/${configName}`;
+      let page = await openPage(browser, mermaidVersion, config);
       for (const entry of manifest) {
         if (entry.error) continue;
         const code = fs.readFileSync(path.join(corpusDir, entry.file), 'utf8');
-        const result = await page.evaluate(checkInPage, code);
-        const problems = [...result.problems];
-        if (result.vertexIds) problems.push(...compareNodes(entry, result.vertexIds));
+        let timer;
+        const timeout = new Promise((resolve) => {
+          timer = setTimeout(() => resolve(null), caseTimeoutMs);
+        });
+        const result = await Promise.race([page.evaluate(checkInPage, code), timeout]);
+        clearTimeout(timer);
+        const problems = [];
+        if (result === null) {
+          problems.push(`render: no result after ${caseTimeoutMs / 1000} s`);
+          await page.close();
+          page = await openPage(browser, mermaidVersion, config);
+        } else {
+          problems.push(...result.problems);
+          if (result.vertexIds) problems.push(...compareNodes(entry, result.vertexIds));
+        }
         for (const problem of problems) problemsByCase.get(entry.name).push(`${label} ${problem}`);
       }
       await page.close();
@@ -160,23 +224,33 @@ try {
   await browser.close();
 }
 
+// "<where> <kind>: <message>" -> kind
+const kindOf = (problem) => problem.split(' ')[1].replace(/:$/, '');
+
 let failureCount = setupProblems.length;
 for (const problem of setupProblems) console.log(`SETUP  ${problem}`);
 const counts = { PASS: 0, XFAIL: 0, FAIL: 0, XPASS: 0 };
 for (const entry of manifest) {
   const problems = problemsByCase.get(entry.name);
   const expected = expectedFailures[entry.name];
+  const unexpectedProblems = expected
+    ? problems.filter((problem) => !expected.problems.includes(kindOf(problem)))
+    : problems;
   let status;
   if (problems.length === 0) status = expected ? 'XPASS' : 'PASS';
-  else status = expected ? 'XFAIL' : 'FAIL';
+  else if (!expected) status = 'FAIL';
+  else status = unexpectedProblems.length > 0 ? 'FAIL' : 'XFAIL';
   counts[status] += 1;
   if (status === 'FAIL' || status === 'XPASS') failureCount += 1;
-  console.log(`${status.padEnd(6)} ${entry.name}${expected ? `  (${expected})` : ''}`);
+  console.log(`${status.padEnd(6)} ${entry.name}${expected ? `  (${expected.issue})` : ''}`);
   if (status === 'XPASS') console.log('         passes now: remove it from expected-failures.json');
-  // Same problem on several versions/configs: print it once with the list of where.
+  if (status === 'FAIL' && expected) {
+    console.log(`         known failure (${expected.problems.join(', ')}), but it also has other problems:`);
+  }
+  // Same problem on several versions/configurations: print it once with the list of where.
   const grouped = new Map();
   for (const problem of problems) {
-    const [where, ...rest] = problem.startsWith('generate: ') ? ['R', problem] : problem.split(' ');
+    const [where, ...rest] = problem.split(' ');
     const what = rest.join(' ');
     if (!grouped.has(what)) grouped.set(what, []);
     grouped.get(what).push(where);

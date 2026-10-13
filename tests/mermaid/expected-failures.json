@@ -1,10 +1,34 @@
 {
-  "direction_TB": "#79: put_diagram() rejects direction = \"TB\"",
-  "keyword_node_id": "#45 finding 1: a Mermaid keyword as node id",
-  "subgraph_id_equals_node_id": "#45 finding 2: a subgraph id equal to a node id",
-  "edge_label_parentheses": "#45 finding 3: unquoted edge label",
-  "title_with_colon": "#45 finding 4: unquoted frontmatter title",
-  "artifact_path_special_characters": "#46 finding 1: artifact edges use unsanitized ids",
-  "ids_equal_after_sanitizing": "#46 finding 2: distinct ids merge after sanitizing",
-  "same_file_name_in_two_folders": "#46 finding 3: two files get one subgraph id"
+  "direction_TB": {
+    "issue": "#79: put_diagram() rejects direction = \"TB\"",
+    "problems": ["generate"]
+  },
+  "keyword_node_id": {
+    "issue": "#45 finding 1: a Mermaid keyword as node id",
+    "problems": ["parse"]
+  },
+  "subgraph_id_equals_node_id": {
+    "issue": "#45 finding 2: a subgraph id equal to a node id",
+    "problems": ["render"]
+  },
+  "edge_label_parentheses": {
+    "issue": "#45 finding 3: unquoted edge label",
+    "problems": ["parse"]
+  },
+  "title_with_colon": {
+    "issue": "#45 finding 4: unquoted frontmatter title",
+    "problems": ["parse"]
+  },
+  "artifact_path_special_characters": {
+    "issue": "#46 finding 1: artifact edges use unsanitized ids",
+    "problems": ["nodes"]
+  },
+  "ids_equal_after_sanitizing": {
+    "issue": "#46 finding 2: distinct ids merge after sanitizing",
+    "problems": ["nodes"]
+  },
+  "same_file_name_in_two_folders": {
+    "issue": "#46 finding 3: two files get one subgraph id",
+    "problems": ["subgraphs"]
+  }
 }

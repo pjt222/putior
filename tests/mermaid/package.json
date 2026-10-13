@@ -7,6 +7,7 @@
     "mermaid-11.12.0": "npm:mermaid@11.12.0",
     "mermaid-11.17.2": "npm:mermaid@11.17.2",
     "mermaid-12.1.0": "npm:mermaid@12.1.0",
+    "mermaid-12.2.0": "npm:mermaid@12.2.0",
     "playwright-core": "1.64.0"
   }
 }

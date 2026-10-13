@@ -3,10 +3,12 @@
 #
 #   Rscript tests/mermaid/generate-corpus.R tests/mermaid/corpus
 #
-# Each case is one .mmd file plus an entry in manifest.json with the node ids
-# and subgraph ids that putior defined, so the check can tell phantom or
-# merged nodes from correct ones. A case whose generation fails in R is
-# recorded with its error instead of a file.
+# Each case is one .mmd file plus an entry in manifest.json. The entry holds
+# the number of distinct ids in the workflow (what the diagram must show) and
+# the node, artifact and subgraph ids, plus the targets of class and click
+# lines, read from the generated text. With these the check can tell phantom,
+# merged or lost nodes from correct ones. A case whose generation fails in R
+# is recorded with its error instead of a file.
 
 stopifnot(
   "Run this script from the package root" =
@@ -161,16 +163,35 @@ add_case("same_file_name_in_two_folders", scan_fixture("same_basename", list(
   "py/a.py" = '# put id:"py_step", label:"Python step", input:"x.csv"'
 )), show_source_info = TRUE, source_info_style = "subgraph")
 
-# Node ids defined by a line such as `    id["label"]`, `    id(["label"])`
-# or `    id{"label"}`; edges, class, click and subgraph lines never put a
-# shape bracket right after the id.
-defined_ids <- function(code_lines, pattern) {
+# Capture groups of `pattern` for every line that matches it
+match_lines <- function(code_lines, pattern) {
   matches <- regmatches(code_lines, regexec(pattern, code_lines, perl = TRUE))
-  vapply(Filter(length, matches), function(match) match[2], character(1))
+  Filter(length, matches)
+}
+
+# Node definitions are lines such as `    id["label"]`, `    id(["label"])`
+# or `    id{"label"}`; edges, class, click and subgraph lines never put a
+# shape bracket right after the id. Artifacts, and only artifacts, use the
+# cylinder `id[("file")]`.
+describe_diagram <- function(code_lines) {
+  definitions <- match_lines(code_lines, "^\\s+([A-Za-z0-9_]+)(\\[\\(|[\\[\\(\\{>])")
+  definition_ids <- vapply(definitions, function(match) match[2], character(1))
+  is_artifact <- vapply(definitions, function(match) match[3] == "[(", logical(1))
+  references <- match_lines(code_lines, "^\\s+(?:class|click)\\s+(\\S+)")
+  subgraphs <- match_lines(code_lines, "^\\s*subgraph\\s+([^\\s\\[]+)")
+  list(
+    defined_node_ids = I(definition_ids[!is_artifact]),
+    defined_artifact_ids = I(definition_ids[is_artifact]),
+    referenced_ids = I(vapply(references, function(match) match[2], character(1))),
+    defined_subgraph_ids = I(vapply(subgraphs, function(match) match[2], character(1)))
+  )
 }
 
 manifest <- lapply(cases, function(case) {
-  entry <- list(name = case$name)
+  entry <- list(
+    name = case$name,
+    expected_node_count = length(unique(case$workflow$id))
+  )
   warning_messages <- character()
   diagram <- tryCatch(
     withCallingHandlers(
@@ -192,9 +213,7 @@ manifest <- lapply(cases, function(case) {
     mmd_connection <- file(file.path(output_dir, entry$file), open = "wb")
     writeLines(diagram, mmd_connection)
     close(mmd_connection)
-    code_lines <- strsplit(diagram, "\n", fixed = TRUE)[[1]]
-    entry$defined_node_ids <- I(defined_ids(code_lines, "^\\s+([A-Za-z0-9_]+)[\\[\\(\\{>]"))
-    entry$defined_subgraph_ids <- I(defined_ids(code_lines, "^\\s*subgraph\\s+([^\\s\\[]+)"))
+    entry <- c(entry, describe_diagram(strsplit(diagram, "\n", fixed = TRUE)[[1]]))
   }
   entry
 })
