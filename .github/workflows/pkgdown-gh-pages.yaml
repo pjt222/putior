@@ -30,6 +30,20 @@ jobs:
           extra-packages: any::pkgdown, local::.
           needs: website
 
+      # pkgdown renders every .md file in the package root as a page. Only
+      # the files listed here belong on the site; the others (CLAUDE.md,
+      # CRAN_REVIEW.md, ...) are development notes. The checkout is thrown
+      # away after the job, so removing them here changes nothing else.
+      - name: Keep development notes off the site
+        run: |
+          for md_file in *.md; do
+            case "$md_file" in
+              README.md|NEWS.md|LICENSE.md|CODE_OF_CONDUCT.md|CONTRIBUTING.md|cran-comments.md) ;;
+              *) echo "Not publishing $md_file"; rm -- "$md_file" ;;
+            esac
+          done
+        shell: bash
+
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
         shell: Rscript {0}
