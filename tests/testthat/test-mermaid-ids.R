@@ -202,3 +202,11 @@ test_that("subgraphs fall back to file_name without a file_path column", {
 
   expect_equal(subgraph_ids_of(diagram), c("file_load", "file_use"))
 })
+
+test_that("edge labels are quoted and escaped like node labels (#45)", {
+  expect_equal(make_edge("a", "b", "./raw data (v2).csv", show_label = TRUE),
+               '    a -->|"./raw data (v2).csv"| b')
+  expect_equal(make_edge("a", "b", 'say "hi" | bye', show_label = TRUE),
+               '    a -->|"say #quot;hi#quot; #124; bye"| b')
+  expect_equal(make_edge("a", "b", "x.csv", show_label = FALSE), "    a --> b")
+})

@@ -1214,8 +1214,9 @@ find_nodes_outputting <- function(nodes_df, target_file) {
 #' @noRd
 make_edge <- function(from_id, to_id, label = "", show_label = FALSE) {
   if (show_label && label != "") {
-    safe_label <- gsub("|", "/", label, fixed = TRUE)
-    paste0("    ", from_id, " -->|", safe_label, "| ", to_id)
+    # Quoted and escaped like node labels: an unquoted label with ( or |
+    # does not parse (#45)
+    paste0("    ", from_id, " -->|", sanitize_mermaid_label(label), "| ", to_id)
   } else {
     paste0("    ", from_id, " --> ", to_id)
   }

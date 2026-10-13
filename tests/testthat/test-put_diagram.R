@@ -104,8 +104,8 @@ test_that("put_diagram() shows file names on connections when requested", {
 
   # With file names
   diagram_with_files <- put_diagram(workflow, show_files = TRUE, output = "raw")
-  expect_true(grepl("\\|raw_data.csv\\|", diagram_with_files))
-  expect_true(grepl("\\|processed_data.csv\\|", diagram_with_files))
+  expect_match(diagram_with_files, '|"raw_data.csv"|', fixed = TRUE)
+  expect_match(diagram_with_files, '|"processed_data.csv"|', fixed = TRUE)
 })
 
 test_that("put_diagram() adds styling when requested", {

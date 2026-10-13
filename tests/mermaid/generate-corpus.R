@@ -149,6 +149,10 @@ add_case("edge_label_parentheses", scan_fixture("edge_label_parens", list(
   "a.R" = '# put id:"load", label:"Load", output:"./raw data (v2).csv"',
   "b.R" = '# put id:"use", label:"Use", input:"./raw data (v2).csv"'
 )), show_files = TRUE)
+add_case("edge_labels_special_characters", scan_fixture("edge_label_chars", list(
+  "a.R" = '# put id:"load", label:"Load", output:"a|b.csv, data #1.csv, x [y].csv"',
+  "b.R" = '# put id:"use", label:"Use", input:"a|b.csv, data #1.csv, x [y].csv"'
+)), show_files = TRUE, show_artifacts = TRUE)
 add_case("title_with_colon", pipeline, title = "ETL: stage 1")
 add_case("subgraph_keyword_and_digit_files", scan_fixture("subgraph_names", list(
   "end.R" = '# put id:"finish", label:"Finish", input:"x.csv"',

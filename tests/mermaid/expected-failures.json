@@ -5,12 +5,6 @@
       "generate"
     ]
   },
-  "edge_label_parentheses": {
-    "issue": "#45 finding 3: unquoted edge label",
-    "problems": [
-      "parse"
-    ]
-  },
   "title_with_colon": {
     "issue": "#45 finding 4: unquoted frontmatter title",
     "problems": [

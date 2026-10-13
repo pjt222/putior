@@ -56,6 +56,9 @@
   which GitHub uses, the node silently disappeared. Files with the same name
   in different folders now get one subgraph each instead of sharing one.
   (#45, #46)
+* With `show_files = TRUE`, edge labels are now quoted and escaped like node
+  labels (`-->|"raw data (v2).csv"|`). A file name with parentheses or other
+  special characters made the diagram fail to parse. (#45)
 
 ## New Features
 
