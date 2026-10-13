@@ -167,9 +167,18 @@ Character string containing the mermaid diagram code
 ## Labels and ids
 
 Labels are quoted, and double quotes, `|` and a `#` that Mermaid would
-read as a character entity (as in `#35;`) are escaped. Mermaid still
-interprets HTML tags such as `<br/>` and `$$...$$` (KaTeX math) inside
-labels.
+read as a character entity (as in `#35;`) are escaped. So is text that
+Mermaid would read as syntax: the space in `direction LR` (or `TB`,
+`BT`, `RL`, `TD`), which Mermaid takes for a direction statement, and,
+on a line where `style` or `classDef` comes before it, a `:` followed by
+an escaped character, which would let Mermaid cut that entity short. An
+edge to an id that ends in `direction` ends with `;`. The escapes are
+Mermaid entities such as `#quot;`. Mermaid shows them as the character
+in HTML labels. Where Mermaid 11.17.2 and later draw SVG text instead
+(`htmlLabels: false` for all labels, or `flowchart.htmlLabels: false`
+for edge labels and subgraph titles), they show the entity as written;
+Mermaid 11.12.0 can garble it there. Mermaid still interprets HTML tags
+such as `<br/>` and `$$...$$` (KaTeX math) inside labels.
 
 Node ids are reduced to letters, digits and underscores. An id that
 starts with a digit or is a Mermaid keyword (such as `end` or `class`)

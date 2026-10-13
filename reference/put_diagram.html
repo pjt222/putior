@@ -335,8 +335,20 @@ Options: "DEBUG", "INFO", "WARN", "ERROR". See <code><a href="set_putior_log_lev
 
 
 <p>Labels are quoted, and double quotes, <code>|</code> and a <code>#</code> that Mermaid
-would read as a character entity (as in <code>#35;</code>) are escaped. Mermaid still interprets HTML tags such as
-<code>&lt;br/&gt;</code> and <code>$$...$$</code> (KaTeX math) inside labels.</p>
+would read as a character entity (as in <code>#35;</code>) are escaped. So is
+text that Mermaid would read as syntax: the space in <code>direction LR</code>
+(or <code>TB</code>, <code>BT</code>, <code>RL</code>, <code>TD</code>), which Mermaid takes for a
+direction statement, and, on a line where <code>style</code> or <code>classDef</code>
+comes before it, a <code>:</code> followed by an escaped character, which would
+let Mermaid cut that entity short. An edge to an id that ends in
+<code>direction</code> ends with <code>;</code>. The escapes are Mermaid entities such
+as <code>#quot;</code>. Mermaid shows them as the character in HTML labels.
+Where Mermaid 11.17.2 and later draw SVG text instead
+(<code>htmlLabels: false</code> for all labels, or
+<code>flowchart.htmlLabels: false</code> for edge labels and subgraph titles),
+they show the entity as written; Mermaid 11.12.0 can garble it there.
+Mermaid still interprets HTML
+tags such as <code>&lt;br/&gt;</code> and <code>$$...$$</code> (KaTeX math) inside labels.</p>
 <p>Node ids are reduced to letters, digits and underscores. An id that starts
 with a digit or is a Mermaid keyword (such as <code>end</code> or <code>class</code>)
 gets a <code>node_</code> prefix. Ids that only differ in punctuation (<code>a-b</code>

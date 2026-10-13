@@ -129,6 +129,22 @@
   synonym for `"TD"`. GUIDE.md named `TB` as the default, but `"TB"` was
   rejected with an error.
   ([\#79](https://github.com/pjt222/putior/issues/79))
+- Labels that contain Mermaid syntax are now written so that Mermaid
+  shows them as written. Mermaid read a line with `direction`,
+  whitespace and `TB`, `BT`, `RL` or `LR` (and `TD` from Mermaid 11.17.2
+  on), as in “Change direction LR to TB”, as a direction statement and
+  dropped it: the node lost its label, and with
+  `source_info_style = "subgraph"` a file named `direction LR.R` made
+  the diagram fail to parse. That whitespace is now written as an entity
+  (`direction#32;LR`). The same rule spans line breaks, so an edge to an
+  id ending in `direction` (`wind_direction`) followed by an edge from
+  an id starting with `LR` (`LR_prep`) lost both edges; such an edge now
+  ends with `;`. On a line where `style` or `classDef` comes before it,
+  in the label or in the node id, a `:` followed by an escaped
+  character, as in `style:"bold"` (written `style:#quot;bold#quot;`), is
+  now written as `#58;`: Mermaid removed the last `;` of such a line and
+  showed `style:"bold#quot`.
+  ([\#89](https://github.com/pjt222/putior/issues/89))
 
 ### New Features
 
