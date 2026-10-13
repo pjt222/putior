@@ -250,9 +250,10 @@ put_diagram <- function(workflow,
   # Start building the mermaid diagram
   mermaid_lines <- character()
 
-  # Add title if provided
+  # Add title if provided, as a quoted YAML string: an unquoted title with
+  # ": " or " #" does not parse (#45)
   if (!is.null(title)) {
-    mermaid_lines <- c(mermaid_lines, paste0("---\ntitle: ", title, "\n---"))
+    mermaid_lines <- c(mermaid_lines, paste0("---\ntitle: ", yaml_quote(title), "\n---"))
   }
 
   # Add flowchart declaration
@@ -655,6 +656,18 @@ resolve_label <- function(node, node_labels, suffix = NULL) {
     raw_label <- paste0(raw_label, suffix)
   }
   sanitize_mermaid_label(raw_label)
+}
+
+#' Quote a string as a double-quoted YAML scalar
+#' @param text Character string
+#' @return The string in double quotes, with backslashes and quotes escaped
+#'   and line breaks replaced by spaces
+#' @noRd
+yaml_quote <- function(text) {
+  text <- gsub("[\r\n]+", " ", as.character(text))
+  text <- gsub("\\", "\\\\", text, fixed = TRUE)
+  text <- gsub('"', '\\"', text, fixed = TRUE)
+  paste0('"', text, '"')
 }
 
 #' Sanitize a label string for safe embedding in Mermaid syntax

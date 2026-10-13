@@ -126,7 +126,7 @@ test_that("put_diagram() includes title when provided", {
   workflow <- create_test_workflow()
 
   diagram_with_title <- put_diagram(workflow, title = "My Workflow", output = "raw")
-  expect_true(grepl("title: My Workflow", diagram_with_title))
+  expect_match(diagram_with_title, 'title: "My Workflow"', fixed = TRUE)
 
   diagram_no_title <- put_diagram(workflow, title = NULL, output = "raw")
   expect_false(grepl("title:", diagram_no_title))

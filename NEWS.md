@@ -59,6 +59,9 @@
 * With `show_files = TRUE`, edge labels are now quoted and escaped like node
   labels (`-->|"raw data (v2).csv"|`). A file name with parentheses or other
   special characters made the diagram fail to parse. (#45)
+* The `title` of `put_diagram()` is now written as a quoted YAML string.
+  A title with `: ` (such as `"ETL: stage 1"`) made the diagram fail to
+  parse, and text after ` #` was dropped as a YAML comment. (#45)
 
 ## New Features
 

@@ -4,11 +4,5 @@
     "problems": [
       "generate"
     ]
-  },
-  "title_with_colon": {
-    "issue": "#45 finding 4: unquoted frontmatter title",
-    "problems": [
-      "parse"
-    ]
   }
 }

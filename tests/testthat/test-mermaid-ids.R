@@ -210,3 +210,14 @@ test_that("edge labels are quoted and escaped like node labels (#45)", {
                '    a -->|"say #quot;hi#quot; #124; bye"| b')
   expect_equal(make_edge("a", "b", "x.csv", show_label = FALSE), "    a --> b")
 })
+
+test_that("the title is a quoted YAML string (#45)", {
+  expect_equal(yaml_quote("ETL: stage 1"), '"ETL: stage 1"')
+  expect_equal(yaml_quote('Say "hi"'), '"Say \\"hi\\""')
+  expect_equal(yaml_quote("C:\\data"), '"C:\\\\data"')
+  expect_equal(yaml_quote("two\nlines"), '"two lines"')
+
+  workflow <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
+  diagram <- put_diagram(workflow, title = "ETL: stage 1 # first", output = "raw")
+  expect_match(diagram, '^---\ntitle: "ETL: stage 1 # first"\n---\nflowchart TD')
+})
