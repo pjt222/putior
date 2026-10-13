@@ -438,8 +438,9 @@ process_single_file <- function(file, include_line_numbers, validate) {
             validation_issues <- c(
               if (length(unparsed_pairs) > 0) {
                 paste0(
-                  "Ignored ", unparsed_pairs, ": a value must be in double or single ",
-                  "quotes, and may contain the other kind of quote but not its own"
+                  "Ignored ", unparsed_pairs, ": not readable as key:\"value\" or ",
+                  "key:'value'. A value may contain the other kind of quote but not ",
+                  "its own, and only a comment may follow it."
                 )
               },
               validate_annotation(properties, full_content)
@@ -860,6 +861,9 @@ summary.putior_workflow <- function(object, ...) {
 #'
 #' Test helper function to validate PUT annotation syntax
 #'
+#' An annotation is valid when every property in it can be read; one that
+#' \code{put()} would partly ignore (and warn about) is not.
+#'
 #' @param line Character string containing a PUT annotation
 #' @return Logical indicating if the annotation is valid
 #' @family utilities
@@ -870,7 +874,8 @@ summary.putior_workflow <- function(object, ...) {
 #' is_valid_put_annotation("# put invalid syntax") # FALSE
 is_valid_put_annotation <- function(line) {
   result <- parse_put_annotation(line)
-  !is.null(result) && length(result) > 0
+  # put() ignores the pairs it cannot read, so they make the line invalid
+  !is.null(result) && length(result) > 0 && is.null(attr(result, "unparsed"))
 }
 
 #' Launch putior Interactive Sandbox

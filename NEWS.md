@@ -50,10 +50,12 @@
   and the node showed its id instead; the troubleshooting vignette even
   recommended `label:"Load 'raw' data"`. There are still no escapes, so a
   value cannot contain its own kind of quote, and backslashes in Windows
-  paths stay as they are. `put()` now warns about each property it cannot
-  read (with `validate = TRUE`, the default). An annotation that ends with
-  a continuation `\` on the last line of the file no longer loses its last
-  property. `put_generate()` wraps a value that contains a double quote
+  paths stay as they are. A property that `put()` cannot read is now named
+  in its validation warning (with `validate = TRUE`, the default) instead
+  of being dropped silently, and `is_valid_put_annotation()` returns
+  `FALSE` for such a line. An annotation that ends with a continuation `\`
+  (without a comma before it) on the last line of the file no longer loses
+  its last property. `put_generate()` wraps a value that contains a double quote
   in single quotes, so that `put()` reads its suggestions back unchanged.
   (#91)
 * A comment may now follow the values of an annotation, as the `put()` help

@@ -103,7 +103,7 @@ test_that("put() warns about the properties it ignores (#91)", {
   on.exit(unlink(test_dir, recursive = TRUE), add = TRUE)
   create_test_file('# put id:"a", label:"Say "hi"", output:"x.csv"', "a.R", test_dir)
 
-  expect_warning(workflow <- put(test_dir), 'Ignored label:"Say "hi""', fixed = TRUE)
+  expect_warning(workflow <- put(test_dir), 'Ignored label:"Say "hi"": not readable', fixed = TRUE)
   expect_equal(workflow$id, "a")
   expect_false("label" %in% names(workflow))
   # Like the other validation warnings, it needs validate = TRUE
@@ -370,6 +370,11 @@ test_that("is_valid_put_annotation() correctly identifies valid annotations", {
   expect_false(is_valid_put_annotation("not a put annotation"))
   expect_false(is_valid_put_annotation(""))
   expect_false(is_valid_put_annotation("#comment"))
+
+  # A property that put() would ignore makes the annotation invalid (#91)
+  expect_false(is_valid_put_annotation('# put id:"a", step:43'))
+  expect_false(is_valid_put_annotation('# put id:"a", label:"Say "hi""'))
+  expect_true(is_valid_put_annotation('# put id:"a", label:"Say \'hi\'"  # note'))
 })
 
 # Test error handling in parsing

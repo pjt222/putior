@@ -15,6 +15,10 @@ Logical indicating if the annotation is valid
 \description{
 Test helper function to validate PUT annotation syntax
 }
+\details{
+An annotation is valid when every property in it can be read; one that
+\code{put()} would partly ignore (and warn about) is not.
+}
 \examples{
 is_valid_put_annotation('# put id:"test", label:"Test"') # TRUE
 is_valid_put_annotation("# put invalid syntax") # FALSE

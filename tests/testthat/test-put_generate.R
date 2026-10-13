@@ -536,6 +536,25 @@ test_that("put_generate() writes annotations that put() reads back (#91)", {
   }
 })
 
+test_that("a suggested value with a double quote reads back unchanged (#91)", {
+  source_dir <- tempfile("putior_generate_dq_")
+  dir.create(source_dir)
+  on.exit(unlink(source_dir, recursive = TRUE), add = TRUE)
+  source_file <- create_test_file('d <- read.csv("data.csv")', "load.R", source_dir)
+
+  # File names cannot hold a double quote on Windows, so set the value
+  elements <- detect_workflow_elements(source_file)
+  elements$input <- 'say "hi".csv'
+  for (style in c("single", "multiline")) {
+    annotation <- generate_annotation_for_file(source_file, style = style, elements = elements)
+    annotated_dir <- tempfile(paste0("putior_generate_dq_copy_", style, "_"))
+    dir.create(annotated_dir)
+    on.exit(unlink(annotated_dir, recursive = TRUE), add = TRUE)
+    create_test_file(strsplit(annotation, "\n", fixed = TRUE)[[1]], "copy.R", annotated_dir)
+    expect_equal(put(annotated_dir)$input, 'say "hi".csv', label = style)
+  }
+})
+
 test_that("annotation_property() picks quotes that put() can read (#91)", {
   expect_equal(annotation_property("label", "Plain", "a.R"), 'label:"Plain"')
   expect_equal(annotation_property("label", "Don't", "a.R"), 'label:"Don\'t"')
