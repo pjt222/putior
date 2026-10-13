@@ -72,7 +72,8 @@
 #' Node ids are reduced to letters, digits and underscores. An id that starts
 #' with a digit or is a Mermaid keyword (such as \code{end} or \code{class})
 #' gets a \code{node_} prefix. Ids that only differ in punctuation (\code{a-b}
-#' and \code{a_b}) are kept apart with a numeric suffix and a warning. With
+#' and \code{a_b}) are kept apart with a numeric suffix and a warning; an id
+#' that is already valid (\code{a_b}) keeps its form. With
 #' \code{source_info_style = "subgraph"}, each source file becomes a subgraph
 #' with the id \code{file_<name>}.
 #'
@@ -758,8 +759,11 @@ sanitize_node_id <- function(node_id) {
 #' id. Distinct ids that become equal after sanitizing (\code{"a-b"} and
 #' \code{"a_b"}) are kept apart with a numeric suffix (\code{a_b_2}); for
 #' annotation ids this gives a warning. Rows with the same raw id share one
-#' Mermaid id. Earlier rows keep the plain form, so script nodes (which come
-#' before artifact nodes) are never renamed because of an artifact.
+#' Mermaid id.
+#'
+#' Which id keeps the plain form does not depend on row order: ids that are
+#' already valid Mermaid ids come first, then other annotation ids, then
+#' artifacts, so a script node is never renamed because of an artifact.
 #' @param workflow Workflow data frame, optionally with artifact rows
 #'   (\code{is_artifact = TRUE})
 #' @param warn Whether to warn when annotation ids collide
@@ -778,24 +782,27 @@ assign_mermaid_ids <- function(workflow, warn = TRUE) {
     rep(FALSE, length(unique_raw_ids))
   }
 
-  mermaid_ids <- character(length(unique_raw_ids))
+  # Priority: valid annotation ids, other annotation ids, artifacts
+  priority <- ifelse(is_artifact_id, 3L, ifelse(sanitized_ids == unique_raw_ids, 1L, 2L))
+  processing_order <- order(priority, seq_along(unique_raw_ids))
+
+  mermaid_ids <- rep(NA_character_, length(unique_raw_ids))
   collision_messages <- character()
-  for (id_index in seq_along(unique_raw_ids)) {
+  for (id_index in processing_order) {
     candidate <- sanitized_ids[id_index]
-    if (candidate %in% mermaid_ids[seq_len(id_index - 1)]) {
-      # Skip every id that is taken or that a later node will want
-      reserved_ids <- c(mermaid_ids[seq_len(id_index - 1)], sanitized_ids)
+    if (candidate %in% mermaid_ids) {
+      # Skip every id that is taken or that another node will want
+      reserved_ids <- c(mermaid_ids[!is.na(mermaid_ids)], sanitized_ids)
       suffix_number <- 2L
       while (paste0(sanitized_ids[id_index], "_", suffix_number) %in% reserved_ids) {
         suffix_number <- suffix_number + 1L
       }
       candidate <- paste0(sanitized_ids[id_index], "_", suffix_number)
       if (!is_artifact_id[id_index]) {
-        first_raw_id <- unique_raw_ids[match(sanitized_ids[id_index], mermaid_ids)]
+        holder_raw_id <- unique_raw_ids[match(sanitized_ids[id_index], mermaid_ids)]
         collision_messages <- c(collision_messages, paste0(
-          "'", unique_raw_ids[id_index], "' and '", first_raw_id, "' both become '",
-          sanitized_ids[id_index], "'; '", unique_raw_ids[id_index],
-          "' is drawn as '", candidate, "'"
+          "'", unique_raw_ids[id_index], "' is drawn as '", candidate, "' ('",
+          holder_raw_id, "' is already '", sanitized_ids[id_index], "')"
         ))
       }
     }
@@ -804,9 +811,9 @@ assign_mermaid_ids <- function(workflow, warn = TRUE) {
 
   if (warn && length(collision_messages) > 0) {
     warning(
-      "Node ids that differ only in punctuation become the same Mermaid id:\n",
+      "Some node ids become the same Mermaid id and get a numeric suffix:\n",
       paste0("- ", collision_messages, collapse = "\n"), "\n",
-      "Use ids made of letters, digits and underscores to control the Mermaid ids.",
+      "Rename one id of each pair to choose the ids the diagram uses.",
       call. = FALSE
     )
   }

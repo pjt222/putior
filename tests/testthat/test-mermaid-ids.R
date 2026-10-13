@@ -22,10 +22,13 @@ test_that("assign_mermaid_ids() keeps ids apart that sanitize to the same id", {
 
   expect_warning(
     result <- assign_mermaid_ids(workflow),
-    "'a_b' and 'a-b' both become 'a_b'"
+    "'a-b' is drawn as 'a_b_2' ('a_b' is already 'a_b')", fixed = TRUE
   )
 
-  expect_equal(result$mermaid_id, c("a_b", "a_b_2", "load_data"))
+  # The id that is already valid keeps its form, whatever the row order
+  expect_equal(result$mermaid_id, c("a_b_2", "a_b", "load_data"))
+  reversed <- suppressWarnings(assign_mermaid_ids(workflow[c(2, 1, 3), , drop = FALSE]))
+  expect_equal(reversed$mermaid_id, c("a_b", "a_b_2", "load_data"))
 })
 
 test_that("assign_mermaid_ids() gives rows with the same raw id one Mermaid id", {
@@ -41,7 +44,7 @@ test_that("assign_mermaid_ids() suffixes skip ids that other nodes need", {
 
   result <- suppressWarnings(assign_mermaid_ids(workflow))
 
-  expect_equal(result$mermaid_id, c("a_b", "a_b_3", "a_b_2"))
+  expect_equal(result$mermaid_id, c("a_b_3", "a_b", "a_b_2"))
   expect_false(anyDuplicated(result$mermaid_id) > 0)
 })
 
@@ -109,14 +112,16 @@ test_that("ids that sanitize to the same id stay two nodes in the diagram (#46)"
 
   expect_warning(
     diagram <- put_diagram(workflow, enable_clicks = TRUE, output = "raw"),
-    "both become 'a_b'"
+    "'a-b' is drawn as 'a_b_2'", fixed = TRUE
   )
   ids <- diagram_ids(diagram)
 
   expect_equal(sort(ids$defined), c("a_b", "a_b_2"))
-  expect_match(diagram, "a_b --> a_b_2", fixed = TRUE)
-  expect_match(diagram, "class a_b_2 processStyle", fixed = TRUE)
+  expect_match(diagram, "a_b_2 --> a_b", fixed = TRUE)
+  expect_match(diagram, "class a_b processStyle", fixed = TRUE)
+  expect_match(diagram, "class a_b_2 inputStyle", fixed = TRUE)
   expect_match(diagram, "click a_b_2 ", fixed = TRUE)
+  expect_match(diagram, "click a_b ", fixed = TRUE)
   expect_true(all(ids$used %in% ids$defined))
 })
 

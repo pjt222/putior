@@ -117,7 +117,8 @@ they appear as written. Mermaid still interprets HTML tags such as
 Node ids are reduced to letters, digits and underscores. An id that starts
 with a digit or is a Mermaid keyword (such as \code{end} or \code{class})
 gets a \code{node_} prefix. Ids that only differ in punctuation (\code{a-b}
-and \code{a_b}) are kept apart with a numeric suffix and a warning. With
+and \code{a_b}) are kept apart with a numeric suffix and a warning; an id
+that is already valid (\code{a_b}) keeps its form. With
 \code{source_info_style = "subgraph"}, each source file becomes a subgraph
 with the id \code{file_<name>}.
 }
