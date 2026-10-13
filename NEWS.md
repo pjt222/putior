@@ -36,11 +36,6 @@
 * Fixed single-line block comment annotations (`/* put ... */`) silently
   losing their last property, which could drop an output and its edge.
   (#72)
-* `put_theme()` overrides now keep everything from the `base` theme that
-  they do not set. A partial override such as `input = c(fill = "#00ff00")`
-  dropped the base stroke and text color, and every override forced a 2px
-  border, so start and end nodes lost their 3px border and artifacts their
-  1px border. (#61)
 
 ## New Features
 
@@ -103,7 +98,12 @@
 * Added `put_theme()` for creating custom color palettes (#39)
 * New `palette` parameter on `put_diagram()` accepts `putior_theme` objects
 * Override individual node types (input, process, output, decision, artifact, start, end)
-* Base theme inheritance — customize only what you need
+* Base theme inheritance — customize only what you need. An override keeps
+  every key it does not set from the `base` theme's style for that node type,
+  including the text color and the border width (3px for start and end
+  nodes, 1px for artifacts); earlier development versions dropped the unset
+  keys and forced a 2px border (#61). If an override changes how light `fill`
+  is, set `color` too, so the label stays readable
 
 ### Block Comment Annotations
 * Added PUT annotation support inside `/* */` and `/** */` block comments (#37)

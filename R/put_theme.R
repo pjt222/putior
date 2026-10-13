@@ -9,6 +9,8 @@
 #' hex colors (e.g., \code{"#1a5276"}). Keys you leave out keep the
 #' \code{base} theme's value for that node type, and so does the border
 #' width (3px for start and end nodes, 1px for artifacts in most themes).
+#' If you change how light \code{fill} is, set \code{color} as well, so
+#' the label stays readable.
 #'
 #' @param base Character string naming the base theme to inherit from.
 #'   Must be one of the valid themes returned by \code{\link{get_diagram_themes}()}.
@@ -93,7 +95,7 @@ put_theme <- function(base = "light",
 #'   \code{"fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000000"}.
 #' @return Single CSS style string.
 #' @noRd
-apply_color_override <- function(override, node_type, base_style = "") {
+apply_color_override <- function(override, node_type, base_style) {
   if (!is.character(override) || is.null(names(override))) {
     stop(
       "'", node_type, "' must be a named character vector ",
@@ -132,15 +134,12 @@ apply_color_override <- function(override, node_type, base_style = "") {
       style[[key]] <- override[[key]]
     }
   }
-  # A base style without a stroke width gets the usual 2px
-  if (is.null(style[["stroke-width"]])) {
-    style[["stroke-width"]] <- "2px"
-  }
-
   paste0(names(style), ":", unlist(style), collapse = ",")
 }
 
 #' Split a Mermaid style string into a named list of properties
+#'
+#' Values must not contain commas (putior's themes use hex colors and px).
 #' @param style_string Such as \code{"fill:#fff,stroke:#000,stroke-width:2px"}
 #' @return Named list, in the order of the string (empty list for "")
 #' @noRd
@@ -150,8 +149,8 @@ parse_style_string <- function(style_string) {
   }
   parts <- strsplit(style_string, ",", fixed = TRUE)[[1]]
   parts <- parts[grepl(":", parts, fixed = TRUE)]
-  style <- as.list(sub("^[^:]*:", "", parts))
-  names(style) <- sub(":.*$", "", parts)
+  style <- as.list(trimws(sub("^[^:]*:", "", parts)))
+  names(style) <- trimws(sub(":.*$", "", parts))
   style
 }
 

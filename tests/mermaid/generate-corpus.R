@@ -90,7 +90,7 @@ add_case("title", pipeline, title = "Sales Pipeline")
 add_case("custom_palette", pipeline, palette = put_theme(
   base = "dark",
   input = c(fill = "#1b4332", stroke = "#95d5b2", color = "#ffffff"),
-  process = c(fill = "#ffd166")
+  process = c(fill = "#ffd166", color = "#000000")
 ))
 add_case("all_options", pipeline,
   title = "Sales Pipeline", direction = "LR", node_labels = "both",

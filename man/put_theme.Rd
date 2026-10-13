@@ -50,6 +50,8 @@ Each node type accepts a named character vector with keys \code{fill},
 hex colors (e.g., \code{"#1a5276"}). Keys you leave out keep the
 \code{base} theme's value for that node type, and so does the border
 width (3px for start and end nodes, 1px for artifacts in most themes).
+If you change how light \code{fill} is, set \code{color} as well, so
+the label stays readable.
 }
 \examples{
 # Override only input node colors, inherit rest from dark theme

@@ -284,4 +284,8 @@ test_that("parse_style_string() splits a style into named properties", {
     list(fill = "#fff", stroke = "#000", `stroke-width` = "2px")
   )
   expect_equal(parse_style_string(""), list())
+  expect_equal(
+    parse_style_string(" fill : #fff , stroke:#000"),
+    list(fill = "#fff", stroke = "#000")
+  )
 })
