@@ -10,15 +10,14 @@ template:
     code_font: {google: "Fira Code"}
   includes:
     in_header: |
-      <!-- Keep this Mermaid pin and its integrity hash in sync with
+      <!-- Mermaid is loaded only on pages that have a diagram (#63). Keep
+           this pin and its integrity hash in sync with
            inst/shiny/putior-sandbox/app.R. -->
-      <script src="https://cdn.jsdelivr.net/npm/mermaid@12.2.0/dist/mermaid.min.js"
-              integrity="sha384-8xUhuLNMjW/cI2Dacg3DR4WliYznvIg0LVG1stctThKD/YVrJFI9TNCFxft5NYgp"
-              crossorigin="anonymous"></script>
       <script>
-        // Stop Mermaid from rendering the <pre class="mermaid"> blocks by itself
-        // on page load; they are rendered below with the site's theme.
-        mermaid.initialize({ startOnLoad: false });
+        var mermaidScript = {
+          src: 'https://cdn.jsdelivr.net/npm/mermaid@12.2.0/dist/mermaid.min.js',
+          integrity: 'sha384-8xUhuLNMjW/cI2Dacg3DR4WliYznvIg0LVG1stctThKD/YVrJFI9TNCFxft5NYgp'
+        };
 
         // Theme-aware Mermaid configuration
         // Light colors aligned with putior default theme
@@ -104,27 +103,49 @@ template:
           }
         }
 
-        function setUpMermaidDiagrams() {
-          collectMermaidBlocks();
-          renderMermaidDiagrams();
+        // Re-render when the Bootstrap light switch changes the theme
+        function watchThemeChanges() {
+          var observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(m) {
+              if (m.attributeName === 'data-bs-theme') {
+                setTimeout(renderMermaidDiagrams, 50);
+              }
+            });
+          });
+          observer.observe(document.documentElement, { attributes: true });
         }
 
-        // Render once, when the DOM is ready
+        // Only a few pages have diagrams, and the Mermaid bundle is large
+        // (1.57 MB gzipped), so load it only where it is needed, with the
+        // same integrity check as a <script> tag. If it cannot be loaded,
+        // the diagram source stays visible as code.
+        function setUpMermaidDiagrams() {
+          if (!document.querySelector('pre.mermaid')) {
+            return;
+          }
+          var script = document.createElement('script');
+          script.src = mermaidScript.src;
+          script.integrity = mermaidScript.integrity;
+          script.crossOrigin = 'anonymous';
+          script.onload = function() {
+            // Stop Mermaid from rendering the <pre class="mermaid"> blocks by
+            // itself on page load; they are rendered here with the site's theme.
+            mermaid.initialize({ startOnLoad: false });
+            collectMermaidBlocks();
+            renderMermaidDiagrams();
+            watchThemeChanges();
+          };
+          script.onerror = function() {
+            console.error('Mermaid could not be loaded from ' + mermaidScript.src);
+          };
+          document.head.appendChild(script);
+        }
+
         if (document.readyState === 'loading') {
           document.addEventListener('DOMContentLoaded', setUpMermaidDiagrams);
         } else {
           setUpMermaidDiagrams();
         }
-
-        // Listen for Bootstrap light-switch theme changes
-        var observer = new MutationObserver(function(mutations) {
-          mutations.forEach(function(m) {
-            if (m.attributeName === 'data-bs-theme') {
-              setTimeout(renderMermaidDiagrams, 50);
-            }
-          });
-        });
-        observer.observe(document.documentElement, { attributes: true });
       </script>
     after_body: |
       <style>
