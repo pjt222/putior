@@ -239,6 +239,69 @@ test_that("a # that starts an entity is escaped, a plain # is not (#45)", {
   expect_equal(sanitize_mermaid_label('a "b" | #1'), '"a #quot;b#quot; #124; #1"')
 })
 
+test_that("words that Mermaid reads as a direction statement are escaped (#89)", {
+  expect_equal(sanitize_mermaid_label("Set direction LR here"), '"Set direction#32;LR here"')
+  for (direction in c("TB", "BT", "RL", "LR", "TD")) {
+    expect_equal(sanitize_mermaid_label(paste("direction", direction)),
+                 paste0('"direction#32;', direction, '"'))
+  }
+  # Mermaid's rule has no word boundaries
+  expect_equal(sanitize_mermaid_label("redirection TBD"), '"redirection#32;TBD"')
+  # Only the first whitespace character is escaped, as the entity of itself
+  expect_equal(sanitize_mermaid_label("direction  LR"), '"direction#32; LR"')
+  expect_equal(sanitize_mermaid_label("direction\tLR"), '"direction#9;LR"')
+  expect_equal(sanitize_mermaid_label("direction\u00a0LR"), '"direction#160;LR"')
+  expect_equal(sanitize_mermaid_label("direction LR, then direction TB"),
+               '"direction#32;LR, then direction#32;TB"')
+  # The rule is case-sensitive and needs whitespace
+  expect_equal(sanitize_mermaid_label("Direction LR"), '"Direction LR"')
+  expect_equal(sanitize_mermaid_label("direction lr"), '"direction lr"')
+  expect_equal(sanitize_mermaid_label("directionLR"), '"directionLR"')
+})
+
+test_that("colons that let Mermaid cut an entity short are escaped (#89)", {
+  expect_equal(sanitize_mermaid_label('style:"bold"'), '"style#58;#quot;bold#quot;"')
+  expect_equal(sanitize_mermaid_label('Lifestyle:"x"'), '"Lifestyle#58;#quot;x#quot;"')
+  expect_equal(sanitize_mermaid_label('classDef a:"x"'), '"classDef a#58;#quot;x#quot;"')
+  # "style" can come from the node id, so the colon is escaped without it
+  expect_equal(sanitize_mermaid_label('Note:"x"'), '"Note#58;#quot;x#quot;"')
+  expect_equal(sanitize_mermaid_label('a:b:"c"'), '"a#58;b#58;#quot;c#quot;"')
+  expect_equal(sanitize_mermaid_label("key:a|b"), '"key#58;a#124;b"')
+  # A colon without a # and a ; after it in the same word stays
+  expect_equal(sanitize_mermaid_label("Step 1: load"), '"Step 1: load"')
+  expect_equal(sanitize_mermaid_label('Note: "x"'), '"Note: #quot;x#quot;"')
+  expect_equal(sanitize_mermaid_label("Rank:#1 of 3"), '"Rank:#1 of 3"')
+  expect_equal(sanitize_mermaid_label("a|b:c"), '"a#124;b:c"')
+})
+
+test_that("no diagram line matches the Mermaid rules that eat labels (#89)", {
+  workflow <- data.frame(
+    id = c("lifestyle", "classDef_step", "plot"),
+    label = c('Note:"x"', 'Filter:"a|b"', "Set direction LR"),
+    file_name = c("style:a.R", "direction TB.R", "plot.R"),
+    file_path = c("x/style:a.R", "x/direction TB.R", "y/plot.R"),
+    input = c(NA, "direction RL.csv", 'k:"v".csv'),
+    output = c("direction RL.csv", 'k:"v".csv', NA),
+    stringsAsFactors = FALSE
+  )
+  diagrams <- list(
+    put_diagram(workflow, output = "raw", show_files = TRUE),
+    put_diagram(workflow, output = "raw", show_artifacts = TRUE),
+    put_diagram(workflow, output = "raw", show_source_info = TRUE),
+    put_diagram(workflow, output = "raw", show_source_info = TRUE,
+                source_info_style = "subgraph", node_labels = "both")
+  )
+  for (diagram in diagrams) {
+    code_lines <- strsplit(diagram, "\n", fixed = TRUE)[[1]]
+    # Mermaid's lexer rule and the two lines of its encodeEntities()
+    expect_false(any(grepl("direction\\s+(TB|BT|RL|LR|TD)", code_lines)))
+    expect_false(any(grepl("(style|classDef).*:\\S*#.*;", code_lines)))
+  }
+  expect_match(diagrams[[1]], 'lifestyle["Note#58;#quot;x#quot;"]', fixed = TRUE)
+  expect_match(diagrams[[1]], '|"direction#32;RL.csv"|', fixed = TRUE)
+  expect_match(diagrams[[4]], '["direction#32;TB.R"]', fixed = TRUE)
+})
+
 test_that("direction = \"TB\" is accepted (#79)", {
   workflow <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
 

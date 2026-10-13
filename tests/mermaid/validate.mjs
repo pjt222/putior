@@ -10,15 +10,17 @@
 // Mermaid parsed (Mermaid 12 drops some nodes without an error), or when the
 // nodes differ from what putior defined: phantom nodes from an edge to an id
 // that was never defined, two definitions of one id, fewer nodes than the
-// workflow has, or class/click lines aimed at ids that do not exist.
+// workflow has, or class/click lines aimed at ids that do not exist. A case
+// that lists expected_texts also fails when a label does not show one of
+// them as written (Mermaid can cut the end off an entity without an error).
 //
 // Cases in expected-failures.json are known bugs. Each entry names its issue
 // and the kinds of problem it is known to cause ("generate", "parse",
-// "render", "nodes", "subgraphs"). A listed case counts as a known failure
-// only if all its problems are of those kinds; a problem of a different kind
-// fails the run (a new problem of a listed kind does not). A listed case that
-// passes also fails the run, so the list is kept up to date as the bugs are
-// fixed.
+// "render", "nodes", "subgraphs", "text"). A listed case counts as a known
+// failure only if all its problems are of those kinds; a problem of a
+// different kind fails the run (a new problem of a listed kind does not). A
+// listed case that passes also fails the run, so the list is kept up to date
+// as the bugs are fixed.
 //
 // MERMAID_EXTRA_ALIASES (comma-separated) adds packages installed in
 // node_modules but not listed in package.json, e.g. the scheduled run's
@@ -82,7 +84,7 @@ const mermaidConfigs = {
 
 const manifest = readJson(path.join(corpusDir, 'manifest.json'));
 const expectedFailures = readJson(path.join(harnessDir, 'expected-failures.json'));
-const problemKinds = ['generate', 'parse', 'render', 'nodes', 'subgraphs'];
+const problemKinds = ['generate', 'parse', 'render', 'nodes', 'subgraphs', 'text'];
 
 for (const [caseName, expected] of Object.entries(expectedFailures)) {
   if (!manifest.some((entry) => entry.name === caseName)) {
@@ -107,7 +109,7 @@ async function checkInPage(code) {
     if (sourceLine) return `${lines[0]} in "${sourceLine.trim()}"`;
     return (lines[0] ?? '').slice(0, 300);
   };
-  const result = { problems: [], vertexIds: null };
+  const result = { problems: [], vertexIds: null, labelTexts: null };
   try {
     await mermaid.parse(code);
   } catch (error) {
@@ -148,6 +150,11 @@ async function checkInPage(code) {
       if (notDrawn.length > 0) result.problems.push(`render: parsed but not drawn: ${notDrawn.join(', ')}`);
       if (notParsed.length > 0) result.problems.push(`render: drawn but not parsed: ${notParsed.join(', ')}`);
       if (drawnIds.length !== new Set(drawnIds).size) result.problems.push('render: a node is drawn twice');
+      // The text of every HTML label (nodes, edge labels, subgraph titles).
+      // Both configurations draw labels as HTML; SVG text labels (and the
+      // title) are not collected.
+      result.labelTexts = [...svgRoot.querySelectorAll('foreignObject')]
+        .map((label) => label.textContent.replace(/\s+/g, ' ').trim());
     }
   } catch (error) {
     result.problems.push(`render: ${summarize(error)}`);
@@ -186,6 +193,15 @@ function compareNodes(entry, vertexIds) {
   const missing = [...new Set(definedIds.filter((id) => !vertexIds.includes(id)))];
   if (missing.length > 0) problems.push(`nodes: defined but not parsed: ${missing.join(', ')}`);
   return problems;
+}
+
+// Every expected text must be the whole text of one label
+function compareTexts(entry, labelTexts) {
+  const notShown = (entry.expected_texts ?? [])
+    .filter((text) => !labelTexts.includes(text.replace(/\s+/g, ' ').trim()));
+  return notShown.length > 0
+    ? [`text: no label shows ${notShown.map((text) => JSON.stringify(text)).join(', ')}`]
+    : [];
 }
 
 // One page per Mermaid version and configuration
@@ -229,6 +245,7 @@ try {
         } else {
           problems.push(...result.problems);
           if (result.vertexIds) problems.push(...compareNodes(entry, result.vertexIds));
+          if (result.labelTexts) problems.push(...compareTexts(entry, result.labelTexts));
         }
         for (const problem of problems) problemsByCase.get(entry.name).push(`${label} ${problem}`);
       }

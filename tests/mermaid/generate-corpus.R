@@ -7,8 +7,10 @@
 # the number of distinct ids in the workflow (what the diagram must show) and
 # the node, artifact and subgraph ids, plus the targets of class and click
 # lines, read from the generated text. With these the check can tell phantom,
-# merged or lost nodes from correct ones. A case whose generation fails in R
-# is recorded with its error instead of a file.
+# merged or lost nodes from correct ones. A case can also list the texts its
+# labels must show (expected_texts), for labels that Mermaid could misread.
+# A case whose generation fails in R is recorded with its error instead of a
+# file.
 
 stopifnot(
   "Run this script from the package root" =
@@ -62,8 +64,10 @@ pipeline <- scan_fixture("pipeline", list(
 self_workflow <- suppressWarnings(put("R"))
 
 cases <- list()
-add_case <- function(case_name, workflow, ...) {
-  cases[[length(cases) + 1]] <<- list(name = case_name, workflow = workflow, args = list(...))
+add_case <- function(case_name, workflow, ..., expected_texts = NULL) {
+  cases[[length(cases) + 1]] <<- list(
+    name = case_name, workflow = workflow, args = list(...), expected_texts = expected_texts
+  )
 }
 
 # Standard output, one option at a time
@@ -120,14 +124,39 @@ add_case("missing_ids", scan_fixture("missing_ids", list(
   )
 )))
 
-# Labels with characters that need escaping (#33)
-add_case("label_special_characters", scan_fixture("special_labels", list(
-  "a.R" = c(
-    '# put id:"quote", label:"Say \\"hi\\" | pipe", output:"x.csv"',
-    '# put id:"unicode", label:"Größe – naïve ✓", input:"x.csv", output:"y.csv"',
-    '# put id:"hash", label:"Step #35; in C# at 100%", input:"y.csv"'
+# A workflow of chained steps in one file, built without put(): put() drops
+# annotation values that contain a quote character (#91)
+chain_workflow <- function(labels) {
+  data.frame(
+    file_name = "a.R", file_path = "a.R", file_type = "r",
+    id = names(labels), label = unname(labels),
+    input = paste0(c("start", head(names(labels), -1)), ".csv"),
+    output = paste0(names(labels), ".csv"),
+    stringsAsFactors = FALSE
   )
-)))
+}
+
+# Labels with characters that need escaping (#33)
+special_labels <- c(quote = 'Say "hi" | pipe', unicode = "Größe – naïve ✓",
+                    hash = "Step #35; in C# at 100%")
+add_case("label_special_characters", chain_workflow(special_labels),
+         expected_texts = unname(special_labels))
+
+# Labels with words that Mermaid reads as syntax (#89): a direction
+# statement drops the line, and "style"/"classDef" before ":...#...;" cuts
+# the end off an entity. The id "lifestyle" carries the word for its label.
+syntax_labels <- c(
+  plot = "Change direction LR to TB", rotate = "redirection TBD",
+  bold = 'style:"bold"', life = 'Lifestyle:"x"', cdef = 'classDef a:"x"',
+  lifestyle = 'Note:"x"', keyed = "key:a|b", keep = "Direction LR stays"
+)
+add_case("labels_mermaid_reads_as_syntax", chain_workflow(syntax_labels),
+         expected_texts = unname(syntax_labels))
+add_case("direction_words_in_edge_and_subgraph_labels", scan_fixture("syntax_file_names", list(
+  "direction LR.R" = '# put id:"make", label:"Make", output:"direction TB.csv"',
+  "use.R" = '# put id:"use", label:"Use", input:"direction TB.csv"'
+)), show_files = TRUE, show_source_info = TRUE, source_info_style = "subgraph",
+   expected_texts = c("direction LR.R", "direction TB.csv"))
 
 # Edge cases from the Mermaid gap analysis
 add_case("keyword_node_id", scan_fixture("keyword_id", list(
@@ -231,6 +260,7 @@ manifest <- lapply(cases, function(case) {
     }
   )
   if (length(warning_messages) > 0) entry$warnings <- warning_messages
+  if (!is.null(case$expected_texts)) entry$expected_texts <- I(case$expected_texts)
   if (!is.null(diagram)) {
     entry$file <- paste0(case$name, ".mmd")
     # A binary connection writes LF line endings on Windows too
