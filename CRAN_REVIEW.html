@@ -374,18 +374,16 @@ checking dependencies in R code ... OK</code></pre>
 <ul><li>
 <strong><a href="file:line" class="uri">file:line</a>:</strong> <code>_pkgdown.yml:132</code> (@import). The timers are gone.</li>
 <li>
-<strong>Status:</strong> Timers resolved 2026-10-12 (#62, #48): the site renders once, when the DOM is ready. The duplicate <code>@import</code> remains.</li>
-<li>
-<strong>Fix (optional, cosmetic):</strong> Remove the <code>@import</code>, since pkgdown links <code>extra.css</code> itself.</li>
+<strong>Status:</strong> Resolved. Timers 2026-10-12 (#62, #48): the site renders once, when the DOM is ready. <code>@import</code> removed 2026-10-12 (#68): it loaded <code>extra.css</code> twice on the home page and requested a missing <code>articles/extra.css</code> or <code>reference/extra.css</code> on every subpage. Computed styles are unchanged on 3 pages in light and dark mode.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="t3-8--pkgdown-05--no-redirects-entry-for-the-renamed-skillsai-integration-article">T3-8 · pkgdown-05 — No <code>redirects:</code> entry for the renamed skills→ai-integration article<a class="anchor" aria-label="anchor" href="#t3-8--pkgdown-05--no-redirects-entry-for-the-renamed-skillsai-integration-article"></a></h3>
 <ul><li>
 <strong><a href="file:line" class="uri">file:line</a>:</strong> <code>_pkgdown.yml</code> (absent)</li>
 <li>
-<strong>Evidence:</strong> In-repo links are clean, but external 0.1.0-era links to <code>articles/skills.html</code> will 404 on the live site.</li>
+<strong>Evidence:</strong> In-repo links are clean, but external links to <code>articles/skills.html</code> (the article’s name until 2026-03-19) returned 404 on the live site.</li>
 <li>
-<strong>Fix (optional):</strong> Add <code>redirects:</code> mapping <code>articles/skills.html</code> → <code>articles/ai-integration.html</code>.</li>
+<strong>Status:</strong> Resolved 2026-10-12 (#68): <code>redirects:</code> maps <code>articles/skills.html</code> → <code>articles/ai-integration.html</code>.</li>
 </ul><hr></div>
 </div>
 <div class="section level2">
@@ -452,9 +450,6 @@ checking dependencies in R code ... OK</code></pre>
 
 
   <style>
-  /* Import external CSS */
-  @import url('extra.css');
-
   /* Fira font family overrides */
   :root {
     --font-family-sans-serif: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

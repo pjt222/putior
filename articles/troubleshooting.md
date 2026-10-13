@@ -286,7 +286,7 @@ workflow <- put("./src/", validate = FALSE)
 # WRONG - Empty ID string
 # put id:"", label:"My Process"
 
-# OK - Missing ID (auto-generated UUID)
+# OK - Missing ID (generated automatically)
 # put label:"My Process"
 ```
 
@@ -297,7 +297,7 @@ valid one.
 
 # With auto-generated ID
 workflow <- put("./src/")
-print(workflow$id)  # Shows UUIDs like "a1b2c3d4-..."
+print(workflow$id)  # UUIDs like "a1b2c3d4-...", or "node_1", ... without uuid
 
 # With explicit IDs
 # put id:"step1", label:"First Step"

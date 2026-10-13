@@ -20,7 +20,7 @@ documentation
 
 - `.Renviron`: Contains Pandoc path for vignette building:
   `RSTUDIO_PANDOC="C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools"`
-- `.Rprofile`: Contains renv activation and conditional mcptools MCP
+- `.Rprofile`: Contains renv activation and conditional `acquaint` MCP
   session loading
 - **NEVER delete these files** - they are essential for development
   workflow
@@ -78,20 +78,22 @@ without explicit permission
 
 ### R CMD Check Status
 
-- **Local**: 0 errors, 0 warnings, 1 note (timing verification)
-- **Win-builder R-devel**: ✅ 1 NOTE (new submission only)
-- **Win-builder R-release**: ✅ 1 NOTE (new submission only)
-- **R-hub**: ✅ 4/5 platforms PASS (linux, macos, windows,
-  ubuntu-release; nosuggests expected fail)
+- **Local `--as-cran`** (Windows R 4.6.1, 2026-10-12, at 0ab2303): 0
+  errors, 0 warnings, 0 notes, including the PDF manual. Re-run at the
+  final 0.2.0 commit before submitting.
+- **Win-builder (0.2.0)**: pending. The 0.1.0 results (“1 NOTE, new
+  submission”) are out of date; 0.2.0 is an update.
+- **R-hub**: no result for 0.2.0. Both `rhub.yaml` runs
+  (22953633249, 22950885436) were cancelled on 2026-03-11.
 - All vignettes build successfully with Pandoc
-- All tests pass (4,100+ tests including multiline annotation,
-  auto-detection, logging, LLM patterns, and multi-language support)
+- All tests pass: 4649 expectations in 529 tests (Windows R 4.6.1 with
+  all Suggests, 2026-10-13)
 - Comprehensive multiline PUT annotation support implemented
 
 ### Documentation Quality
 
 - Vignette rating: **9.2/10** - Exceptional quality
-- **6 comprehensive vignettes**:
+- **8 vignettes**:
   - `quick-start.Rmd` - First diagram in 2 minutes (\< 200 lines)
   - `annotation-guide.Rmd` - Complete syntax reference, multiline
     annotations, best practices
@@ -102,6 +104,9 @@ without explicit permission
     tables
   - `showcase.Rmd` - Real-world examples (ETL, ML, bioinformatics,
     finance, web scraping)
+  - `troubleshooting.Rmd` - Common problems and their fixes
+  - `ai-integration.Rmd` - Using putior from AI assistants (guide, MCP,
+    ACP)
 - Complete self-documentation workflow
 - README with auto-generated examples capability
 
@@ -125,14 +130,14 @@ without explicit permission
 
 ### Development-Only Tools (NOT in renv.lock)
 
-- **mcptools**: MCP server for AI-assisted development
-- **btw**: Dependency of mcptools
-- Install separately when needed:
-  `remotes::install_github("posit-dev/mcptools")`
-- Loaded conditionally in .Rprofile if available
-- Excluded from renv.lock to avoid GitHub credential warnings for users
-- Configure renv to ignore:
-  `renv::settings$ignored.packages(c("mcptools", "btw"))`
+- **acquaint**: MCP session for AI-assisted development, loaded
+  conditionally in `.Rprofile` if installed
+- **btw**: Development helper, not a package dependency
+- **mcptools** is a package dependency (Suggests) and on CRAN:
+  `install.packages("mcptools")`. renv still ignores it from when it was
+  GitHub-only; revisit when renv.lock is next refreshed.
+- renv ignores these via `renv/settings.json` (`ignored.packages`:
+  acquaint, btw, mcptools, rsyslog)
 
 ## Recent Major Accomplishments
 
@@ -233,10 +238,10 @@ claude mcp add putior -- Rscript -e "putior::putior_mcp_server()"
 ### Available MCP Tools (16 tools)
 
 **Core Workflow:** \| Tool \| Description \| \|——\|————-\| \| `put` \|
-Scan files for PUT annotations \| \| `put_diagram` \| Generate Mermaid
-diagrams \| \| `put_auto` \| Auto-detect workflow from code \| \|
-`put_generate` \| Generate annotation suggestions \| \| `put_merge` \|
-Merge manual + auto annotations \|
+Scan files for PUT annotations \| \| `put_diagram` \| Scan a path and
+return its Mermaid diagram \| \| `put_auto` \| Auto-detect workflow from
+code \| \| `put_generate` \| Generate annotation suggestions \| \|
+`put_merge` \| Merge manual + auto annotations \|
 
 **Reference/Discovery:** \| Tool \| Description \| \|——\|————-\| \|
 `get_comment_prefix` \| Get comment prefix for extension \| \|
@@ -257,7 +262,7 @@ Extension to language name \|
 **From Claude Code:**
 
     Use the put tool to scan ./R/ for PUT annotations
-    Then use put_diagram to create a visualization
+    Use the put_diagram tool on ./R/ to get the Mermaid diagram
 
 **Programmatic access:**
 
@@ -275,8 +280,7 @@ tools <- putior_mcp_tools(include = c("put", "put_diagram"))
 
 ### Dependencies
 
-- **mcptools**: MCP server framework -
-  `remotes::install_github("posit-dev/mcptools")`
+- **mcptools**: MCP server framework - `install.packages("mcptools")`
 - **ellmer**: Tool definition - `install.packages("ellmer")`
 - Both are in Suggests (optional) - MCP functions fail gracefully with
   helpful messages if not installed
@@ -1061,14 +1065,17 @@ not preloaded): - `../agent-almanac/guides/r-package-development.md` -
 `../agent-almanac/guides/setting-up-your-environment.md` -
 `../agent-almanac/guides/quick-reference.md`
 
-## Team Activation (REQUIRED when user requests a team)
+## Team Activation (when user requests a team)
 
-When the user asks to activate or use a team: (1) call
-`ToolSearch("select:TeamCreate")` to load the TeamCreate tool, (2) read
-the team definition from
-`/mnt/d/dev/p/agent-almanac/teams/<team-name>.md`, (3) call `TeamCreate`
-with the team configuration. Do NOT fall back to spawning individual
-agents via the Agent tool — always use TeamCreate for team requests.
+A Claude Code session has a single implicit team; `TeamCreate` is on a
+deprecation path and is not offered in ordinary interactive sessions
+(checked against Claude Code v2.1.202, 2026-07-07). When the user asks
+to activate or use a team: (1) read the team definition from
+`/mnt/d/dev/p/agent-almanac/teams/<team-name>.md`, (2) spawn each listed
+member as a subagent with the Agent tool, following the team’s lead and
+coordination shape, (3) coordinate them with `SendMessage`. Use
+`TeamCreate` only where `ToolSearch("select:TeamCreate")` actually
+offers it.
 
 Available teams are listed in
 `/mnt/d/dev/p/agent-almanac/teams/_registry.yml`.

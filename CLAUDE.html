@@ -174,7 +174,7 @@
 <code>.Renviron</code>: Contains Pandoc path for vignette building: <code>RSTUDIO_PANDOC="C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools"</code>
 </li>
 <li>
-<code>.Rprofile</code>: Contains renv activation and conditional mcptools MCP session loading</li>
+<code>.Rprofile</code>: Contains renv activation and conditional <code>acquaint</code> MCP session loading</li>
 <li>
 <strong>NEVER delete these files</strong> - they are essential for development workflow</li>
 </ul></div>
@@ -230,22 +230,20 @@
 <div class="section level3">
 <h3 id="r-cmd-check-status">R CMD Check Status<a class="anchor" aria-label="anchor" href="#r-cmd-check-status"></a></h3>
 <ul><li>
-<strong>Local</strong>: 0 errors, 0 warnings, 1 note (timing verification)</li>
+<strong>Local <code>--as-cran</code></strong> (Windows R 4.6.1, 2026-10-12, at 0ab2303): 0 errors, 0 warnings, 0 notes, including the PDF manual. Re-run at the final 0.2.0 commit before submitting.</li>
 <li>
-<strong>Win-builder R-devel</strong>: ✅ 1 NOTE (new submission only)</li>
+<strong>Win-builder (0.2.0)</strong>: pending. The 0.1.0 results (“1 NOTE, new submission”) are out of date; 0.2.0 is an update.</li>
 <li>
-<strong>Win-builder R-release</strong>: ✅ 1 NOTE (new submission only)</li>
-<li>
-<strong>R-hub</strong>: ✅ 4/5 platforms PASS (linux, macos, windows, ubuntu-release; nosuggests expected fail)</li>
+<strong>R-hub</strong>: no result for 0.2.0. Both <code>rhub.yaml</code> runs (22953633249, 22950885436) were cancelled on 2026-03-11.</li>
 <li>All vignettes build successfully with Pandoc</li>
-<li>All tests pass (4,100+ tests including multiline annotation, auto-detection, logging, LLM patterns, and multi-language support)</li>
+<li>All tests pass: 4649 expectations in 529 tests (Windows R 4.6.1 with all Suggests, 2026-10-13)</li>
 <li>Comprehensive multiline PUT annotation support implemented</li>
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-quality">Documentation Quality<a class="anchor" aria-label="anchor" href="#documentation-quality"></a></h3>
 <ul><li>Vignette rating: <strong>9.2/10</strong> - Exceptional quality</li>
 <li>
-<strong>6 comprehensive vignettes</strong>:
+<strong>8 vignettes</strong>:
 <ul><li>
 <code>quick-start.Rmd</code> - First diagram in 2 minutes (&lt; 200 lines)</li>
 <li>
@@ -258,6 +256,10 @@
 <code>api-reference.Rmd</code> - Complete function documentation with parameter tables</li>
 <li>
 <code>showcase.Rmd</code> - Real-world examples (ETL, ML, bioinformatics, finance, web scraping)</li>
+<li>
+<code>troubleshooting.Rmd</code> - Common problems and their fixes</li>
+<li>
+<code>ai-integration.Rmd</code> - Using putior from AI assistants (guide, MCP, ACP)</li>
 </ul></li>
 <li>Complete self-documentation workflow</li>
 <li>README with auto-generated examples capability</li>
@@ -282,15 +284,12 @@
 <div class="section level3">
 <h3 id="development-only-tools-not-in-renvlock">Development-Only Tools (NOT in renv.lock)<a class="anchor" aria-label="anchor" href="#development-only-tools-not-in-renvlock"></a></h3>
 <ul><li>
-<strong>mcptools</strong>: MCP server for AI-assisted development</li>
+<strong>acquaint</strong>: MCP session for AI-assisted development, loaded conditionally in <code>.Rprofile</code> if installed</li>
 <li>
-<strong>btw</strong>: Dependency of mcptools</li>
-<li>Install separately when needed: <code>remotes::install_github("posit-dev/mcptools")</code>
-</li>
-<li>Loaded conditionally in .Rprofile if available</li>
-<li>Excluded from renv.lock to avoid GitHub credential warnings for users</li>
-<li>Configure renv to ignore: <code>renv::settings$ignored.packages(c("mcptools", "btw"))</code>
-</li>
+<strong>btw</strong>: Development helper, not a package dependency</li>
+<li>
+<strong>mcptools</strong> is a package dependency (Suggests) and on CRAN: <code>install.packages("mcptools")</code>. renv still ignores it from when it was GitHub-only; revisit when renv.lock is next refreshed.</li>
+<li>renv ignores these via <code>renv/settings.json</code> (<code>ignored.packages</code>: acquaint, btw, mcptools, rsyslog)</li>
 </ul></div>
 </div>
 <div class="section level2">
@@ -372,7 +371,7 @@
 </div>
 <div class="section level3">
 <h3 id="available-mcp-tools-16-tools">Available MCP Tools (16 tools)<a class="anchor" aria-label="anchor" href="#available-mcp-tools-16-tools"></a></h3>
-<p><strong>Core Workflow:</strong> | Tool | Description | |——|————-| | <code>put</code> | Scan files for PUT annotations | | <code>put_diagram</code> | Generate Mermaid diagrams | | <code>put_auto</code> | Auto-detect workflow from code | | <code>put_generate</code> | Generate annotation suggestions | | <code>put_merge</code> | Merge manual + auto annotations |</p>
+<p><strong>Core Workflow:</strong> | Tool | Description | |——|————-| | <code>put</code> | Scan files for PUT annotations | | <code>put_diagram</code> | Scan a path and return its Mermaid diagram | | <code>put_auto</code> | Auto-detect workflow from code | | <code>put_generate</code> | Generate annotation suggestions | | <code>put_merge</code> | Merge manual + auto annotations |</p>
 <p><strong>Reference/Discovery:</strong> | Tool | Description | |——|————-| | <code>get_comment_prefix</code> | Get comment prefix for extension | | <code>get_supported_extensions</code> | List supported extensions | | <code>list_supported_languages</code> | List supported languages | | <code>get_detection_patterns</code> | Get auto-detection patterns | | <code>get_diagram_themes</code> | List available themes | | <code>putior_guide</code> | AI assistant documentation | | <code>putior_help</code> | Quick reference help | | <code>set_putior_log_level</code> | Configure logging |</p>
 <p><strong>Utilities:</strong> | Tool | Description | |——|————-| | <code>is_valid_put_annotation</code> | Validate annotation syntax | | <code>split_file_list</code> | Parse file lists | | <code>ext_to_language</code> | Extension to language name |</p>
 </div>
@@ -380,7 +379,7 @@
 <h3 id="usage-examples">Usage Examples<a class="anchor" aria-label="anchor" href="#usage-examples"></a></h3>
 <p><strong>From Claude Code:</strong></p>
 <pre><code>Use the put tool to scan ./R/ for PUT annotations
-Then use put_diagram to create a visualization</code></pre>
+Use the put_diagram tool on ./R/ to get the Mermaid diagram</code></pre>
 <p><strong>Programmatic access:</strong></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Start MCP server (runs until terminated)</span></span>
@@ -395,7 +394,7 @@ Then use put_diagram to create a visualization</code></pre>
 <div class="section level3">
 <h3 id="dependencies">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies"></a></h3>
 <ul><li>
-<strong>mcptools</strong>: MCP server framework - <code>remotes::install_github("posit-dev/mcptools")</code>
+<strong>mcptools</strong>: MCP server framework - <code>install.packages("mcptools")</code>
 </li>
 <li>
 <strong>ellmer</strong>: Tool definition - <code>install.packages("ellmer")</code>
@@ -1113,8 +1112,8 @@ Then use put_diagram to create a visualization</code></pre>
 <p>Development guides available for reference when needed (read on demand, not preloaded): - <code>../agent-almanac/guides/r-package-development.md</code> - <code>../agent-almanac/guides/setting-up-your-environment.md</code> - <code>../agent-almanac/guides/quick-reference.md</code></p>
 </div>
 <div class="section level2">
-<h2 id="team-activation-required-when-user-requests-a-team">Team Activation (REQUIRED when user requests a team)<a class="anchor" aria-label="anchor" href="#team-activation-required-when-user-requests-a-team"></a></h2>
-<p>When the user asks to activate or use a team: (1) call <code>ToolSearch("select:TeamCreate")</code> to load the TeamCreate tool, (2) read the team definition from <code>/mnt/d/dev/p/agent-almanac/teams/&lt;team-name&gt;.md</code>, (3) call <code>TeamCreate</code> with the team configuration. Do NOT fall back to spawning individual agents via the Agent tool — always use TeamCreate for team requests.</p>
+<h2 id="team-activation-when-user-requests-a-team">Team Activation (when user requests a team)<a class="anchor" aria-label="anchor" href="#team-activation-when-user-requests-a-team"></a></h2>
+<p>A Claude Code session has a single implicit team; <code>TeamCreate</code> is on a deprecation path and is not offered in ordinary interactive sessions (checked against Claude Code v2.1.202, 2026-07-07). When the user asks to activate or use a team: (1) read the team definition from <code>/mnt/d/dev/p/agent-almanac/teams/&lt;team-name&gt;.md</code>, (2) spawn each listed member as a subagent with the Agent tool, following the team’s lead and coordination shape, (3) coordinate them with <code>SendMessage</code>. Use <code>TeamCreate</code> only where <code>ToolSearch("select:TeamCreate")</code> actually offers it.</p>
 <p>Available teams are listed in <code>/mnt/d/dev/p/agent-almanac/teams/_registry.yml</code>.</p>
 </div>
 </div>
@@ -1136,9 +1135,6 @@ Then use put_diagram to create a visualization</code></pre>
 
 
   <style>
-  /* Import external CSS */
-  @import url('extra.css');
-
   /* Fira font family overrides */
   :root {
     --font-family-sans-serif: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

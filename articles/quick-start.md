@@ -75,18 +75,12 @@ writeLines(c(
   '# put label:"Transform", input:"raw.csv", output:"clean.csv"',
   'clean <- transform(data)',
   '',
-  '# put label:"Load", input:"clean.csv", output:"database"',
+  '# put label:"Load", input:"clean.csv", output:"database.db"',
   'write_to_db(clean)'
 ), temp_file)
 
 # Scan, then clean up
 workflow <- put(temp_file)
-#> Warning: Validation issues in file25146793755e.R line 7:
-#> File reference missing extension: database
-```
-
-``` r
-
 unlink(temp_file)
 
 # Visualize
@@ -95,13 +89,13 @@ cat("```mermaid\n", put_diagram(workflow, output = "raw"), "\n```\n", sep = "")
 
 ``` mermaid
 flowchart TD
-    node_32523f7d_8660_4f2d_8010_a901cb4dd22f["Extract"]
-    node_68ba3eb7_a7de_4d62_bd0f_ea18a39ae17c["Transform"]
-    ffdb4b00_eb30_44b7_8321_1482a9fac1d6["Load"]
+    node_5d054437_e78c_415c_b1d9_7f1e45f2a217["Extract"]
+    c2387f3a_ad5a_486d_862c_c52bc0b568d9["Transform"]
+    node_6c02666f_d89c_48d3_8b37_b9f79dede708["Load"]
 
     %% Connections
-    node_32523f7d_8660_4f2d_8010_a901cb4dd22f --> node_68ba3eb7_a7de_4d62_bd0f_ea18a39ae17c
-    node_68ba3eb7_a7de_4d62_bd0f_ea18a39ae17c --> ffdb4b00_eb30_44b7_8321_1482a9fac1d6
+    node_5d054437_e78c_415c_b1d9_7f1e45f2a217 --> c2387f3a_ad5a_486d_862c_c52bc0b568d9
+    c2387f3a_ad5a_486d_862c_c52bc0b568d9 --> node_6c02666f_d89c_48d3_8b37_b9f79dede708
 ```
 
 ------------------------------------------------------------------------

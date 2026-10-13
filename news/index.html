@@ -169,6 +169,10 @@
 <h3 id="bug-fixes-0-2-0">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-0"></a></h3>
 <ul><li>Fixed <code>show_source_info = TRUE</code> using <code>&lt;small&gt;</code> HTML tags that are unsupported by GitHub’s Mermaid renderer. Source file names are now shown without HTML formatting tags. (<a href="https://github.com/pjt222/putior/issues/32" class="external-link">#32</a>)</li>
 <li>Fixed pipe characters (<code>|</code>) in node labels breaking Mermaid diagram parsing. Pipes are now escaped using the <code>#124;</code> entity. (<a href="https://github.com/pjt222/putior/issues/33" class="external-link">#33</a>)</li>
+<li>
+<code><a href="../reference/put.html">put()</a></code> now gives annotations without an <code>id</code> a fallback id (<code>node_1</code>, <code>node_2</code>, …) when the uuid package is not installed. Before, such annotations had no id: if none had one, <code><a href="../reference/put_diagram.html">put_diagram()</a></code> failed with a misleading “missing required column(s): id” error, and if only some had one, it silently dropped the others. This broke the quick-start example and the sandbox templates for anyone without uuid. The sandbox now also shows diagram errors in its status line instead of a blank preview. (<a href="https://github.com/pjt222/putior/issues/58" class="external-link">#58</a>)</li>
+<li>Fixed logging, which wrote nothing with logger 0.3 or later: every log call failed inside logger and the error was hidden. The <code>putior.log_level</code> option, set by <code><a href="../reference/set_putior_log_level.html">set_putior_log_level()</a></code> or for one call by the <code>log_level</code> argument, is now the only threshold, and an invalid <code>log_level</code> is an error. With logger installed, WARN-level messages now appear on stderr next to the matching R warnings. (<a href="https://github.com/pjt222/putior/issues/70" class="external-link">#70</a>)</li>
+<li>Fixed single-line block comment annotations (<code>/* put ... */</code>) silently losing their last property, which could drop an output and its edge. (<a href="https://github.com/pjt222/putior/issues/72" class="external-link">#72</a>)</li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-0-2-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-2-0"></a></h3>
@@ -179,6 +183,7 @@
 <li>16 tools available: <code>put</code>, <code>put_diagram</code>, <code>put_auto</code>, <code>put_generate</code>, <code>put_merge</code>, <code>get_comment_prefix</code>, <code>get_supported_extensions</code>, <code>list_supported_languages</code>, <code>get_detection_patterns</code>, <code>get_diagram_themes</code>, <code>putior_guide</code>, <code>putior_help</code>, <code>set_putior_log_level</code>, <code>is_valid_put_annotation</code>, <code>split_file_list</code>, <code>ext_to_language</code>
 </li>
 <li>Supports Claude Code, Claude Desktop, and other MCP-compatible clients</li>
+<li>Tools return JSON (workflow data as one object per node) or plain text. They print nothing, because with the stdio transport stdout is the protocol channel, and never write files or the clipboard, so every tool except <code>set_putior_log_level</code> is read-only. The <code>put_diagram</code> tool scans a <code>path</code> and returns the Mermaid code. (<a href="https://github.com/pjt222/putior/issues/65" class="external-link">#65</a>)</li>
 </ul></div>
 <div class="section level4">
 <h4 id="acp-server-integration-0-2-0">ACP Server Integration<a class="anchor" aria-label="anchor" href="#acp-server-integration-0-2-0"></a></h4>
@@ -377,9 +382,6 @@
 
 
   <style>
-  /* Import external CSS */
-  @import url('extra.css');
-
   /* Fira font family overrides */
   :root {
     --font-family-sans-serif: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

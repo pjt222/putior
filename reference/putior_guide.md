@@ -49,7 +49,7 @@ putior_guide()
 #> ---
 #> name: putior
 #> description: Extract workflow annotations from source code and generate Mermaid diagrams
-#> version: 0.2.0.9000
+#> version: 0.2.0
 #> tags: [r, documentation, workflow, mermaid, visualization, multi-language, code-analysis]
 #> languages: [R, Python, SQL, JavaScript, TypeScript, Go, Rust, Java, C, C++, MATLAB, Ruby, Lua, Julia, Shell, WGSL, Dockerfile, Makefile]
 #> repository: https://github.com/pjt222/putior

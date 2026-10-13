@@ -31,6 +31,29 @@
 - Fixed pipe characters (`|`) in node labels breaking Mermaid diagram
   parsing. Pipes are now escaped using the `#124;` entity.
   ([\#33](https://github.com/pjt222/putior/issues/33))
+- [`put()`](https://pjt222.github.io/putior/reference/put.md) now gives
+  annotations without an `id` a fallback id (`node_1`, `node_2`, …) when
+  the uuid package is not installed. Before, such annotations had no id:
+  if none had one,
+  [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  failed with a misleading “missing required column(s): id” error, and
+  if only some had one, it silently dropped the others. This broke the
+  quick-start example and the sandbox templates for anyone without uuid.
+  The sandbox now also shows diagram errors in its status line instead
+  of a blank preview.
+  ([\#58](https://github.com/pjt222/putior/issues/58))
+- Fixed logging, which wrote nothing with logger 0.3 or later: every log
+  call failed inside logger and the error was hidden. The
+  `putior.log_level` option, set by
+  [`set_putior_log_level()`](https://pjt222.github.io/putior/reference/set_putior_log_level.md)
+  or for one call by the `log_level` argument, is now the only
+  threshold, and an invalid `log_level` is an error. With logger
+  installed, WARN-level messages now appear on stderr next to the
+  matching R warnings.
+  ([\#70](https://github.com/pjt222/putior/issues/70))
+- Fixed single-line block comment annotations (`/* put ... */`) silently
+  losing their last property, which could drop an output and its edge.
+  ([\#72](https://github.com/pjt222/putior/issues/72))
 
 ### New Features
 
@@ -49,6 +72,12 @@
   `set_putior_log_level`, `is_valid_put_annotation`, `split_file_list`,
   `ext_to_language`
 - Supports Claude Code, Claude Desktop, and other MCP-compatible clients
+- Tools return JSON (workflow data as one object per node) or plain
+  text. They print nothing, because with the stdio transport stdout is
+  the protocol channel, and never write files or the clipboard, so every
+  tool except `set_putior_log_level` is read-only. The `put_diagram`
+  tool scans a `path` and returns the Mermaid code.
+  ([\#65](https://github.com/pjt222/putior/issues/65))
 
 #### ACP Server Integration
 

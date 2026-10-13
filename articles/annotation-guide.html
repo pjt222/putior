@@ -702,16 +702,19 @@ workflow management systems.</p>
 <div class="section level3">
 <h3 id="automatic-id-generation">Automatic ID Generation<a class="anchor" aria-label="anchor" href="#automatic-id-generation"></a>
 </h3>
-<p>If you omit the <code>id</code> field, putior will automatically
-generate a unique UUID:</p>
+<p>If you omit the <code>id</code> field, putior generates a unique one:
+a UUID when the uuid package is installed, otherwise
+<code>node_1</code>, <code>node_2</code>, and so on, skipping ids that
+are already in use.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Annotations without explicit IDs get auto-generated UUIDs</span></span>
+<code class="sourceCode R"><span><span class="co"># Annotations without explicit IDs get generated IDs</span></span>
 <span><span class="co"># put label:"Load Data", node_type:"input", output:"data.csv"</span></span>
 <span><span class="co"># put label:"Process Data", node_type:"process", input:"data.csv", output:"clean.csv"</span></span>
 <span></span>
 <span><span class="co"># Extract workflow - IDs will be auto-generated</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">$</span><span class="va">id</span><span class="op">)</span>  <span class="co"># Will show UUIDs like "a1b2c3d4-e5f6-7890-abcd-ef1234567890"</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">$</span><span class="va">id</span><span class="op">)</span>  <span class="co"># UUIDs like "a1b2c3d4-e5f6-7890-abcd-ef1234567890",</span></span>
+<span>                    <span class="co"># or "node_1", "node_2" without the uuid package</span></span></code></pre></div>
 <p>Note: If you provide an empty <code>id</code> (e.g.,
 <code>id:""</code>), you’ll get a validation warning.</p>
 </div>
@@ -1045,9 +1048,6 @@ Logging</a></strong> - Enable detailed output</li>
 
 
   <style>
-  /* Import external CSS */
-  @import url('extra.css');
-
   /* Fira font family overrides */
   :root {
     --font-family-sans-serif: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

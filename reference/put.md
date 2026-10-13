@@ -61,9 +61,11 @@ put(
 A data frame containing file names and all properties found in
 annotations. Always includes columns: file_name, file_type, and any
 properties found in PUT annotations (typically: id, label, node_type,
-input, output). Valid `node_type` values: `"input"`, `"process"`
-(default), `"output"`, `"decision"`, `"start"`, `"end"`. An additional
-type `"artifact"` is used internally by
+input, output). Annotations without an `id` get one: a UUID when the
+uuid package is installed, otherwise `node_1`, `node_2`, and so on.
+Valid `node_type` values: `"input"`, `"process"` (default), `"output"`,
+`"decision"`, `"start"`, `"end"`. An additional type `"artifact"` is
+used internally by
 [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
 for data file nodes and should not be set manually. If
 include_line_numbers is TRUE, also includes line_number. Note: If output

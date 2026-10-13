@@ -407,18 +407,20 @@ workflow <- put("./src/", validate = FALSE)
 
 ### Automatic ID Generation
 
-If you omit the `id` field, putior will automatically generate a unique
-UUID:
+If you omit the `id` field, putior generates a unique one: a UUID when
+the uuid package is installed, otherwise `node_1`, `node_2`, and so on,
+skipping ids that are already in use.
 
 ``` r
 
-# Annotations without explicit IDs get auto-generated UUIDs
+# Annotations without explicit IDs get generated IDs
 # put label:"Load Data", node_type:"input", output:"data.csv"
 # put label:"Process Data", node_type:"process", input:"data.csv", output:"clean.csv"
 
 # Extract workflow - IDs will be auto-generated
 workflow <- put("./")
-print(workflow$id)  # Will show UUIDs like "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+print(workflow$id)  # UUIDs like "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    # or "node_1", "node_2" without the uuid package
 ```
 
 Note: If you provide an empty `id` (e.g., `id:""`), you’ll get a

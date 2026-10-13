@@ -466,14 +466,14 @@ Suppress with <code>validate = FALSE</code>:</p>
 <code class="sourceCode R"><span><span class="co"># WRONG - Empty ID string</span></span>
 <span><span class="co"># put id:"", label:"My Process"</span></span>
 <span></span>
-<span><span class="co"># OK - Missing ID (auto-generated UUID)</span></span>
+<span><span class="co"># OK - Missing ID (generated automatically)</span></span>
 <span><span class="co"># put label:"My Process"</span></span></code></pre></div>
 <p><strong>Solution</strong>: Either omit the ID entirely
 (auto-generated) or provide a valid one.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># With auto-generated ID</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">$</span><span class="va">id</span><span class="op">)</span>  <span class="co"># Shows UUIDs like "a1b2c3d4-..."</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">$</span><span class="va">id</span><span class="op">)</span>  <span class="co"># UUIDs like "a1b2c3d4-...", or "node_1", ... without uuid</span></span>
 <span></span>
 <span><span class="co"># With explicit IDs</span></span>
 <span><span class="co"># put id:"step1", label:"First Step"</span></span>
@@ -1240,9 +1240,6 @@ carefully</p></li>
 
 
   <style>
-  /* Import external CSS */
-  @import url('extra.css');
-
   /* Fira font family overrides */
   :root {
     --font-family-sans-serif: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

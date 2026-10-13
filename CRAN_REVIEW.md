@@ -328,18 +328,20 @@ remaining work is NOTE-level cleanup and quality.
 ### T3-7 · pkgdown-04 — Redundant Mermaid double-render timers + duplicate `extra.css` @import
 
 - **<file:line>:** `_pkgdown.yml:132` (@import). The timers are gone.
-- **Status:** Timers resolved 2026-10-12 (#62, \#48): the site renders
-  once, when the DOM is ready. The duplicate `@import` remains.
-- **Fix (optional, cosmetic):** Remove the `@import`, since pkgdown
-  links `extra.css` itself.
+- **Status:** Resolved. Timers 2026-10-12 (#62, \#48): the site renders
+  once, when the DOM is ready. `@import` removed 2026-10-12 (#68): it
+  loaded `extra.css` twice on the home page and requested a missing
+  `articles/extra.css` or `reference/extra.css` on every subpage.
+  Computed styles are unchanged on 3 pages in light and dark mode.
 
 ### T3-8 · pkgdown-05 — No `redirects:` entry for the renamed skills→ai-integration article
 
 - **<file:line>:** `_pkgdown.yml` (absent)
-- **Evidence:** In-repo links are clean, but external 0.1.0-era links to
-  `articles/skills.html` will 404 on the live site.
-- **Fix (optional):** Add `redirects:` mapping `articles/skills.html` →
-  `articles/ai-integration.html`.
+- **Evidence:** In-repo links are clean, but external links to
+  `articles/skills.html` (the article’s name until 2026-03-19) returned
+  404 on the live site.
+- **Status:** Resolved 2026-10-12 (#68): `redirects:` maps
+  `articles/skills.html` → `articles/ai-integration.html`.
 
 ------------------------------------------------------------------------
 

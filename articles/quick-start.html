@@ -261,27 +261,24 @@
 <span>  <span class="st">'# put label:"Transform", input:"raw.csv", output:"clean.csv"'</span>,</span>
 <span>  <span class="st">'clean &lt;- transform(data)'</span>,</span>
 <span>  <span class="st">''</span>,</span>
-<span>  <span class="st">'# put label:"Load", input:"clean.csv", output:"database"'</span>,</span>
+<span>  <span class="st">'# put label:"Load", input:"clean.csv", output:"database.db"'</span>,</span>
 <span>  <span class="st">'write_to_db(clean)'</span></span>
 <span><span class="op">)</span>, <span class="va">temp_file</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Scan, then clean up</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="va">temp_file</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Validation issues in file25146793755e.R line 7:</span></span>
-<span><span class="co">#&gt; File reference missing extension: database</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">temp_file</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">temp_file</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Visualize</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"```mermaid\n"</span>, <span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"raw"</span><span class="op">)</span>, <span class="st">"\n```\n"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
 <pre class="mermaid"><code>flowchart TD
-    node_32523f7d_8660_4f2d_8010_a901cb4dd22f["Extract"]
-    node_68ba3eb7_a7de_4d62_bd0f_ea18a39ae17c["Transform"]
-    ffdb4b00_eb30_44b7_8321_1482a9fac1d6["Load"]
+    node_5d054437_e78c_415c_b1d9_7f1e45f2a217["Extract"]
+    c2387f3a_ad5a_486d_862c_c52bc0b568d9["Transform"]
+    node_6c02666f_d89c_48d3_8b37_b9f79dede708["Load"]
 
     %% Connections
-    node_32523f7d_8660_4f2d_8010_a901cb4dd22f --&gt; node_68ba3eb7_a7de_4d62_bd0f_ea18a39ae17c
-    node_68ba3eb7_a7de_4d62_bd0f_ea18a39ae17c --&gt; ffdb4b00_eb30_44b7_8321_1482a9fac1d6</code></pre>
+    node_5d054437_e78c_415c_b1d9_7f1e45f2a217 --&gt; c2387f3a_ad5a_486d_862c_c52bc0b568d9
+    c2387f3a_ad5a_486d_862c_c52bc0b568d9 --&gt; node_6c02666f_d89c_48d3_8b37_b9f79dede708</code></pre>
 <hr>
 </div>
 <div class="section level2">
@@ -370,20 +367,20 @@
 <div class="section level3">
 <h3 id="scan-a-directory">Scan a Directory<a class="anchor" aria-label="anchor" href="#scan-a-directory"></a>
 </h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="include-subdirectories">Include Subdirectories<a class="anchor" aria-label="anchor" href="#include-subdirectories"></a>
 </h3>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./project/"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="auto-detect-workflow-no-annotations">Auto-Detect Workflow (No Annotations!)<a class="anchor" aria-label="anchor" href="#auto-detect-workflow-no-annotations"></a>
 </h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Automatically detect file I/O from code</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put_auto.html">put_auto</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span></span></code></pre></div>
@@ -391,13 +388,13 @@
 <div class="section level3">
 <h3 id="choose-a-theme">Choose a Theme<a class="anchor" aria-label="anchor" href="#choose-a-theme"></a>
 </h3>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"github"</span><span class="op">)</span>  <span class="co"># or: light, dark, minimal, viridis</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="save-to-file">Save to File<a class="anchor" aria-label="anchor" href="#save-to-file"></a>
 </h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, output <span class="op">=</span> <span class="st">"file"</span>, file <span class="op">=</span> <span class="st">"workflow.md"</span><span class="op">)</span></span></code></pre></div>
 <hr>
 </div>
@@ -406,14 +403,14 @@
 <h2 id="interactive-sandbox">Interactive Sandbox<a class="anchor" aria-label="anchor" href="#interactive-sandbox"></a>
 </h2>
 <p>Experiment without creating files:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/run_sandbox.html">run_sandbox</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># Opens Shiny app</span></span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
 <h2 id="quick-reference">Quick Reference<a class="anchor" aria-label="anchor" href="#quick-reference"></a>
 </h2>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Core functions</span></span>
 <span><span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>                    <span class="co"># Extract annotations</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">)</span>        <span class="co"># Generate Mermaid diagram</span></span>
@@ -492,9 +489,6 @@
 
 
   <style>
-  /* Import external CSS */
-  @import url('extra.css');
-
   /* Fira font family overrides */
   :root {
     --font-family-sans-serif: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
