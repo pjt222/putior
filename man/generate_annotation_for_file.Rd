@@ -4,12 +4,14 @@
 \alias{generate_annotation_for_file}
 \title{Generate annotation text for a single file}
 \usage{
-generate_annotation_for_file(file, style = "multiline")
+generate_annotation_for_file(file, style = "multiline", node_id = NULL)
 }
 \arguments{
 \item{file}{Path to source file}
 
 \item{style}{Annotation style ("single" or "multiline")}
+
+\item{node_id}{Id to use instead of the one derived from the file name}
 }
 \value{
 Annotation string

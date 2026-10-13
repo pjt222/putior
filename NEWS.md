@@ -44,7 +44,10 @@
   Annotation ids that differ only in punctuation (`a-b` and `a_b`) were
   merged into one node with a self-loop; they now stay two nodes (`a_b`,
   `a_b_2`) and `put_diagram()` warns. Two data files whose names differ only
-  in punctuation get two artifact nodes. (#46)
+  in punctuation get two artifact nodes. `put_auto()` and `put_generate()`,
+  which derive ids from file names, now give files that would share an id
+  (`a-b.R` and `a_b.R`, or `load.R` in two folders) distinct ids (`load`,
+  `load_2`). (#46)
 * Node ids that are Mermaid keywords (`end`, `graph`, `flowchart`,
   `subgraph`, `style`, `class`, `classDef`, `click`, `linkStyle`, `call`,
   `href`, `interpolate`) made the whole diagram fail to parse. They are now

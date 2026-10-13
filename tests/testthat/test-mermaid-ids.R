@@ -240,3 +240,44 @@ test_that("direction = \"TB\" is accepted (#79)", {
   expect_match(put_diagram(workflow, direction = "TB", output = "raw"), "flowchart TB", fixed = TRUE)
   expect_error(put_diagram(workflow, direction = "XY", output = "raw"))
 })
+
+test_that("make_unique_ids() suffixes repeats without taking another id", {
+  expect_equal(make_unique_ids(c("a", "b", "a", "a_2", "a")), c("a", "b", "a_3", "a_2", "a_4"))
+  expect_equal(make_unique_ids(character()), character())
+})
+
+test_that("put_auto() gives files with the same derived id distinct ids (#46)", {
+  auto_dir <- tempfile("putior_auto_ids_")
+  dir.create(file.path(auto_dir, "x"), recursive = TRUE)
+  dir.create(file.path(auto_dir, "y"))
+  on.exit(unlink(auto_dir, recursive = TRUE), add = TRUE)
+  writeLines('d <- read.csv("in.csv")', file.path(auto_dir, "a-b.R"))
+  writeLines('d <- read.csv("in.csv")', file.path(auto_dir, "a_b.R"))
+  writeLines('d <- read.csv("in.csv")', file.path(auto_dir, "x", "load.R"))
+  writeLines('d <- read.csv("in.csv")', file.path(auto_dir, "y", "load.R"))
+
+  workflow <- put_auto(auto_dir)
+
+  expect_equal(nrow(workflow), 4)
+  expect_false(anyDuplicated(workflow$id) > 0)
+  expect_setequal(workflow$id, c("a_b", "a_b_2", "load", "load_2"))
+
+  diagram <- put_diagram(workflow, show_source_info = TRUE,
+                         source_info_style = "subgraph", output = "raw")
+  expect_equal(length(unique(diagram_ids(diagram)$defined)), 4)
+})
+
+test_that("put_generate() suggests different ids for files with the same name", {
+  generate_dir <- tempfile("putior_generate_ids_")
+  dir.create(file.path(generate_dir, "x"), recursive = TRUE)
+  dir.create(file.path(generate_dir, "y"))
+  on.exit(unlink(generate_dir, recursive = TRUE), add = TRUE)
+  writeLines('d <- read.csv("in.csv")', file.path(generate_dir, "x", "load.R"))
+  writeLines('d <- read.csv("in.csv")', file.path(generate_dir, "y", "load.R"))
+
+  annotations <- paste(put_generate(generate_dir, output = "raw", style = "single"),
+                       collapse = "\n")
+
+  expect_match(annotations, 'id:"load"', fixed = TRUE)
+  expect_match(annotations, 'id:"load_2"', fixed = TRUE)
+})

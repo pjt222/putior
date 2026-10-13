@@ -133,6 +133,9 @@ put_auto <- function(path,
   if (length(results) > 0) {
     df <- do.call(rbind, lapply(results, as.data.frame, stringsAsFactors = FALSE))
     rownames(df) <- NULL
+    # Ids come from file names, so a-b.R and a_b.R, a.R and a.py, or two
+    # load.R in different folders would share one id and one node (#46)
+    df$id <- make_unique_ids(df$id)
     putior_log("INFO", "Auto-detection complete: found {nrow(df)} workflow node(s)")
     return(as_putior_workflow(df))
   } else {
@@ -264,11 +267,13 @@ put_generate <- function(path,
     return(invisible(character(0)))
   }
 
-  # Generate annotations for each file
+  # Generate annotations for each file, with ids that differ between files
   all_annotations <- character()
+  node_ids <- make_unique_ids(vapply(files, auto_node_id, character(1), USE.NAMES = FALSE))
 
-  for (file in files) {
-    annotation <- generate_annotation_for_file(file, style)
+  for (file_index in seq_along(files)) {
+    file <- files[[file_index]]
+    annotation <- generate_annotation_for_file(file, style, node_id = node_ids[file_index])
     if (!is.null(annotation) && nchar(annotation) > 0) {
       all_annotations <- c(all_annotations, annotation)
 
@@ -490,7 +495,7 @@ detect_workflow_elements <- function(file,
     # Generate node ID and label from filename
     file_name <- basename(file)
     file_base <- tools::file_path_sans_ext(file_name)
-    node_id <- gsub("[^a-zA-Z0-9_]", "_", tolower(file_base))
+    node_id <- auto_node_id(file)
 
     # Determine node type based on detected elements
     node_type <- infer_node_type(inputs, outputs)
@@ -638,14 +643,18 @@ infer_node_type <- function(inputs, outputs) {
 #' Generate annotation text for a single file
 #' @param file Path to source file
 #' @param style Annotation style ("single" or "multiline")
+#' @param node_id Id to use instead of the one derived from the file name
 #' @return Annotation string
 #' @keywords internal
-generate_annotation_for_file <- function(file, style = "multiline") {
+generate_annotation_for_file <- function(file, style = "multiline", node_id = NULL) {
   # Detect workflow elements
   elements <- detect_workflow_elements(file, include_line_numbers = FALSE)
 
   if (is.null(elements)) {
     return(NULL)
+  }
+  if (!is.null(node_id)) {
+    elements$id <- node_id
   }
 
   # Build annotation parts
@@ -892,4 +901,35 @@ empty_auto_result_df <- function(include_line_numbers = FALSE) {
   }
 
   data.frame(cols, stringsAsFactors = FALSE)
+}
+
+#' Node id that put_auto() and put_generate() derive from a file name
+#' @param file Path to a source file
+#' @return Lower-case base name without extension, with characters other than
+#'   letters, digits and underscores replaced by underscores
+#' @noRd
+auto_node_id <- function(file) {
+  gsub("[^a-zA-Z0-9_]", "_", tolower(tools::file_path_sans_ext(basename(file))))
+}
+
+#' Make ids unique by adding a numeric suffix to repeats
+#'
+#' The first occurrence keeps its id; later ones get \code{_2}, \code{_3}, ...,
+#' skipping any id that another element already has.
+#' @param ids Character vector of ids
+#' @return Character vector of the same length without duplicates
+#' @noRd
+make_unique_ids <- function(ids) {
+  unique_ids <- ids
+  for (id_index in seq_along(ids)[-1]) {
+    earlier_ids <- unique_ids[seq_len(id_index - 1)]
+    if (ids[id_index] %in% earlier_ids) {
+      suffix_number <- 2L
+      while (paste0(ids[id_index], "_", suffix_number) %in% c(earlier_ids, ids)) {
+        suffix_number <- suffix_number + 1L
+      }
+      unique_ids[id_index] <- paste0(ids[id_index], "_", suffix_number)
+    }
+  }
+  unique_ids
 }
