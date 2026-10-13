@@ -1050,21 +1050,32 @@ chain_workflow <- function(step_count) {
   )
 }
 
-test_that("put_diagram() warns above Mermaid's 500 edges (#56)", {
-  # 501 steps give 500 edges, which Mermaid draws; 502 give 501
-  expect_no_warning(put_diagram(chain_workflow(501), output = "raw"))
-  expect_warning(put_diagram(chain_workflow(502), output = "raw"),
+test_that("warn_about_mermaid_limits() warns above 500 edges (#56)", {
+  edge_lines <- function(edge_count) {
+    paste(c("flowchart TD", sprintf("    n%d --> n%d", seq_len(edge_count), seq_len(edge_count) + 1)),
+          collapse = "\n")
+  }
+  expect_no_warning(warn_about_mermaid_limits(edge_lines(500), show_artifacts = FALSE))
+  expect_warning(warn_about_mermaid_limits(edge_lines(501), show_artifacts = FALSE),
                  "The diagram has 501 edges, more than the 500", fixed = TRUE)
   # With artifacts, the warning suggests leaving them out
-  expect_warning(put_diagram(chain_workflow(300), output = "raw", show_artifacts = TRUE),
+  expect_warning(warn_about_mermaid_limits(edge_lines(501), show_artifacts = TRUE),
                  "show_artifacts = FALSE", fixed = TRUE)
+  # put_diagram() itself warns (502 steps give 501 edges)
+  expect_warning(put_diagram(chain_workflow(502), output = "raw"), "501 edges", fixed = TRUE)
 })
 
 test_that("mermaid_text_size() measures what Mermaid compares (#56)", {
-  # Frontmatter and %% comment lines are not counted; a directive is
-  expect_equal(mermaid_text_size("---\ntitle: x\n---\nflowchart TD\n    %% c\n    a --> b"),
-               nchar("flowchart TD\n    a --> b"))
-  expect_equal(mermaid_text_size("%%{init: {}}%%\nflowchart TD"), nchar("%%{init: {}}%%\nflowchart TD"))
+  # Frontmatter (also over several lines), %% comment lines and the blank
+  # lines before them, and leading whitespace are not counted
+  expect_equal(
+    mermaid_text_size("---\ntitle: x\nconfig:\n  look: \"classic\"\n---\nflowchart TD\n\n    %% c\n    a --> b"),
+    nchar("flowchart TD\n    a --> b")
+  )
+  workflow <- data.frame(id = c("a", "b"), label = c("A", "B"), file_name = c("a.R", "b.R"),
+                         input = c(NA, "x.csv"), output = c("x.csv", NA), stringsAsFactors = FALSE)
+  # Measured with mermaid.render(): Mermaid counts 99 for this diagram
+  expect_equal(mermaid_text_size(put_diagram(workflow, output = "raw")), 99)
   # A character outside the BMP is two UTF-16 code units, as in JavaScript
   expect_equal(mermaid_text_size("a\U0001F600b"), 4)
 })
@@ -1073,11 +1084,13 @@ test_that("put_diagram() warns above Mermaid's 50,000 characters (#56)", {
   one_step <- function(label) {
     data.frame(id = "a", label = label, file_name = "a.R", stringsAsFactors = FALSE)
   }
-  base_size <- mermaid_text_size(put_diagram(one_step("x"), output = "raw"))
-  at_limit <- strrep("x", 50000 - base_size + 1)
-  expect_equal(mermaid_text_size(put_diagram(one_step(at_limit), output = "raw")), 50000)
+  # The size includes the newline that ends a code block
+  size_with_newline <- function(label) {
+    mermaid_text_size(paste0(put_diagram(one_step(label), output = "raw"), "\n"))
+  }
+  at_limit <- strrep("x", 50000 - size_with_newline("x") + 1)
+  expect_equal(size_with_newline(at_limit), 50000)
   expect_no_warning(put_diagram(one_step(at_limit), output = "raw"))
   expect_warning(put_diagram(one_step(paste0(at_limit, "x")), output = "raw"),
                  "The diagram has 50001 characters", fixed = TRUE)
 })
-

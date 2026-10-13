@@ -55,16 +55,6 @@
 
 ## Bug Fixes
 
-* `put_diagram()` warns when a diagram is over Mermaid's default limits
-  of 500 edges (`maxEdges`) or 50,000 characters (`maxTextSize`, counted
-  without the frontmatter and comments). Renderers such as GitHub, GitLab
-  and Quarto then show an error or an empty placeholder, and the diagram
-  cannot raise either limit itself. The warning names the options.
-  `?put_diagram` and the troubleshooting vignette describe both limits.
-  Large diagrams are also much faster to generate: a 500-step chain took
-  about two minutes, because every input looked through every step's
-  outputs, and now takes about two seconds. (#56)
-
 * Fixed `show_source_info = TRUE` using `<small>` HTML tags that are unsupported
   by GitHub's Mermaid renderer. Source file names are now shown without HTML
   formatting tags. (#32)
@@ -347,6 +337,17 @@
 * Moved `%||%` operator from `acp.R` to `zzz.R` for shared access
 
 ## Improvements
+* `put_diagram()` warns when a diagram is over Mermaid's default limits
+  of 500 edges (`maxEdges`) or 50,000 characters (`maxTextSize`).
+  Renderers such as GitHub, GitLab and Quarto then show an error or an
+  empty placeholder, and the diagram cannot raise either limit itself.
+  The size is counted as Mermaid counts it (without the frontmatter and
+  comments, with the newline that ends a code block), and the Mermaid
+  check confirms both limits at the boundary. The warning names the
+  options; `?put_diagram` and the troubleshooting vignette describe both
+  limits. Large diagrams are also much faster to generate: a 500-step
+  chain took about two minutes, because every input looked through every
+  step's outputs, and now takes about two seconds. (#56)
 * Consolidated language detection list into single authoritative registry
   (`.LANGUAGES_WITH_DETECTION` in `language_registry.R`)
 * Standardized `output` parameter across `put_diagram()`, `put_generate()`, and

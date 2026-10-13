@@ -435,6 +435,11 @@ test_that("MCP put_diagram passes its arguments through unchanged", {
     put_diagram(put(project_dir), output = "raw", mermaid_config = "none")
   )
   expect_true(startsWith(tools$put_diagram(path = project_dir), "---\nconfig:"))
+  # Direct edges next to artifact paths (#55)
+  expect_identical(
+    tools$put_diagram(path = project_dir, show_artifacts = TRUE, artifact_edges = "both"),
+    put_diagram(put(project_dir), output = "raw", show_artifacts = TRUE, artifact_edges = "both")
+  )
   # Accessibility metadata (#50)
   expect_identical(
     tools$put_diagram(path = project_dir, accessibility = FALSE),

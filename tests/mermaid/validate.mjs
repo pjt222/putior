@@ -21,6 +21,10 @@
 // The SVG's <title> and <desc> must show the expected accTitle and
 // accDescr text.
 //
+// A case whose manifest entry lists must_fail kinds is over one of
+// Mermaid's limits on purpose and must fail with only those kinds; if it
+// draws, the check fails, because putior's warning would then be wrong.
+//
 // Cases in expected-failures.json are known bugs. Each entry names its issue
 // and the kinds of problem it is known to cause ("generate", "parse",
 // "render", "nodes", "edges", "subgraphs", "text", "look", "wrap"). A
@@ -334,7 +338,10 @@ for (const problem of setupProblems) console.log(`SETUP  ${problem}`);
 const counts = { PASS: 0, XFAIL: 0, FAIL: 0, XPASS: 0 };
 for (const entry of manifest) {
   const problems = problemsByCase.get(entry.name);
-  const expected = expectedFailures[entry.name];
+  // A case over one of Mermaid's limits must fail, and only in that way
+  // (#56); it is then counted like a known failure
+  const expected = expectedFailures[entry.name] ??
+    (entry.must_fail ? { issue: 'over a Mermaid limit', problems: entry.must_fail } : undefined);
   const unexpectedProblems = expected
     ? problems.filter((problem) => !expected.problems.includes(kindOf(problem)))
     : problems;

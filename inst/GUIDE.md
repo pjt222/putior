@@ -157,8 +157,9 @@ put_diagram(workflow)
 put_diagram(workflow,
   direction = "LR",           # Left-to-right (default: "TD", top-down)
   theme = "github",           # Theme: github, light, dark, auto, minimal
-  show_artifacts = TRUE       # Show data files as nodes
+  show_artifacts = TRUE       # Show data files as nodes (script --> file --> script)
 )
+put_diagram(workflow, show_artifacts = TRUE, artifact_edges = "both")  # Also the direct edges
 
 # Colorblind-safe themes (viridis family)
 put_diagram(workflow, theme = "viridis")  # Purple-blue-green-yellow

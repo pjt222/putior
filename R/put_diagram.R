@@ -881,14 +881,19 @@ yaml_mapping_lines <- function(mapping, indent, config_error) {
 #' Size of a diagram as Mermaid measures it against maxTextSize
 #'
 #' Mermaid compares the length of the diagram text after it has removed the
-#' frontmatter and the \code{\%\%} comment lines, in UTF-16 code units
-#' (JavaScript string length).
+#' frontmatter and the \code{\%\%} comment lines (with
+#' \code{/^\\s*\%\%(?!\{)[^\\n]+\\n?/gm}, whose \code{\\s*} also takes the
+#' blank line before a comment) and trimmed the start, in UTF-16 code units
+#' (JavaScript string length). Read from the Mermaid 11.12.0 and 12.2.0
+#' bundles and checked against \code{mermaid.render()} at 50,000 and 50,001
+#' characters on 11.12.0 to 12.2.0.
 #' @param mermaid_code Diagram code as put_diagram() writes it
 #' @return Number of UTF-16 code units
 #' @noRd
 mermaid_text_size <- function(mermaid_code) {
-  body <- sub("^---\n.*?\n---\n", "", mermaid_code, perl = TRUE)
-  body <- gsub("(?m)^[ \t]*%%(?!\\{)[^\n]*(\n|$)", "", body, perl = TRUE)
+  body <- sub("(?s)^-{3}\\s*[\n\r](.*?)[\n\r]-{3}\\s*[\n\r]+", "", mermaid_code, perl = TRUE)
+  body <- gsub("(?m)^\\s*%%(?!\\{)[^\n]+\n?", "", body, perl = TRUE)
+  body <- sub("^\\s+", "", body, perl = TRUE)
   code_points <- utf8ToInt(enc2utf8(body))
   length(code_points) + sum(code_points > 65535)
 }
@@ -901,7 +906,9 @@ mermaid_text_size <- function(mermaid_code) {
 warn_about_mermaid_limits <- function(mermaid_code, show_artifacts) {
   code_lines <- strsplit(mermaid_code, "\n", fixed = TRUE)[[1]]
   edge_count <- sum(grepl("^    [A-Za-z0-9_]+ -->", code_lines))
-  text_size <- mermaid_text_size(mermaid_code)
+  # A Markdown code block or a .mmd file ends the diagram with a newline,
+  # which Mermaid counts too
+  text_size <- mermaid_text_size(paste0(mermaid_code, "\n"))
   options_text <- paste0(
     "Options: ",
     if (show_artifacts) "show_artifacts = FALSE, " else "",
