@@ -186,9 +186,14 @@ test_that("sanitize_node_id() works correctly", {
 
   # Mermaid keywords get a prefix; other spellings are left alone (#45)
   for (keyword in c("end", "graph", "flowchart", "subgraph", "style", "class",
-                    "classDef", "click", "linkStyle", "call", "href", "interpolate")) {
+                    "classDef", "click", "linkStyle", "call", "href", "interpolate",
+                    "_self", "_blank", "_parent", "_top")) {
     expect_equal(sanitize_node_id(keyword), paste0("node_", keyword))
   }
+  # Ids that only become a link target after sanitizing
+  expect_equal(sanitize_node_id("-top"), "node__top")
+  expect_equal(sanitize_node_id("__blank"), "node__blank")
+  expect_equal(sanitize_node_id("_selfie"), "_selfie")
   expect_equal(sanitize_node_id("End"), "End")
   expect_equal(sanitize_node_id("END"), "END")
   expect_equal(sanitize_node_id("direction"), "direction")

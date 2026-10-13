@@ -137,7 +137,8 @@ add_case("keyword_node_id", scan_fixture("keyword_id", list(
   )
 )))
 keyword_ids <- c("end", "graph", "flowchart", "subgraph", "style", "class",
-                 "classDef", "click", "linkStyle", "call", "href", "interpolate")
+                 "classDef", "click", "linkStyle", "call", "href", "interpolate",
+                 "_self", "_blank", "_parent", "-top")
 add_case("keyword_node_ids_all", scan_fixture("keyword_ids_all", list(
   "k.R" = sprintf('# put id:"%s", label:"Step %s", input:"%s.csv", output:"%s.csv"',
                   keyword_ids, keyword_ids, c("start", head(keyword_ids, -1)), keyword_ids)

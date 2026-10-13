@@ -50,8 +50,9 @@
   `load_2`). (#46)
 * Node ids that are Mermaid keywords (`end`, `graph`, `flowchart`,
   `subgraph`, `style`, `class`, `classDef`, `click`, `linkStyle`, `call`,
-  `href`, `interpolate`) made the whole diagram fail to parse. They are now
-  written as `node_end` and so on. `id:"end"` is a natural name for a
+  `href`, `interpolate`, and the link targets `_self`, `_blank`, `_parent`,
+  `_top`) made the whole diagram fail to parse. They are now written as
+  `node_end` and so on. `id:"end"` is a natural name for a
   pipeline's last step. (#45)
 * With `source_info_style = "subgraph"`, subgraph ids are now `file_<name>`
   and never equal a node id. Before, a file `load.R` with a node `id:"load"`

@@ -709,11 +709,13 @@ sanitize_mermaid_label <- function(label) {
 }
 
 # Words that Mermaid's flowchart parser rejects as a node id (case-sensitive:
-# "End" and "END" work). Measured on Mermaid 11.12.0, 11.17.2 and 12.1.0;
-# "direction" and "default" parse, so they are not listed. (#45)
+# "End" and "END" work), including the link targets of click lines.
+# Measured on Mermaid 11.12.0, 11.17.2, 12.1.0 and 12.2.0; "direction" and
+# "default" parse, so they are not listed. (#45)
 .MERMAID_KEYWORD_IDS <- c(
   "end", "graph", "flowchart", "subgraph", "style", "class", "classDef",
-  "click", "linkStyle", "call", "href", "interpolate"
+  "click", "linkStyle", "call", "href", "interpolate",
+  "_self", "_blank", "_parent", "_top"
 )
 
 #' Sanitize node ID for mermaid compatibility (IMPROVED VERSION)
