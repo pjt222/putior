@@ -329,13 +329,13 @@
 - R warnings now reach the client. Over stdio they never did: they were
   written to stderr when the server stopped, so a `<` in a title or
   label, a diagram over Mermaid’s limits or an invalid annotation went
-  unnoticed. A tool that warned returns the warnings (at most 20) as a
-  second text item after its unchanged result. For `put_diagram` they
-  are Mermaid comment lines, so the diagram still renders when a client
-  joins both items, and a `%%{` in a quoted label cannot act as a
-  directive. An error lists the warnings raised before it. The MCP
-  server needs mcptools 1.0.0 or later, which passes such a list on;
-  older versions turned it into “
+  unnoticed. A tool that warned returns the warnings (at most 20, each
+  cut to 1,000 characters) as a second text item after its unchanged
+  result. For `put_diagram` they are Mermaid comment lines, so the
+  diagram still renders when a client joins both items, and a `%%{` in a
+  quoted label cannot act as a directive. An error lists the warnings
+  raised before it. The MCP server needs mcptools 1.0.0 or later, which
+  passes such a list on; older versions turned it into “
   ” text.
 - [`putior_mcp_server()`](https://pjt222.github.io/putior/reference/putior_mcp_server.md)
   serves only its 16 tools. mcptools’ tools for choosing a running R
@@ -360,6 +360,19 @@
   recognized, so it is rejected too instead of being ignored.
 - Unquoted paths in a request work: `scan ./R/` read the path as `./R/`,
   with the space in front, and reported that it does not exist.
+- Requests name paths in more forms: Windows paths (`D:/data`,
+  `C:\Users\me`), `~/` paths, relative paths such as `R/` that exist,
+  and paths in backticks or curly quotes; punctuation after a path
+  (`./R?`) is dropped. A path-like word wins over a quoted word that is
+  not one (`for ./R/ using the 'dark' theme`, `titled "ETL" for ./R/`),
+  a theme or direction name is never the path, and an apostrophe
+  (“Let’s”) is no quote. A lone `/`, `\`, `~` or drive in prose is not
+  taken for the root of a drive or the home directory. A scan with no
+  path in the request still reads the server’s working directory, but
+  now says so; before, an unrecognized path silently gave the results of
+  another folder. A `..` after a drive (`D:..\x`) is rejected like any
+  other, also by the path checks of the other functions.
+  ([\#109](https://github.com/pjt222/putior/issues/109))
 - Warnings that R raises during a run (invalid annotations, a `<` in a
   label, …) come as a second `text/plain` part of the output; the server
   only logged them.
