@@ -34,7 +34,7 @@ Suggests:
     logger,
     shiny,
     shinyAce,
-    mcptools,
+    mcptools (>= 1.0.0),
     ellmer,
     jsonlite,
     plumber2

@@ -234,7 +234,9 @@
   item after its unchanged result. For `put_diagram` they are Mermaid
   comment lines, so the diagram still renders when a client joins both
   items, and a `%%{` in a quoted label cannot act as a directive. An error
-  lists the warnings raised before it.
+  lists the warnings raised before it. The MCP server needs mcptools
+  1.0.0 or later, which passes such a list on; older versions turned it
+  into "<object>" text.
 * `putior_mcp_server()` serves only its 16 tools. mcptools' tools for
   choosing a running R session (`list_r_sessions`, `select_r_session`)
   were on as well, so clients saw 18 tools, and a call could run in a

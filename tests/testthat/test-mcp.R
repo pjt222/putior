@@ -358,7 +358,7 @@ test_that("MCP tools expose no arguments that write files or the clipboard", {
 test_that("MCP results reach the client as JSON text through mcptools", {
   # Uses an mcptools internal (the server's tools/call handler); keep it off CRAN.
   skip_on_cran()
-  skip_if_not_installed("mcptools")
+  skip_if_not_installed("mcptools", "1.0.0")
   skip_if_not_installed("jsonlite")
   project_dir <- create_mcp_test_project()
   on.exit(unlink(project_dir, recursive = TRUE), add = TRUE)
@@ -728,11 +728,56 @@ test_that("collect_warnings() keeps the value and appends warnings to errors", {
     warning("first")
     stop("it failed")
   }), error = conditionMessage)
-  expect_equal(failure, "it failed\n\nputior warnings (1), not part of the result above:\n- first")
+  expect_equal(failure, "it failed\n\nputior warnings (1), raised before the error:\n- first")
+})
+
+test_that("every MCP tool that can warn returns its warnings", {
+  skip_if_not_installed("ellmer")
+  skip_if_not_installed("jsonlite")
+  project_dir <- create_mcp_test_project()
+  on.exit(unlink(project_dir, recursive = TRUE), add = TRUE)
+  tools <- putior_mcp_tools()
+  # Each scan warns once and returns a small result
+  warned_workflow <- function(...) {
+    warning("scan warning")
+    data.frame(id = "a", label = "A", stringsAsFactors = FALSE)
+  }
+  local_mocked_bindings(
+    put_auto = warned_workflow,
+    put_merge = warned_workflow,
+    put_generate = function(...) {
+      warning("scan warning")
+      "# put id:\"a\""
+    }
+  )
+  replies <- list(
+    put_auto = tools$put_auto(path = project_dir),
+    put_merge = tools$put_merge(path = project_dir),
+    put_generate = tools$put_generate(path = project_dir),
+    putior_guide = tools$putior_guide(topic = "no_such_topic")
+  )
+  for (tool_name in names(replies)) {
+    expect_length(replies[[tool_name]], 2)
+    expect_match(replies[[tool_name]][[2]]@text, "putior warnings (1)", fixed = TRUE,
+                 label = tool_name)
+  }
+  expect_match(replies$put_generate[[1]]@text, '# put id:"a"', fixed = TRUE)
+})
+
+test_that("long warnings are cut in the block", {
+  block <- format_warning_block(strrep("x", 1500))
+  expect_match(block, paste0("- ", strrep("x", 1000), " ... (500 more characters)"), fixed = TRUE)
+})
+
+test_that("putior_mcp_server() asks for mcptools 1.0.0 or later", {
+  skip_if_not_installed("mcptools")
+  local_mocked_bindings(packageVersion = function(pkg, ...) package_version("0.2.1"),
+                        .package = "utils")
+  expect_error(putior_mcp_server(), "needs mcptools 1.0.0 or later", fixed = TRUE)
 })
 
 test_that("putior_mcp_server() serves only putior's tools", {
-  skip_if_not_installed("mcptools")
+  skip_if_not_installed("mcptools", "1.0.0")
   skip_if_not_installed("ellmer")
   server_arguments <- NULL
   local_mocked_bindings(

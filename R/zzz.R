@@ -162,9 +162,12 @@ is_valid_hex_color <- function(x) {
 # collisions, invalid annotations), so the servers collect them and return
 # them with the result.
 
-# At most this many warnings are listed in a reply; one per invalid
-# annotation can be many, and a client may cut long tool output short.
+# At most this many warnings are listed in a reply, each cut to at most
+# .MAX_WARNING_CHARACTERS characters: one per invalid annotation can be
+# many, one warning can list every unreadable file, and a client may cut
+# long tool output short.
 .MAX_REPORTED_WARNINGS <- 20L
+.MAX_WARNING_CHARACTERS <- 1000L
 
 #' Drop warnings that repeat another one
 #'
@@ -207,7 +210,9 @@ collect_warnings <- function(code) {
   if (!is.null(failure)) {
     error_message <- conditionMessage(failure)
     if (length(warning_messages) > 0) {
-      error_message <- paste0(error_message, format_warning_block(warning_messages))
+      error_message <- paste0(
+        error_message, format_warning_block(warning_messages, before_error = TRUE)
+      )
     }
     stop(error_message, call. = FALSE)
   }
@@ -228,11 +233,18 @@ collect_warnings <- function(code) {
 #' a comment line changed the theme on Mermaid 11.12.0 and 12.2.0).
 #' @param warning_messages Character vector of warning messages
 #' @param style "text" or "mermaid"
+#' @param before_error TRUE when the block follows an error message
 #' @return The block, starting with a line break
 #' @noRd
-format_warning_block <- function(warning_messages, style = c("text", "mermaid")) {
+format_warning_block <- function(warning_messages, style = c("text", "mermaid"),
+                                 before_error = FALSE) {
   style <- match.arg(style)
   shown_messages <- warning_messages[seq_len(min(length(warning_messages), .MAX_REPORTED_WARNINGS))]
+  is_long <- nchar(shown_messages) > .MAX_WARNING_CHARACTERS
+  shown_messages[is_long] <- paste0(
+    substr(shown_messages[is_long], 1L, .MAX_WARNING_CHARACTERS), " ... (",
+    nchar(shown_messages[is_long]) - .MAX_WARNING_CHARACTERS, " more characters)"
+  )
   item_lines <- unlist(lapply(shown_messages, function(warning_message) {
     message_lines <- strsplit(warning_message, "\n", fixed = TRUE)[[1]]
     message_lines <- sub("\\s+$", "", replace_control_chars(message_lines))
@@ -246,8 +258,12 @@ format_warning_block <- function(warning_messages, style = c("text", "mermaid"))
     item_lines <- c(item_lines, paste0("- ... and ", hidden_count, " more"))
   }
   header <- paste0(
-    "putior warnings (", length(warning_messages), "), not part of the ",
-    if (style == "mermaid") "diagram" else "result", " above:"
+    "putior warnings (", length(warning_messages), "), ",
+    if (before_error) {
+      "raised before the error:"
+    } else {
+      paste0("not part of the ", if (style == "mermaid") "diagram" else "result", " above:")
+    }
   )
   block_lines <- c(header, item_lines)
   if (style == "mermaid") {

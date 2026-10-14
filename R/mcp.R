@@ -107,6 +107,17 @@ putior_mcp_server <- function(type = c("stdio", "http"),
     )
   }
 
+  # Older mcptools turned a list of content items, as a tool returns when
+  # R warned, into "<object>" text and lost the result
+  if (utils::packageVersion("mcptools") < "1.0.0") {
+    stop(
+      "putior's MCP server needs mcptools 1.0.0 or later; installed: ",
+      utils::packageVersion("mcptools"), ".\n",
+      "Update it with: install.packages('mcptools')",
+      call. = FALSE
+    )
+  }
+
   if (!requireNamespace("ellmer", quietly = TRUE)) {
     stop(
       "The 'ellmer' package is required for MCP server functionality.\n",
