@@ -230,7 +230,10 @@ all available tools are included.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A list of ellmer tool definitions suitable for use with
-<code><a href="https://posit-dev.github.io/mcptools/reference/server.html" class="external-link">mcptools::mcp_server()</a></code>.</p>
+<code><a href="https://posit-dev.github.io/mcptools/reference/server.html" class="external-link">mcptools::mcp_server()</a></code>. A tool returns its result as text (JSON,
+Mermaid code or Markdown); when R warned, it returns a list of two
+<code><a href="https://ellmer.tidyverse.org/reference/Content.html" class="external-link">ellmer::ContentText</a></code> objects instead: the result and the
+warnings.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

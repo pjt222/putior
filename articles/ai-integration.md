@@ -52,6 +52,14 @@ When running as an MCP or ACP server, AI assistants can:
 3.  **Generate diagrams** via `put_diagram` tool
 4.  **Auto-detect workflows** via `put_auto` tool
 
+When putior warns during a call (invalid annotations, a `<` in a title
+or label, a diagram over Mermaid’s size limits, …), the tool returns the
+warnings as a second text part after its result, since R warnings never
+reach an MCP client otherwise. The `put_diagram` tool writes them as
+Mermaid comment lines (`%% ...`), so the diagram still renders if the
+client joins both parts; its first part is always exactly the Mermaid
+code.
+
 See the [MCP Server section in
 CLAUDE.md](https://github.com/pjt222/putior/blob/main/CLAUDE.md#mcp-server-integration)
 for setup instructions.

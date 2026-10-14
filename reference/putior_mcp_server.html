@@ -252,7 +252,18 @@ Default: 8080</p></dd>
 <li><p><code>is_valid_put_annotation</code> - Validate annotation syntax</p></li>
 <li><p><code>split_file_list</code> - Parse file lists</p></li>
 <li><p><code>ext_to_language</code> - Extension to language name</p></li>
-</ul></div>
+</ul><p>Only these tools are served: mcptools' tools for choosing a running R
+session (<code>list_r_sessions</code>, <code>select_r_session</code>) are turned off,
+so every call runs in the server's own R process.</p>
+<p>Over stdio, R warnings would never reach the client. When R warns while
+a tool runs (invalid annotations, a <code>&lt;</code> in a title or label, a
+diagram over Mermaid's size limits, ...), the tool returns the warnings
+as a second text item after its result, at most 20 of them. For
+<code>put_diagram</code> they are Mermaid comment lines, so the diagram still
+renders when a client joins the two items; the first item is always
+exactly the Mermaid code. When a call fails, the warnings raised before
+the error follow its message.</p>
+    </div>
     <div class="section level2">
     <h2 id="configuration">Configuration<a class="anchor" aria-label="anchor" href="#configuration"></a></h2>
 

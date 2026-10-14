@@ -322,6 +322,26 @@
   annotations (and it suggests `source = "auto"`), or no file that
   [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md)
   can analyze. ([\#73](https://github.com/pjt222/putior/issues/73))
+- An argument that a client sends as `null` gets its default. Before,
+  most arguments of the scan and diagram tools and of
+  `list_supported_languages` then stopped the call with “argument is of
+  length zero”.
+- R warnings now reach the client. Over stdio they never did: they were
+  written to stderr when the server stopped, so a `<` in a title or
+  label, a diagram over Mermaid’s limits or an invalid annotation went
+  unnoticed. A tool that warned returns the warnings (at most 20) as a
+  second text item after its unchanged result. For `put_diagram` they
+  are Mermaid comment lines, so the diagram still renders when a client
+  joins both items, and a `%%{` in a quoted label cannot act as a
+  directive. An error lists the warnings raised before it. The MCP
+  server needs mcptools 1.0.0 or later, which passes such a list on;
+  older versions turned it into “
+  ” text.
+- [`putior_mcp_server()`](https://pjt222.github.io/putior/reference/putior_mcp_server.md)
+  serves only its 16 tools. mcptools’ tools for choosing a running R
+  session (`list_r_sessions`, `select_r_session`) were on as well, so
+  clients saw 18 tools, and a call could run in a user’s live R session
+  instead of the server’s own process.
 
 #### ACP Server Integration
 
@@ -333,7 +353,18 @@
   [`putior_acp_manifest()`](https://pjt222.github.io/putior/reference/putior_acp_manifest.md)
   for agent discovery
 - Supports natural language requests for all core operations
-- Input path sanitization to prevent directory traversal attacks
+- Input path sanitization to prevent directory traversal attacks. A path
+  with `..` or control characters ends the run with an error; it used to
+  be replaced by `.` with a warning in the server log, so the run
+  scanned the server’s working directory. An unquoted `../` path is now
+  recognized, so it is rejected too instead of being ignored.
+- Unquoted paths in a request work: `scan ./R/` read the path as `./R/`,
+  with the space in front, and reported that it does not exist.
+- Warnings that R raises during a run (invalid annotations, a `<` in a
+  label, …) come as a second `text/plain` part of the output; the server
+  only logged them.
+- A scan whose annotations name no input (or no label) is listed; the
+  run stopped with “missing value where TRUE/FALSE needed”.
 
 #### Multi-Language Comment Syntax (30+ Languages)
 

@@ -28,6 +28,10 @@ putior_mcp_tools(include = NULL, exclude = c("run_sandbox"))
 
 A list of ellmer tool definitions suitable for use with
 [`mcptools::mcp_server()`](https://posit-dev.github.io/mcptools/reference/server.html).
+A tool returns its result as text (JSON, Mermaid code or Markdown); when
+R warned, it returns a list of two
+[`ellmer::ContentText`](https://ellmer.tidyverse.org/reference/Content.html)
+objects instead: the result and the warnings.
 
 ## See also
 
