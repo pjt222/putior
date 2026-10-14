@@ -55,6 +55,19 @@
 
 ## Bug Fixes
 
+* Click links (`enable_clicks = TRUE`) now point to the file's full path
+  (`file_path`) instead of its base name, which was resolved against the
+  working directory at the time the diagram was made. Absolute Unix paths
+  give `vscode://file/home/...` and `file:///home/...` instead of a doubled
+  or quadrupled slash, and a relative path to a missing file is made
+  absolute. Paths are percent-encoded, and tooltips escaped like labels: a
+  quote in a file name made the diagram fail to parse, and a name such as
+  `direction LR.R` made Mermaid drop the click line. The docs now say that
+  Mermaid keeps click links only with `securityLevel: "loose"`, so they do
+  not work on GitHub, GitLab or in Quarto with default settings. The
+  pkgdown site and the sandbox stay `"strict"`, because `"loose"` would
+  also let click callbacks run JavaScript. (#47)
+
 * Fixed `show_source_info = TRUE` using `<small>` HTML tags that are unsupported
   by GitHub's Mermaid renderer. Source file names are now shown without HTML
   formatting tags. (#32)

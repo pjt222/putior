@@ -143,11 +143,11 @@ unlink(temp_file)
 # -----------------------------------------------------------------------------
 
 cat("\n\n=== Tips ===\n\n")
-cat("1. Mermaid click directives work in many viewers:\n")
-cat("   - GitHub README files\n")
-cat("   - GitLab wikis\n")
-cat("   - Obsidian notes\n")
-cat("   - Some Markdown editors\n\n")
+cat("1. Mermaid keeps click links only with securityLevel 'loose':\n")
+cat("   - They do NOT work on GitHub, GitLab or in Quarto with default settings\n")
+cat("     (Mermaid's default 'strict' and GitHub's 'antiscript' drop them)\n")
+cat("   - They work in a page that calls mermaid.initialize({ securityLevel: 'loose' })\n")
+cat("   - 'loose' also lets click callbacks run JavaScript; use it for trusted diagrams\n\n")
 
 cat("2. For VS Code to handle vscode:// URLs, ensure:\n")
 cat("   - VS Code is your registered protocol handler\n")

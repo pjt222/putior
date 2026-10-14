@@ -19,7 +19,8 @@
 // attribute (Mermaid 11.17.2 and later) must have it, and labels listed in
 // wide_texts must be drawn wider than Mermaid 12's 120px wrapping width.
 // The SVG's <title> and <desc> must show the expected accTitle and
-// accDescr text.
+// accDescr text, every click line must give its node a link, and expected
+// tooltips must show as written.
 //
 // A case whose manifest entry lists must_fail kinds is over one of
 // Mermaid's limits on purpose and must fail with only those kinds, with
@@ -28,11 +29,11 @@
 //
 // Cases in expected-failures.json are known bugs. Each entry names its issue
 // and the kinds of problem it is known to cause ("generate", "parse",
-// "render", "nodes", "edges", "subgraphs", "text", "look", "wrap"). A
-// listed case counts as a known failure only if all its problems are of
-// those kinds; a problem of a different kind fails the run (a new problem
-// of a listed kind does not). A listed case that passes also fails the
-// run, so the list is kept up to date as the bugs are fixed.
+// "render", "nodes", "edges", "subgraphs", "text", "look", "wrap",
+// "click"). A listed case counts as a known failure only if all its
+// problems are of those kinds; a problem of a different kind fails the run
+// (a new problem of a listed kind does not). A listed case that passes also
+// fails the run, so the list is kept up to date as the bugs are fixed.
 //
 // MERMAID_EXTRA_ALIASES (comma-separated) adds packages installed in
 // node_modules but not listed in package.json, e.g. the scheduled run's
@@ -102,7 +103,7 @@ const mermaidConfigs = {
 
 const manifest = readJson(path.join(corpusDir, 'manifest.json'));
 const expectedFailures = readJson(path.join(harnessDir, 'expected-failures.json'));
-const problemKinds = ['generate', 'parse', 'render', 'nodes', 'edges', 'subgraphs', 'text', 'look', 'wrap', 'limit'];
+const problemKinds = ['generate', 'parse', 'render', 'nodes', 'edges', 'subgraphs', 'text', 'look', 'wrap', 'limit', 'click'];
 
 for (const [caseName, expected] of Object.entries(expectedFailures)) {
   if (!manifest.some((entry) => entry.name === caseName)) {
@@ -116,7 +117,7 @@ for (const [caseName, expected] of Object.entries(expectedFailures)) {
 
 // Runs in the page: parse, collect Mermaid's nodes, render, compare the
 // nodes drawn in the SVG with the nodes Mermaid parsed.
-async function checkInPage(code) {
+async function checkInPage({ code, clickIds }) {
   // One line per error: Mermaid's parse errors end with "Expecting ...,
   // got 'end'", and frontmatter (YAML) errors quote the line as " 1 | title: ...".
   const summarize = (error) => {
@@ -129,7 +130,7 @@ async function checkInPage(code) {
   };
   const result = {
     problems: [], vertexIds: null, edgeCount: null, labelTexts: null, labelWidths: null, looks: null,
-    accTitle: null, accDescr: null,
+    accTitle: null, accDescr: null, clickLinks: null, titleAttributes: null,
   };
   try {
     await mermaid.parse(code);
@@ -141,6 +142,12 @@ async function checkInPage(code) {
     const diagram = await mermaid.mermaidAPI.getDiagramFromText(code);
     const vertices = diagram.db.getVertices();
     result.vertexIds = vertices instanceof Map ? [...vertices.keys()] : Object.keys(vertices);
+    // The link of every node that a click line names; null if Mermaid did
+    // not read the click line (its lexer can swallow it, #47)
+    result.clickLinks = (clickIds ?? []).map((id) => {
+      const vertex = vertices instanceof Map ? vertices.get(id) : vertices[id];
+      return vertex?.link ?? null;
+    });
     result.edgeCount = diagram.db.getEdges().length;
   } catch (error) {
     result.problems.push(`parse: reading the parsed nodes failed: ${summarize(error)}`);
@@ -172,6 +179,8 @@ async function checkInPage(code) {
       if (notDrawn.length > 0) result.problems.push(`render: parsed but not drawn: ${notDrawn.join(', ')}`);
       if (notParsed.length > 0) result.problems.push(`render: drawn but not parsed: ${notParsed.join(', ')}`);
       if (drawnIds.length !== new Set(drawnIds).size) result.problems.push('render: a node is drawn twice');
+      // Tooltips of click lines end up in title attributes
+      result.titleAttributes = [...svgRoot.querySelectorAll('[title]')].map((element) => element.getAttribute('title'));
       // Screen reader text from accTitle and accDescr
       result.accTitle = svgRoot.querySelector(':scope > title')?.textContent ?? null;
       result.accDescr = svgRoot.querySelector(':scope > desc')?.textContent ?? null;
@@ -266,6 +275,17 @@ function compareWidths(entry, labelTexts, labelWidths) {
     : [];
 }
 
+// Every click line must give its node a link, and the expected tooltips
+// must show as written
+function compareClicks(entry, result) {
+  const problems = [];
+  const unlinked = (entry.click_ids ?? []).filter((id, index) => !result.clickLinks?.[index]);
+  if (unlinked.length > 0) problems.push(`click: no link on ${unlinked.join(', ')} (click line not read)`);
+  const missingTips = (entry.expected_tooltips ?? []).filter((tip) => !(result.titleAttributes ?? []).includes(tip));
+  if (missingTips.length > 0) problems.push(`click: no tooltip shows ${missingTips.map((tip) => JSON.stringify(tip)).join(', ')}`);
+  return problems;
+}
+
 // Every expected text must be the whole text of one label
 function compareTexts(entry, labelTexts) {
   const notShown = (entry.expected_texts ?? [])
@@ -306,7 +326,9 @@ try {
         const timeout = new Promise((resolve) => {
           timer = setTimeout(() => resolve(null), caseTimeoutMs);
         });
-        const result = await Promise.race([page.evaluate(checkInPage, code), timeout]);
+        const result = await Promise.race([
+          page.evaluate(checkInPage, { code, clickIds: entry.click_ids ?? [] }), timeout,
+        ]);
         clearTimeout(timer);
         const problems = [];
         if (result === null) {
@@ -317,6 +339,7 @@ try {
           problems.push(...result.problems);
           if (result.vertexIds) problems.push(...compareNodes(entry, result.vertexIds));
           if (result.edgeCount !== null) problems.push(...compareEdges(entry, result.edgeCount));
+          if (result.clickLinks) problems.push(...compareClicks(entry, result));
           if (result.labelTexts) problems.push(...compareTexts(entry, result.labelTexts));
           if (result.labelTexts) problems.push(...compareWidths(entry, result.labelTexts, result.labelWidths));
           if (result.looks) problems.push(...compareLook(entry, result.looks));

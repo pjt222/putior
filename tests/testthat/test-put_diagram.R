@@ -753,6 +753,50 @@ test_that("generate_click_url creates proper URLs for each protocol", {
   expect_true(grepl("&line=10", url_rstudio_line))
 })
 
+test_that("click URLs use the full path, with one slash for Unix paths (#47)", {
+  # Test the URL from a given absolute path, whatever the OS of the test
+  local_mocked_bindings(normalize_path_for_url = function(file_path) file_path)
+  expect_equal(generate_click_url("/home/u/proj/a.R", 3, "vscode"), "vscode://file/home/u/proj/a.R:3")
+  expect_equal(generate_click_url("/home/u/proj/a.R", 3, "file"), "file:///home/u/proj/a.R")
+  expect_equal(generate_click_url("D:/p/a.R", 3, "vscode"), "vscode://file/D:/p/a.R:3")
+  expect_equal(generate_click_url("D:/p/a.R", NULL, "file"), "file:///D:/p/a.R")
+  expect_equal(generate_click_url("/home/u/a.R", 3, "rstudio"),
+               "rstudio://open-file?path=%2Fhome%2Fu%2Fa.R&line=3")
+  # Spaces, quotes, # and ; are percent-encoded, as is non-ASCII text
+  expect_equal(generate_click_url('/p/say "hi" #1;.R', 3, "vscode"),
+               "vscode://file/p/say%20%22hi%22%20%231%3B.R:3")
+  expect_equal(generate_click_url("/p/gr\u00f6\u00dfe.R", NULL, "file"), "file:///p/gr%C3%B6%C3%9Fe.R")
+})
+
+test_that("normalize_path_for_url() makes a relative path absolute (#47)", {
+  path <- normalize_path_for_url("no/such/dir/x.R")
+  expect_true(grepl("^(/|[A-Za-z]:/)", path))
+  expect_true(endsWith(path, "/no/such/dir/x.R"))
+})
+
+test_that("click lines use file_path and escape the tooltip (#47)", {
+  workflow <- data.frame(
+    id = c("lifestyle", "b"), label = c("A", "B"),
+    file_name = c('say "hi".R', "direction LR.R"),
+    file_path = c('/p/say "hi".R', "/p/direction LR.R"),
+    line_number = c(3, NA), stringsAsFactors = FALSE
+  )
+  click_lines <- grep("^    click ", strsplit(
+    put_diagram(workflow, output = "raw", enable_clicks = TRUE), "\n", fixed = TRUE
+  )[[1]], value = TRUE)
+  expect_match(click_lines[1], '"Open say #quot;hi#quot;.R at line 3"$')
+  expect_match(click_lines[1], "say%20%22hi%22.R:3", fixed = TRUE)
+  expect_match(click_lines[1], "/p/say", fixed = TRUE)
+  expect_match(click_lines[2], '"Open direction#32;LR.R"$')
+  # No line matches Mermaid's direction rule or its colon rule
+  expect_false(any(grepl("direction\\s+(TB|BT|RL|LR|TD)", click_lines)))
+  expect_false(any(grepl("(style|classDef).*:\\S*#.*;", click_lines)))
+  # Without file_path the file name is used
+  workflow$file_path <- NULL
+  expect_match(put_diagram(workflow, output = "raw", enable_clicks = TRUE),
+               "say%20%22hi%22.R:3", fixed = TRUE)
+})
+
 test_that("click directives include tooltips", {
   workflow <- create_test_workflow()
 

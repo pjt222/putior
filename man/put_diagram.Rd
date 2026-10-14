@@ -94,8 +94,16 @@ file name. Default is FALSE for backward compatibility.}
 }}
 
 \item{enable_clicks}{Logical indicating whether to add click directives to nodes.
-When TRUE, nodes become clickable links that open the source file in an editor.
-Default is FALSE for backward compatibility.}
+When TRUE, nodes become clickable links that open the source file (its
+full path, \code{file_path}) in an editor. Default is FALSE. Mermaid
+keeps these links only with \code{securityLevel: "loose"}; with its
+default \code{"strict"} and GitHub's \code{"antiscript"}, the nodes are
+not clickable. So clicks do not work on GitHub, GitLab or in Quarto
+with their default settings, nor on putior's pkgdown site or in the
+sandbox, which stay \code{"strict"} because \code{"loose"} would also
+let click callbacks run JavaScript. They work where you render the
+diagram yourself with \code{mermaid.initialize(\{ securityLevel:
+"loose" \})}.}
 
 \item{click_protocol}{Character string specifying the URL protocol for clickable nodes:
 \itemize{

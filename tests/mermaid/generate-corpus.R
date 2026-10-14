@@ -66,10 +66,11 @@ self_workflow <- suppressWarnings(put("R"))
 
 cases <- list()
 add_case <- function(case_name, workflow, ..., expected_texts = NULL, wide_texts = NULL,
-                     must_fail = NULL, must_fail_message = NULL) {
+                     must_fail = NULL, must_fail_message = NULL, expected_tooltips = NULL) {
   cases[[length(cases) + 1]] <<- list(
     name = case_name, workflow = workflow, args = list(...), expected_texts = expected_texts,
-    wide_texts = wide_texts, must_fail = must_fail, must_fail_message = must_fail_message
+    wide_texts = wide_texts, must_fail = must_fail, must_fail_message = must_fail_message,
+    expected_tooltips = expected_tooltips
   )
 }
 
@@ -183,6 +184,21 @@ add_case("edge_target_id_ending_in_direction", scan_fixture("direction_ids", lis
     '# put id:"lifestyle", label:"Life", output:"k:#1.csv"'
   )
 )), show_files = TRUE)
+
+# Click lines whose file names hold Mermaid syntax (#47): a space before
+# LR, quotes, # and ;, and the id lifestyle for the colon rule. Each click
+# line must still give its node a link, and the tooltip must read as
+# written.
+click_files <- data.frame(
+  id = c("lifestyle", "turn", "hash"), label = c("Life", "Turn", "Hash"),
+  file_name = c('say "hi".R', "direction LR.R", "notes #1;.R"),
+  file_path = c('/proj/say "hi".R', "/proj/my dir/direction LR.R", "/proj/notes #1;.R"),
+  line_number = c(3L, NA, 7L), input = c(NA, "a.csv", "b.csv"), output = c("a.csv", "b.csv", NA),
+  stringsAsFactors = FALSE
+)
+add_case("clicks_mermaid_syntax_in_paths", click_files, enable_clicks = TRUE,
+         expected_tooltips = c('Open say "hi".R at line 3', "Open direction LR.R",
+                               "Open notes #1;.R at line 7"))
 
 # Without artifacts nothing changes; with them, "both" adds the direct
 # script-to-script edges again (#55)
@@ -300,11 +316,13 @@ describe_diagram <- function(code_lines) {
   definition_ids <- vapply(definitions, function(match) match[2], character(1))
   is_artifact <- vapply(definitions, function(match) match[3] == "[(", logical(1))
   references <- match_lines(code_lines, "^\\s+(?:class|click)\\s+(\\S+)")
+  clicks <- match_lines(code_lines, "^\\s+click\\s+(\\S+)")
   subgraphs <- match_lines(code_lines, "^\\s*subgraph\\s+([^\\s\\[]+)")
   list(
     defined_node_ids = I(definition_ids[!is_artifact]),
     defined_artifact_ids = I(definition_ids[is_artifact]),
     referenced_ids = I(vapply(references, function(match) match[2], character(1))),
+    click_ids = I(vapply(clicks, function(match) match[2], character(1))),
     defined_subgraph_ids = I(vapply(subgraphs, function(match) match[2], character(1)))
   )
 }
@@ -335,6 +353,7 @@ manifest <- lapply(cases, function(case) {
   if (!is.null(case$expected_texts)) entry$expected_texts <- I(case$expected_texts)
   if (!is.null(case$must_fail)) entry$must_fail <- I(case$must_fail)
   if (!is.null(case$must_fail_message)) entry$must_fail_message <- case$must_fail_message
+  if (!is.null(case$expected_tooltips)) entry$expected_tooltips <- I(case$expected_tooltips)
   if (!is.null(diagram)) {
     entry$file <- paste0(case$name, ".mmd")
     # A binary connection writes LF line endings on Windows too

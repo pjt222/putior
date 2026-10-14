@@ -56,8 +56,16 @@
 #'     \item "subgraph" - Group nodes by source file into Mermaid subgraphs
 #'   }
 #' @param enable_clicks Logical indicating whether to add click directives to nodes.
-#'   When TRUE, nodes become clickable links that open the source file in an editor.
-#'   Default is FALSE for backward compatibility.
+#'   When TRUE, nodes become clickable links that open the source file (its
+#'   full path, \code{file_path}) in an editor. Default is FALSE. Mermaid
+#'   keeps these links only with \code{securityLevel: "loose"}; with its
+#'   default \code{"strict"} and GitHub's \code{"antiscript"}, the nodes are
+#'   not clickable. So clicks do not work on GitHub, GitLab or in Quarto
+#'   with their default settings, nor on putior's pkgdown site or in the
+#'   sandbox, which stay \code{"strict"} because \code{"loose"} would also
+#'   let click callbacks run JavaScript. They work where you render the
+#'   diagram yourself with \code{mermaid.initialize(\{ securityLevel:
+#'   "loose" \})}.
 #' @param click_protocol Character string specifying the URL protocol for clickable nodes:
 #'   \itemize{
 #'     \item "vscode" - VS Code editor (vscode://file/path:line) (default)
@@ -994,6 +1002,50 @@ escape_mermaid_syntax <- function(text, line_start = NULL, line_end = NULL) {
   escape_style_colons(escape_direction_words(text), line_start, line_end)
 }
 
+#' Escape text that Mermaid shows outside a label (#50, #47)
+#'
+#' For accTitle text and click tooltips. Mermaid decodes entities there, as
+#' in labels, and its lexer reads these lines like any other. It also
+#' passes the text through DOMPurify, which turns the text around a "<"
+#' into entities that are then shown as written, and it removes
+#' "%%{...}%%" directives from the whole diagram text, so "%%{" can
+#' swallow the lines after it. Measured on Mermaid 10.9.8 to 12.2.0.
+#' @param text Text without line breaks
+#' @param line_start The text in front of it on its line
+#' @param escape_quotes TRUE for text inside a quoted Mermaid string
+#' @return The escaped text
+#' @noRd
+escape_mermaid_text <- function(text, line_start, escape_quotes = FALSE) {
+  text <- escape_entity_hashes(text)
+  if (escape_quotes) {
+    text <- gsub('"', "#quot;", text, fixed = TRUE)
+  }
+  text <- gsub("<", "#60;", text, fixed = TRUE)
+  text <- gsub("%(?=%\\{)", "#37;", text, perl = TRUE)
+  # Runs last: the colon escape must see every ";" written above
+  escape_mermaid_syntax(text, line_start)
+}
+
+#' Percent-encode a path for a click URL (#47)
+#'
+#' Keeps letters, digits, "-", ".", "_", "~", "/" and ":" (drive letters
+#' and the ":line" suffix); every other byte of the UTF-8 path becomes
+#' %XX. A space, "#", ";" or quote in a path then cannot end the URL,
+#' start a fragment, or trigger Mermaid's direction and colon rules on the
+#' click line. Editors decode the path.
+#' @param path File path with forward slashes
+#' @return Encoded path
+#' @noRd
+encode_url_path <- function(path) {
+  bytes <- charToRaw(enc2utf8(path))
+  codes <- as.integer(bytes)
+  safe <- (codes >= 48L & codes <= 57L) | (codes >= 65L & codes <= 90L) |
+    (codes >= 97L & codes <= 122L) | codes %in% utf8ToInt("-._~/:")
+  parts <- ifelse(safe, vapply(codes, function(code) intToUtf8(code), character(1)),
+                  sprintf("%%%02X", codes))
+  paste(parts, collapse = "")
+}
+
 #' accTitle and accDescr lines for a diagram (#50)
 #'
 #' accTitle comes from the title, if there is one; accDescr summarises the
@@ -1009,15 +1061,7 @@ accessibility_lines <- function(workflow, title) {
   if (!is_empty_string(title)) {
     title_text <- trimws(gsub("[[:cntrl:]]+", " ", as.character(title)))
     if (nzchar(title_text)) {
-      title_text <- escape_entity_hashes(title_text)
-      # Mermaid passes accTitle text through DOMPurify, which turns the text
-      # around a "<" into entities that the SVG <title> then shows as
-      # written; and it removes "%%{...}%%" directives from the whole
-      # diagram text, so "%%{" in the title can swallow the lines after it
-      title_text <- gsub("<", "#60;", title_text, fixed = TRUE)
-      title_text <- gsub("%(?=%\\{)", "#37;", title_text, perl = TRUE)
-      # Runs last: the colon escape must see every ";" written above
-      title_text <- escape_mermaid_syntax(title_text, "    accTitle")
+      title_text <- escape_mermaid_text(title_text, "    accTitle")
       lines <- c(lines, paste0("    accTitle: ", title_text))
     }
   }
@@ -1267,6 +1311,13 @@ normalize_path_for_url <- function(file_path) {
   # Ensure forward slashes for URLs
   normalized <- gsub("\\\\", "/", normalized)
 
+  # normalizePath() leaves a path to a file that does not exist relative;
+  # a URL needs it absolute (#47)
+  if (!grepl("^(/|[A-Za-z]:/)", normalized)) {
+    working_dir <- sub("/$", "", gsub("\\\\", "/", getwd()))
+    normalized <- paste0(working_dir, "/", sub("^\\./", "", normalized))
+  }
+
   return(normalized)
 }
 
@@ -1291,9 +1342,14 @@ generate_click_url <- function(file_path, line_number = NULL, protocol = "vscode
     return("")
   }
 
+  # Without the leading "/" of an absolute Unix path, so that "vscode://file/"
+  # and "file:///" get exactly one slash in front of it, as Windows paths
+  # (D:/...) do; percent-encoded (#47)
+  url_path <- encode_url_path(sub("^/+", "", normalized_path))
+
   url <- switch(protocol,
     "vscode" = {
-      base_url <- paste0("vscode://file/", normalized_path)
+      base_url <- paste0("vscode://file/", url_path)
       if (!is.null(line_number) && !is.na(line_number)) {
         paste0(base_url, ":", line_number)
       } else {
@@ -1301,9 +1357,8 @@ generate_click_url <- function(file_path, line_number = NULL, protocol = "vscode
       }
     },
     "file" = {
-      # File protocol with URL encoding
-      encoded_path <- utils::URLencode(normalized_path, reserved = FALSE)
-      paste0("file:///", encoded_path)
+      # file:// URLs have no line number
+      paste0("file:///", url_path)
     },
     "rstudio" = {
       # RStudio URL scheme
@@ -1317,7 +1372,7 @@ generate_click_url <- function(file_path, line_number = NULL, protocol = "vscode
     },
     # Default to vscode
     {
-      base_url <- paste0("vscode://file/", normalized_path)
+      base_url <- paste0("vscode://file/", url_path)
       if (!is.null(line_number) && !is.na(line_number)) {
         paste0(base_url, ":", line_number)
       } else {
@@ -1364,23 +1419,37 @@ generate_click_directives <- function(workflow, protocol = "vscode") {
       line_number <- node$line_number
     }
 
-    # Generate URL
-    url <- generate_click_url(node$file_name, line_number, protocol)
+    # The full path when the workflow has it: a file name alone was
+    # resolved against the working directory at diagram time (#47)
+    click_path <- node$file_name
+    if ("file_path" %in% names(node) && !is_empty_string(node$file_path)) {
+      click_path <- node$file_path
+    }
+    url <- generate_click_url(click_path, line_number, protocol)
 
     if (url != "") {
-      # Create tooltip
-      tooltip <- paste0("Open ", node$file_name)
-      if (!is.null(line_number)) {
-        tooltip <- paste0(tooltip, " at line ", line_number)
-      }
-
       # Mermaid click directive format: click nodeId "url" "tooltip"
-      click_line <- paste0('    click ', node_id, ' "', url, '" "', tooltip, '"')
-      click_lines <- c(click_lines, click_line)
+      line_start <- paste0('    click ', node_id, ' "', url, '" ')
+      tooltip <- escape_mermaid_text(click_tooltip(node$file_name, line_number),
+                                     line_start, escape_quotes = TRUE)
+      click_lines <- c(click_lines, paste0(line_start, '"', tooltip, '"'))
     }
   }
 
   return(click_lines)
+}
+
+#' Tooltip text of a click line
+#' @param file_name The node's source file name
+#' @param line_number The annotation's line number, or NULL
+#' @return "Open <file>" or "Open <file> at line <n>", without line breaks
+#' @noRd
+click_tooltip <- function(file_name, line_number = NULL) {
+  tooltip <- paste0("Open ", gsub("[[:cntrl:]]+", " ", file_name))
+  if (!is.null(line_number) && !is.na(line_number)) {
+    tooltip <- paste0(tooltip, " at line ", line_number)
+  }
+  tooltip
 }
 
 #' Generate file-based subgraphs
