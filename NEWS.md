@@ -182,8 +182,9 @@
   so a label such as "Budget 50%%{x: draft" was cut short or made the
   diagram fail to parse, and with a later `}%%` the text in between was
   lost. `put_diagram()` now also warns when the `title` contains a `<`:
-  the drawn title then shows `&lt;` and `&amp;` and drops text that looks
-  like an HTML tag, and no escape avoids that. The `accTitle` line shows
+  the drawn title then shows HTML entities such as `&lt;`, `&gt;` and
+  `&amp;` and drops text that looks like an HTML tag, and no escape avoids
+  that. The `accTitle` line shows
   the title as written. (#98)
 
 ## New Features

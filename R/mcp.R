@@ -548,7 +548,10 @@ make_tool_put_diagram <- function() {
         required = FALSE
       ),
       title = ellmer::type_string(
-        description = "Optional title for the diagram",
+        description = paste0(
+          "Optional title for the diagram. Leave out \"<\": Mermaid garbles ",
+          "the drawn title when it contains one"
+        ),
         required = FALSE
       ),
       direction = ellmer::type_enum(

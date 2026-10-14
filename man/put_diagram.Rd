@@ -42,10 +42,13 @@ put_diagram(
 
 \item{title}{Character string for diagram title (optional). The drawn
 title shows it as written, except when it contains a \code{<}: Mermaid
-then shows \code{&lt;} for \code{<} and \code{&amp;} for \code{&},
-and drops text that looks like an HTML tag, and \code{put_diagram()}
-warns. No escape avoids that in the drawn title. The \code{accTitle}
-line (see \code{accessibility}) shows it as written.}
+then shows HTML entities such as \code{&lt;}, \code{&gt;} and
+\code{&amp;} in it and drops text that looks like an HTML tag, and
+\code{put_diagram()} warns. No escape avoids that in the drawn title.
+The \code{accTitle} line (see \code{accessibility}) shows it as
+written. (Measured with the security levels \code{strict},
+\code{antiscript} and \code{loose}; with \code{sandbox}, Mermaid
+before 11.17.2 writes entities into every title.)}
 
 \item{direction}{Character string specifying diagram direction. Options:
 "TD" (top-down; "TB" is a synonym), "LR" (left-right), "BT" (bottom-top),
