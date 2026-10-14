@@ -551,6 +551,45 @@ test_that("U+2028 and U+2029 are written as spaces (#104)", {
   expect_match(diagram, "accTitle: T u", fixed = TRUE)
 })
 
+test_that("put_diagram() warns about a < that starts an HTML tag in a label (#102)", {
+  label_code <- function(label) {
+    paste0('flowchart TD\n    a[', sanitize_mermaid_label(label), ']')
+  }
+  # A "<" before a letter that starts no intended tag
+  for (label in c("a<b and c>d", "<draft> Report", "n<threshold", "x </foo> y", "<bold>", "ok a<b")) {
+    expect_length(find_html_in_labels(label_code(label)), 1)
+  }
+  # Intended tags, with attribute values; "<" before a space or a digit; "&lt;"
+  for (label in c("<b>x</b>", "a<br/>b", "a<BR />b", "<span style='color:red'>x</span>",
+                  "<sub>2</sub> <sup>3</sup> <code>c</code> <em>e</em> <strong>s</strong> <i>i</i>",
+                  "x < 5", "x<5", "a &lt;b")) {
+    expect_length(find_html_in_labels(label_code(label)), 0)
+  }
+  # Entities are decoded for the message
+  expect_equal(decode_label_entities('say #quot;hi#quot; #124; #35;35; <x>'), 'say "hi" | #35; <x>')
+
+  # Drawn labels only: node, edge and subgraph labels, not the title, accTitle
+  # or a file name that is not drawn
+  workflow <- data.frame(
+    id = c("a", "b"), label = c("Filter n<threshold", "B"), file_name = c("a<b.R", "b.R"),
+    input = c(NA, "x<y.csv"), output = c("x<y.csv", NA), stringsAsFactors = FALSE
+  )
+  edge_warning <- tryCatch(put_diagram(workflow, output = "raw", show_files = TRUE),
+                           warning = conditionMessage)
+  expect_match(edge_warning, '2 labels contain a "<" before a letter', fixed = TRUE)
+  expect_match(edge_warning, '"Filter n<threshold", "x<y.csv"', fixed = TRUE)
+  expect_no_warning(put_diagram(workflow[2, ], output = "raw", show_source_info = TRUE,
+                                source_info_style = "subgraph"))
+  subgraph_warning <- tryCatch(put_diagram(workflow, output = "raw", show_source_info = TRUE,
+                                           source_info_style = "subgraph"),
+                               warning = conditionMessage)
+  expect_match(subgraph_warning, '"a<b.R", "Filter n<threshold"', fixed = TRUE)
+  # putior's own <br/> (show_source_info) and a title with a lone quote
+  plain <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
+  expect_no_warning(put_diagram(plain, output = "raw", show_source_info = TRUE,
+                                title = 'Say "hi on a 5" screen'))
+})
+
 test_that("direction = \"TB\" is accepted (#79)", {
   workflow <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
 

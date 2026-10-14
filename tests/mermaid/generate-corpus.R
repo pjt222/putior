@@ -195,6 +195,15 @@ add_case("line_separators_in_labels", data.frame(
 ), title = "T\u2028%% u", show_files = TRUE, show_source_info = TRUE,
    source_info_style = "subgraph", enable_clicks = TRUE,
    expected_texts = c("a %% b", "x %% y.csv", "a %%x.R"), expected_tooltips = "Open a %%x.R")
+# A "<" before a letter starts an HTML tag in a label (#102). "&lt;" shows
+# a "<", a "<" before a digit is text, and the tags put_diagram() takes as
+# intended are drawn as HTML.
+html_labels <- c(
+  escaped = "a &lt;b and c&gt; d", digit = "x<5 and y>3",
+  bold = "<b>bold</b> text", newline = "one<br/>two"
+)
+add_case("labels_with_html", chain_fixture("html_labels", html_labels),
+         expected_texts = c("a <b and c> d", "x<5 and y>3", "bold text", "onetwo"))
 add_case("direction_words_in_edge_and_subgraph_labels", scan_fixture("syntax_file_names", list(
   "direction LR.R" = '# put id:"make", label:"Make", output:"direction TB.csv"',
   "use.R" = '# put id:"use", label:"Use", input:"direction TB.csv"'

@@ -485,6 +485,27 @@ cat(mermaid_code)
    keywords. `put_diagram()` writes them as `node_end` and `node_class`, so
    they work; only the id in the Mermaid code differs.
 
+### Label Loses Text After `<`
+
+**Problem**: Part of a label is missing, and `put_diagram()` warned that a
+label contains a `<` before a letter.
+
+**Cause**: Mermaid draws labels as HTML, so `<` followed by a letter starts
+an HTML tag. A tag it does not know, such as `<draft>`, disappears, and so
+does text that looks like the attributes of a real tag: `a<b and c>d` shows
+"ad".
+
+**Solution**: Write `&lt;` for a `<` that should show:
+
+```{r}
+# put id:"filter", label:"Keep rows with n &lt;threshold"
+```
+
+A `<` followed by a space or a digit (`x < 5`, `x<5`) shows as written.
+Labels may still contain the tags `br`, `b`, `i`, `em`, `strong`, `sub`,
+`sup`, `code` and `span` on purpose; `put_diagram()` does not warn about
+them.
+
 ### Title Shows `&lt;` or Loses Text
 
 **Problem**: The title above the diagram shows `&lt;`, `&gt;` or `&amp;`,

@@ -140,8 +140,14 @@
 #' (\code{htmlLabels: false} for all labels, or
 #' \code{flowchart.htmlLabels: false} for edge labels and subgraph titles),
 #' they show the entity as written; Mermaid 11.12.0 can garble it there.
-#' Mermaid still interprets HTML
-#' tags such as \code{<br/>} and \code{$$...$$} (KaTeX math) inside labels.
+#' Mermaid still interprets HTML tags such as \code{<br/>} and
+#' \code{$$...$$} (KaTeX math) inside labels. So a \code{<} followed by a
+#' letter starts a tag, and the text up to the next \code{>} disappears
+#' (\code{a<b and c>d} shows \code{ad}); write \code{&lt;} for a \code{<}
+#' that should show. \code{put_diagram()} warns about such a \code{<},
+#' unless it starts one of the tags \code{br}, \code{b}, \code{i},
+#' \code{em}, \code{strong}, \code{sub}, \code{sup}, \code{code} or
+#' \code{span}.
 #'
 #' Node ids are reduced to letters, digits and underscores. An id that starts
 #' with a digit or is a Mermaid keyword (such as \code{end} or \code{class})
@@ -513,6 +519,7 @@ put_diagram <- function(workflow,
   # Combine into final diagram
   mermaid_code <- paste(mermaid_lines, collapse = "\n")
   warn_about_mermaid_limits(mermaid_code, show_artifacts)
+  warn_about_html_in_labels(mermaid_code)
 
   putior_log("INFO", "Diagram generation complete: {nrow(combined_workflow)} node(s), {length(connections)} connection(s)")
   putior_log("DEBUG", "Output format: '{output}'")
@@ -995,6 +1002,80 @@ warn_about_mermaid_limits <- function(mermaid_code, show_artifacts) {
       call. = FALSE
     )
   }
+  invisible(NULL)
+}
+
+# HTML tags that a label may contain on purpose: Mermaid draws them, and
+# putior writes <br/> itself (show_source_info). A "<" before a letter that
+# starts none of them is most likely text that Mermaid would drop (#102).
+.LABEL_HTML_TAGS <- c("br", "b", "i", "em", "strong", "sub", "sup", "code", "span")
+
+#' Labels in which Mermaid would read text as an HTML tag (#102)
+#'
+#' Mermaid draws labels as HTML, so a "<" followed by a letter (or "</" and
+#' a letter) starts a tag, and the text up to the next ">" disappears:
+#' "a<b and c>d" shows "ad", "<draft> ok" shows " ok". Mermaid keeps nearly
+#' every real tag, and an attribute list cannot tell "<b and c>" from
+#' markup, so only the tags in .LABEL_HTML_TAGS, with attribute values if
+#' any, count as intended. Measured on Mermaid 11.12.0 and 12.2.0.
+#' @param mermaid_code Diagram code as put_diagram() writes it
+#' @return The labels, as written in the diagram code
+#' @noRd
+find_html_in_labels <- function(mermaid_code) {
+  # Not the frontmatter, whose title has its own warning (#98), and not the
+  # accTitle and accDescr lines, which escape "<" and may hold a lone quote
+  body <- sub("(?s)^-{3}\\s*[\n\r](.*?)[\n\r]-{3}\\s*[\n\r]+", "", mermaid_code, perl = TRUE)
+  code_lines <- strsplit(body, "\n", fixed = TRUE)[[1]]
+  code_lines <- code_lines[!grepl("^\\s*acc(Title|Descr)\\s*:", code_lines)]
+  # Labels, edge labels, subgraph titles and tooltips are quoted, with their
+  # own quotes written as #quot;
+  labels <- unlist(regmatches(code_lines, gregexpr('"[^"]*"', code_lines)))
+  labels <- substr(labels, 2L, nchar(labels) - 1L)
+  intended_tag <- paste0(
+    "^</?(?:", paste(.LABEL_HTML_TAGS, collapse = "|"), ")",
+    "(?:\\s+[A-Za-z_:][-A-Za-z0-9_:.]*\\s*=\\s*(?:'[^']*'|[^\\s'>]+))*\\s*/?>"
+  )
+  has_stray_tag <- vapply(labels, function(label) {
+    tag_starts <- gregexpr("</?[A-Za-z]", label, perl = TRUE)[[1]]
+    if (tag_starts[1] < 0) return(FALSE)
+    any(!grepl(intended_tag, substring(label, tag_starts), perl = TRUE, ignore.case = TRUE))
+  }, logical(1), USE.NAMES = FALSE)
+  unique(labels[has_stray_tag])
+}
+
+#' Decode the entities that putior writes into labels, for messages
+#' @noRd
+decode_label_entities <- function(text) {
+  text <- gsub("#quot;", '"', text, fixed = TRUE)
+  entity_matches <- gregexpr("#[0-9]+;", text)
+  regmatches(text, entity_matches) <- lapply(regmatches(text, entity_matches), function(entities) {
+    vapply(entities, function(entity) {
+      intToUtf8(as.integer(substr(entity, 2L, nchar(entity) - 1L)))
+    }, character(1), USE.NAMES = FALSE)
+  })
+  text
+}
+
+#' Warn about labels in which Mermaid would read text as an HTML tag (#102)
+#' @param mermaid_code Diagram code
+#' @return NULL, invisibly; called for its warning
+#' @noRd
+warn_about_html_in_labels <- function(mermaid_code) {
+  labels <- find_html_in_labels(mermaid_code)
+  if (length(labels) == 0) {
+    return(invisible(NULL))
+  }
+  first_labels <- decode_label_entities(labels[seq_len(min(3, length(labels)))])
+  shown_labels <- paste0('"', first_labels, '"', collapse = ", ")
+  warning(
+    if (length(labels) == 1) "A label contains" else paste(length(labels), "labels contain"),
+    " a \"<\" before a letter, which Mermaid reads as the start of an HTML tag, ",
+    "so the text up to the next \">\" disappears: ", shown_labels,
+    if (length(labels) > 3) ", ..." else "", ". Write \"&lt;\" for a \"<\" that ",
+    "should show. Only the tags ", paste(.LABEL_HTML_TAGS, collapse = ", "),
+    " count as intended HTML.",
+    call. = FALSE
+  )
   invisible(NULL)
 }
 
