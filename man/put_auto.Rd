@@ -46,7 +46,7 @@ Options: "DEBUG", "INFO", "WARN", "ERROR". See \code{\link{set_putior_log_level}
 A data frame in the same format as \code{\link{put}()}, containing:
 \itemize{
 \item file_name: Name of the source file
-\item file_path: Full path to the file
+\item file_path: Path to the file, as the scan found it
 \item file_type: File extension (r, py, sql, etc.)
 \item id: Auto-generated node identifier (based on file name)
 \item label: Human-readable label (file name without extension)

@@ -190,15 +190,17 @@ add_case("edge_target_id_ending_in_direction", scan_fixture("direction_ids", lis
 # line must still give its node a link, and the tooltip must read as
 # written.
 click_files <- data.frame(
-  id = c("lifestyle", "turn", "hash"), label = c("Life", "Turn", "Hash"),
-  file_name = c('say "hi".R', "direction LR.R", "notes #1;.R"),
-  file_path = c('/proj/say "hi".R', "/proj/my dir/direction LR.R", "/proj/notes #1;.R"),
-  line_number = c(3L, NA, 7L), input = c(NA, "a.csv", "b.csv"), output = c("a.csv", "b.csv", NA),
+  id = c("lifestyle", "turn", "hash", "mystyle"), label = c("Life", "Turn", "Hash", "Colon"),
+  file_name = c('say "hi".R', "direction LR.R", "notes #1;.R", 'k:"v"#x;.R'),
+  file_path = c('/proj/say "hi".R', "/proj/my dir/direction LR.R", "/proj/notes #1;.R",
+                '/proj/k:"v"#x;.R'),
+  line_number = c(3L, NA, 7L, 1L), input = c(NA, "a.csv", "b.csv", NA),
+  output = c("a.csv", "b.csv", NA, NA),
   stringsAsFactors = FALSE
 )
 add_case("clicks_mermaid_syntax_in_paths", click_files, enable_clicks = TRUE,
          expected_tooltips = c('Open say "hi".R at line 3', "Open direction LR.R",
-                               "Open notes #1;.R at line 7"))
+                               "Open notes #1;.R at line 7", 'Open k:"v"#x;.R at line 1'))
 
 # Without artifacts nothing changes; with them, "both" adds the direct
 # script-to-script edges again (#55)
@@ -333,7 +335,9 @@ manifest <- lapply(cases, function(case) {
   workflow_ids <- workflow_ids[!is.na(workflow_ids) & workflow_ids != ""]
   entry <- list(
     name = case$name,
-    expected_node_count = length(unique(workflow_ids))
+    expected_node_count = length(unique(workflow_ids)),
+    # With enable_clicks, every node drawn from a file gets a click line
+    expects_clicks = isTRUE(case$args$enable_clicks)
   )
   warning_messages <- character()
   diagram <- tryCatch(

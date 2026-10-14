@@ -55,12 +55,13 @@
 
 ## Bug Fixes
 
-* Click links (`enable_clicks = TRUE`) now point to the file's full path
-  (`file_path`) instead of its base name, which was resolved against the
-  working directory at the time the diagram was made. Absolute Unix paths
-  give `vscode://file/home/...` and `file:///home/...` instead of a doubled
-  or quadrupled slash, and a relative path to a missing file is made
-  absolute. Paths are percent-encoded, and tooltips escaped like labels: a
+* Click links (`enable_clicks = TRUE`) now use the path the scan recorded
+  (`file_path`) instead of the file's base name, which was resolved against
+  the working directory at the time the diagram was made. Absolute Unix
+  paths give `vscode://file/home/...` and `file:///home/...` instead of a
+  doubled or quadrupled slash, UNC paths (`//server/share/...`) give
+  `vscode://file//server/...` and `file://server/...`, and a relative path
+  to a missing file is made absolute. Paths are percent-encoded, and tooltips escaped like labels: a
   quote in a file name made the diagram fail to parse, and a name such as
   `direction LR.R` made Mermaid drop the click line. The docs now say that
   Mermaid keeps click links only with `securityLevel: "loose"`, so they do

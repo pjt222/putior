@@ -761,11 +761,19 @@ test_that("click URLs use the full path, with one slash for Unix paths (#47)", {
   expect_equal(generate_click_url("D:/p/a.R", 3, "vscode"), "vscode://file/D:/p/a.R:3")
   expect_equal(generate_click_url("D:/p/a.R", NULL, "file"), "file:///D:/p/a.R")
   expect_equal(generate_click_url("/home/u/a.R", 3, "rstudio"),
-               "rstudio://open-file?path=%2Fhome%2Fu%2Fa.R&line=3")
+               "rstudio://open-file?path=/home/u/a.R&line=3")
   # Spaces, quotes, # and ; are percent-encoded, as is non-ASCII text
   expect_equal(generate_click_url('/p/say "hi" #1;.R', 3, "vscode"),
                "vscode://file/p/say%20%22hi%22%20%231%3B.R:3")
   expect_equal(generate_click_url("/p/gr\u00f6\u00dfe.R", NULL, "file"), "file:///p/gr%C3%B6%C3%9Fe.R")
+  # A UNC path (also WSL paths from Windows R) keeps its server
+  expect_equal(generate_click_url("//server/share/a b.R", 2, "vscode"),
+               "vscode://file//server/share/a%20b.R:2")
+  expect_equal(generate_click_url("//wsl.localhost/Ubuntu/home/a.R", NULL, "file"),
+               "file://wsl.localhost/Ubuntu/home/a.R")
+  # The RStudio query value is encoded with the same rules
+  expect_equal(generate_click_url('/p/a "b" %41 &x.R', 1, "rstudio"),
+               "rstudio://open-file?path=/p/a%20%22b%22%20%2541%20%26x.R&line=1")
 })
 
 test_that("normalize_path_for_url() makes a relative path absolute (#47)", {
@@ -788,6 +796,14 @@ test_that("click lines use file_path and escape the tooltip (#47)", {
   expect_match(click_lines[1], "say%20%22hi%22.R:3", fixed = TRUE)
   expect_match(click_lines[1], "/p/say", fixed = TRUE)
   expect_match(click_lines[2], '"Open direction#32;LR.R"$')
+  # A colon in the tooltip after the id lifestyle is escaped
+  colon_workflow <- data.frame(id = "lifestyle", label = "A", file_name = 'k:"v"#x;.R',
+                               stringsAsFactors = FALSE)
+  colon_line <- grep("^    click ", strsplit(
+    put_diagram(colon_workflow, output = "raw", enable_clicks = TRUE), "\n", fixed = TRUE
+  )[[1]], value = TRUE)
+  expect_match(colon_line, '"Open k#58;#quot;v#quot;#35;x;.R"$')
+  expect_false(grepl("(style|classDef).*:\\S*#.*;", colon_line))
   # No line matches Mermaid's direction rule or its colon rule
   expect_false(any(grepl("direction\\s+(TB|BT|RL|LR|TD)", click_lines)))
   expect_false(any(grepl("(style|classDef).*:\\S*#.*;", click_lines)))

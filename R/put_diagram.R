@@ -56,8 +56,10 @@
 #'     \item "subgraph" - Group nodes by source file into Mermaid subgraphs
 #'   }
 #' @param enable_clicks Logical indicating whether to add click directives to nodes.
-#'   When TRUE, nodes become clickable links that open the source file (its
-#'   full path, \code{file_path}) in an editor. Default is FALSE. Mermaid
+#'   When TRUE, nodes become clickable links that open the source file in an
+#'   editor. The link uses the path the scan recorded (\code{file_path});
+#'   a relative path is resolved against the working directory when the
+#'   diagram is made. Default is FALSE. Mermaid
 #'   keeps these links only with \code{securityLevel: "loose"}; with its
 #'   default \code{"strict"} and GitHub's \code{"antiscript"}, the nodes are
 #'   not clickable. So clicks do not work on GitHub, GitLab or in Quarto
@@ -65,7 +67,8 @@
 #'   sandbox, which stay \code{"strict"} because \code{"loose"} would also
 #'   let click callbacks run JavaScript. They work where you render the
 #'   diagram yourself with \code{mermaid.initialize(\{ securityLevel:
-#'   "loose" \})}.
+#'   "loose" \})}; browsers open \code{file://} links only from a page that
+#'   is itself a local file.
 #' @param click_protocol Character string specifying the URL protocol for clickable nodes:
 #'   \itemize{
 #'     \item "vscode" - VS Code editor (vscode://file/path:line) (default)
@@ -1342,10 +1345,14 @@ generate_click_url <- function(file_path, line_number = NULL, protocol = "vscode
     return("")
   }
 
-  # Without the leading "/" of an absolute Unix path, so that "vscode://file/"
-  # and "file:///" get exactly one slash in front of it, as Windows paths
-  # (D:/...) do; percent-encoded (#47)
-  url_path <- encode_url_path(sub("^/+", "", normalized_path))
+  # Without one leading "/", so that "vscode://file/" and "file:///" get
+  # exactly one slash in front of an absolute Unix path, as of a Windows
+  # path (D:/...). A UNC path (//server/share/..., also WSL paths from
+  # Windows R) keeps one of its two slashes: VS Code needs
+  # vscode://file//server/..., and a file URL names the server as its host.
+  # Percent-encoded (#47).
+  is_unc_path <- startsWith(normalized_path, "//")
+  url_path <- encode_url_path(sub("^/", "", normalized_path))
 
   url <- switch(protocol,
     "vscode" = {
@@ -1358,12 +1365,12 @@ generate_click_url <- function(file_path, line_number = NULL, protocol = "vscode
     },
     "file" = {
       # file:// URLs have no line number
-      paste0("file:///", url_path)
+      if (is_unc_path) paste0("file:", encode_url_path(normalized_path)) else paste0("file:///", url_path)
     },
     "rstudio" = {
-      # RStudio URL scheme
-      encoded_path <- utils::URLencode(normalized_path, reserved = TRUE)
-      base_url <- paste0("rstudio://open-file?path=", encoded_path)
+      # RStudio URL scheme; the path is a query value, so "&", "=" and "?"
+      # are encoded too
+      base_url <- paste0("rstudio://open-file?path=", encode_url_path(normalized_path))
       if (!is.null(line_number) && !is.na(line_number)) {
         paste0(base_url, "&line=", line_number)
       } else {
@@ -1419,8 +1426,8 @@ generate_click_directives <- function(workflow, protocol = "vscode") {
       line_number <- node$line_number
     }
 
-    # The full path when the workflow has it: a file name alone was
-    # resolved against the working directory at diagram time (#47)
+    # The path the scan recorded when the workflow has it: a file name
+    # alone was resolved against the working directory at diagram time (#47)
     click_path <- node$file_name
     if ("file_path" %in% names(node) && !is_empty_string(node$file_path)) {
       click_path <- node$file_path

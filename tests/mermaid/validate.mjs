@@ -218,6 +218,10 @@ function checkManifest(entry) {
   }
   const strayReferences = [...new Set(entry.referenced_ids.filter((id) => !definedIds.includes(id)))];
   if (strayReferences.length > 0) problems.push(`nodes: class or click line for an undefined id: ${strayReferences.join(', ')}`);
+  if (entry.expects_clicks) {
+    const unclicked = entry.defined_node_ids.filter((id) => !(entry.click_ids ?? []).includes(id));
+    if (unclicked.length > 0) problems.push(`click: no click line for ${unclicked.join(', ')}`);
+  }
   const duplicateSubgraphs = duplicatesOf(entry.defined_subgraph_ids);
   if (duplicateSubgraphs.length > 0) problems.push(`subgraphs: defined more than once: ${duplicateSubgraphs.join(', ')}`);
   return problems;

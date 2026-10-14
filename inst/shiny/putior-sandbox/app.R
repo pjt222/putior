@@ -210,9 +210,8 @@ ui <- fluidPage(
       if (mermaidAvailable) {
         mermaid.initialize({
           startOnLoad: false,
-          // Stays 'strict' (Mermaid's default): 'loose' would make
-          // enable_clicks links work, but also let click callbacks run
-          // pasted code's JavaScript (#47)
+          // Mermaid's default, stated: the sandbox has no click links, and
+          // 'loose' would let click callbacks run JavaScript (#47)
           securityLevel: 'strict',
           layout: 'dagre',
           look: 'classic',
