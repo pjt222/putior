@@ -240,10 +240,12 @@ format_warning_block <- function(warning_messages, style = c("text", "mermaid"),
                                  before_error = FALSE) {
   style <- match.arg(style)
   shown_messages <- warning_messages[seq_len(min(length(warning_messages), .MAX_REPORTED_WARNINGS))]
-  is_long <- nchar(shown_messages) > .MAX_WARNING_CHARACTERS
+  # allowNA: a warning with invalid UTF-8 is listed, not an error
+  message_lengths <- nchar(shown_messages, allowNA = TRUE)
+  is_long <- !is.na(message_lengths) & message_lengths > .MAX_WARNING_CHARACTERS
   shown_messages[is_long] <- paste0(
     substr(shown_messages[is_long], 1L, .MAX_WARNING_CHARACTERS), " ... (",
-    nchar(shown_messages[is_long]) - .MAX_WARNING_CHARACTERS, " more characters)"
+    message_lengths[is_long] - .MAX_WARNING_CHARACTERS, " more characters)"
   )
   item_lines <- unlist(lapply(shown_messages, function(warning_message) {
     message_lines <- strsplit(warning_message, "\n", fixed = TRUE)[[1]]

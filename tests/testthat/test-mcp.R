@@ -773,6 +773,9 @@ test_that("putior_mcp_server() asks for mcptools 1.0.0 or later", {
   skip_if_not_installed("mcptools")
   local_mocked_bindings(packageVersion = function(pkg, ...) package_version("0.2.1"),
                         .package = "utils")
+  # Without the check the test fails instead of starting a server that reads stdin
+  local_mocked_bindings(mcp_server = function(...) stop("reached mcp_server"),
+                        .package = "mcptools")
   expect_error(putior_mcp_server(), "needs mcptools 1.0.0 or later", fixed = TRUE)
 })
 

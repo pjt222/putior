@@ -224,7 +224,7 @@ tools <- putior_mcp_tools(include = c("put", "put_diagram"))
 ```
 
 ### Warnings
-R warnings never reach an MCP client over stdio (mcptools' server loop never returns to the top level). `mcp_reply()` in `R/mcp.R` runs each tool that can warn with `collect_warnings()` (`R/zzz.R`) and, when R warned, returns a list of two `ellmer::ContentText` items: the result unchanged, then `format_warning_block()` (at most 20 warnings). For `put_diagram` the block is Mermaid comment lines with `%%{` written as `%% {`, because Mermaid applies a `%%{...}%%` directive even inside a comment line (measured), and Claude Code joins content items without a separator. Errors carry the warnings raised before them in their message.
+R warnings never reach an MCP client over stdio (mcptools' server loop never returns to the top level). `mcp_reply()` in `R/mcp.R` runs each tool that can warn with `collect_warnings()` (`R/zzz.R`) and, when R warned, returns a list of two `ellmer::ContentText` items: the result unchanged, then `format_warning_block()` (at most 20 warnings, each cut to 1,000 characters). For `put_diagram` the block is Mermaid comment lines with `%%{` written as `%% {`, because Mermaid applies a `%%{...}%%` directive even inside a comment line (measured), and Claude Code joins content items without a separator. Errors carry the warnings raised before them in their message.
 
 ### Dependencies
 - **mcptools** (>= 1.0.0): MCP server framework - `install.packages("mcptools")`; older versions turn a reply with warnings (a list of content items) into "<object>" text, so `putior_mcp_server()` checks the version
