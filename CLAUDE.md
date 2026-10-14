@@ -263,7 +263,7 @@ putior::putior_acp_server(host = "0.0.0.0", port = 9000)
 | `/runs` | POST | Execute a putior operation |
 | `/runs/:run_id` | GET | Get status/results of a previous run |
 
-`extract_path()` takes, best first: a quoted value that starts like a path, an unquoted word that starts like one (`/x`, `./`, `../`, `~/`, `D:/x`, `C:\x`; not a lone `/`, `\`, `~` or drive), an existing word with a slash, an existing quoted value, then any other quoted value except theme and direction names; it reads only the first 10,000 characters and looks up only words with a slash on disk. Without a path, a scan reads the server's working directory and says so (#109). A run's output gets a second `text/plain` part with the warnings R raised (`collect_warnings()`, shared with the MCP server). A path with `..` or control characters ends the run with "Error: ACP path rejected: ..." instead of scanning `.`.
+`extract_path()` takes, best first: a quoted value that starts like a path, an unquoted word that starts like one (`/x`, `./`, `../`, `~/`, `D:/x`, `C:\x`; not a lone `/`, `\`, `~` or drive), an existing word with a slash, an existing quoted value, then any other quoted value except theme and direction names; it reads only the first 10,000 characters (cut at a word) and looks up on disk only words with a slash and quoted values. Without a path, a scan reads the server's working directory and says so (#109). A run's output gets a second `text/plain` part with the warnings R raised (`collect_warnings()`, shared with the MCP server). A path with `..` or control characters ends the run with "Error: ACP path rejected: ..." instead of scanning `.`.
 
 ### Testing with curl
 

@@ -175,6 +175,10 @@ test_that("ACP requests name paths in every common form (#109)", {
     "Let's scan './R/'" = "./R/",
     "scan `./R/`" = "./R/",
     "scan \"D:/my project/R\"" = "D:/my project/R",
+    # A quoted value that starts like a path before an unquoted one
+    "scan \"D:/my project/R\" and ./R/" = "D:/my project/R",
+    "scan the package code (./R/)." = "./R/",
+    "scan D:/dev/p/putior/R)." = "D:/dev/p/putior/R",
     "scan '/'" = "/",
     "scan ..\\secret" = "..\\secret",
     # An unquoted path wins over a quoted word that is not one
@@ -198,10 +202,22 @@ test_that("ACP requests name paths in every common form (#109)", {
   # Plain words, prose with a slash, URLs, bare roots and parameter values
   for (request in c("scan src", "scan R files and/or tests", "fetch https://x.org/a", "scan /",
                     "scan ~", "scan D:/", "scan .", "scan R \\ Python files", "scan //",
-                    "scan /.", "scan ~/.", "scan D:/.",
+                    "scan /.", "scan ~/.", "scan D:/.", "scan /./", "scan D:\\.\\",
                     "generate a diagram with the theme set to 'dark'", "direction 'LR' please")) {
     expect_null(putior:::extract_path(request), label = request)
   }
+})
+
+test_that("a long request is cut at a word, and brackets cost little (#109)", {
+  # A path that the cut would split is dropped, not shortened to a parent
+  filler <- strrep("x", 9985)
+  expect_null(putior:::extract_path(paste(filler, "scan D:/dev/p/putior/R")))
+  expect_equal(putior:::extract_path(paste("scan ./R/", filler, "D:/x")), "./R/")
+  expect_equal(putior:::extract_path(paste0("./R/", strrep(")", 9990))), "./R/")
+  # Timing varies too much on CRAN's machines
+  skip_on_cran()
+  timing <- system.time(putior:::extract_path(paste0("./R/", strrep(")", 9990))))
+  expect_lt(timing[["elapsed"]], 2)
 })
 
 test_that("curly quotes and non-ASCII words around a path work (#109)", {

@@ -18,6 +18,9 @@ NULL
 # Maximum number of runs to retain (prevents unbounded memory growth)
 .ACP_MAX_RUNS <- 1000L
 
+# A request is searched for its path in this many characters (#109)
+.ACP_MAX_PATH_SEARCH <- 10000L
+
 # Counter for run IDs made without the uuid package
 .acp_run_counter <- new.env(parent = emptyenv())
 
@@ -194,21 +197,25 @@ detect_operation <- function(content) {
 #' one either. Quotes may be straight, curly or backticks; an apostrophe
 #' inside a word ("Let's") is not one. A plain word ("src") is not a path.
 #' "../" paths are found so that sanitize_acp_path() rejects them. Each
-#' candidate is looked for only if the ones before it found nothing, and
-#' only words with a slash are looked up on disk.
+#' candidate is looked for only if the ones before it found nothing; only
+#' words with a slash and quoted values are looked up on disk, and only the
+#' first .ACP_MAX_PATH_SEARCH characters are read.
 #' @param content The request text
 #' @return The path, or NULL
 #' @noRd
 extract_path <- function(content) {
-  # A request names its path early; this bounds the work for a huge one
-  content <- substr(content, 1L, 10000L)
+  # A request names its path early; this bounds the work for a huge one.
+  # The cut drops a word it splits, which could name a parent folder.
+  if (nchar(content) > .ACP_MAX_PATH_SEARCH) {
+    content <- sub("\\S*$", "", substr(content, 1L, .ACP_MAX_PATH_SEARCH + 1L))
+  }
   content <- gsub("[\u2018\u2019]", "'", content)
   content <- gsub("[\u201c\u201d]", '"', content)
   starts_like_path <- function(x) {
     grepl("^(/|\\.{1,2}[/\\\\]|~[/\\\\]|[A-Za-z]:[/\\\\])", x) & !is_bare_root(x)
   }
   is_bare_root <- function(x) {
-    grepl("^(/+\\.?|~(/\\.?)?|[A-Za-z]:(/+\\.?)?)$", gsub("\\\\", "/", x))
+    grepl("^(/+(\\./*)*|~(/+(\\./*)*)?|[A-Za-z]:(/+(\\./*)*)?)$", gsub("\\\\", "/", x))
   }
   path_exists <- function(x) suppressWarnings(file.exists(x))
   parameter_values <- tolower(c(.VALID_THEMES, "td", "tb", "lr", "bt", "rl"))
@@ -239,29 +246,42 @@ extract_path <- function(content) {
 
 #' Drop the punctuation around the words of an ACP request
 #'
-#' Brackets before a word; "?", "!", ",", ";", ":" and brackets after it,
-#' but a closing bracket only without its opening one ("./R/(old)" keeps
-#' it); and one sentence-final period ("scan ./R.").
+#' Brackets before a word; after it, "?", "!", ",", ";", ":", a closing
+#' bracket without its opening one ("./R/(old)" keeps it) and one
+#' sentence-final period ("scan ./R.", "(./R/)."), in any order. A period
+#' after "." or "/" stays ("./R/.", ".."). The trailing run is walked once,
+#' so a word ending in many brackets costs no more than its length.
 #' @param words Character vector of words
 #' @return The words without that punctuation
 #' @noRd
 strip_word_punctuation <- function(words) {
   words <- sub("^[[({]+", "", words)
-  words <- sub("[?!,;:]+$", "", words)
-  for (index in which(grepl("[])}]$", words))) {
-    word <- words[index]
-    repeat {
-      closing <- substr(word, nchar(word), nchar(word))
-      opening <- c(")" = "(", "]" = "[", "}" = "{")[[closing]]
-      opening_count <- lengths(regmatches(word, gregexpr(opening, word, fixed = TRUE)))
-      closing_count <- lengths(regmatches(word, gregexpr(closing, word, fixed = TRUE)))
-      if (opening_count >= closing_count) break
-      word <- sub("[?!,;:]+$", "", substr(word, 1L, nchar(word) - 1L))
-      if (!grepl("[])}]$", word)) break
+  closing_of <- c(")" = "(", "]" = "[", "}" = "{")
+  for (index in which(grepl("[])}?!,;:.]$", words))) {
+    word_chars <- strsplit(words[index], "", fixed = TRUE)[[1]]
+    surplus <- vapply(names(closing_of), function(closing) {
+      sum(word_chars == closing) - sum(word_chars == closing_of[[closing]])
+    }, numeric(1))
+    keep <- length(word_chars)
+    period_dropped <- FALSE
+    while (keep > 0) {
+      last_char <- word_chars[keep]
+      if (last_char %in% c("?", "!", ",", ";", ":")) {
+        keep <- keep - 1L
+      } else if (last_char %in% names(closing_of) && surplus[[last_char]] > 0) {
+        surplus[[last_char]] <- surplus[[last_char]] - 1
+        keep <- keep - 1L
+      } else if (last_char == "." && !period_dropped && keep > 1 &&
+                 !word_chars[keep - 1L] %in% c(".", "/")) {
+        period_dropped <- TRUE
+        keep <- keep - 1L
+      } else {
+        break
+      }
     }
-    words[index] <- word
+    words[index] <- paste(word_chars[seq_len(keep)], collapse = "")
   }
-  sub("([^./])\\.$", "\\1", words)
+  words
 }
 
 #' The path a scan uses: the request's, or "." with a note (#109)
@@ -276,9 +296,9 @@ acp_scan_path <- function(path) {
     return(path)
   }
   warning(
-    "No path was found in the request, so the server's working directory ",
-    "was scanned. Name the folder to scan another one, in quotes if it ",
-    "contains spaces.",
+    "No path was found in the request (in its first ",
+    format(.ACP_MAX_PATH_SEARCH, big.mark = ","), " characters), so the server's working directory was scanned. Name the ",
+    "folder to scan another one, in quotes if it contains spaces.",
     call. = FALSE
   )
   "."
