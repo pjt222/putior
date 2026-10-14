@@ -753,7 +753,7 @@ test_that("generate_click_url creates proper URLs for each protocol", {
   expect_true(grepl("&line=10", url_rstudio_line))
 })
 
-test_that("click URLs use the full path, with one slash for Unix paths (#47)", {
+test_that("click URLs use the given path, with one slash for Unix paths (#47)", {
   # Test the URL from a given absolute path, whatever the OS of the test
   local_mocked_bindings(normalize_path_for_url = function(file_path) file_path)
   expect_equal(generate_click_url("/home/u/proj/a.R", 3, "vscode"), "vscode://file/home/u/proj/a.R:3")
