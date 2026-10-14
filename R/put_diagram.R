@@ -333,24 +333,34 @@ put_diagram <- function(workflow,
   # Validate click_protocol. RStudio registers no rstudio:// URL handler on
   # any platform (checked in its source for Windows, macOS and Linux), so
   # such links did nothing; "rstudio" was removed before release (#101).
-  valid_protocols <- c("vscode", "file")
-  if (enable_clicks && identical(click_protocol, "rstudio")) {
-    warning(
-      "click_protocol = \"rstudio\" is not supported: RStudio has no URL ",
-      "scheme for opening files, so rstudio:// links do nothing. Using ",
-      "\"file\"; use \"vscode\" for VS Code.",
-      call. = FALSE
-    )
-    click_protocol <- "file"
-  } else if (enable_clicks && !click_protocol %in% valid_protocols) {
-    warning(
-      "Invalid click_protocol '", click_protocol, "'. Using 'vscode'.\n",
-      "Valid protocols: ", paste(valid_protocols, collapse = ", "), "\n",
-      "- vscode: VS Code editor (vscode://file/path:line)\n",
-      "- file: Standard file:// protocol",
-      call. = FALSE
-    )
-    click_protocol <- "vscode"
+  if (enable_clicks) {
+    protocol_text <- if (length(click_protocol) == 1 && !is.na(click_protocol)) {
+      as.character(click_protocol)
+    } else {
+      NA_character_
+    }
+    if (identical(tolower(protocol_text), "rstudio")) {
+      warning(
+        "click_protocol = \"rstudio\" is not supported: RStudio has no URL ",
+        "scheme for opening files, so rstudio:// links do nothing. Using ",
+        "\"file\"; use \"vscode\" for VS Code.",
+        call. = FALSE
+      )
+      click_protocol <- "file"
+    } else if (!protocol_text %in% .VALID_CLICK_PROTOCOLS) {
+      shown_protocol <- paste(as.character(click_protocol), collapse = ", ")
+      warning(
+        "Invalid click_protocol '", shown_protocol, "'. Using 'vscode'.\n",
+        "Valid protocols: ", paste(.VALID_CLICK_PROTOCOLS, collapse = ", "), "\n",
+        "- vscode: VS Code editor (vscode://file/path:line)\n",
+        "- file: Standard file:// protocol",
+        call. = FALSE
+      )
+      click_protocol <- "vscode"
+    } else {
+      # Without names or factor levels
+      click_protocol <- protocol_text
+    }
   }
 
   config_lines <- mermaid_config_lines(mermaid_config)
@@ -1492,7 +1502,9 @@ generate_click_directives <- function(workflow, protocol = "vscode") {
     if (url != "") {
       # Mermaid click directive format: click nodeId "url" "tooltip"
       line_start <- paste0('    click ', node_id, ' "', url, '" ')
-      tooltip <- escape_mermaid_text(click_tooltip(node$file_name, line_number),
+      # Only vscode:// links carry the line, so only their tooltips name it
+      tooltip_line <- if (identical(protocol, "vscode")) line_number else NULL
+      tooltip <- escape_mermaid_text(click_tooltip(node$file_name, tooltip_line),
                                      line_start, escape_quotes = TRUE)
       click_lines <- c(click_lines, paste0(line_start, '"', tooltip, '"'))
     }

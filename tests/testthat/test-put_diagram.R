@@ -709,6 +709,39 @@ test_that("click_protocol = 'rstudio' warns and writes file:// links (#101)", {
   expect_false(grepl("rstudio://", diagram_code, fixed = TRUE))
   # Without enable_clicks the protocol is not used, so there is no warning
   expect_no_warning(put_diagram(workflow, click_protocol = "rstudio", output = "raw"))
+  # Other spellings and forms get the same message
+  for (protocol in list("RStudio", c(ide = "rstudio"), factor("rstudio"))) {
+    expect_warning(
+      code <- put_diagram(workflow, enable_clicks = TRUE, click_protocol = protocol, output = "raw"),
+      'click_protocol = "rstudio" is not supported', fixed = TRUE
+    )
+    expect_true(grepl("file:///", code, fixed = TRUE))
+  }
+})
+
+test_that("an empty or vector click_protocol warns and uses vscode", {
+  workflow <- create_test_workflow()
+  for (protocol in list(NULL, character(0), NA, c("vscode", "file"))) {
+    expect_warning(
+      code <- put_diagram(workflow, enable_clicks = TRUE, click_protocol = protocol, output = "raw"),
+      "Invalid click_protocol"
+    )
+    expect_true(grepl("vscode://", code, fixed = TRUE))
+  }
+  # A factor or named value is used as its text
+  expect_no_warning(code <- put_diagram(workflow, enable_clicks = TRUE,
+                                        click_protocol = factor("file"), output = "raw"))
+  expect_true(grepl("file:///", code, fixed = TRUE))
+})
+
+test_that("only vscode tooltips name the line, as only vscode links carry it", {
+  workflow <- data.frame(id = "a", label = "A", file_name = "a.R", file_path = "a.R",
+                         line_number = 3, stringsAsFactors = FALSE)
+  expect_match(put_diagram(workflow, output = "raw", enable_clicks = TRUE),
+               ':3" "Open a.R at line 3"', fixed = TRUE)
+  file_code <- put_diagram(workflow, output = "raw", enable_clicks = TRUE, click_protocol = "file")
+  expect_match(file_code, '"Open a.R"', fixed = TRUE)
+  expect_false(grepl("at line", file_code, fixed = TRUE))
 })
 
 test_that("enable_clicks with invalid protocol warns and uses default", {

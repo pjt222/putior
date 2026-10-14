@@ -16,6 +16,10 @@ NULL
 .VALID_THEMES <- c("light", "dark", "auto", "minimal", "github",
                     "viridis", "magma", "plasma", "cividis")
 
+#' Valid click protocols (single source of truth; "rstudio" was removed, #101)
+#' @noRd
+.VALID_CLICK_PROTOCOLS <- c("vscode", "file")
+
 #' Valid node types (single source of truth)
 #' @noRd
 .VALID_NODE_TYPES <- c("input", "process", "output", "decision", "start", "end")

@@ -542,6 +542,13 @@ test_that("MCP put_diagram draws put_auto() and put_merge() results", {
   expect_error(mcp_put_diagram(project_dir, source = "files"), 'source must be "annotations"')
   # Clients may send null for arguments they leave out
   expect_identical(mcp_put_diagram(project_dir, source = NULL), tools$put_diagram(path = project_dir))
+  expect_identical(
+    mcp_put_diagram(project_dir, enable_clicks = TRUE, click_protocol = NULL),
+    tools$put_diagram(path = project_dir, enable_clicks = TRUE)
+  )
+  # The tool offers the protocols put_diagram() accepts (#101)
+  click_argument <- putior_mcp_tools(include = "put_diagram")[[1]]@arguments@properties$click_protocol
+  expect_identical(click_argument@values, .VALID_CLICK_PROTOCOLS)
 })
 
 test_that("MCP put_diagram draws each merge strategy", {

@@ -303,6 +303,8 @@
   RStudio has no URL scheme for opening files, so `rstudio://` links did
   nothing. `click_protocol = "rstudio"` now warns and writes `file://`
   links. (#101)
+* Click tooltips name the line ("Open a.R at line 3") only for `vscode://`
+  links, which open that line; `file://` links have no line number.
 * Click directives include line numbers when available
 
 ### Structured Logging

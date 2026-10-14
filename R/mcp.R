@@ -301,6 +301,7 @@ mcp_put_diagram <- function(path, source = "annotations",
   mermaid_config <- mermaid_config %||% "classic"
   source <- source %||% "annotations"
   merge_strategy <- merge_strategy %||% "manual_priority"
+  click_protocol <- click_protocol %||% "vscode"
   if (length(source) != 1 || !source %in% c("annotations", "auto", "merge")) {
     stop('source must be "annotations", "auto" or "merge", not ',
          deparse(source), call. = FALSE)
@@ -600,7 +601,7 @@ make_tool_put_diagram <- function() {
       ),
       click_protocol = ellmer::type_enum(
         description = "URL protocol for clickable nodes: vscode or file (default: vscode)",
-        values = c("vscode", "file"),
+        values = .VALID_CLICK_PROTOCOLS,
         required = FALSE
       ),
       artifact_edges = ellmer::type_enum(
