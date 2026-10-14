@@ -13,7 +13,12 @@
 #'     \item "raw" - Return raw mermaid code without markdown fences (for knitr/pkgdown)
 #'   }
 #' @param file Character string specifying output file path (used when output = "file")
-#' @param title Character string for diagram title (optional)
+#' @param title Character string for diagram title (optional). The drawn
+#'   title shows it as written, except when it contains a \code{<}: Mermaid
+#'   then shows \code{&lt;} for \code{<} and \code{&amp;} for \code{&},
+#'   and drops text that looks like an HTML tag, and \code{put_diagram()}
+#'   warns. No escape avoids that in the drawn title. The \code{accTitle}
+#'   line (see \code{accessibility}) shows it as written.
 #' @param direction Character string specifying diagram direction. Options:
 #'   "TD" (top-down; "TB" is a synonym), "LR" (left-right), "BT" (bottom-top),
 #'   "RL" (right-left)
@@ -114,13 +119,19 @@
 #' @section Labels and ids:
 #' Labels are quoted, and double quotes, \code{|} and a \code{#} that Mermaid
 #' would read as a character entity (as in \code{#35;}) are escaped. So is
-#' text that Mermaid would read as syntax: the space in \code{direction LR}
-#' (or \code{TB}, \code{BT}, \code{RL}, \code{TD}), which Mermaid takes for a
-#' direction statement, and, on a line where \code{style} or \code{classDef}
-#' comes before it, a \code{:} followed by an escaped character, which would
-#' let Mermaid cut that entity short. An edge to an id that ends in
-#' \code{direction} ends with \code{;}. The escapes are Mermaid entities such
-#' as \code{#quot;}. Mermaid shows them as the character in HTML labels.
+#' text that Mermaid would read as syntax:
+#' \itemize{
+#'   \item the first \code{\%} of \code{\%\%\{}, which starts a directive
+#'     that Mermaid removes from the diagram text;
+#'   \item the space in \code{direction LR} (or \code{TB}, \code{BT},
+#'     \code{RL}, \code{TD}), which Mermaid takes for a direction statement;
+#'   \item on a line where \code{style} or \code{classDef} comes before it,
+#'     a \code{:} followed by an escaped character, which would let Mermaid
+#'     cut that entity short.
+#' }
+#' An edge to an id that ends in \code{direction} ends with \code{;}. The
+#' escapes are Mermaid entities such as \code{#quot;}. Mermaid shows them as
+#' the character in HTML labels.
 #' Where Mermaid 11.17.2 and later draw SVG text instead
 #' (\code{htmlLabels: false} for all labels, or
 #' \code{flowchart.htmlLabels: false} for edge labels and subgraph titles),
@@ -337,6 +348,18 @@ put_diagram <- function(workflow,
     }
     # A number or factor worked before and still does
     title <- as.character(title)
+    # Mermaid passes the title through DOMPurify, which turns a title with a
+    # "<" into HTML that the drawn title then shows as written; no escape
+    # avoids that. Measured on Mermaid 10.9.8 to 12.2.0 (#98).
+    if (grepl("<", title, fixed = TRUE)) {
+      warning(
+        "The title contains \"<\", which Mermaid does not draw as written: ",
+        "the drawn title shows \"&lt;\" for \"<\" and \"&amp;\" for \"&\", ",
+        "and drops text that looks like an HTML tag. Write \"less than\" or ",
+        "leave the \"<\" out.",
+        call. = FALSE
+      )
+    }
   }
   if (!(is.logical(accessibility) && length(accessibility) == 1 && !is.na(accessibility))) {
     stop("accessibility must be TRUE or FALSE", call. = FALSE)
@@ -956,8 +979,9 @@ warn_about_mermaid_limits <- function(mermaid_code, show_artifacts) {
 #'
 #' Quotes the label, so that brackets, braces, parentheses and arrows in it
 #' are text, and escapes what Mermaid would still misread: line breaks,
-#' double quotes, pipes, a \code{#} that starts an entity, direction
-#' statements and colons that let Mermaid cut an entity short.
+#' double quotes, pipes, a \code{#} that starts an entity, the start of a
+#' directive (\code{\%\%\{}), direction statements and colons that let
+#' Mermaid cut an entity short.
 #'
 #' @param label Character string to sanitize
 #' @param line_start The text in front of the label on its line (the node,
@@ -995,24 +1019,28 @@ escape_entity_hashes <- function(text) {
   gsub("#(?=\\w+;)", "#35;", text, perl = TRUE)
 }
 
-#' Escape text that Mermaid's lexer would read as syntax (#89)
+#' Escape text that Mermaid would read as syntax (#89, #98)
 #'
-#' Direction words and colons that let Mermaid cut an entity short; see
-#' escape_direction_words() and escape_style_colons(). Both write entities,
-#' and the colon escape must see those of the direction escape.
+#' Mermaid removes "%%{...}%%" directives from the whole diagram text before
+#' it parses it, so the start of one in a label cuts the label short and
+#' can swallow the lines up to a later end of one; the first "%" of each
+#' start becomes "#37;" (#98, measured on Mermaid 10.9.8 to 12.2.0). Then direction words and colons
+#' that let Mermaid cut an entity short; see escape_direction_words() and
+#' escape_style_colons(). All three write entities, and the colon escape
+#' must see those of the other two.
 #' @noRd
 escape_mermaid_syntax <- function(text, line_start = NULL, line_end = NULL) {
+  text <- gsub("%(?=%\\{)", "#37;", text, perl = TRUE)
   escape_style_colons(escape_direction_words(text), line_start, line_end)
 }
 
 #' Escape text that Mermaid shows outside a label (#50, #47)
 #'
 #' For accTitle text and click tooltips. Mermaid decodes entities there, as
-#' in labels, and its lexer reads these lines like any other. It also
-#' passes the text through DOMPurify, which turns the text around a "<"
-#' into entities that are then shown as written, and it removes
-#' "%%{...}%%" directives from the whole diagram text, so "%%{" can
-#' swallow the lines after it. Measured on Mermaid 10.9.8 to 12.2.0.
+#' in labels, and its lexer reads these lines like any other (see
+#' escape_mermaid_syntax()). It also passes the text through DOMPurify,
+#' which turns the text around a "<" into entities that are then shown as
+#' written. Measured on Mermaid 10.9.8 to 12.2.0.
 #' @param text Text without line breaks
 #' @param line_start The text in front of it on its line
 #' @param escape_quotes TRUE for text inside a quoted Mermaid string
@@ -1024,7 +1052,6 @@ escape_mermaid_text <- function(text, line_start, escape_quotes = FALSE) {
     text <- gsub('"', "#quot;", text, fixed = TRUE)
   }
   text <- gsub("<", "#60;", text, fixed = TRUE)
-  text <- gsub("%(?=%\\{)", "#37;", text, perl = TRUE)
   # Runs last: the colon escape must see every ";" written above
   escape_mermaid_syntax(text, line_start)
 }
@@ -1053,7 +1080,7 @@ encode_url_path <- function(path) {
 #'
 #' accTitle comes from the title, if there is one; accDescr summarises the
 #' workflow. Mermaid decodes entities in both, as in labels, but quotes and
-#' pipes need no escape there; "<" and "%%{" do. Measured on Mermaid
+#' pipes need no escape there; "<" and "%%{...}%%" do. Measured on Mermaid
 #' 10.9.8, 11.12.0, 11.17.2, 12.1.0 and 12.2.0.
 #' @param workflow The workflow being drawn, without artifact nodes
 #' @param title The diagram title, or NULL

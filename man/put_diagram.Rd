@@ -40,7 +40,12 @@ put_diagram(
 
 \item{file}{Character string specifying output file path (used when output = "file")}
 
-\item{title}{Character string for diagram title (optional)}
+\item{title}{Character string for diagram title (optional). The drawn
+title shows it as written, except when it contains a \code{<}: Mermaid
+then shows \code{&lt;} for \code{<} and \code{&amp;} for \code{&},
+and drops text that looks like an HTML tag, and \code{put_diagram()}
+warns. No escape avoids that in the drawn title. The \code{accTitle}
+line (see \code{accessibility}) shows it as written.}
 
 \item{direction}{Character string specifying diagram direction. Options:
 "TD" (top-down; "TB" is a synonym), "LR" (left-right), "BT" (bottom-top),
@@ -165,13 +170,19 @@ the flow of data through your analysis pipeline.
 
 Labels are quoted, and double quotes, \code{|} and a \code{#} that Mermaid
 would read as a character entity (as in \code{#35;}) are escaped. So is
-text that Mermaid would read as syntax: the space in \code{direction LR}
-(or \code{TB}, \code{BT}, \code{RL}, \code{TD}), which Mermaid takes for a
-direction statement, and, on a line where \code{style} or \code{classDef}
-comes before it, a \code{:} followed by an escaped character, which would
-let Mermaid cut that entity short. An edge to an id that ends in
-\code{direction} ends with \code{;}. The escapes are Mermaid entities such
-as \code{#quot;}. Mermaid shows them as the character in HTML labels.
+text that Mermaid would read as syntax:
+\itemize{
+\item the first \code{\%} of \code{\%\%\{}, which starts a directive
+that Mermaid removes from the diagram text;
+\item the space in \code{direction LR} (or \code{TB}, \code{BT},
+\code{RL}, \code{TD}), which Mermaid takes for a direction statement;
+\item on a line where \code{style} or \code{classDef} comes before it,
+a \code{:} followed by an escaped character, which would let Mermaid
+cut that entity short.
+}
+An edge to an id that ends in \code{direction} ends with \code{;}. The
+escapes are Mermaid entities such as \code{#quot;}. Mermaid shows them as
+the character in HTML labels.
 Where Mermaid 11.17.2 and later draw SVG text instead
 (\code{htmlLabels: false} for all labels, or
 \code{flowchart.htmlLabels: false} for edge labels and subgraph titles),

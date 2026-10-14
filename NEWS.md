@@ -176,6 +176,15 @@
   followed by an escaped character, as in `style:"bold"` (written
   `style:#quot;bold#quot;`), is now written as `#58;`: Mermaid removed the
   last `;` of such a line and showed `style:"bold#quot`. (#89)
+* A `%%{` in a node, edge or subgraph label is now written with its first
+  `%` as `#37;`, so that Mermaid shows it as written. Mermaid removes
+  `%%{...}%%` directives from the whole diagram text before it parses it,
+  so a label such as "Budget 50%%{x: draft" was cut short or made the
+  diagram fail to parse, and with a later `}%%` the text in between was
+  lost. `put_diagram()` now also warns when the `title` contains a `<`:
+  the drawn title then shows `&lt;` and `&amp;` and drops text that looks
+  like an HTML tag, and no escape avoids that. The `accTitle` line shows
+  the title as written. (#98)
 
 ## New Features
 

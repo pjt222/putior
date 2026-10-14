@@ -18,8 +18,8 @@
 // diagram's frontmatter sets a look, every node that carries a data-look
 // attribute (Mermaid 11.17.2 and later) must have it, and labels listed in
 // wide_texts must be drawn wider than Mermaid 12's 120px wrapping width.
-// The SVG's <title> and <desc> must show the expected accTitle and
-// accDescr text, every click line must give its node a link, and expected
+// The drawn title and the SVG's <title> and <desc> must show the expected
+// title, accTitle and accDescr text, every click line must give its node a link, and expected
 // tooltips must show as written.
 //
 // A case whose manifest entry lists must_fail kinds is over one of
@@ -130,7 +130,7 @@ async function checkInPage({ code, clickIds }) {
   };
   const result = {
     problems: [], vertexIds: null, edgeCount: null, labelTexts: null, labelWidths: null, looks: null,
-    accTitle: null, accDescr: null, clickLinks: null, titleAttributes: null,
+    accTitle: null, accDescr: null, title: null, clickLinks: null, titleAttributes: null,
   };
   try {
     await mermaid.parse(code);
@@ -184,6 +184,8 @@ async function checkInPage({ code, clickIds }) {
       // Screen reader text from accTitle and accDescr
       result.accTitle = svgRoot.querySelector(':scope > title')?.textContent ?? null;
       result.accDescr = svgRoot.querySelector(':scope > desc')?.textContent ?? null;
+      // The frontmatter title, drawn above the diagram
+      result.title = svgRoot.querySelector('[class*="TitleText"]')?.textContent ?? null;
       // The look each node was drawn in; Mermaid 11.12.0 does not record it
       result.looks = [...new Set([...svgRoot.querySelectorAll('g.node')]
         .map((nodeElement) => nodeElement.getAttribute('data-look'))
@@ -254,11 +256,13 @@ function compareLook(entry, looks) {
     : [];
 }
 
-// The SVG's <title> and <desc> must show accTitle and accDescr as written
-function compareAccessibility(entry, result) {
+// The drawn title and the SVG's <title> and <desc> must show the title,
+// accTitle and accDescr as written
+function compareTitles(entry, result) {
   const normalize = (text) => (text ?? '').replace(/\s+/g, ' ').trim();
   const problems = [];
-  for (const [field, element] of [['expected_acc_title', 'accTitle'], ['expected_acc_descr', 'accDescr']]) {
+  const fields = [['expected_title', 'title'], ['expected_acc_title', 'accTitle'], ['expected_acc_descr', 'accDescr']];
+  for (const [field, element] of fields) {
     if (entry[field] === undefined) continue;
     if (normalize(result[element]) !== normalize(entry[field])) {
       problems.push(`text: ${element} shows ${JSON.stringify(result[element])}, expected ${JSON.stringify(entry[field])}`);
@@ -347,7 +351,7 @@ try {
           if (result.labelTexts) problems.push(...compareTexts(entry, result.labelTexts));
           if (result.labelTexts) problems.push(...compareWidths(entry, result.labelTexts, result.labelWidths));
           if (result.looks) problems.push(...compareLook(entry, result.looks));
-          if (result.labelTexts) problems.push(...compareAccessibility(entry, result));
+          if (result.labelTexts) problems.push(...compareTitles(entry, result));
         }
         for (const problem of problems) problemsByCase.get(entry.name).push(`${label} ${problem}`);
         // An over-limit case must fail for that reason here, too

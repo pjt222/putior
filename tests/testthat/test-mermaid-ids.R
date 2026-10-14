@@ -304,12 +304,15 @@ test_that("the accTitle text is escaped like a label, but keeps quotes (#50)", {
   # Control characters become spaces; a blank title gives no accTitle
   expect_equal(title_line("tab\there\001bell"), "    accTitle: tab here bell")
   expect_length(title_line("   "), 0)
-  # "<" would go through DOMPurify, "%%{" would start a directive
-  expect_equal(title_line("Input < 5 & ok"), "    accTitle: Input #60; 5 & ok")
+  # "<" would go through DOMPurify (it warns, for the drawn title, #98),
+  # "%%{" would start a directive
+  expect_warning(less_than_line <- title_line("Input < 5 & ok"), 'title contains "<"', fixed = TRUE)
+  expect_equal(less_than_line, "    accTitle: Input #60; 5 & ok")
   expect_equal(title_line("50%%{x: y"), "    accTitle: 50#37;%{x: y")
   expect_equal(title_line("50%% done"), "    accTitle: 50%% done")
   # The colon escape runs last, so that it sees the ";" of "#60;"
-  expect_equal(title_line("style a:<b"), "    accTitle: style a#58;#60;b")
+  expect_warning(colon_line <- title_line("style a:<b"), 'title contains "<"', fixed = TRUE)
+  expect_equal(colon_line, "    accTitle: style a#58;#60;b")
 })
 
 test_that("accDescr counts unique steps and data files only (#50)", {
@@ -336,6 +339,21 @@ test_that("put_diagram() checks title and accessibility (#50)", {
     expect_error(put_diagram(workflow, output = "raw", accessibility = bad_value),
                  "accessibility must be TRUE or FALSE")
   }
+})
+
+test_that("put_diagram() warns about a < in the title (#98)", {
+  workflow <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
+  # Mermaid's DOMPurify step garbles the drawn title, whatever the escape
+  expect_warning(put_diagram(workflow, output = "raw", title = "Input < 5 MB"),
+                 'The title contains "<"', fixed = TRUE)
+  expect_warning(put_diagram(workflow, output = "raw", title = "<draft> Report",
+                             accessibility = FALSE),
+                 'The title contains "<"', fixed = TRUE)
+  # The frontmatter title is written as given: Mermaid shows "&", ">",
+  # "%%{" and entities in it as written
+  expect_no_warning(diagram <- put_diagram(workflow, output = "raw", mermaid_config = "none",
+                                           title = "A & B > C at 50%%{x: #35;"))
+  expect_match(diagram, '^---\ntitle: "A & B > C at 50%%\\{x: #35;"\n---\n')
 })
 
 test_that("a decision node with the id accDescr keeps its shape (#50)", {
@@ -476,6 +494,32 @@ test_that("no diagram line matches the Mermaid rules that eat labels (#89)", {
   expect_match(diagrams[[1]], 'LR_prep["k:#quot;v#quot;"]', fixed = TRUE)
   expect_match(diagrams[[1]], '|"direction#32;RL.csv"|', fixed = TRUE)
   expect_match(diagrams[[4]], '["direction#32;TB.R"]', fixed = TRUE)
+})
+
+test_that("the start of a Mermaid directive in a label is escaped (#98)", {
+  # Mermaid removes "%%{...}%%" from the whole diagram text before parsing
+  expect_equal(sanitize_mermaid_label("Budget 50%%{x: draft"), '"Budget 50#37;%{x: draft"')
+  expect_equal(sanitize_mermaid_label("Up 5%%%{y"), '"Up 5%#37;%{y"')
+  expect_equal(sanitize_mermaid_label("%%{a}%% and %%{b"), '"#37;%{a}%% and #37;%{b"')
+  # Without "%%{" nothing changes
+  expect_equal(sanitize_mermaid_label("Only %{z} at 50%% }%%"), '"Only %{z} at 50%% }%%"')
+  # The colon escape runs after it and sees the ";" of "#37;"
+  expect_equal(sanitize_mermaid_label("style:50%%{x", line_start = "a"), '"style#58;50#37;%{x"')
+  expect_equal(sanitize_mermaid_label("Note:50%%{x", line_start = "plain"), '"Note:50#37;%{x"')
+
+  # Node, edge and subgraph labels and click tooltips all get it
+  workflow <- data.frame(
+    id = c("make", "use"), label = c("Budget 50%%{x: draft", "Use"),
+    file_name = c("50%%{x.R", "use.R"), file_path = c("50%%{x.R", "use.R"),
+    input = c(NA, "50%%{y.csv"), output = c("50%%{y.csv", NA), stringsAsFactors = FALSE
+  )
+  diagram <- put_diagram(workflow, output = "raw", show_files = TRUE, show_source_info = TRUE,
+                         source_info_style = "subgraph", enable_clicks = TRUE)
+  expect_false(grepl("%%{", diagram, fixed = TRUE))
+  expect_match(diagram, 'make["Budget 50#37;%{x: draft"]', fixed = TRUE)
+  expect_match(diagram, '|"50#37;%{y.csv"|', fixed = TRUE)
+  expect_match(diagram, '["50#37;%{x.R"]', fixed = TRUE)
+  expect_match(diagram, '"Open 50#37;%{x.R', fixed = TRUE)
 })
 
 test_that("direction = \"TB\" is accepted (#79)", {

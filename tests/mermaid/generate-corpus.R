@@ -168,6 +168,21 @@ syntax_labels <- c(
 )
 add_case("labels_mermaid_reads_as_syntax", chain_fixture("syntax_labels", syntax_labels),
          expected_texts = unname(syntax_labels))
+# "%%{" starts a directive, which Mermaid removes from the whole diagram
+# text before it parses it: a label was cut short there, and with a later
+# "}%%" the text in between was lost too (#98). The id "lifestyle" makes the
+# colon escape see the ";" of the "#37;" that escapes the "%".
+directive_labels <- c(
+  open = "Budget 50%%{x: draft", swallow = "a %%{init: {theme: dark}", close = "b }%% c",
+  triple = "Up 5%%%{y", single = "Only %{z}", lifestyle = "Note:50%%{x"
+)
+add_case("labels_with_directive_starts", chain_fixture("directive_labels", directive_labels),
+         expected_texts = unname(directive_labels))
+add_case("directive_starts_in_edge_and_subgraph_labels", scan_fixture("directive_file_names", list(
+  "50%%{x.R" = '# put id:"make", label:"Make", output:"50%%{y.csv"',
+  "use.R" = '# put id:"use", label:"Use", input:"50%%{y.csv"'
+)), show_files = TRUE, show_source_info = TRUE, source_info_style = "subgraph",
+   expected_texts = c("50%%{x.R", "50%%{y.csv"))
 add_case("direction_words_in_edge_and_subgraph_labels", scan_fixture("syntax_file_names", list(
   "direction LR.R" = '# put id:"make", label:"Make", output:"direction TB.csv"',
   "use.R" = '# put id:"use", label:"Use", input:"direction TB.csv"'
@@ -268,8 +283,13 @@ add_case("title_with_colon", pipeline, title = "ETL: stage 1")
 add_case("title_mermaid_syntax", pipeline,
          title = 'Step #35; with direction LR, Lifestyle:#quot;x#quot; and "quotes" | pipes')
 # "<" makes Mermaid's DOMPurify step write entities into the SVG title, and
-# "%%{" starts a directive that can swallow the lines after it (#50)
+# "%%{" starts a directive that can swallow the lines after it (#50). The
+# drawn title garbles the "<" (put_diagram() warns, #98), so only accTitle
+# is checked.
 add_case("title_html_and_directive", pipeline, title = "Input < 5 MB & <draft> at 50%%{x: (y)")
+# Without a "<", the drawn title shows "%%{", "&", ">" and entities as
+# written: Mermaid reads the frontmatter before it removes directives (#98)
+add_case("title_with_directive_start", pipeline, title = "Budget 50%%{x: draft} & #35; > less")
 # A decision node whose id starts an accDescr block (#50)
 add_case("accdescr_decision_id", scan_fixture("accdescr_id", list(
   "a.R" = c('# put id:"accDescr", label:"Decide", node_type:"decision", output:"x.csv"',
@@ -372,6 +392,11 @@ manifest <- lapply(cases, function(case) {
     if (!is.null(case$args$title)) {
       acc_title <- trimws(gsub("[[:cntrl:]]+", " ", case$args$title))
       if (nzchar(acc_title)) entry$expected_acc_title <- acc_title
+      # The drawn title shows the title as written, unless it has a "<",
+      # which no escape gets through Mermaid's DOMPurify step (#98)
+      if (!grepl("<", case$args$title, fixed = TRUE)) {
+        entry$expected_title <- gsub("[[:cntrl:]]+", " ", case$args$title)
+      }
     }
     acc_descr <- sub("^    accDescr: ", "", grep("^    accDescr: ", code_lines, value = TRUE))
     if (length(acc_descr) == 1) entry$expected_acc_descr <- acc_descr
