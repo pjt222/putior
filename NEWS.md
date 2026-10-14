@@ -250,7 +250,7 @@
 * Requests may scan only the folder given as `root` (default: the working
   directory) and what lies below it; a path outside it, also through a
   symbolic link, is rejected, and a scan skips files that links inside it
-  lead outside to. Before, a request could name any absolute path the
+  lead outside to (a folder with more than 200 such links is refused). Before, a request could name any absolute path the
   server's R process could read. Network and device paths are rejected
   before the disk is touched, and messages show the root as `<root>`. A
   `token` makes the server require `Authorization: Bearer <token>` on

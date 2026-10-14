@@ -54,7 +54,8 @@ The ACP server exposes the following endpoints:
 below it, and it sees the file names and labels found there. A path
 outside the root is rejected, also when a symbolic link or junction
 leads there; a recursive scan skips the files that links inside the
-root lead outside to. A path with a \code{..} component, control
+root lead outside to, and refuses a folder with more than 200 such
+links. A path with a \code{..} component, control
 characters, or a network or device form (\code{\\\\server\\share},
 \code{//server/share}) is rejected before the disk is touched.
 Messages show the root as \code{<root>}.

@@ -24,6 +24,11 @@ NULL
 # The largest request body the server reads, in bytes (#111)
 .ACP_MAX_REQUEST_BYTES <- 1e6
 
+# A scan with more links out of the root than this is refused: each needs
+# its own exclude pattern, and put() matches every pattern against every
+# file (#111)
+.ACP_MAX_OUTSIDE_LINKS <- 200L
+
 # Counter for run IDs made without openssl or uuid
 .acp_run_counter <- new.env(parent = emptyenv())
 
@@ -435,7 +440,8 @@ acp_outside_excludes <- function(path, recursive = TRUE) {
   # The listed path of the link that each outside file is reached through
   link_paths <- character()
   for (file in sort(outside)) {
-    if (any(startsWith(file, paste0(link_paths, "/")))) {
+    # paste0(character(0), "/") is "/", which every absolute path starts with
+    if (length(link_paths) > 0 && any(startsWith(file, paste0(link_paths, "/")))) {
       next
     }
     relative_parts <- strsplit(substring(file, nchar(path) + 2L), "/", fixed = TRUE)[[1]]
@@ -447,6 +453,13 @@ acp_outside_excludes <- function(path, recursive = TRUE) {
       }
     }
     link_paths <- c(link_paths, prefix)
+    if (length(link_paths) > .ACP_MAX_OUTSIDE_LINKS) {
+      stop(
+        "ACP scan refused: more than ", .ACP_MAX_OUTSIDE_LINKS, " links in this ",
+        "folder lead outside the server's root folder; scan a subfolder.",
+        call. = FALSE
+      )
+    }
   }
   # One pattern per link, escaped. "^$" matches no file; with it, put() does
   # not split a single pattern at its commas.
@@ -1013,7 +1026,8 @@ acp_get_run_handler <- function(run_id, request = NULL, response = NULL) {
 #'     below it, and it sees the file names and labels found there. A path
 #'     outside the root is rejected, also when a symbolic link or junction
 #'     leads there; a recursive scan skips the files that links inside the
-#'     root lead outside to. A path with a \code{..} component, control
+#'     root lead outside to, and refuses a folder with more than 200 such
+#'     links. A path with a \code{..} component, control
 #'     characters, or a network or device form (\code{\\\\server\\share},
 #'     \code{//server/share}) is rejected before the disk is touched.
 #'     Messages show the root as \code{<root>}.

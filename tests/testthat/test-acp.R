@@ -1092,6 +1092,19 @@ test_that("a scan skips files that links inside the root lead outside to (#111)"
     expect_false(grepl("OUTSIDE SECRET|leak\\.R|secret", all_text), label = request)
     expect_match(all_text, "lead outside the server's root folder", fixed = TRUE, label = request)
   }
+  # The files inside the root are still scanned (on Linux, the first link
+  # once hid every file)
+  body <- list(input = list(list(role = "user", parts = list(list(
+    content = "scan for annotations", content_type = "text/plain"
+  )))))
+  parts <- putior:::acp_create_run_handler(body)$output[[1]]$parts
+  expect_match(parts[[1]]$content, "Node 1: inside", fixed = TRUE)
+  normalized_root <- normalizePath(root, winslash = "/")
+  patterns <- suppressWarnings(putior:::acp_outside_excludes(normalized_root))
+  expect_false("^(/|$)" %in% patterns)
+  expect_true(paste0(normalized_root, "/ok.R") %in%
+                putior:::filter_excluded_files(list.files(normalized_root, full.names = TRUE,
+                                                          recursive = TRUE), patterns))
 })
 
 test_that("network and device paths are rejected before any file access (#111)", {
@@ -1222,4 +1235,21 @@ test_that("the root is redacted only where it ends at a path boundary (#111)", {
   restore_root()
   restore_root <- set_acp_root("/")
   expect_equal(putior:::redact_acp_root("Found /etc/x and a/b"), "Found /etc/x and a/b")
+})
+
+test_that("a scan with too many links out of the root is refused (#111)", {
+  skip_on_os("windows")
+  root <- file.path(tempdir(), "acp_many_links")
+  outside <- file.path(tempdir(), "acp_many_links_outside")
+  dir.create(root, showWarnings = FALSE)
+  dir.create(outside, showWarnings = FALSE)
+  on.exit(unlink(c(root, outside), recursive = TRUE), add = TRUE)
+  targets <- file.path(outside, sprintf("t%03d.R", seq_len(210)))
+  invisible(file.create(targets))
+  linked <- all(file.symlink(targets, file.path(root, basename(targets))))
+  skip_if_not(linked, "cannot make links")
+  restore_root <- set_acp_root(root)
+  on.exit(restore_root(), add = TRUE)
+  expect_error(putior:::acp_outside_excludes(normalizePath(root, winslash = "/")),
+               "more than 200 links")
 })
