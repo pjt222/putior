@@ -45,6 +45,15 @@ NULL
 #'   \item \code{ext_to_language} - Extension to language name
 #' }
 #'
+#' Over stdio, R warnings would never reach the client. When R warns while
+#' a tool runs (invalid annotations, a \code{<} in a title or label, a
+#' diagram over Mermaid's size limits, ...), the tool returns the warnings
+#' as a second text item after its result, at most 20 of them. For
+#' \code{put_diagram} they are Mermaid comment lines, so the diagram still
+#' renders when a client joins the two items; the first item is always
+#' exactly the Mermaid code. When a call fails, the warnings raised before
+#' the error follow its message.
+#'
 #' @section Configuration:
 #'
 #' \strong{Claude Code (WSL/Linux/macOS):}
@@ -137,7 +146,10 @@ putior_mcp_server <- function(type = c("stdio", "http"),
 #'   "run_sandbox" since Shiny apps cannot run via MCP.
 #'
 #' @return A list of ellmer tool definitions suitable for use with
-#'   \code{mcptools::mcp_server()}.
+#'   \code{mcptools::mcp_server()}. A tool returns its result as text (JSON,
+#'   Mermaid code or Markdown); when R warned, it returns a list of two
+#'   \code{ellmer::ContentText} objects instead: the result and the
+#'   warnings.
 #'
 #' @family integration
 #' @export
@@ -228,16 +240,14 @@ mcp_json <- function(x) {
   jsonlite::toJSON(x, dataframe = "rows", auto_unbox = TRUE, na = "null", null = "null")
 }
 
-#' Run a scan and report its warnings when it finds nothing
+#' Run a scan and turn its warnings into an error when it finds nothing
 #'
-#' With the stdio transport, R warnings never reach the MCP client: mcptools
-#' only turns errors into responses, and its server loop never returns to the
-#' top level, where deferred warnings would print. So a scan of an empty
-#' directory, or with a pattern that matches no file, returned \code{[]} with
-#' no hint why (#73). This runs the scan with its warnings held back. If the
-#' result is empty and R warned (no file matches, a file cannot be read, an
-#' annotation is invalid, ...), the warnings become an error, which mcptools
-#' sends to the client. Otherwise the warnings are raised again.
+#' A scan of an empty directory, or with a pattern that matches no file,
+#' returned \code{[]} with no hint why (#73). This runs the scan with its
+#' warnings held back. If the result is empty and R warned (no file
+#' matches, a file cannot be read, an annotation is invalid, ...), the
+#' warnings become an error, which mcptools sends to the client. Otherwise
+#' the warnings are raised again, and mcp_reply() returns them.
 #' @param scan A call that returns a data frame or a character vector
 #' @return The value of \code{scan}
 #' @noRd
@@ -247,14 +257,7 @@ mcp_scan <- function(scan) {
     warning_messages <<- c(warning_messages, conditionMessage(warning_condition))
     invokeRestart("muffleWarning")
   })
-  # put_merge() runs put() and put_auto(), which both warn about missing
-  # files; put_auto()'s one-line warning is the first line of put()'s. Drop
-  # exact repeats and one-line warnings that another warning starts with.
-  multi_line <- grepl("\n", warning_messages, fixed = TRUE)
-  first_lines <- sub("(?s)\n.*", "", warning_messages[multi_line], perl = TRUE)
-  is_redundant <- duplicated(warning_messages) |
-    (!multi_line & warning_messages %in% first_lines)
-  warning_messages <- warning_messages[!is_redundant]
+  warning_messages <- drop_redundant_warnings(warning_messages)
   is_empty <- if (is.data.frame(result)) nrow(result) == 0 else !any(nzchar(result))
   if (is_empty && length(warning_messages) > 0) {
     stop(paste(c("The scan found nothing.", warning_messages), collapse = "\n"), call. = FALSE)
@@ -264,6 +267,35 @@ mcp_scan <- function(scan) {
   }
   result
 }
+
+#' A tool's reply: its result, and the warnings R raised as a second item
+#'
+#' R warnings never reach an MCP client over stdio (see collect_warnings()),
+#' so a tool that can warn returns them as a second text item. The first
+#' item is the result as before: for put_diagram exactly the Mermaid code of
+#' put_diagram(output = "raw"). Its warnings are Mermaid comment lines, so
+#' the diagram still renders when a client joins the two items. Without
+#' warnings the reply is the result alone, as before.
+#' @param code Code that returns the tool's result as text
+#' @param style "text", or "mermaid" for the put_diagram tool
+#' @return The result, or a list of two ellmer::ContentText items
+#' @noRd
+mcp_reply <- function(code, style = "text") {
+  collected <- collect_warnings(code)
+  if (length(collected$warnings) == 0) {
+    return(collected$value)
+  }
+  list(
+    ellmer::ContentText(paste(collected$value, collapse = "\n")),
+    ellmer::ContentText(format_warning_block(collected$warnings, style))
+  )
+}
+
+# For the descriptions of the tools that can warn
+.MCP_WARNINGS_NOTE <- paste0(
+  " If putior warned, a second text part lists the warnings; ",
+  "tell the user about them."
+)
 
 #' Give null arguments their defaults
 #'
@@ -295,11 +327,11 @@ mcp_put <- function(path, pattern = NULL, recursive = TRUE,
                     include_line_numbers = FALSE, validate = TRUE,
                     exclude = NULL, log_level = NULL) {
   use_defaults_for_null()
-  mcp_json(mcp_scan(put(
+  mcp_reply(mcp_json(mcp_scan(put(
     path, pattern = pattern, recursive = recursive,
     include_line_numbers = include_line_numbers, validate = validate,
     exclude = exclude, log_level = log_level
-  )))
+  ))))
 }
 
 #' Scan a path and return the Mermaid code of its diagram
@@ -328,60 +360,62 @@ mcp_put_diagram <- function(path, source = "annotations",
     stop('source must be "annotations", "auto" or "merge", not ',
          deparse(source), call. = FALSE)
   }
-  # Click links include line numbers when the workflow has them
-  include_line_numbers <- isTRUE(enable_clicks)
-  workflow <- mcp_scan(switch(source,
-    annotations = put(
-      path, pattern = pattern, recursive = recursive,
-      include_line_numbers = include_line_numbers, exclude = exclude,
-      log_level = log_level
-    ),
-    auto = put_auto(
-      path, pattern = pattern, recursive = recursive,
-      include_line_numbers = include_line_numbers, exclude = exclude,
-      log_level = log_level
-    ),
-    merge = put_merge(
-      path, pattern = pattern, recursive = recursive,
-      merge_strategy = merge_strategy,
-      include_line_numbers = include_line_numbers, exclude = exclude,
-      log_level = log_level
-    )
-  ))
-  # Files were found, but the scan made no nodes and raised no warning:
-  # put_diagram() would only say that the workflow is empty
-  if (nrow(workflow) == 0) {
-    auto_detection_note <- paste0(
-      "put_auto() reads only files in languages with auto-detection ",
-      "(see list_supported_languages(detection_only = TRUE)); check pattern and exclude."
-    )
-    stop(switch(source,
-      annotations = paste0(
-        "No PUT annotations were found in '", path, "'. ",
-        "To draw the workflow detected from the code instead, use ",
-        "source = \"auto\", or source = \"merge\" to combine both."
+  mcp_reply(style = "mermaid", {
+    # Click links include line numbers when the workflow has them
+    include_line_numbers <- isTRUE(enable_clicks)
+    workflow <- mcp_scan(switch(source,
+      annotations = put(
+        path, pattern = pattern, recursive = recursive,
+        include_line_numbers = include_line_numbers, exclude = exclude,
+        log_level = log_level
       ),
-      auto = paste0(
-        "put_auto() found no file to analyze in '", path, "'. ", auto_detection_note
+      auto = put_auto(
+        path, pattern = pattern, recursive = recursive,
+        include_line_numbers = include_line_numbers, exclude = exclude,
+        log_level = log_level
       ),
-      merge = paste0(
-        "No workflow was found in '", path, "': the files hold no PUT ",
-        "annotations, and put_auto() found no file to analyze. ", auto_detection_note
+      merge = put_merge(
+        path, pattern = pattern, recursive = recursive,
+        merge_strategy = merge_strategy,
+        include_line_numbers = include_line_numbers, exclude = exclude,
+        log_level = log_level
       )
-    ), call. = FALSE)
-  }
-  put_diagram(
-    workflow, output = "raw", title = title, direction = direction,
-    node_labels = node_labels, show_files = show_files,
-    show_artifacts = show_artifacts,
-    show_workflow_boundaries = show_workflow_boundaries,
-    style_nodes = style_nodes, theme = theme,
-    show_source_info = show_source_info,
-    source_info_style = source_info_style, enable_clicks = enable_clicks,
-    click_protocol = click_protocol, artifact_edges = artifact_edges,
-    mermaid_config = mermaid_config,
-    accessibility = !isFALSE(accessibility), log_level = log_level
-  )
+    ))
+    # Files were found, but the scan made no nodes and raised no warning:
+    # put_diagram() would only say that the workflow is empty
+    if (nrow(workflow) == 0) {
+      auto_detection_note <- paste0(
+        "put_auto() reads only files in languages with auto-detection ",
+        "(see list_supported_languages(detection_only = TRUE)); check pattern and exclude."
+      )
+      stop(switch(source,
+        annotations = paste0(
+          "No PUT annotations were found in '", path, "'. ",
+          "To draw the workflow detected from the code instead, use ",
+          "source = \"auto\", or source = \"merge\" to combine both."
+        ),
+        auto = paste0(
+          "put_auto() found no file to analyze in '", path, "'. ", auto_detection_note
+        ),
+        merge = paste0(
+          "No workflow was found in '", path, "': the files hold no PUT ",
+          "annotations, and put_auto() found no file to analyze. ", auto_detection_note
+        )
+      ), call. = FALSE)
+    }
+    put_diagram(
+      workflow, output = "raw", title = title, direction = direction,
+      node_labels = node_labels, show_files = show_files,
+      show_artifacts = show_artifacts,
+      show_workflow_boundaries = show_workflow_boundaries,
+      style_nodes = style_nodes, theme = theme,
+      show_source_info = show_source_info,
+      source_info_style = source_info_style, enable_clicks = enable_clicks,
+      click_protocol = click_protocol, artifact_edges = artifact_edges,
+      mermaid_config = mermaid_config,
+      accessibility = !isFALSE(accessibility), log_level = log_level
+    )
+  })
 }
 
 #' @noRd
@@ -391,13 +425,13 @@ mcp_put_auto <- function(path, pattern = NULL, recursive = TRUE,
                          include_line_numbers = FALSE, exclude = NULL,
                          log_level = NULL) {
   use_defaults_for_null()
-  mcp_json(mcp_scan(put_auto(
+  mcp_reply(mcp_json(mcp_scan(put_auto(
     path, pattern = pattern, recursive = recursive,
     detect_inputs = detect_inputs, detect_outputs = detect_outputs,
     detect_dependencies = detect_dependencies,
     include_line_numbers = include_line_numbers, exclude = exclude,
     log_level = log_level
-  )))
+  ))))
 }
 
 #' @noRd
@@ -405,11 +439,13 @@ mcp_put_generate <- function(path, pattern = NULL, recursive = TRUE,
                              style = "multiline", exclude = NULL,
                              log_level = NULL) {
   use_defaults_for_null()
-  annotations <- mcp_scan(put_generate(
-    path, pattern = pattern, recursive = recursive, output = "raw",
-    insert = FALSE, style = style, exclude = exclude, log_level = log_level
-  ))
-  paste(annotations, collapse = "\n\n")
+  mcp_reply({
+    annotations <- mcp_scan(put_generate(
+      path, pattern = pattern, recursive = recursive, output = "raw",
+      insert = FALSE, style = style, exclude = exclude, log_level = log_level
+    ))
+    paste(annotations, collapse = "\n\n")
+  })
 }
 
 #' @noRd
@@ -418,12 +454,12 @@ mcp_put_merge <- function(path, pattern = NULL, recursive = TRUE,
                           include_line_numbers = FALSE, exclude = NULL,
                           log_level = NULL) {
   use_defaults_for_null()
-  mcp_json(mcp_scan(put_merge(
+  mcp_reply(mcp_json(mcp_scan(put_merge(
     path, pattern = pattern, recursive = recursive,
     merge_strategy = merge_strategy,
     include_line_numbers = include_line_numbers, exclude = exclude,
     log_level = log_level
-  )))
+  ))))
 }
 
 #' @noRd
@@ -438,7 +474,7 @@ mcp_get_diagram_themes <- function() {
 
 #' @noRd
 mcp_putior_guide <- function(topic = NULL) {
-  putior_guide(topic = topic, output = "raw")
+  mcp_reply(putior_guide(topic = topic, output = "raw"))
 }
 
 #' putior_help() prints its text; capture it instead
@@ -488,7 +524,8 @@ make_tool_put <- function() {
       "Returns the nodes as JSON, one object per node, or [] when the scanned ",
       "files hold no annotations. When the scan finds nothing and R warned ",
       "(for example, no file matches the pattern), the call fails with the warnings. ",
-      "To draw them, call put_diagram with the same path."
+      "To draw them, call put_diagram with the same path.",
+      .MCP_WARNINGS_NOTE
     ),
     name = "put",
     annotations = list(
@@ -538,7 +575,9 @@ make_tool_put_diagram <- function() {
       "With source = annotations (the default) the workflow comes from PUT annotations, ",
       "with auto it is detected from the code (as by put_auto), and with merge ",
       "both are combined (as by put_merge). Shows data flows and processing steps. ",
-      "Supports multiple themes, node styling, and interactive features."
+      "Supports multiple themes, node styling, and interactive features. ",
+      "If putior warned, a second text part lists the warnings as Mermaid comment ",
+      "lines: the first part is the complete diagram; tell the user about the warnings."
     ),
     name = "put_diagram",
     annotations = list(
@@ -680,7 +719,8 @@ make_tool_put_auto <- function() {
       "Similar to how roxygen2 auto-generates documentation skeletons. ",
       "Returns the detected nodes as JSON, one object per node. ",
       "When the scan finds nothing and R warned (for example, no file matches ",
-      "the pattern), the call fails with the warnings."
+      "the pattern), the call fails with the warnings.",
+      .MCP_WARNINGS_NOTE
     ),
     name = "put_auto",
     annotations = list(
@@ -740,7 +780,8 @@ make_tool_put_generate <- function() {
       "When the scan finds nothing and R warned (for example, no file matches ",
       "the pattern), the call fails with the warnings. ",
       "Similar to how roxygen2 generates documentation skeletons. ",
-      "Supports single-line and multiline annotation styles."
+      "Supports single-line and multiline annotation styles.",
+      .MCP_WARNINGS_NOTE
     ),
     name = "put_generate",
     annotations = list(
@@ -788,7 +829,8 @@ make_tool_put_merge <- function() {
       "supplement (auto fills in missing fields), union (combine all detected I/O). ",
       "Returns the merged nodes as JSON, one object per node. ",
       "When the scan finds nothing and R warned (for example, no file matches ",
-      "the pattern), the call fails with the warnings."
+      "the pattern), the call fails with the warnings.",
+      .MCP_WARNINGS_NOTE
     ),
     name = "put_merge",
     annotations = list(
@@ -941,7 +983,8 @@ make_tool_putior_guide <- function() {
     description = paste0(
       "Access putior guide documentation for AI assistants. ",
       "Provides structured information about annotation syntax, supported languages, ",
-      "core functions, detection patterns, and usage examples, as markdown."
+      "core functions, detection patterns, and usage examples, as markdown.",
+      .MCP_WARNINGS_NOTE
     ),
     name = "putior_guide",
     annotations = list(

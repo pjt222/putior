@@ -151,6 +151,112 @@ is_valid_hex_color <- function(x) {
   is.character(x) && length(x) == 1 && grepl("^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$", x)
 }
 
+# =============================================================================
+# Warnings for the MCP and ACP servers
+# =============================================================================
+#
+# Clients of the MCP (stdio) and ACP servers never see R warnings: mcptools'
+# server loop never returns to the top level, where deferred warnings would
+# print, and plumber2 only logs them. Several problems are reported only as
+# warnings (a "<" in a title or label, a diagram over Mermaid's limits, id
+# collisions, invalid annotations), so the servers collect them and return
+# them with the result.
+
+# At most this many warnings are listed in a reply; one per invalid
+# annotation can be many, and a client may cut long tool output short.
+.MAX_REPORTED_WARNINGS <- 20L
+
+#' Drop warnings that repeat another one
+#'
+#' put_merge() runs put() and put_auto(), which both warn about missing
+#' files; put_auto()'s one-line warning is the first line of put()'s. Drops
+#' exact repeats and one-line warnings that another warning starts with.
+#' @param warning_messages Character vector of warning messages
+#' @return The messages without the redundant ones, in their order
+#' @noRd
+drop_redundant_warnings <- function(warning_messages) {
+  multi_line <- grepl("\n", warning_messages, fixed = TRUE)
+  first_lines <- sub("(?s)\n.*", "", warning_messages[multi_line], perl = TRUE)
+  is_redundant <- duplicated(warning_messages) |
+    (!multi_line & warning_messages %in% first_lines)
+  warning_messages[!is_redundant]
+}
+
+#' Run code and collect the warnings it raises
+#'
+#' The warnings are held back and returned with the value. An error keeps
+#' its message, with the warnings raised before it appended, because a
+#' server reports only the error's message.
+#' @param code Code to run
+#' @return A list with \code{value} and \code{warnings} (character)
+#' @noRd
+collect_warnings <- function(code) {
+  warning_messages <- character()
+  failure <- NULL
+  value <- withCallingHandlers(
+    tryCatch(code, error = function(error_condition) {
+      failure <<- error_condition
+      NULL
+    }),
+    warning = function(warning_condition) {
+      warning_messages <<- c(warning_messages, conditionMessage(warning_condition))
+      invokeRestart("muffleWarning")
+    }
+  )
+  warning_messages <- drop_redundant_warnings(warning_messages)
+  if (!is.null(failure)) {
+    error_message <- conditionMessage(failure)
+    if (length(warning_messages) > 0) {
+      error_message <- paste0(error_message, format_warning_block(warning_messages))
+    }
+    stop(error_message, call. = FALSE)
+  }
+  list(value = value, warnings = warning_messages)
+}
+
+#' The warnings as a block of text for a server reply
+#'
+#' A header line and one "- " item per warning, continuation lines indented,
+#' at most .MAX_REPORTED_WARNINGS of them. Control characters and the line
+#' separators U+2028 and U+2029 become spaces.
+#'
+#' With \code{style = "mermaid"}, every line is a Mermaid comment ("\%\% "),
+#' so that the diagram still renders when a client joins the block to it
+#' (Claude Code joins content items without a separator). "\%\%\{" in a
+#' warning, such as a label it quotes, is written "\%\% \{": Mermaid applies
+#' a "\%\%\{...\}\%\%" directive even inside a comment line (measured: one in
+#' a comment line changed the theme on Mermaid 11.12.0 and 12.2.0).
+#' @param warning_messages Character vector of warning messages
+#' @param style "text" or "mermaid"
+#' @return The block, starting with a line break
+#' @noRd
+format_warning_block <- function(warning_messages, style = c("text", "mermaid")) {
+  style <- match.arg(style)
+  shown_messages <- warning_messages[seq_len(min(length(warning_messages), .MAX_REPORTED_WARNINGS))]
+  item_lines <- unlist(lapply(shown_messages, function(warning_message) {
+    message_lines <- strsplit(warning_message, "\n", fixed = TRUE)[[1]]
+    message_lines <- sub("\\s+$", "", replace_control_chars(message_lines))
+    message_lines <- message_lines[nzchar(trimws(message_lines))]
+    if (length(message_lines) == 0) message_lines <- "(no message)"
+    continuation_lines <- if (length(message_lines) > 1) paste0("  ", message_lines[-1])
+    c(paste0("- ", message_lines[1]), continuation_lines)
+  }))
+  hidden_count <- length(warning_messages) - length(shown_messages)
+  if (hidden_count > 0) {
+    item_lines <- c(item_lines, paste0("- ... and ", hidden_count, " more"))
+  }
+  header <- paste0(
+    "putior warnings (", length(warning_messages), "), not part of the ",
+    if (style == "mermaid") "diagram" else "result", " above:"
+  )
+  block_lines <- c(header, item_lines)
+  if (style == "mermaid") {
+    block_lines <- gsub("%%{", "%% {", block_lines, fixed = TRUE)
+    return(paste0("\n", paste0("%% ", block_lines, collapse = "\n"), "\n"))
+  }
+  paste0("\n\n", paste(block_lines, collapse = "\n"))
+}
+
 .onLoad <- function(libname, pkgname) {
   # Set default package options
   op <- options()

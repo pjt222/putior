@@ -227,6 +227,14 @@
 * An argument that a client sends as `null` gets its default. Before, most
   arguments of the scan and diagram tools and of `list_supported_languages`
   then stopped the call with "argument is of length zero".
+* R warnings now reach the client. Over stdio they never did: they were
+  written to stderr when the server stopped, so a `<` in a title or label,
+  a diagram over Mermaid's limits or an invalid annotation went unnoticed.
+  A tool that warned returns the warnings (at most 20) as a second text
+  item after its unchanged result. For `put_diagram` they are Mermaid
+  comment lines, so the diagram still renders when a client joins both
+  items, and a `%%{` in a quoted label cannot act as a directive. An error
+  lists the warnings raised before it.
 
 ### ACP Server Integration
 * Added `putior_acp_server()` to expose putior as an ACP agent for inter-agent

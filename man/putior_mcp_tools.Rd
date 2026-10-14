@@ -15,7 +15,10 @@ all available tools are included.}
 }
 \value{
 A list of ellmer tool definitions suitable for use with
-\code{mcptools::mcp_server()}.
+\code{mcptools::mcp_server()}. A tool returns its result as text (JSON,
+Mermaid code or Markdown); when R warned, it returns a list of two
+\code{ellmer::ContentText} objects instead: the result and the
+warnings.
 }
 \description{
 Returns a list of ellmer tool definitions for all putior functions that

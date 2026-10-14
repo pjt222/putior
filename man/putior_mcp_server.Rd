@@ -47,6 +47,15 @@ The MCP server exposes the following putior functions as tools:
 \item \code{split_file_list} - Parse file lists
 \item \code{ext_to_language} - Extension to language name
 }
+
+Over stdio, R warnings would never reach the client. When R warns while
+a tool runs (invalid annotations, a \code{<} in a title or label, a
+diagram over Mermaid's size limits, ...), the tool returns the warnings
+as a second text item after its result, at most 20 of them. For
+\code{put_diagram} they are Mermaid comment lines, so the diagram still
+renders when a client joins the two items; the first item is always
+exactly the Mermaid code. When a call fails, the warnings raised before
+the error follow its message.
 }
 \section{Configuration}{
 

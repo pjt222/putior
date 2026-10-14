@@ -383,6 +383,17 @@ test_that("MCP results reach the client as JSON text through mcptools", {
 
   help_response <- call_tool("putior_help", list())
   expect_match(help_response$result$content[[1]]$text, "putior Quick Reference", fixed = TRUE)
+
+  # Without warnings one item; with warnings a second one, as text, not an
+  # error, and not as structured content
+  expect_length(diagram_response$result$content, 1)
+  warned_response <- call_tool("put_diagram", list(path = project_dir, title = "a<b"))
+  expect_length(warned_response$result$content, 2)
+  expect_false(isTRUE(warned_response$result$isError))
+  expect_null(warned_response$result$structuredContent)
+  expect_identical(warned_response$result$content[[1]]$text,
+                   suppressWarnings(put_diagram(put(project_dir), output = "raw", title = "a<b")))
+  expect_match(warned_response$result$content[[2]]$text, "^\n%% putior warnings \\(1\\)")
 })
 
 test_that("ellmer accepts MCP tool results without a deprecation warning", {
@@ -634,15 +645,88 @@ test_that("mcp_scan() drops only repeated warnings", {
   expect_equal(scan_error, "The scan found nothing.\nA\nhint\nB\nx\nB\ny")
 })
 
-test_that("MCP scans still raise warnings when they find something", {
+test_that("MCP tools return R's warnings as a second item", {
   skip_if_not_installed("ellmer")
+  skip_if_not_installed("jsonlite")
   warn_dir <- file.path(tempdir(), "putior_mcp_warn")
   unlink(warn_dir, recursive = TRUE)
   dir.create(warn_dir)
   on.exit(unlink(warn_dir, recursive = TRUE), add = TRUE)
-  writeLines('# put id:"a", label:"A", node_type:"unknown_type"', file.path(warn_dir, "a.R"))
+  writeLines(c('# put id:"a", label:"A", node_type:"unknown_type", output:"x.csv"',
+               '# put id:"b", label:"Keep n<threshold", input:"x.csv"'),
+             file.path(warn_dir, "a.R"))
   tools <- putior_mcp_tools()
 
-  expect_warning(nodes_json <- tools$put(path = warn_dir), "node_type")
-  expect_match(as.character(nodes_json), '"id":"a"', fixed = TRUE)
+  # The scan tools: the JSON as before, then the warnings; nothing escapes
+  expect_no_warning(nodes_reply <- tools$put(path = warn_dir))
+  expect_length(nodes_reply, 2)
+  expect_identical(nodes_reply[[1]]@text, as.character(suppressWarnings(mcp_json(put(warn_dir)))))
+  expect_match(nodes_reply[[2]]@text, "^\n\nputior warnings \\(1\\), not part of the result above:\n- ")
+  expect_match(nodes_reply[[2]]@text, "unknown_type", fixed = TRUE)
+
+  # put_diagram: the first item is exactly the Mermaid code, the second
+  # one comment lines with the scan's and the diagram's warnings
+  expect_no_warning(diagram_reply <- tools$put_diagram(path = warn_dir, title = "a<b"))
+  expect_length(diagram_reply, 2)
+  expect_identical(diagram_reply[[1]]@text,
+                   suppressWarnings(put_diagram(put(warn_dir), output = "raw", title = "a<b")))
+  trailer <- diagram_reply[[2]]@text
+  expect_match(trailer, "^\n%% putior warnings \\(3\\), not part of the diagram above:\n")
+  trailer_lines <- strsplit(sub("^\n", "", trailer), "\n", fixed = TRUE)[[1]]
+  expect_true(all(startsWith(trailer_lines, "%% ")))
+  for (expected_text in c("unknown_type", "The title contains", "Keep n<threshold")) {
+    expect_true(any(grepl(expected_text, trailer_lines, fixed = TRUE)))
+  }
+  # Without warnings the reply is the result alone, as before
+  plain_dir <- create_mcp_test_project()
+  on.exit(unlink(plain_dir, recursive = TRUE), add = TRUE)
+  expect_true(is.character(tools$put_diagram(path = plain_dir)))
+})
+
+test_that("the warning block is safe to join to a Mermaid diagram", {
+  warning_messages <- c(
+    'A label contains "50%%{init: {"theme":"forest"}}%%" and "%%%{x"',
+    "first line\n  - second line\n\n",
+    "tab\there\u2028line separator\u2029done",
+    rep("the same kind of warning, numbered ", 25)
+  )
+  warning_messages[4:28] <- paste0(warning_messages[4:28], 1:25)
+  block <- format_warning_block(warning_messages, "mermaid")
+  block_lines <- strsplit(sub("^\n", "", block), "\n", fixed = TRUE)[[1]]
+  # Every line is a Mermaid comment, none starts or carries a directive
+  expect_true(all(startsWith(block_lines, "%% ")))
+  expect_false(grepl("%%{", block, fixed = TRUE))
+  expect_false(grepl("[\u2028\u2029\t\r]", block))
+  expect_match(block, "%% - A label contains \"50%% {init", fixed = TRUE)
+  # Continuation lines are indented under their item, empty ones dropped
+  expect_true("%%     - second line" %in% block_lines)
+  expect_false("%% " %in% block_lines)
+  # At most 20 are listed
+  expect_match(block_lines[1], "putior warnings (28)", fixed = TRUE)
+  expect_equal(block_lines[length(block_lines)], "%% - ... and 8 more")
+  # Comment lines do not count toward Mermaid's text size limit
+  diagram <- "flowchart TD\n    a --> b"
+  expect_equal(mermaid_text_size(paste0(diagram, block)), mermaid_text_size(paste0(diagram, "\n")))
+
+  # The text style: a blank line, a header and "- " items
+  text_block <- format_warning_block(c("one", "two\nmore"))
+  expect_equal(text_block,
+               "\n\nputior warnings (2), not part of the result above:\n- one\n- two\n  more")
+})
+
+test_that("collect_warnings() keeps the value and appends warnings to errors", {
+  collected <- collect_warnings({
+    warning("A\nhint")
+    warning("A")
+    warning("B")
+    42
+  })
+  expect_equal(collected$value, 42)
+  expect_equal(collected$warnings, c("A\nhint", "B"))
+  expect_no_warning(collect_warnings(1))
+  failure <- tryCatch(collect_warnings({
+    warning("first")
+    stop("it failed")
+  }), error = conditionMessage)
+  expect_equal(failure, "it failed\n\nputior warnings (1), not part of the result above:\n- first")
 })
