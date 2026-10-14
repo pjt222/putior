@@ -332,6 +332,13 @@ its result, since R warnings never reach an MCP client otherwise. The
 <code>put_diagram</code> tool writes them as Mermaid comment lines
 (<code>%% ...</code>), so the diagram still renders if the client joins
 both parts; its first part is always exactly the Mermaid code.</p>
+<p>Over HTTP, the MCP server
+(<code>putior_mcp_server(type = "http")</code>) and the ACP server scan
+only their <code>root</code> folder (by default the working directory).
+By default they listen on <code>127.0.0.1</code>, so only programs on
+this machine reach them; to serve other machines, set <code>host</code>
+and a <code>token</code>. See the Security sections of
+<code><a href="../reference/putior_mcp_server.html">?putior_mcp_server</a></code> and <code><a href="../reference/putior_acp_server.html">?putior_acp_server</a></code>.</p>
 <p>See the <a href="https://github.com/pjt222/putior/blob/main/CLAUDE.md#mcp-server-integration" class="external-link">MCP
 Server section in CLAUDE.md</a> for setup instructions.</p>
 </div>

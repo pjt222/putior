@@ -4,14 +4,6 @@
 
 ### Breaking Changes
 
-- Renamed `putior_skills()` to
-  [`putior_guide()`](https://pjt222.github.io/putior/reference/putior_guide.md).
-  The function, its MCP tool (`putior_guide`), and its ACP operation
-  (`guide`) all use the new name. `putior_help("skills")` still works as
-  an alias for backward compatibility. The inst file was renamed from
-  `SKILLS.md` to `GUIDE.md`, and the vignette from `skills.Rmd` to
-  `ai-integration.Rmd`.
-
 - [`put()`](https://pjt222.github.io/putior/reference/put.md),
   [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md),
   [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md),
@@ -70,221 +62,11 @@
   `put_diagram` tool has the same argument.
   ([\#55](https://github.com/pjt222/putior/issues/55))
 
-### Bug Fixes
-
-- Click links (`enable_clicks = TRUE`) now use the path the scan
-  recorded (`file_path`) instead of the file’s base name, which was
-  resolved against the working directory at the time the diagram was
-  made. Absolute Unix paths give `vscode://file/home/...` and
-  `file:///home/...` instead of a doubled or quadrupled slash, UNC paths
-  (`//server/share/...`) give `vscode://file//server/...` and
-  `file://server/...`, and a relative path to a missing file is made
-  absolute. Paths are percent-encoded, and tooltips escaped like labels:
-  a quote in a file name made the diagram fail to parse, and a name such
-  as `direction LR.R` made Mermaid drop the click line. The docs now say
-  that Mermaid keeps click links only with `securityLevel: "loose"`, so
-  they do not work on GitHub, GitLab or in Quarto with default settings.
-  The pkgdown site and the sandbox stay `"strict"`, because `"loose"`
-  would also let click callbacks run JavaScript.
-  ([\#47](https://github.com/pjt222/putior/issues/47))
-
-- Fixed `show_source_info = TRUE` using `<small>` HTML tags that are
-  unsupported by GitHub’s Mermaid renderer. Source file names are now
-  shown without HTML formatting tags.
-  ([\#32](https://github.com/pjt222/putior/issues/32))
-
-- Fixed pipe characters (`|`) in node labels breaking Mermaid diagram
-  parsing. Pipes are now escaped using the `#124;` entity.
-  ([\#33](https://github.com/pjt222/putior/issues/33))
-
-- [`put()`](https://pjt222.github.io/putior/reference/put.md) now gives
-  annotations without an `id` a fallback id (`node_1`, `node_2`, …) when
-  the uuid package is not installed. Before, such annotations had no id:
-  if none had one,
-  [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
-  failed with a misleading “missing required column(s): id” error, and
-  if only some had one, it silently dropped the others. This broke the
-  quick-start example and the sandbox templates for anyone without uuid.
-  The sandbox now also shows diagram errors in its status line instead
-  of a blank preview.
-  ([\#58](https://github.com/pjt222/putior/issues/58))
-
-- Fixed logging, which wrote nothing with logger 0.3 or later: every log
-  call failed inside logger and the error was hidden. The
-  `putior.log_level` option, set by
-  [`set_putior_log_level()`](https://pjt222.github.io/putior/reference/set_putior_log_level.md)
-  or for one call by the `log_level` argument, is now the only
-  threshold, and an invalid `log_level` is an error. With logger
-  installed, WARN-level messages now appear on stderr next to the
-  matching R warnings.
-  ([\#70](https://github.com/pjt222/putior/issues/70))
-
-- Fixed single-line block comment annotations (`/* put ... */`) silently
-  losing their last property, which could drop an output and its edge.
-  ([\#72](https://github.com/pjt222/putior/issues/72))
-
-- [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md)
-  no longer merges a manual annotation and an auto-detected file into
-  one node when their ids meet: auto-detected rows get a suffix when
-  their id (also in its Mermaid form, where `1` is `node_1`) is already
-  used, so an unannotated `node_1.R` next to an annotation with the
-  fallback id `node_1` stays separate. It also matches manual and
-  auto-detected rows by file path, so an annotated `x/load.R` no longer
-  hides an unannotated `y/load.R`, and with
-  `merge_strategy = "supplement"` or `"union"` no longer takes the
-  inputs and outputs detected in the other file.
-  ([\#74](https://github.com/pjt222/putior/issues/74))
-
-- Annotation values may now contain the other kind of quote:
-  `label:"Don't panic"` and `label:'Say "hi"'` keep their labels.
-  Before, [`put()`](https://pjt222.github.io/putior/reference/put.md)
-  dropped any value with a quote character in it, without a warning, and
-  the node showed its id instead; the troubleshooting vignette even
-  recommended `label:"Load 'raw' data"`. There are still no escapes, so
-  a value cannot contain its own kind of quote, and backslashes in
-  Windows paths stay as they are. A property that
-  [`put()`](https://pjt222.github.io/putior/reference/put.md) cannot
-  read is now named in its validation warning (with `validate = TRUE`,
-  the default) instead of being dropped silently, and
-  [`is_valid_put_annotation()`](https://pjt222.github.io/putior/reference/is_valid_put_annotation.md)
-  returns `FALSE` for such a line. An annotation that ends with a
-  continuation `\` (without a comma before it) on the last line of the
-  file no longer loses its last property.
-  [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md)
-  wraps a value that contains a double quote in single quotes, so that
-  [`put()`](https://pjt222.github.io/putior/reference/put.md) reads its
-  suggestions back unchanged.
-  ([\#91](https://github.com/pjt222/putior/issues/91))
-
-- A comment may now follow the values of an annotation, as the
-  [`put()`](https://pjt222.github.io/putior/reference/put.md) help page,
-  the vignettes and the cheatsheet have always shown
-  (`# put id:"a", label:"Load" # first step`). Before, the comment made
-  the last property unreadable, and it was dropped. Outside quotes,
-  whitespace followed by `#`, `--`, `//` or `%` after a value starts the
-  comment. In a multiline annotation, a comment may also come before the
-  continuation `\` of a line.
-  ([\#91](https://github.com/pjt222/putior/issues/91))
-
-- [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
-  gives every node one Mermaid id and uses it in the node definition,
-  edges, `class` lines and click directives. Before, edges to an
-  artifact whose path has two punctuation characters in a row (such as
-  `./raw data (v2).csv`) used a different id than the artifact node, so
-  Mermaid drew an extra unlabeled node and left the artifact
-  unconnected. Annotation ids that differ only in punctuation (`a-b` and
-  `a_b`) were merged into one node with a self-loop; they now stay two
-  nodes (`a_b`, `a_b_2`) and
-  [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
-  warns. Two data files whose names differ only in punctuation get two
-  artifact nodes.
-  [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md)
-  and
-  [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md),
-  which derive ids from file names, now give files that would share an
-  id (`a-b.R` and `a_b.R`, `end.R` and `node_end.R`, or `load.R` in two
-  folders) distinct ids (`load`, `load_2`).
-  `put_generate(output = "file")` now writes each annotation next to the
-  file it belongs to; when a file in between gave no annotation, the
-  next one went into the wrong `.put` file.
-  ([\#46](https://github.com/pjt222/putior/issues/46))
-
-- Node ids that are Mermaid keywords (`end`, `graph`, `flowchart`,
-  `subgraph`, `style`, `class`, `classDef`, `click`, `linkStyle`,
-  `call`, `href`, `interpolate`, and the link targets `_self`, `_blank`,
-  `_parent`, `_top`) made the whole diagram fail to parse. They are now
-  written as `node_end` and so on. `id:"end"` is a natural name for a
-  pipeline’s last step.
-  ([\#45](https://github.com/pjt222/putior/issues/45))
-
-- With `source_info_style = "subgraph"`, subgraph ids are now
-  `file_<name>` and never equal a node id. Before, a file `load.R` with
-  a node `id:"load"` failed to render (“would create a cycle”) on
-  Mermaid 11, and on Mermaid 12, which GitHub uses, the node silently
-  disappeared. Files with the same name in different folders now get one
-  subgraph each instead of sharing one, and the subgraph label then
-  includes as much of the folder path as it takes to tell them apart
-  (`x/load.R`, `a/x/load.R`).
-  ([\#45](https://github.com/pjt222/putior/issues/45),
-  [\#46](https://github.com/pjt222/putior/issues/46))
-
-- With `show_files = TRUE`, edge labels are now quoted and escaped like
-  node labels (`-->|"raw data (v2).csv"|`). A file name with parentheses
-  or other special characters made the diagram fail to parse.
-  ([\#45](https://github.com/pjt222/putior/issues/45))
-
-- The `title` of
-  [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
-  is now written as a quoted YAML string. A title with `:` (such as
-  `"ETL: stage 1"`) made the diagram fail to parse, and text after `#`
-  was dropped as a YAML comment.
-  ([\#45](https://github.com/pjt222/putior/issues/45))
-
-- A `#` in a label that Mermaid would read as a character entity is now
-  escaped as `#35;`. Mermaid decodes `#<name>;` and `#<digits>;`, so a
-  label such as
-  `Step `[`#35`](https://github.com/pjt222/putior/issues/35)`;` was
-  shown as `Step #`. A plain `#` (`C#`,
-  `item `[`#1`](https://github.com/pjt222/putior/issues/1)) is left
-  alone.
-  [`?put_diagram`](https://pjt222.github.io/putior/reference/put_diagram.md)
-  now describes how labels and ids are written.
-  ([\#45](https://github.com/pjt222/putior/issues/45))
-
-- [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
-  and the MCP and ACP servers accept `direction = "TB"`, Mermaid’s
-  synonym for `"TD"`. GUIDE.md named `TB` as the default, but `"TB"` was
-  rejected with an error.
-  ([\#79](https://github.com/pjt222/putior/issues/79))
-
-- Labels that contain Mermaid syntax are now written so that Mermaid
-  shows them as written. Mermaid read a line with `direction`,
-  whitespace and `TB`, `BT`, `RL` or `LR` (and `TD` from Mermaid 11.17.2
-  on), as in “Change direction LR to TB”, as a direction statement and
-  dropped it: the node lost its label, and with
-  `source_info_style = "subgraph"` a file named `direction LR.R` made
-  the diagram fail to parse. That whitespace is now written as an entity
-  (`direction#32;LR`). The same rule spans line breaks, so an edge to an
-  id ending in `direction` (`wind_direction`) followed by an edge from
-  an id starting with `LR` (`LR_prep`) lost both edges; such an edge now
-  ends with `;`. On a line where `style` or `classDef` comes before it,
-  in the label or in the node id, a `:` followed by an escaped
-  character, as in `style:"bold"` (written `style:#quot;bold#quot;`), is
-  now written as `#58;`: Mermaid removed the last `;` of such a line and
-  showed `style:"bold#quot`.
-  ([\#89](https://github.com/pjt222/putior/issues/89))
-
-- A `%%{` in a node, edge or subgraph label is now written with its
-  first `%` as `#37;`, so that Mermaid shows it as written. Mermaid
-  removes `%%{...}%%` directives from the whole diagram text before it
-  parses it, so a label such as “Budget 50%%{x: draft” was cut short or
-  made the diagram fail to parse, and with a later `}%%` the text in
-  between was lost.
-  [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
-  now also warns when the `title` contains a `<`: the drawn title then
-  shows HTML entities such as `&lt;`, `&gt;` and `&amp;` and drops text
-  that looks like an HTML tag, and no escape avoids that. The `accTitle`
-  line shows the title as written.
-  ([\#98](https://github.com/pjt222/putior/issues/98))
-
-- A label with U+2028 or U+2029 (line and paragraph separator) followed
-  by `%%` made the diagram fail to parse: Mermaid removes comment lines
-  with a JavaScript regex that treats these characters as line ends.
-  They are now written as spaces, as line breaks are. The title, the
-  accTitle line and click tooltips already replaced them, except in the
-  C locale; they now do so there too.
-  ([\#104](https://github.com/pjt222/putior/issues/104))
-
-- [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
-  now warns when a drawn label contains a `<` before a letter, `/`, `!`
-  or `?`, such as `n<threshold` or `<draft>`: Mermaid draws labels as
-  HTML and reads it as the start of a tag, so the text up to the next
-  `>` disappears (`a<b and c>d` shows “ad”). The docs show `&lt;` for a
-  `<` that should show (`\lt` in `$$...$$` math). The tags `br`, `b`,
-  `i`, `em`, `strong`, `sub`, `sup`, `code` and `span` still count as
-  intended HTML. ([\#102](https://github.com/pjt222/putior/issues/102))
-
 ### New Features
+
+Everything in this section is new since putior 0.1.0. Where an entry
+says what changed or what happened before, it describes development
+versions of 0.2.0, not putior 0.1.0.
 
 #### MCP Server Integration
 
@@ -388,11 +170,10 @@
   [`?putior_acp_server`](https://pjt222.github.io/putior/reference/putior_acp_server.md)
   describes the security model.
   ([\#111](https://github.com/pjt222/putior/issues/111))
-- Input path sanitization to prevent directory traversal attacks. A path
-  with `..` or control characters ends the run with an error; it used to
-  be replaced by `.` with a warning in the server log, so the run
-  scanned the server’s working directory. An unquoted `../` path is now
-  recognized, so it is rejected too instead of being ignored.
+- A path with `..` or control characters ends the run with an error; it
+  used to be replaced by `.` with a warning in the server log, so the
+  run scanned the server’s working directory. An unquoted `../` path is
+  now recognized, so it is rejected too instead of being ignored.
 - Unquoted paths in a request work: `scan ./R/` read the path as `./R/`,
   with the space in front, and reported that it does not exist.
 - Requests name paths in more forms: Windows paths (`D:/data`,
@@ -403,10 +184,10 @@
   a theme or direction name is never the path, and an apostrophe
   (“Let’s”) is no quote. A lone `/`, `\`, `~` or drive in prose is not
   taken for the root of a drive or the home directory. A scan with no
-  path in the request still reads the server’s working directory, but
-  now says so; before, an unrecognized path silently gave the results of
-  another folder. A `..` after a drive (`D:..\x`) is rejected like any
-  other. ([\#109](https://github.com/pjt222/putior/issues/109))
+  path in the request reads the server’s `root` folder and says so;
+  before, an unrecognized path silently gave the results of another
+  folder. A `..` after a drive (`D:..\x`) is rejected like any other.
+  ([\#109](https://github.com/pjt222/putior/issues/109))
 - The server works over HTTP. Every `POST /runs` failed with “500
   Internal Server Error”: plumber2’s JSON parser turns the request’s
   `input` into a data frame, which the request handling did not expect.
@@ -575,6 +356,8 @@
 - Added
   [`summary.putior_workflow()`](https://pjt222.github.io/putior/reference/summary.putior_workflow.md)
   for structured summary information
+- `putior_workflow` inherits from `data.frame`, so code that uses the
+  result as a data frame keeps working
 
 #### Interactive Sandbox
 
@@ -627,36 +410,16 @@
   and
   [`putior_help()`](https://pjt222.github.io/putior/reference/putior_help.md)
   for in-session reference
-
-#### New Helper Functions
-
-- [`resolve_label()`](https://pjt222.github.io/putior/reference/resolve_label.md)
-  internal helper to reduce code duplication in diagram generation
-- `sanitize_acp_path()` for ACP input validation
-- [`normalize_path_for_url()`](https://pjt222.github.io/putior/reference/normalize_path_for_url.md)
-  for cross-platform path handling
-- [`generate_click_url()`](https://pjt222.github.io/putior/reference/generate_click_url.md)
-  for creating protocol-specific URLs
-- [`generate_click_directives()`](https://pjt222.github.io/putior/reference/generate_click_directives.md)
-  for Mermaid click action generation
-- [`generate_file_subgraphs()`](https://pjt222.github.io/putior/reference/generate_file_subgraphs.md)
-  for file-based node grouping
-
-### Bug Fixes
-
-- Fixed ACP
-  [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md)
-  called with invalid `output = "raw"` (now supported)
-- Fixed MCP theme enum missing viridis family themes
-- Fixed documentation using deprecated `name` instead of `id` in
-  examples
-- Fixed ACP theme extraction regex missing colorblind-safe themes
-- Replaced unsafe `1:nrow()` loops with `seq_len(nrow())` to handle
-  empty data frames
-- Moved `%||%` operator from `acp.R` to `zzz.R` for shared access
+- The 0.1.0 vignette `getting-started` is replaced by `quick-start` and
+  `annotation-guide`
 
 ### Improvements
 
+- [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  checks `direction`: it takes `"TD"`, `"TB"`, `"LR"`, `"BT"` or `"RL"`
+  (or an unambiguous abbreviation, such as `"L"`), and other values give
+  an error. 0.1.0 wrote any value into the diagram, which Mermaid then
+  could not parse.
 - [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
   warns when a diagram is over Mermaid’s default limits of 500 edges
   (`maxEdges`) or 50,000 characters (`maxTextSize`). Renderers such as
@@ -674,25 +437,230 @@
   minutes, because every input looked through every step’s outputs, and
   now takes about two seconds.
   ([\#56](https://github.com/pjt222/putior/issues/56))
-- Consolidated language detection list into single authoritative
-  registry (`.LANGUAGES_WITH_DETECTION` in `language_registry.R`)
 - Standardized `output` parameter across
   [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md),
   [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md),
   and
   [`putior_guide()`](https://pjt222.github.io/putior/reference/putior_guide.md)
   – all now support “raw”
-- Extracted duplicated label resolution into
-  [`resolve_label()`](https://pjt222.github.io/putior/reference/resolve_label.md)
-  helper
-- Added input path sanitization to ACP server endpoints
 
-### Backward Compatibility
+### Bug Fixes
 
-- All new parameters default to FALSE/previous behavior
-- Existing code continues to work unchanged
-- `putior_workflow` class inherits from `data.frame`, preserving
-  compatibility
+- Fixed pipe characters (`|`) in node labels breaking Mermaid diagram
+  parsing. Pipes are now escaped using the `#124;` entity.
+  ([\#33](https://github.com/pjt222/putior/issues/33))
+- [`put()`](https://pjt222.github.io/putior/reference/put.md) now gives
+  annotations without an `id` a fallback id (`node_1`, `node_2`, …) when
+  the uuid package is not installed. Before, such annotations had no id:
+  if none had one,
+  [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  failed with a misleading “missing required column(s): id” error, and
+  if only some had one, it silently dropped the others. This broke the
+  quick-start example and the sandbox templates for anyone without uuid.
+  The sandbox now also shows diagram errors in its status line instead
+  of a blank preview.
+  ([\#58](https://github.com/pjt222/putior/issues/58))
+- Annotation values may now contain the other kind of quote:
+  `label:"Don't panic"` and `label:'Say "hi"'` keep their labels.
+  Before, [`put()`](https://pjt222.github.io/putior/reference/put.md)
+  dropped any value with a quote character in it, without a warning, and
+  the node showed its id instead; the troubleshooting vignette even
+  recommended `label:"Load 'raw' data"`. There are still no escapes, so
+  a value cannot contain its own kind of quote, and backslashes in
+  Windows paths stay as they are. A property that
+  [`put()`](https://pjt222.github.io/putior/reference/put.md) cannot
+  read is now named in its validation warning (with `validate = TRUE`,
+  the default) instead of being dropped silently, and
+  [`is_valid_put_annotation()`](https://pjt222.github.io/putior/reference/is_valid_put_annotation.md)
+  returns `FALSE` for such a line. An annotation that ends with a
+  continuation `\` (without a comma before it) on the last line of the
+  file no longer loses its last property.
+  [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md)
+  wraps a value that contains a double quote in single quotes, so that
+  [`put()`](https://pjt222.github.io/putior/reference/put.md) reads its
+  suggestions back unchanged.
+  ([\#91](https://github.com/pjt222/putior/issues/91))
+- A comment may now follow the values of an annotation, as the
+  [`put()`](https://pjt222.github.io/putior/reference/put.md) help page,
+  the vignettes and the cheatsheet have always shown
+  (`# put id:"a", label:"Load" # first step`). Before, the comment made
+  the last property unreadable, and it was dropped. Outside quotes,
+  whitespace followed by `#`, `--`, `//` or `%` after a value starts the
+  comment. In a multiline annotation, a comment may also come before the
+  continuation `\` of a line.
+  ([\#91](https://github.com/pjt222/putior/issues/91))
+- [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  gives every node one Mermaid id and uses it in the node definition,
+  edges, `class` lines and click directives. Before, edges to an
+  artifact whose path has two punctuation characters in a row (such as
+  `./raw data (v2).csv`) used a different id than the artifact node, so
+  Mermaid drew an extra unlabeled node and left the artifact
+  unconnected. Annotation ids that differ only in punctuation (`a-b` and
+  `a_b`) were merged into one node with a self-loop; they now stay two
+  nodes (`a_b`, `a_b_2`) and
+  [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  warns. Two data files whose names differ only in punctuation get two
+  artifact nodes.
+  [`put_auto()`](https://pjt222.github.io/putior/reference/put_auto.md)
+  and
+  [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md),
+  which derive ids from file names, now give files that would share an
+  id (`a-b.R` and `a_b.R`, `end.R` and `node_end.R`, or `load.R` in two
+  folders) distinct ids (`load`, `load_2`).
+  `put_generate(output = "file")` now writes each annotation next to the
+  file it belongs to; when a file in between gave no annotation, the
+  next one went into the wrong `.put` file.
+  ([\#46](https://github.com/pjt222/putior/issues/46))
+- Node ids that are Mermaid keywords (`end`, `graph`, `flowchart`,
+  `subgraph`, `style`, `class`, `classDef`, `click`, `linkStyle`,
+  `call`, `href`, `interpolate`, and the link targets `_self`, `_blank`,
+  `_parent`, `_top`) made the whole diagram fail to parse. They are now
+  written as `node_end` and so on. `id:"end"` is a natural name for a
+  pipeline’s last step.
+  ([\#45](https://github.com/pjt222/putior/issues/45))
+- With `show_files = TRUE`, edge labels are now quoted and escaped like
+  node labels (`-->|"raw data (v2).csv"|`). A file name with parentheses
+  or other special characters made the diagram fail to parse.
+  ([\#45](https://github.com/pjt222/putior/issues/45))
+- The `title` of
+  [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  is now written as a quoted YAML string. A title with `:` (such as
+  `"ETL: stage 1"`) made the diagram fail to parse, and text after `#`
+  was dropped as a YAML comment.
+  ([\#45](https://github.com/pjt222/putior/issues/45))
+- A `#` in a label that Mermaid would read as a character entity is now
+  escaped as `#35;`. Mermaid decodes `#<name>;` and `#<digits>;`, so a
+  label such as
+  `Step `[`#35`](https://github.com/pjt222/putior/issues/35)`;` was
+  shown as `Step #`. A plain `#` (`C#`,
+  `item `[`#1`](https://github.com/pjt222/putior/issues/1)) is left
+  alone.
+  [`?put_diagram`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  now describes how labels and ids are written.
+  ([\#45](https://github.com/pjt222/putior/issues/45))
+- Labels that contain Mermaid syntax are now written so that Mermaid
+  shows them as written. Mermaid read a line with `direction`,
+  whitespace and `TB`, `BT`, `RL` or `LR` (and `TD` from Mermaid 11.17.2
+  on), as in “Change direction LR to TB”, as a direction statement and
+  dropped it: the node lost its label, and with
+  `source_info_style = "subgraph"` a file named `direction LR.R` made
+  the diagram fail to parse. That whitespace is now written as an entity
+  (`direction#32;LR`). The same rule spans line breaks, so an edge to an
+  id ending in `direction` (`wind_direction`) followed by an edge from
+  an id starting with `LR` (`LR_prep`) lost both edges; such an edge now
+  ends with `;`. On a line where `style` or `classDef` comes before it,
+  in the label or in the node id, a `:` followed by an escaped
+  character, as in `style:"bold"` (written `style:#quot;bold#quot;`), is
+  now written as `#58;`: Mermaid removed the last `;` of such a line and
+  showed `style:"bold#quot`.
+  ([\#89](https://github.com/pjt222/putior/issues/89))
+- A `%%{` in a node, edge or subgraph label is now written with its
+  first `%` as `#37;`, so that Mermaid shows it as written. Mermaid
+  removes `%%{...}%%` directives from the whole diagram text before it
+  parses it, so a label such as “Budget 50%%{x: draft” was cut short or
+  made the diagram fail to parse, and with a later `}%%` the text in
+  between was lost.
+  [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  now also warns when the `title` contains a `<`: the drawn title then
+  shows HTML entities such as `&lt;`, `&gt;` and `&amp;` and drops text
+  that looks like an HTML tag, and no escape avoids that. The `accTitle`
+  line shows the title as written.
+  ([\#98](https://github.com/pjt222/putior/issues/98))
+- A label with U+2028 or U+2029 (line and paragraph separator) followed
+  by `%%` made the diagram fail to parse: Mermaid removes comment lines
+  with a JavaScript regex that treats these characters as line ends.
+  They are now written as spaces, as line breaks are. The title, the
+  accTitle line and click tooltips already replaced them, except in the
+  C locale; they now do so there too.
+  ([\#104](https://github.com/pjt222/putior/issues/104))
+- [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  now warns when a drawn label contains a `<` before a letter, `/`, `!`
+  or `?`, such as `n<threshold` or `<draft>`: Mermaid draws labels as
+  HTML and reads it as the start of a tag, so the text up to the next
+  `>` disappears (`a<b and c>d` shows “ad”). The docs show `&lt;` for a
+  `<` that should show (`\lt` in `$$...$$` math). The tags `br`, `b`,
+  `i`, `em`, `strong`, `sub`, `sup`, `code` and `span` still count as
+  intended HTML. ([\#102](https://github.com/pjt222/putior/issues/102))
+- Fixed documentation using deprecated `name` instead of `id` in
+  examples
+- Replaced unsafe `1:nrow()` loops with `seq_len(nrow())` to handle
+  empty data frames
+
+### Fixes to features that are new in 0.2.0
+
+These entries fix features that were not in putior 0.1.0, or checks
+added while 0.2.0 was developed. They matter only to users of a
+development version.
+
+- Renamed `putior_skills()` to
+  [`putior_guide()`](https://pjt222.github.io/putior/reference/putior_guide.md).
+  The function, its MCP tool (`putior_guide`), and its ACP operation
+  (`guide`) all use the new name. `putior_help("skills")` still works as
+  an alias for backward compatibility. The inst file was renamed from
+  `SKILLS.md` to `GUIDE.md`, and the vignette from `skills.Rmd` to
+  `ai-integration.Rmd`.
+- [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  and the MCP and ACP servers accept `direction = "TB"`, Mermaid’s
+  synonym for `"TD"`. GUIDE.md named `TB` as the default, but `"TB"` was
+  rejected with an error.
+  ([\#79](https://github.com/pjt222/putior/issues/79))
+- Click links (`enable_clicks = TRUE`) now use the path the scan
+  recorded (`file_path`) instead of the file’s base name, which was
+  resolved against the working directory at the time the diagram was
+  made. Absolute Unix paths give `vscode://file/home/...` and
+  `file:///home/...` instead of a doubled or quadrupled slash, UNC paths
+  (`//server/share/...`) give `vscode://file//server/...` and
+  `file://server/...`, and a relative path to a missing file is made
+  absolute. Paths are percent-encoded, and tooltips escaped like labels:
+  a quote in a file name made the diagram fail to parse, and a name such
+  as `direction LR.R` made Mermaid drop the click line. The docs now say
+  that Mermaid keeps click links only with `securityLevel: "loose"`, so
+  they do not work on GitHub, GitLab or in Quarto with default settings.
+  The pkgdown site and the sandbox stay `"strict"`, because `"loose"`
+  would also let click callbacks run JavaScript.
+  ([\#47](https://github.com/pjt222/putior/issues/47))
+- Fixed `show_source_info = TRUE` using `<small>` HTML tags that are
+  unsupported by GitHub’s Mermaid renderer. Source file names are now
+  shown without HTML formatting tags.
+  ([\#32](https://github.com/pjt222/putior/issues/32))
+- Fixed logging, which wrote nothing with logger 0.3 or later: every log
+  call failed inside logger and the error was hidden. The
+  `putior.log_level` option, set by
+  [`set_putior_log_level()`](https://pjt222.github.io/putior/reference/set_putior_log_level.md)
+  or for one call by the `log_level` argument, is now the only
+  threshold, and an invalid `log_level` is an error. With logger
+  installed, WARN-level messages now appear on stderr next to the
+  matching R warnings.
+  ([\#70](https://github.com/pjt222/putior/issues/70))
+- Fixed single-line block comment annotations (`/* put ... */`) silently
+  losing their last property, which could drop an output and its edge.
+  ([\#72](https://github.com/pjt222/putior/issues/72))
+- [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md)
+  no longer merges a manual annotation and an auto-detected file into
+  one node when their ids meet: auto-detected rows get a suffix when
+  their id (also in its Mermaid form, where `1` is `node_1`) is already
+  used, so an unannotated `node_1.R` next to an annotation with the
+  fallback id `node_1` stays separate. It also matches manual and
+  auto-detected rows by file path, so an annotated `x/load.R` no longer
+  hides an unannotated `y/load.R`, and with
+  `merge_strategy = "supplement"` or `"union"` no longer takes the
+  inputs and outputs detected in the other file.
+  ([\#74](https://github.com/pjt222/putior/issues/74))
+- With `source_info_style = "subgraph"`, subgraph ids are now
+  `file_<name>` and never equal a node id. Before, a file `load.R` with
+  a node `id:"load"` failed to render (“would create a cycle”) on
+  Mermaid 11, and on Mermaid 12, which GitHub uses, the node silently
+  disappeared. Files with the same name in different folders now get one
+  subgraph each instead of sharing one, and the subgraph label then
+  includes as much of the folder path as it takes to tell them apart
+  (`x/load.R`, `a/x/load.R`).
+  ([\#45](https://github.com/pjt222/putior/issues/45),
+  [\#46](https://github.com/pjt222/putior/issues/46))
+- Fixed ACP
+  [`put_generate()`](https://pjt222.github.io/putior/reference/put_generate.md)
+  called with invalid `output = "raw"` (now supported)
+- Fixed MCP theme enum missing viridis family themes
+- Fixed ACP theme extraction regex missing colorblind-safe themes
 
 ## putior 0.1.0
 

@@ -60,6 +60,15 @@ Mermaid comment lines (`%% ...`), so the diagram still renders if the
 client joins both parts; its first part is always exactly the Mermaid
 code.
 
+Over HTTP, the MCP server (`putior_mcp_server(type = "http")`) and the
+ACP server scan only their `root` folder (by default the working
+directory). By default they listen on `127.0.0.1`, so only programs on
+this machine reach them; to serve other machines, set `host` and a
+`token`. See the Security sections of
+[`?putior_mcp_server`](https://pjt222.github.io/putior/reference/putior_mcp_server.md)
+and
+[`?putior_acp_server`](https://pjt222.github.io/putior/reference/putior_acp_server.md).
+
 See the [MCP Server section in
 CLAUDE.md](https://github.com/pjt222/putior/blob/main/CLAUDE.md#mcp-server-integration)
 for setup instructions.
