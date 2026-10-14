@@ -8,6 +8,12 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  # Weekly as well, to notice when a new release of a dependency breaks
+  # putior: for example an mcptools that no longer reads the settings
+  # putior's MCP server over HTTP relies on (#111)
+  schedule:
+    - cron: "43 5 * * 1"
+  workflow_dispatch:
 
 permissions:
   contents: read

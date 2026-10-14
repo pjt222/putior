@@ -167,10 +167,10 @@ putior_mcp_server <- function(type = c("stdio", "http"),
 
   # Older mcptools turned a list of content items, as a tool returns when
   # R warned, into "<object>" text and lost the result
-  if (utils::packageVersion("mcptools") < "1.0.0") {
+  if (mcptools_version() < "1.0.0") {
     stop(
       "putior's MCP server needs mcptools 1.0.0 or later; installed: ",
-      utils::packageVersion("mcptools"), ".\n",
+      mcptools_version(), ".\n",
       "Update it with: install.packages('mcptools')",
       call. = FALSE
     )
@@ -231,12 +231,31 @@ putior_mcp_server <- function(type = c("stdio", "http"),
   # Without mcptools' session tools: clients saw 18 tools, and a call could
   # run in a user's live R session (another working directory, another
   # putior version) instead of the server's own process
-  mcptools::mcp_server(
+  mcp_run_server(
     tools = tools,
     type = type,
     host = host,
     port = as.integer(port),
     session_tools = FALSE
+  )
+}
+
+# What putior_mcp_server() needs from mcptools, in functions of putior's
+# own, so that tests mock these instead of mcptools' namespace
+#' @noRd
+mcp_run_server <- function(...) mcptools::mcp_server(...)
+
+#' @noRd
+mcptools_version <- function() utils::packageVersion("mcptools")
+
+#' mcptools' request handler for HTTP, or NULL if it has none (#111)
+#'
+#' Not exported by mcptools; used only by mcp_check_http_security().
+#' @noRd
+mcp_http_request_handler <- function() {
+  tryCatch(
+    utils::getFromNamespace("handle_http_request", "mcptools"),
+    error = function(error_condition) NULL
   )
 }
 
@@ -433,16 +452,15 @@ mcp_reply <- function(code, style = "text") {
 #' without the token, with a wrong one and with an untrusted Host, and let
 #' a valid one through to the method check. An unknown method is used, so
 #' no request reaches a tool. If mcptools answers otherwise, or has no such
-#' handler, the server does not start.
+#' handler, the server does not start. The test secret and host differ
+#' with each call (from tempfile(), which leaves the session's random
+#' number generator alone).
+#' @param request_handler mcptools' request handler, or NULL
 #' @return NULL, invisibly; an error if mcptools does not enforce the settings
 #' @noRd
-mcp_check_http_security <- function() {
-  request_handler <- tryCatch(
-    utils::getFromNamespace("handle_http_request", "mcptools"),
-    error = function(error_condition) NULL
-  )
-  test_secret <- "putior-self-check-secret"
-  test_host <- "putior-self-check.invalid"
+mcp_check_http_security <- function(request_handler = mcp_http_request_handler()) {
+  test_secret <- basename(tempfile("putior-self-check-"))
+  test_host <- paste0(basename(tempfile("putior-self-check-")), ".invalid")
   old_options <- options(mcptools.http_shared_secret = test_secret,
                          mcptools.http_trusted_hosts = test_host)
   on.exit(options(old_options), add = TRUE)
@@ -462,7 +480,7 @@ mcp_check_http_security <- function() {
   if (!enforced) {
     stop(
       "putior's MCP server over HTTP needs mcptools to check the token and ",
-      "the Host of each request, and mcptools ", utils::packageVersion("mcptools"),
+      "the Host of each request, and mcptools ", mcptools_version(),
       " did not refuse putior's test requests: it may read other settings ",
       "than mcptools 1.0. The server was not started. Use the stdio ",
       "transport, or a putior version that supports this mcptools.",

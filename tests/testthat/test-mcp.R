@@ -778,11 +778,9 @@ test_that("long warnings are cut in the block", {
 
 test_that("putior_mcp_server() asks for mcptools 1.0.0 or later", {
   skip_if_not_installed("mcptools")
-  local_mocked_bindings(packageVersion = function(pkg, ...) package_version("0.2.1"),
-                        .package = "utils")
   # Without the check the test fails instead of starting a server that reads stdin
-  local_mocked_bindings(mcp_server = function(...) stop("reached mcp_server"),
-                        .package = "mcptools")
+  local_mocked_bindings(mcptools_version = function() package_version("0.2.1"),
+                        mcp_run_server = function(...) stop("reached mcp_server"))
   expect_error(putior_mcp_server(), "needs mcptools 1.0.0 or later", fixed = TRUE)
 })
 
@@ -790,10 +788,7 @@ test_that("putior_mcp_server() serves only putior's tools", {
   skip_if_not_installed("mcptools", "1.0.0")
   skip_if_not_installed("ellmer")
   server_arguments <- NULL
-  local_mocked_bindings(
-    mcp_server = function(...) server_arguments <<- list(...),
-    .package = "mcptools"
-  )
+  local_mocked_bindings(mcp_run_server = function(...) server_arguments <<- list(...))
   putior_mcp_server()
   expect_false(server_arguments$session_tools)
   expect_length(server_arguments$tools, 16)
@@ -803,18 +798,30 @@ test_that("putior_mcp_server() serves only putior's tools", {
 # The server over HTTP: scan root, token and trusted hosts (#111)
 # =============================================================================
 
-# Mock mcptools::mcp_server() to record what putior set up for it
+# A request handler that checks the secret and Host as mcptools 1.0 does,
+# so that the tests that run on CRAN do not depend on mcptools' internals
+compliant_request_handler <- function(request) {
+  secret <- getOption("mcptools.http_shared_secret", "")
+  trusted_hosts <- getOption("mcptools.http_trusted_hosts", character())
+  secret_ok <- !nzchar(secret) || identical(request$HTTP_PLUMBER_SHARED_SECRET, secret)
+  host_ok <- length(trusted_hosts) == 0 || isTRUE(request$HTTP_HOST %in% trusted_hosts)
+  list(status = if (secret_ok && host_ok) 405L else 403L)
+}
+
+# Mock putior's call of mcptools::mcp_server() to record what putior set
+# up for it; mcptools' namespace is left alone
 record_mcp_server_setup <- function(env = parent.frame()) {
   recorded <- new.env()
   local_mocked_bindings(
-    mcp_server = function(...) {
+    mcp_run_server = function(...) {
       recorded$arguments <- list(...)
       recorded$root <- .mcp_state$root
       recorded$secret <- getOption("mcptools.http_shared_secret")
       recorded$trusted_hosts <- getOption("mcptools.http_trusted_hosts")
       if (!is.null(recorded$check)) recorded$statuses <- recorded$check()
     },
-    .package = "mcptools", .env = env
+    mcp_http_request_handler = function() compliant_request_handler,
+    .env = env
   )
   recorded
 }
@@ -904,7 +911,7 @@ test_that("mcptools refuses requests that the setup does not allow (#111)", {
   # DELETE passes every check and then gets 405, so 405 means "allowed"
   request_status <- function(headers) {
     request <- c(list(REQUEST_METHOD = "DELETE"), headers)
-    mcptools:::handle_http_request(request)$status
+    utils::getFromNamespace("handle_http_request", "mcptools")(request)$status
   }
   recorded$check <- function() {
     c(
@@ -1018,11 +1025,19 @@ test_that("MCP warnings over HTTP show the root as <root> (#111)", {
   expect_false(grepl(normalized_root, reply[[2]]@text, fixed = TRUE))
 })
 
+test_that("the installed mcptools passes putior's check of its settings (#111)", {
+  # Uses mcptools internals, so only off CRAN
+  skip_on_cran()
+  skip_if_not_installed("mcptools", "1.0.0")
+  expect_false(is.null(mcp_http_request_handler()))
+  expect_no_error(mcp_check_http_security())
+})
+
 test_that("the MCP server over HTTP does not start if mcptools ignores its settings (#111)", {
   skip_if_not_installed("mcptools", "1.0.0")
   skip_if_not_installed("ellmer")
-  # The installed mcptools enforces them
-  expect_no_error(mcp_check_http_security())
+  # The check passes a handler that enforces the settings
+  expect_no_error(mcp_check_http_security(compliant_request_handler))
 
   recorded <- record_mcp_server_setup()
   old_options <- options(mcptools.http_shared_secret = "theirs",
@@ -1035,7 +1050,9 @@ test_that("the MCP server over HTTP does not start if mcptools ignores its setti
     identical(request$HTTP_PLUMBER_SHARED_SECRET, getOption("mcptools.http_shared_secret"))
   }
   status_if <- function(allowed) list(status = if (allowed) 405L else 403L)
-  for (handler in list(function(request) list(status = 405L),
+  # mcptools without the handler
+  handlers <- list(NULL)
+  handlers <- c(handlers, list(function(request) list(status = 405L),
                        function(request) stop("no such field"),
                        function(request) list(status = 403L),
                        # Ignores the secret
@@ -1050,8 +1067,9 @@ test_that("the MCP server over HTTP does not start if mcptools ignores its setti
                          status_if(trusted(request) && !is.null(request$HTTP_PLUMBER_SHARED_SECRET))
                        },
                        # Ignores the Host
-                       function(request) status_if(right_secret(request)))) {
-    local_mocked_bindings(handle_http_request = handler, .package = "mcptools")
+                       function(request) status_if(right_secret(request))))
+  for (handler in handlers) {
+    local_mocked_bindings(mcp_http_request_handler = function() handler)
     expect_error(putior_mcp_server(type = "http", port = 8123),
                  "did not refuse putior's test requests", fixed = TRUE)
     expect_null(recorded$arguments)
