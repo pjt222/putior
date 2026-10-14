@@ -123,6 +123,7 @@ put_diagram(
   source_info_style = "inline",
   enable_clicks = FALSE,
   click_protocol = "vscode",
+  artifact_edges = "replace",
   mermaid_config = "classic",
   accessibility = TRUE,
   log_level = NULL
@@ -149,6 +150,7 @@ put_diagram(
 | `source_info_style` | character | `"inline"` | Source info style: “inline”, “subgraph” |
 | `enable_clicks` | logical | `FALSE` | Make nodes clickable. See [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#enable_clicks---clickable-nodes) |
 | `click_protocol` | character | `"vscode"` | Click protocol: “vscode”, “rstudio”, “file” |
+| `artifact_edges` | character | `"replace"` | With `show_artifacts`: “replace” draws each data hop once, through the file; “both” also draws the direct edge |
 | `mermaid_config` | character or list | `"classic"` | Mermaid configuration in the frontmatter: “classic”, “none” or a named list |
 | `accessibility` | logical | `TRUE` | Write `accTitle` (from `title`) and `accDescr` for screen readers |
 | `log_level` | character | `NULL` | Override log level. See [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#debugging-with-logging) |

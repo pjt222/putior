@@ -217,6 +217,7 @@ the flow of data through your analysis pipeline.</p>
 <span>  source_info_style <span class="op">=</span> <span class="st">"inline"</span>,</span>
 <span>  enable_clicks <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  click_protocol <span class="op">=</span> <span class="st">"vscode"</span>,</span>
+<span>  artifact_edges <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"replace"</span>, <span class="st">"both"</span><span class="op">)</span>,</span>
 <span>  mermaid_config <span class="op">=</span> <span class="st">"classic"</span>,</span>
 <span>  accessibility <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  log_level <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -264,8 +265,12 @@ the flow of data through your analysis pipeline.</p>
 
 <dt id="arg-show-artifacts">show_artifacts<a class="anchor" aria-label="anchor" href="#arg-show-artifacts"></a></dt>
 <dd><p>Logical indicating whether to show data files as nodes.
-When TRUE, creates nodes for all input/output files, not just script connections.
-This provides a complete view of the data flow including terminal outputs.</p></dd>
+When TRUE, every input and output file that is not itself one of the
+workflow's scripts gets a node, and each script connects to the files
+it writes and reads (<code>script --&gt; file --&gt; script</code>), so that the
+diagram also shows terminal outputs. Scripts that read another script
+(such as <code>utils.R</code>) stay connected directly. See
+<code>artifact_edges</code>.</p></dd>
 
 
 <dt id="arg-show-workflow-boundaries">show_workflow_boundaries<a class="anchor" aria-label="anchor" href="#arg-show-workflow-boundaries"></a></dt>
@@ -320,6 +325,14 @@ Default is FALSE for backward compatibility.</p></dd>
 <li><p>"file" - Standard file:// protocol</p></li>
 <li><p>"rstudio" - RStudio IDE (rstudio://open-file?path=)</p></li>
 </ul></dd>
+
+
+<dt id="arg-artifact-edges">artifact_edges<a class="anchor" aria-label="anchor" href="#arg-artifact-edges"></a></dt>
+<dd><p>With <code>show_artifacts = TRUE</code>, how two scripts
+that a data file connects are drawn: "replace" (default) draws only the
+path through the file's node; "both" also draws the direct
+script-to-script edge, as putior did before 0.2.0, which shows every
+hop twice. Has no effect with <code>show_artifacts = FALSE</code>.</p></dd>
 
 
 <dt id="arg-mermaid-config">mermaid_config<a class="anchor" aria-label="anchor" href="#arg-mermaid-config"></a></dt>
@@ -389,6 +402,18 @@ and <code>a_b</code>) are kept apart with a numeric suffix and a warning; an id
 that is already valid (<code>a_b</code>) keeps its form. With
 <code>source_info_style = "subgraph"</code>, each source file becomes a subgraph
 with the id <code>file_&lt;name&gt;</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="size-limits">Size limits<a class="anchor" aria-label="anchor" href="#size-limits"></a></h2>
+
+
+<p>Mermaid draws at most 500 edges and 50,000 characters (not counting the
+frontmatter and <code>%%</code> comments) by default, and shows an error or a
+placeholder instead. Only the page that renders the diagram can raise
+these limits (<code>maxEdges</code>, <code>maxTextSize</code> in
+<code>mermaid.initialize()</code>); GitHub, GitLab and Quarto keep the
+defaults. <code>put_diagram()</code> warns when its output is over either
+limit.</p>
     </div>
     <div class="section level2">
     <h2 id="mermaid-versions">Mermaid versions<a class="anchor" aria-label="anchor" href="#mermaid-versions"></a></h2>

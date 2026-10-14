@@ -499,6 +499,7 @@ Logging</a>
 <span>  source_info_style <span class="op">=</span> <span class="st">"inline"</span>,</span>
 <span>  enable_clicks <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  click_protocol <span class="op">=</span> <span class="st">"vscode"</span>,</span>
+<span>  artifact_edges <span class="op">=</span> <span class="st">"replace"</span>,</span>
 <span>  mermaid_config <span class="op">=</span> <span class="st">"classic"</span>,</span>
 <span>  accessibility <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  log_level <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -623,20 +624,27 @@ Tour</a>
 <td>Click protocol: “vscode”, “rstudio”, “file”</td>
 </tr>
 <tr class="odd">
+<td><code>artifact_edges</code></td>
+<td>character</td>
+<td><code>"replace"</code></td>
+<td>With <code>show_artifacts</code>: “replace” draws each data hop
+once, through the file; “both” also draws the direct edge</td>
+</tr>
+<tr class="even">
 <td><code>mermaid_config</code></td>
 <td>character or list</td>
 <td><code>"classic"</code></td>
 <td>Mermaid configuration in the frontmatter: “classic”, “none” or a
 named list</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>accessibility</code></td>
 <td>logical</td>
 <td><code>TRUE</code></td>
 <td>Write <code>accTitle</code> (from <code>title</code>) and
 <code>accDescr</code> for screen readers</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>log_level</code></td>
 <td>character</td>
 <td><code>NULL</code></td>

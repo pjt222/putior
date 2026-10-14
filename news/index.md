@@ -58,6 +58,18 @@
   the node lost its shape and label.
   ([\#50](https://github.com/pjt222/putior/issues/50))
 
+- With `show_artifacts = TRUE`,
+  [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  now draws each data hop once, through the file’s node
+  (`script --> file --> script`). Before, it also drew a direct edge
+  between the two scripts, so every hop appeared twice and the diagram
+  had about 1.5 times the edges it needed, which brings Mermaid’s
+  500-edge limit closer. A script that another script reads (such as
+  `utils.R`) has no file node and keeps its direct edge.
+  `artifact_edges = "both"` draws the direct edges as before; the MCP
+  `put_diagram` tool has the same argument.
+  ([\#55](https://github.com/pjt222/putior/issues/55))
+
 ### Bug Fixes
 
 - Fixed `show_source_info = TRUE` using `<small>` HTML tags that are
@@ -491,6 +503,23 @@
 
 ### Improvements
 
+- [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  warns when a diagram is over Mermaid’s default limits of 500 edges
+  (`maxEdges`) or 50,000 characters (`maxTextSize`). Renderers such as
+  GitHub, GitLab and Quarto then show an error or an empty placeholder,
+  and the diagram cannot raise either limit itself. The size is counted
+  as `mermaid.render()` counts it (without the frontmatter and comments,
+  with the newline that ends a code block), and the Mermaid check
+  confirms both limits at the boundary. Hosts that use `mermaid.run()`,
+  such as pkgdown sites, count up to a few characters less, so the
+  warning there can come a little early, never late. The warning names
+  the options;
+  [`?put_diagram`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  and the troubleshooting vignette describe both limits. Large diagrams
+  are also much faster to generate: a 500-step chain took about two
+  minutes, because every input looked through every step’s outputs, and
+  now takes about two seconds.
+  ([\#56](https://github.com/pjt222/putior/issues/56))
 - Consolidated language detection list into single authoritative
   registry (`.LANGUAGES_WITH_DETECTION` in `language_registry.R`)
 - Standardized `output` parameter across

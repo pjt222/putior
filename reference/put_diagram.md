@@ -23,6 +23,7 @@ put_diagram(
   source_info_style = "inline",
   enable_clicks = FALSE,
   click_protocol = "vscode",
+  artifact_edges = c("replace", "both"),
   mermaid_config = "classic",
   accessibility = TRUE,
   log_level = NULL
@@ -77,9 +78,11 @@ put_diagram(
 - show_artifacts:
 
   Logical indicating whether to show data files as nodes. When TRUE,
-  creates nodes for all input/output files, not just script connections.
-  This provides a complete view of the data flow including terminal
-  outputs.
+  every input and output file that is not itself one of the workflow's
+  scripts gets a node, and each script connects to the files it writes
+  and reads (`script --> file --> script`), so that the diagram also
+  shows terminal outputs. Scripts that read another script (such as
+  `utils.R`) stay connected directly. See `artifact_edges`.
 
 - show_workflow_boundaries:
 
@@ -155,6 +158,14 @@ put_diagram(
 
   - "rstudio" - RStudio IDE (rstudio://open-file?path=)
 
+- artifact_edges:
+
+  With `show_artifacts = TRUE`, how two scripts that a data file
+  connects are drawn: "replace" (default) draws only the path through
+  the file's node; "both" also draws the direct script-to-script edge,
+  as putior did before 0.2.0, which shows every hop twice. Has no effect
+  with `show_artifacts = FALSE`.
+
 - mermaid_config:
 
   Mermaid configuration to write into the diagram's frontmatter, next to
@@ -222,6 +233,15 @@ gets a `node_` prefix. Ids that only differ in punctuation (`a-b` and
 already valid (`a_b`) keeps its form. With
 `source_info_style = "subgraph"`, each source file becomes a subgraph
 with the id `file_<name>`.
+
+## Size limits
+
+Mermaid draws at most 500 edges and 50,000 characters (not counting the
+frontmatter and `%%` comments) by default, and shows an error or a
+placeholder instead. Only the page that renders the diagram can raise
+these limits (`maxEdges`, `maxTextSize` in `mermaid.initialize()`);
+GitHub, GitLab and Quarto keep the defaults. `put_diagram()` warns when
+its output is over either limit.
 
 ## Mermaid versions
 
