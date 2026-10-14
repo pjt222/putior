@@ -385,17 +385,18 @@ is_inside_folder <- function(path, folder) {
 #' get out. A path outside the root is an error: the server used to scan
 #' any absolute path its R process could read.
 #' @param path A path that passed sanitize_acp_path()
+#' @param root The normalized root folder (also used by the MCP server
+#'   over HTTP)
 #' @return The normalized absolute path
 #' @noRd
-confine_acp_path <- function(path) {
-  root <- acp_root()
+confine_acp_path <- function(path, root = acp_root()) {
   candidate <- path.expand(path)
   if (!grepl("^([A-Za-z]:)?[/\\\\]", candidate)) {
     candidate <- file.path(root, candidate)
   }
   resolved <- normalizePath(candidate, winslash = "/", mustWork = FALSE)
   if (!is_inside_folder(resolved, root)) {
-    stop("ACP path rejected: outside the folder this server scans: ", path, call. = FALSE)
+    stop("Path rejected: outside the folder this server scans: ", path, call. = FALSE)
   }
   resolved
 }
@@ -415,9 +416,10 @@ confine_acp_path <- function(path) {
 #' scanned.
 #' @param path The confined path to scan
 #' @param recursive Whether the scan is recursive
+#' @param root The normalized root folder
 #' @return Exclude patterns, or NULL when every file is inside the root
 #' @noRd
-acp_outside_excludes <- function(path, recursive = TRUE) {
+acp_outside_excludes <- function(path, recursive = TRUE, root = acp_root()) {
   if (!dir.exists(path)) {
     return(NULL)
   }
@@ -425,7 +427,6 @@ acp_outside_excludes <- function(path, recursive = TRUE) {
   if (length(files) == 0) {
     return(NULL)
   }
-  root <- acp_root()
   resolved <- normalizePath(files, winslash = "/", mustWork = FALSE)
   outside <- files[!vapply(resolved, is_inside_folder, logical(1), folder = root)]
   if (length(outside) == 0) {
@@ -556,7 +557,7 @@ sanitize_acp_path <- function(path) {
 
   # Reject paths with control characters (including null bytes)
   if (grepl("[[:cntrl:]]", path)) {
-    stop("ACP path rejected: contains control characters", call. = FALSE)
+    stop("Path rejected: contains control characters", call. = FALSE)
   }
 
   # Normalize path separators for traversal check
@@ -565,12 +566,12 @@ sanitize_acp_path <- function(path) {
   # Network and device paths (\\\\server\\share, //server/share, \\\\?\\): a
   # file system call on one would make the server contact that host (#111)
   if (startsWith(normalized, "//")) {
-    stop("ACP path rejected: network and device paths are not allowed: ", path, call. = FALSE)
+    stop("Path rejected: network and device paths are not allowed: ", path, call. = FALSE)
   }
 
   # Reject directory traversal attempts, also after a drive ("D:..\\x")
   if (grepl("(^|[/:])\\.\\.(/|$)", normalized)) {
-    stop("ACP path rejected: directory traversal not allowed: ", path, call. = FALSE)
+    stop("Path rejected: directory traversal not allowed: ", path, call. = FALSE)
   }
 
   path
@@ -843,6 +844,40 @@ is_loopback_host <- function(host) {
   grepl("^127(\\.[0-9]{1,3}){3}$", host) || host %in% c("localhost", "::1")
 }
 
+#' Check a server's root folder and return it normalized (#111)
+#' @noRd
+check_server_root <- function(root) {
+  if (!is.character(root) || length(root) != 1 || is.na(root) || !dir.exists(root)) {
+    stop("'root' must be an existing folder.", call. = FALSE)
+  }
+  normalizePath(root, winslash = "/", mustWork = TRUE)
+}
+
+#' Check a server's token against its host (#111)
+#'
+#' A token is NULL or a string of at least 16 characters without spaces. A
+#' server on an address other than a loopback one can be reached from
+#' other machines and needs one.
+#' @param header How clients send the token, for the error message
+#' @noRd
+check_server_token <- function(token, host, header) {
+  if (!is.null(token) &&
+      (!is.character(token) || length(token) != 1 || is.na(token) ||
+         nchar(trimws(token)) < 16 || grepl("[[:space:]]", token))) {
+    stop("'token' must be a string of at least 16 characters without spaces, or NULL.",
+         call. = FALSE)
+  }
+  if (!is_loopback_host(host) && is.null(token)) {
+    stop(
+      "A server on ", host, " can be reached from other machines, so it needs ",
+      "a token: token = \"<at least 16 random characters>\". Clients then send ",
+      "'", header, "'.",
+      call. = FALSE
+    )
+  }
+  invisible(token)
+}
+
 #' A request that the server refuses before running it (#111)
 #'
 #' Sets the status and returns the body of the answer, or NULL when the
@@ -876,8 +911,7 @@ acp_refuse_request <- function(request, response, needs_json = FALSE) {
 #' Error messages and warnings name absolute paths, which would tell a
 #' client where the root lies and how the disk is laid out.
 #' @noRd
-redact_acp_root <- function(text) {
-  root <- acp_root()
+redact_acp_root <- function(text, root = acp_root()) {
   # A drive or file system root would be every path's start
   if (grepl("^([A-Za-z]:)?/?$", root)) {
     return(text)
@@ -1137,27 +1171,10 @@ putior_acp_server <- function(host = "127.0.0.1", port = 8080L, root = getwd(),
     stop("'port' must be an integer between 1 and 65535.", call. = FALSE)
   }
 
-  # The folder the server may scan (#111)
-  if (!is.character(root) || length(root) != 1 || is.na(root) || !dir.exists(root)) {
-    stop("'root' must be an existing folder.", call. = FALSE)
-  }
-  root <- normalizePath(root, winslash = "/", mustWork = TRUE)
-
-  # A token, required unless only this machine can reach the server (#111)
-  if (!is.null(token) &&
-      (!is.character(token) || length(token) != 1 || is.na(token) ||
-         nchar(trimws(token)) < 16 || grepl("[[:space:]]", token))) {
-    stop("'token' must be a string of at least 16 characters without spaces, or NULL.",
-         call. = FALSE)
-  }
-  if (!is_loopback_host(host) && is.null(token)) {
-    stop(
-      "A server on ", host, " can be reached from other machines, so it needs ",
-      "a token: putior_acp_server(host = \"", host, "\", token = \"<at least 16 ",
-      "random characters>\"). Clients then send 'Authorization: Bearer <token>'.",
-      call. = FALSE
-    )
-  }
+  # The folder the server may scan, and a token unless only this machine
+  # can reach it (#111)
+  root <- check_server_root(root)
+  check_server_token(token, host, "Authorization: Bearer <token>")
   if (host == "0.0.0.0") {
     warning(
       "Binding to 0.0.0.0 exposes the ACP server to all network interfaces; ",

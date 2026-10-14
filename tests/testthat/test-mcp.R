@@ -798,3 +798,191 @@ test_that("putior_mcp_server() serves only putior's tools", {
   expect_false(server_arguments$session_tools)
   expect_length(server_arguments$tools, 16)
 })
+
+# =============================================================================
+# The server over HTTP: scan root, token and trusted hosts (#111)
+# =============================================================================
+
+# Mock mcptools::mcp_server() to record what putior set up for it
+record_mcp_server_setup <- function(env = parent.frame()) {
+  recorded <- new.env()
+  local_mocked_bindings(
+    mcp_server = function(...) {
+      recorded$arguments <- list(...)
+      recorded$root <- .mcp_state$root
+      recorded$secret <- getOption("mcptools.http_shared_secret")
+      recorded$trusted_hosts <- getOption("mcptools.http_trusted_hosts")
+      if (!is.null(recorded$check)) recorded$statuses <- recorded$check()
+    },
+    .package = "mcptools", .env = env
+  )
+  recorded
+}
+
+test_that("putior_mcp_server() over HTTP sets a root, secret and trusted hosts (#111)", {
+  skip_if_not_installed("mcptools", "1.0.0")
+  skip_if_not_installed("ellmer")
+  root <- file.path(tempdir(), "mcp_http_root")
+  dir.create(root, showWarnings = FALSE)
+  on.exit(unlink(root, recursive = TRUE), add = TRUE)
+  old_options <- options(mcptools.http_shared_secret = "theirs",
+                         mcptools.http_trusted_hosts = "theirs")
+  on.exit(options(old_options), add = TRUE)
+  recorded <- record_mcp_server_setup()
+
+  # Over stdio nothing changes
+  putior_mcp_server()
+  expect_null(recorded$root)
+  expect_identical(recorded$secret, "theirs")
+
+  # Without a token: only loopback names, with and without the port
+  putior_mcp_server(type = "http", port = 8123, root = root)
+  expect_identical(recorded$root, normalizePath(root, winslash = "/"))
+  expect_identical(recorded$secret, "")
+  expect_setequal(recorded$trusted_hosts, c(
+    "127.0.0.1:8123", "localhost:8123", "[::1]:8123", "127.0.0.1", "localhost", "[::1]"
+  ))
+  # Another loopback address and IPv6 are written as clients send them
+  putior_mcp_server(type = "http", host = "127.0.0.2", port = 8123, root = root)
+  expect_true("127.0.0.2:8123" %in% recorded$trusted_hosts)
+  putior_mcp_server(type = "http", host = "::1", port = 8123, root = root)
+  expect_true("[::1]:8123" %in% recorded$trusted_hosts)
+  # Restored when the server stops
+  expect_null(.mcp_state$root)
+  expect_identical(getOption("mcptools.http_shared_secret"), "theirs")
+  expect_identical(getOption("mcptools.http_trusted_hosts"), "theirs")
+
+  # With a token: any Host, but every request must send the token
+  token <- "0123456789abcdef0123"
+  expect_warning(
+    putior_mcp_server(type = "http", host = "0.0.0.0", port = 8123, root = root, token = token),
+    "0.0.0.0", fixed = TRUE
+  )
+  expect_identical(recorded$secret, token)
+  expect_length(recorded$trusted_hosts, 0)
+})
+
+test_that("putior_mcp_server() over HTTP refuses an unsafe setup (#111)", {
+  skip_if_not_installed("mcptools", "1.0.0")
+  skip_if_not_installed("ellmer")
+  recorded <- record_mcp_server_setup()
+  for (host in c("0.0.0.0", "192.168.1.5", "example.org")) {
+    expect_error(putior_mcp_server(type = "http", host = host), "needs a token",
+                 fixed = TRUE, label = host)
+  }
+  for (token in list("short", "0123456789 abcdef0123", NA_character_, 1234567890123456)) {
+    expect_error(putior_mcp_server(type = "http", token = token), "at least 16 characters",
+                 fixed = TRUE)
+  }
+  expect_error(putior_mcp_server(type = "http", root = file.path(tempdir(), "no_such_root")),
+               "'root' must be an existing folder", fixed = TRUE)
+  expect_null(recorded$arguments)
+  expect_null(.mcp_state$root)
+})
+
+test_that("mcptools refuses requests that the setup does not allow (#111)", {
+  # Uses mcptools internals, so only off CRAN
+  skip_on_cran()
+  skip_if_not_installed("mcptools", "1.0.0")
+  skip_if_not_installed("ellmer")
+  root <- file.path(tempdir(), "mcp_http_requests")
+  dir.create(root, showWarnings = FALSE)
+  on.exit(unlink(root, recursive = TRUE), add = TRUE)
+  # Hosts trusted through the environment would be added to putior's list
+  old_trusted_hosts <- Sys.getenv("MCPTOOLS_HTTP_TRUSTED_HOSTS", NA)
+  Sys.unsetenv("MCPTOOLS_HTTP_TRUSTED_HOSTS")
+  if (!is.na(old_trusted_hosts)) {
+    on.exit(Sys.setenv(MCPTOOLS_HTTP_TRUSTED_HOSTS = old_trusted_hosts), add = TRUE)
+  }
+  recorded <- record_mcp_server_setup()
+  # DELETE passes every check and then gets 405, so 405 means "allowed"
+  request_status <- function(headers) {
+    request <- c(list(REQUEST_METHOD = "DELETE"), headers)
+    mcptools:::handle_http_request(request)$status
+  }
+  recorded$check <- function() {
+    c(
+      loopback = request_status(list(HTTP_HOST = "127.0.0.1:8123")),
+      localhost = request_status(list(HTTP_HOST = "localhost:8123")),
+      rebinding = request_status(list(HTTP_HOST = "attacker.example:8123")),
+      no_host = request_status(list()),
+      other_origin = request_status(list(HTTP_HOST = "127.0.0.1:8123",
+                                         HTTP_ORIGIN = "http://attacker.example")),
+      no_secret = request_status(list(HTTP_HOST = "server.lan:8123")),
+      wrong_secret = request_status(list(HTTP_HOST = "server.lan:8123",
+                                         HTTP_PLUMBER_SHARED_SECRET = "wrong")),
+      right_secret = request_status(list(HTTP_HOST = "server.lan:8123",
+                                         HTTP_PLUMBER_SHARED_SECRET = "0123456789abcdef0123"))
+    )
+  }
+
+  putior_mcp_server(type = "http", port = 8123, root = root)
+  expect_equal(recorded$statuses[c("loopback", "localhost")], c(loopback = 405, localhost = 405))
+  expect_equal(recorded$statuses[c("rebinding", "no_host", "other_origin", "no_secret")],
+               c(rebinding = 403, no_host = 403, other_origin = 403, no_secret = 403))
+
+  suppressWarnings(putior_mcp_server(type = "http", host = "0.0.0.0", port = 8123,
+                                     root = root, token = "0123456789abcdef0123"))
+  expect_equal(recorded$statuses[c("no_secret", "wrong_secret", "right_secret")],
+               c(no_secret = 403, wrong_secret = 403, right_secret = 405))
+})
+
+test_that("MCP tools over HTTP scan only inside the root (#111)", {
+  skip_if_not_installed("ellmer")
+  skip_if_not_installed("jsonlite")
+  project_dir <- create_mcp_test_project()
+  outside_dir <- file.path(tempdir(), "putior_mcp_outside")
+  dir.create(outside_dir, showWarnings = FALSE)
+  writeLines('# put id:"secret_step", label:"Secret"', file.path(outside_dir, "other.R"))
+  on.exit(unlink(c(project_dir, outside_dir), recursive = TRUE), add = TRUE)
+  tools <- putior_mcp_tools()
+
+  # Over stdio (no root) any folder can be scanned
+  expect_match(tools$put(path = outside_dir), "secret_step", fixed = TRUE)
+
+  .mcp_state$root <- normalizePath(project_dir, winslash = "/")
+  on.exit(.mcp_state$root <- NULL, add = TRUE)
+  # A relative path is taken from the root; replies show the root as <root>
+  scan_reply <- tools$put(path = ".")
+  expect_match(scan_reply, "extract", fixed = TRUE)
+  expect_match(scan_reply, "<root>/etl.R", fixed = TRUE)
+  expect_false(grepl(.mcp_state$root, scan_reply, fixed = TRUE))
+  dir.create(file.path(project_dir, "empty"), showWarnings = FALSE)
+  expect_error(tools$put_diagram(path = "empty"), "found in: <root>/empty", fixed = TRUE)
+  expect_match(tools$put(path = "etl.R"), "clean", fixed = TRUE)
+  expect_match(tools$put_diagram(path = "."), "flowchart", fixed = TRUE)
+  # Outside the root: an error naming the root as <root>, for every scanning tool
+  outside_path <- normalizePath(outside_dir, winslash = "/")
+  scans <- list(
+    put = function() tools$put(path = outside_path),
+    put_diagram = function() tools$put_diagram(path = outside_path),
+    put_auto = function() tools$put_auto(path = outside_path),
+    put_generate = function() tools$put_generate(path = outside_path),
+    put_merge = function() tools$put_merge(path = outside_path)
+  )
+  for (tool_name in names(scans)) {
+    expect_error(scans[[tool_name]](), "outside the folder this server scans", fixed = TRUE,
+                 label = tool_name)
+  }
+  expect_error(tools$put(path = "../putior_mcp_outside"),
+               "Path rejected: directory traversal", fixed = TRUE)
+})
+
+test_that("mcp_confine_scan() adds the excludes for links out of the root (#111)", {
+  root <- file.path(tempdir(), "mcp_confine_root")
+  dir.create(root, showWarnings = FALSE)
+  on.exit(unlink(root, recursive = TRUE), add = TRUE)
+  normalized_root <- normalizePath(root, winslash = "/")
+  # Over stdio, path and exclude stay as given
+  expect_identical(mcp_confine_scan("R", TRUE, "a,b"), list(path = "R", exclude = "a,b"))
+
+  .mcp_state$root <- normalized_root
+  on.exit(.mcp_state$root <- NULL, add = TRUE)
+  local_mocked_bindings(acp_outside_excludes = function(...) "^outside/")
+  # A comma-separated exclude is split, since put() splits only a single one
+  expect_identical(mcp_confine_scan(".", TRUE, "a, b"),
+                   list(path = normalized_root, exclude = c("a", "b", "^outside/")))
+  expect_identical(mcp_confine_scan(".", TRUE, NULL)$exclude, "^outside/")
+  local_mocked_bindings(acp_outside_excludes = function(...) NULL)
+  expect_identical(mcp_confine_scan(".", TRUE, "a,b")$exclude, "a,b")
+})

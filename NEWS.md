@@ -241,6 +241,15 @@
   choosing a running R session (`list_r_sessions`, `select_r_session`)
   were on as well, so clients saw 18 tools, and a call could run in a
   user's live R session instead of the server's own process.
+* Over HTTP (`type = "http"`), the tools scan only the folder given as
+  `root` (default: the working directory), with the ACP server's rules,
+  and replies show the root as `<root>`; before, a client could scan any
+  folder the server's R process could read. A `token` makes mcptools
+  require the header `Plumber-Shared-Secret: <token>`; a server on an
+  address other than a loopback one refuses to start without one.
+  Without a token, the server answers only requests addressed to a
+  loopback name (against DNS rebinding). Over stdio nothing changes.
+  `?putior_mcp_server` describes the security model. (#111)
 
 ### ACP Server Integration
 * Added `putior_acp_server()` to expose putior as an ACP agent for inter-agent

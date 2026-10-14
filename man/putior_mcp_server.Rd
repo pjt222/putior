@@ -4,7 +4,13 @@
 \alias{putior_mcp_server}
 \title{Start putior MCP Server}
 \usage{
-putior_mcp_server(type = c("stdio", "http"), host = "127.0.0.1", port = 8080L)
+putior_mcp_server(
+  type = c("stdio", "http"),
+  host = "127.0.0.1",
+  port = 8080L,
+  root = getwd(),
+  token = NULL
+)
 }
 \arguments{
 \item{type}{Character string specifying the transport type:
@@ -18,6 +24,19 @@ Default: "127.0.0.1"}
 
 \item{port}{Integer specifying the port for HTTP transport.
 Default: 8080}
+
+\item{root}{For HTTP transport: the folder that the tools may scan
+(default: the working directory). A relative path is taken from it, a
+path outside it is an error, and a recursive scan skips the files that
+links inside it lead outside to. Over stdio the client is the local
+program that started the server, and paths are not limited.}
+
+\item{token}{For HTTP transport: \code{NULL} (default) or a string of
+at least 16 characters without spaces that clients must send as the
+header \code{Plumber-Shared-Secret: <token>}. A server on an address
+other than a loopback one (\code{127.0.0.1}, \code{localhost},
+\code{::1}) needs a token. Without one, only requests addressed to a
+loopback name are answered.}
 }
 \value{
 This function does not return; it runs the MCP server until terminated.
@@ -83,12 +102,48 @@ Add to \code{\%APPDATA\%\\Claude\\claude_desktop_config.json}:
 }
 }
 
+\section{Security}{
+
+Over stdio nothing below applies: the client is the program that started
+the server. Over HTTP:
+\itemize{
+\item A tool can scan only the \code{root} folder and what lies below
+it, and returns the file names, labels and annotations found there,
+with the same rules as \code{\link{putior_acp_server}}: a path
+outside the root is an error, also through a symbolic link or
+junction; a recursive scan skips the files that links inside the
+root lead outside to; a path with a \code{..} component, control
+characters or a network or device form is rejected. Results and
+messages show the root as \code{<root>}, so the links that
+\code{enable_clicks} adds open files only over stdio.
+\item Without a token, the server runs only on a loopback \code{host}
+and answers only requests addressed to a loopback name, so that a
+web page cannot reach it through DNS rebinding; mcptools also
+rejects requests from web pages of other origins.
+\item To serve other machines, set \code{token}; mcptools then answers
+only requests that send it:
+\preformatted{
+# R
+putior_mcp_server(type = "http", host = "0.0.0.0", port = 8080,
+                  root = "path/to/project",
+                  token = Sys.getenv("PUTIOR_MCP_TOKEN"))
+
+# Claude Code
+claude mcp add --transport http putior http://<server>:8080/ \\
+  --header "Plumber-Shared-Secret: <token>"
+}
+\item The server does not use TLS and mcptools does not limit the
+request size: across a network, put it behind a proxy that serves
+HTTPS and limits the size, or the token travels in clear text.
+}
+}
+
 \examples{
 \dontrun{
 # Start MCP server with default stdio transport
 putior_mcp_server()
 
-# Start MCP server with HTTP transport
+# Start MCP server with HTTP transport, scanning only the current folder
 putior_mcp_server(type = "http", port = 8080)
 }
 

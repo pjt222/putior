@@ -21,6 +21,17 @@ NULL
 #'   }
 #' @param host Character string specifying the host for HTTP transport.
 #'   Default: "127.0.0.1"
+#' @param root For HTTP transport: the folder that the tools may scan
+#'   (default: the working directory). A relative path is taken from it, a
+#'   path outside it is an error, and a recursive scan skips the files that
+#'   links inside it lead outside to. Over stdio the client is the local
+#'   program that started the server, and paths are not limited.
+#' @param token For HTTP transport: \code{NULL} (default) or a string of
+#'   at least 16 characters without spaces that clients must send as the
+#'   header \code{Plumber-Shared-Secret: <token>}. A server on an address
+#'   other than a loopback one (\code{127.0.0.1}, \code{localhost},
+#'   \code{::1}) needs a token. Without one, only requests addressed to a
+#'   loopback name are answered.
 #' @param port Integer specifying the port for HTTP transport.
 #'   Default: 8080
 #'
@@ -78,6 +89,40 @@ NULL
 #' }
 #' }
 #'
+#' @section Security:
+#' Over stdio nothing below applies: the client is the program that started
+#' the server. Over HTTP:
+#' \itemize{
+#'   \item A tool can scan only the \code{root} folder and what lies below
+#'     it, and returns the file names, labels and annotations found there,
+#'     with the same rules as \code{\link{putior_acp_server}}: a path
+#'     outside the root is an error, also through a symbolic link or
+#'     junction; a recursive scan skips the files that links inside the
+#'     root lead outside to; a path with a \code{..} component, control
+#'     characters or a network or device form is rejected. Results and
+#'     messages show the root as \code{<root>}, so the links that
+#'     \code{enable_clicks} adds open files only over stdio.
+#'   \item Without a token, the server runs only on a loopback \code{host}
+#'     and answers only requests addressed to a loopback name, so that a
+#'     web page cannot reach it through DNS rebinding; mcptools also
+#'     rejects requests from web pages of other origins.
+#'   \item To serve other machines, set \code{token}; mcptools then answers
+#'     only requests that send it:
+#' \preformatted{
+#' # R
+#' putior_mcp_server(type = "http", host = "0.0.0.0", port = 8080,
+#'                   root = "path/to/project",
+#'                   token = Sys.getenv("PUTIOR_MCP_TOKEN"))
+#'
+#' # Claude Code
+#' claude mcp add --transport http putior http://<server>:8080/ \\
+#'   --header "Plumber-Shared-Secret: <token>"
+#' }
+#'   \item The server does not use TLS and mcptools does not limit the
+#'     request size: across a network, put it behind a proxy that serves
+#'     HTTPS and limits the size, or the token travels in clear text.
+#' }
+#'
 #' @return This function does not return; it runs the MCP server until terminated.
 #'
 #' @family integration
@@ -88,14 +133,16 @@ NULL
 #' # Start MCP server with default stdio transport
 #' putior_mcp_server()
 #'
-#' # Start MCP server with HTTP transport
+#' # Start MCP server with HTTP transport, scanning only the current folder
 #' putior_mcp_server(type = "http", port = 8080)
 #' }
 #'
 #' @seealso \code{\link{putior_mcp_tools}} for accessing the tool definitions
 putior_mcp_server <- function(type = c("stdio", "http"),
                                host = "127.0.0.1",
-                               port = 8080L) {
+                               port = 8080L,
+                               root = getwd(),
+                               token = NULL) {
   type <- match.arg(type)
 
   # Check for required dependencies
@@ -133,6 +180,29 @@ putior_mcp_server <- function(type = c("stdio", "http"),
     if (is.na(port) || port < 1L || port > 65535L) {
       stop("'port' must be an integer between 1 and 65535. Received: ", port,
            call. = FALSE)
+    }
+  }
+
+  # Over HTTP, other programs (or machines) can call the tools: confine
+  # scans to root, and use mcptools' shared secret and trusted hosts (#111)
+  if (type == "http") {
+    root <- check_server_root(root)
+    check_server_token(token, host, "Plumber-Shared-Secret: <token>")
+    # Without a token, only requests addressed to this machine by a loopback
+    # name are answered (no DNS rebinding); mcptools also rejects browser
+    # pages from other origins
+    trusted_hosts <- if (is.null(token)) mcp_loopback_hosts(host, port) else character()
+    old_options <- options(mcptools.http_shared_secret = token %||% "",
+                           mcptools.http_trusted_hosts = trusted_hosts)
+    on.exit(options(old_options), add = TRUE)
+    .mcp_state$root <- root
+    on.exit(.mcp_state$root <- NULL, add = TRUE)
+    if (host == "0.0.0.0") {
+      warning(
+        "Binding to 0.0.0.0 exposes the MCP server to all network interfaces; ",
+        "requests need the token. Use host = \"127.0.0.1\" for local-only access.",
+        call. = FALSE
+      )
     }
   }
 
@@ -300,7 +370,20 @@ mcp_scan <- function(scan) {
 #' @return The result, or a list of two ellmer::ContentText items
 #' @noRd
 mcp_reply <- function(code, style = "text") {
-  collected <- collect_warnings(code)
+  root <- .mcp_state$root
+  if (is.null(root)) {
+    collected <- collect_warnings(code)
+  } else {
+    # Over HTTP, results and messages show the root as <root>, as the ACP
+    # server's do (#111)
+    collected <- tryCatch(collect_warnings(code), error = function(error_condition) {
+      stop(redact_acp_root(conditionMessage(error_condition), root), call. = FALSE)
+    })
+    if (is.character(collected$value)) {
+      collected$value <- redact_acp_root(collected$value, root)
+    }
+    collected$warnings <- redact_acp_root(collected$warnings, root)
+  }
   if (length(collected$warnings) == 0) {
     return(collected$value)
   }
@@ -315,6 +398,51 @@ mcp_reply <- function(code, style = "text") {
   " If putior warned, a second text part lists the warnings; ",
   "tell the user about them."
 )
+
+#' The Host headers that an MCP server without a token answers (#111)
+#'
+#' mcptools compares a request's Host header with this list as written:
+#' the loopback names, and the address the server listens on, with and
+#' without the port.
+#' @noRd
+mcp_loopback_hosts <- function(host, port) {
+  host <- tolower(host)
+  if (grepl(":", host, fixed = TRUE)) {
+    host <- paste0("[", host, "]")
+  }
+  host_names <- unique(c("127.0.0.1", "localhost", "[::1]", host))
+  c(paste0(host_names, ":", port), host_names)
+}
+
+# The folder that an MCP server over HTTP may scan; NULL over stdio, where
+# the client is the local program that started the server (#111)
+.mcp_state <- new.env(parent = emptyenv())
+
+#' Confine a scan of an MCP server over HTTP to its root folder (#111)
+#'
+#' Over HTTP, other programs (and, with a token, other machines) can call
+#' the tools, so a path must lie in the root folder, as for the ACP server:
+#' a relative path is taken from the root, a path outside it is an error,
+#' and a recursive scan skips the files that links inside it lead outside
+#' to. Over stdio nothing changes.
+#' @param path,recursive,exclude The tool's arguments
+#' @return A list with the path and exclude to scan with
+#' @noRd
+mcp_confine_scan <- function(path, recursive, exclude) {
+  root <- .mcp_state$root
+  if (is.null(root)) {
+    return(list(path = path, exclude = exclude))
+  }
+  confined <- confine_acp_path(sanitize_acp_path(path), root)
+  outside_patterns <- acp_outside_excludes(confined, recursive, root)
+  if (!is.null(outside_patterns) && !is.null(exclude)) {
+    # put() splits a single pattern at its commas only if it is the only one
+    if (length(exclude) == 1 && grepl(",", exclude)) {
+      exclude <- trimws(strsplit(exclude, ",")[[1]])
+    }
+  }
+  list(path = confined, exclude = c(exclude, outside_patterns))
+}
 
 #' Give null arguments their defaults
 #'
@@ -346,11 +474,14 @@ mcp_put <- function(path, pattern = NULL, recursive = TRUE,
                     include_line_numbers = FALSE, validate = TRUE,
                     exclude = NULL, log_level = NULL) {
   use_defaults_for_null()
-  mcp_reply(mcp_json(mcp_scan(put(
-    path, pattern = pattern, recursive = recursive,
-    include_line_numbers = include_line_numbers, validate = validate,
-    exclude = exclude, log_level = log_level
-  ))))
+  mcp_reply({
+    scan <- mcp_confine_scan(path, recursive, exclude)
+    mcp_json(mcp_scan(put(
+      scan$path, pattern = pattern, recursive = recursive,
+      include_line_numbers = include_line_numbers, validate = validate,
+      exclude = scan$exclude, log_level = log_level
+    )))
+  })
 }
 
 #' Scan a path and return the Mermaid code of its diagram
@@ -380,6 +511,9 @@ mcp_put_diagram <- function(path, source = "annotations",
          deparse(source), call. = FALSE)
   }
   mcp_reply(style = "mermaid", {
+    scan <- mcp_confine_scan(path, recursive, exclude)
+    path <- scan$path
+    exclude <- scan$exclude
     # Click links include line numbers when the workflow has them
     include_line_numbers <- isTRUE(enable_clicks)
     workflow <- mcp_scan(switch(source,
@@ -444,13 +578,16 @@ mcp_put_auto <- function(path, pattern = NULL, recursive = TRUE,
                          include_line_numbers = FALSE, exclude = NULL,
                          log_level = NULL) {
   use_defaults_for_null()
-  mcp_reply(mcp_json(mcp_scan(put_auto(
-    path, pattern = pattern, recursive = recursive,
-    detect_inputs = detect_inputs, detect_outputs = detect_outputs,
-    detect_dependencies = detect_dependencies,
-    include_line_numbers = include_line_numbers, exclude = exclude,
-    log_level = log_level
-  ))))
+  mcp_reply({
+    scan <- mcp_confine_scan(path, recursive, exclude)
+    mcp_json(mcp_scan(put_auto(
+      scan$path, pattern = pattern, recursive = recursive,
+      detect_inputs = detect_inputs, detect_outputs = detect_outputs,
+      detect_dependencies = detect_dependencies,
+      include_line_numbers = include_line_numbers, exclude = scan$exclude,
+      log_level = log_level
+    )))
+  })
 }
 
 #' @noRd
@@ -459,9 +596,10 @@ mcp_put_generate <- function(path, pattern = NULL, recursive = TRUE,
                              log_level = NULL) {
   use_defaults_for_null()
   mcp_reply({
+    scan <- mcp_confine_scan(path, recursive, exclude)
     annotations <- mcp_scan(put_generate(
-      path, pattern = pattern, recursive = recursive, output = "raw",
-      insert = FALSE, style = style, exclude = exclude, log_level = log_level
+      scan$path, pattern = pattern, recursive = recursive, output = "raw",
+      insert = FALSE, style = style, exclude = scan$exclude, log_level = log_level
     ))
     paste(annotations, collapse = "\n\n")
   })
@@ -473,12 +611,15 @@ mcp_put_merge <- function(path, pattern = NULL, recursive = TRUE,
                           include_line_numbers = FALSE, exclude = NULL,
                           log_level = NULL) {
   use_defaults_for_null()
-  mcp_reply(mcp_json(mcp_scan(put_merge(
-    path, pattern = pattern, recursive = recursive,
-    merge_strategy = merge_strategy,
-    include_line_numbers = include_line_numbers, exclude = exclude,
-    log_level = log_level
-  ))))
+  mcp_reply({
+    scan <- mcp_confine_scan(path, recursive, exclude)
+    mcp_json(mcp_scan(put_merge(
+      scan$path, pattern = pattern, recursive = recursive,
+      merge_strategy = merge_strategy,
+      include_line_numbers = include_line_numbers, exclude = scan$exclude,
+      log_level = log_level
+    )))
+  })
 }
 
 #' @noRd

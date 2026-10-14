@@ -709,7 +709,7 @@ test_that("a rejected path ends the run with an error, not a scan of '.'", {
     body <- list(input = list(list(role = "user",
                                    parts = list(list(content = text, content_type = "text/plain")))))
     parts <- putior:::acp_create_run_handler(body)$output[[1]]$parts
-    expect_match(parts[[1]]$content, "^Error: ACP path rejected: directory traversal")
+    expect_match(parts[[1]]$content, "^Error: Path rejected: directory traversal")
   }
 })
 
@@ -961,7 +961,7 @@ test_that("requests may scan only inside the server's root folder (#111)", {
     content_type = "text/plain"
   )))))
   parts <- putior:::acp_create_run_handler(body)$output[[1]]$parts
-  expect_match(parts[[1]]$content, "^Error: ACP path rejected: outside the folder")
+  expect_match(parts[[1]]$content, "^Error: Path rejected: outside the folder")
 })
 
 test_that("a link out of the root does not get out (#111)", {
