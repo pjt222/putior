@@ -37,7 +37,11 @@ NULL
 #' Validate a file/directory path argument
 #'
 #' Shared validation for path arguments across put(), put_auto(), put_generate().
-#' Checks type, existence, and rejects directory traversal.
+#' Checks type and existence. A path with ".." is accepted, as in putior
+#' 0.1.0 (put("../R") from a report in a subfolder): the caller can read
+#' those files anyway. Paths from requests to the MCP and ACP servers are
+#' checked by sanitize_acp_path() and, over HTTP, confined to the server's
+#' root.
 #'
 #' @param path The path argument to validate
 #' @param caller Name of the calling function (for error messages)
@@ -51,16 +55,6 @@ validate_path_arg <- function(path, caller) {
       if (length(path) > 1) paste0(" with ", length(path), " elements") else "",
       ".\n",
       "Example: ", caller, "(\"./src/\") or ", caller, "(\"script.R\")",
-      call. = FALSE
-    )
-  }
-
-  # Reject directory traversal attempts (defense-in-depth)
-  normalized <- gsub("\\\\", "/", path)
-  # Also after a drive ("D:..\\x")
-  if (grepl("(^|[/:])\\.\\.(/|$)", normalized)) {
-    stop(
-      "Path rejected: directory traversal ('..') not allowed: '", path, "'",
       call. = FALSE
     )
   }

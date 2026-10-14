@@ -266,7 +266,6 @@ test_that("a scan without a path says that it read the working directory (#109)"
 test_that("a drive-relative .. path is rejected, and help needs no path", {
   expect_error(putior:::sanitize_acp_path("D:..\\x"), "directory traversal")
   expect_error(putior:::sanitize_acp_path("D:../x"), "directory traversal")
-  expect_error(validate_path_arg("D:..\\x", "test"), "traversal")
   body <- list(input = list(list(role = "user", parts = list(list(
     content = "help with annotation syntax for D:/x/../y", content_type = "text/plain"
   )))))

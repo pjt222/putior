@@ -293,8 +293,7 @@
   scan with no path in the request still reads the server's working
   directory, but now says so; before, an unrecognized path silently gave
   the results of another folder. A `..` after a drive (`D:..\x`) is
-  rejected like any other, also by the path checks of the other
-  functions. (#109)
+  rejected like any other. (#109)
 * The server works over HTTP. Every `POST /runs` failed with "500
   Internal Server Error": plumber2's JSON parser turns the request's
   `input` into a data frame, which the request handling did not expect.

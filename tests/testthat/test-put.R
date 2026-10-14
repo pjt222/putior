@@ -736,3 +736,22 @@ test_that("put_diagram handles labels with special characters", {
   # Should not error and should contain the label
   expect_true(grepl("Load", diagram))
 })
+test_that("the scan functions accept a path with .., as 0.1.0 did", {
+  # A report in a subfolder scans the code next to it: put("../R")
+  project_dir <- file.path(tempdir(), "putior_dotdot_project")
+  dir.create(file.path(project_dir, "R"), recursive = TRUE, showWarnings = FALSE)
+  dir.create(file.path(project_dir, "reports"), showWarnings = FALSE)
+  on.exit(unlink(project_dir, recursive = TRUE), add = TRUE)
+  writeLines(c('# put id:"load", label:"Load", output:"data.csv"',
+               'data <- read.csv("raw.csv")',
+               'write.csv(data, "data.csv")'),
+             file.path(project_dir, "R", "load.R"))
+  old_wd <- setwd(file.path(project_dir, "reports"))
+  on.exit(setwd(old_wd), add = TRUE)
+
+  expect_equal(put("../R")$id, "load")
+  expect_equal(put("../R/load.R")$id, "load")
+  expect_gte(nrow(put_auto("../R")), 1)
+  expect_match(paste(put_generate("../R", output = "raw"), collapse = "\n"), 'id:"load"', fixed = TRUE)
+  expect_true("load" %in% put_merge("../R")$id)
+})
