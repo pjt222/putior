@@ -175,22 +175,76 @@ detect_operation <- function(content) {
   "scan"
 }
 
+#' Find the path in an ACP request (#109)
+#'
+#' A quoted value counts, unless it belongs to a parameter ("theme 'dark'").
+#' So does an unquoted word that starts like a path: "/", "./", "../", "~"
+#' or a Windows drive ("D:/", "C:\\"), with either kind of slash. A word
+#' that only contains a slash ("R/", "src/x.R") counts if it exists, so
+#' that "and/or" is not taken for a path. A plain word ("src") is not a
+#' path. "../" paths are found so that sanitize_acp_path() rejects them.
+#' @param content The request text
+#' @return The path, or NULL
+#' @noRd
+extract_path <- function(content) {
+  # Not an apostrophe inside a word ("Let's")
+  quoted_matches <- gregexpr("(?<!\\w)[\"']([^\"']+)[\"'](?!\\w)", content, perl = TRUE)[[1]]
+  if (quoted_matches[1] > 0) {
+    quoted_values <- regmatches(content, list(quoted_matches))[[1]]
+    for (match_index in seq_along(quoted_values)) {
+      text_before <- substr(content, 1L, quoted_matches[match_index] - 1L)
+      belongs_to_parameter <- grepl(
+        "(?i)\\b(theme|direction|topic|style|strategy|source)\\s*[=:]?\\s*$",
+        text_before, perl = TRUE
+      )
+      if (!belongs_to_parameter) {
+        quoted_value <- quoted_values[match_index]
+        return(substr(quoted_value, 2L, nchar(quoted_value) - 1L))
+      }
+    }
+  }
+  # Unquoted words, without brackets or punctuation around them
+  words <- strsplit(trimws(content), "\\s+")[[1]]
+  words <- sub("[],;)]+$", "", sub("^[[(]+", "", words))
+  is_url <- grepl("^[A-Za-z][A-Za-z0-9+.-]*://", words)
+  starts_like_path <- !is_url &
+    grepl("^(/|\\.{1,2}[/\\\\]|~([/\\\\]|$)|[A-Za-z]:[/\\\\])", words)
+  if (any(starts_like_path)) {
+    return(words[starts_like_path][1])
+  }
+  has_slash <- !is_url & grepl("[/\\\\]", words)
+  existing <- words[has_slash][file.exists(words[has_slash])]
+  if (length(existing) > 0) existing[1] else NULL
+}
+
+#' The path a scan uses: the request's, or "." with a note (#109)
+#'
+#' Without a path in the request, a scan reads the server's working
+#' directory. That used to happen without a word, so a request with a path
+#' the parser did not recognize got results for another folder. The note
+#' is a warning, which reaches the client as a second part of the output.
+#' @noRd
+acp_scan_path <- function(path) {
+  if (!is.null(path)) {
+    return(path)
+  }
+  warning(
+    "No path was found in the request, so the server's working directory ",
+    "was scanned. Name the folder to scan another one, in quotes if it ",
+    "contains spaces.",
+    call. = FALSE
+  )
+  "."
+}
+
 #' Extract parameters from message content
 #' @noRd
 extract_parameters <- function(content) {
   params <- list()
 
-  # Extract path: a quoted string, or a word that starts with "/", "./" or
-  # "../". Only the captured path counts: the whole match of an unquoted
-  # path began with the space before it (" ./R/" did not exist). "../"
-  # paths are extracted so that sanitize_acp_path() rejects them, instead
-  # of the run scanning "." without one.
-  path_match <- regmatches(
-    content,
-    regexec('["\']([^"\']+)["\']|(?:^|\\s)(\\.{0,2}/[^\\s]+)', content, perl = TRUE)
-  )[[1]]
-  if (length(path_match) > 0) {
-    params$path <- if (nzchar(path_match[2])) path_match[2] else path_match[3]
+  path <- extract_path(content)
+  if (!is.null(path)) {
+    params$path <- path
   }
 
   # Extract topic for help
@@ -312,8 +366,7 @@ execute_acp_request <- function(input, session_id = NULL) {
     }
     switch(parsed$operation,
       "scan" = {
-        path <- parsed$params$path
-        if (is.null(path)) path <- "."
+        path <- acp_scan_path(parsed$params$path)
         put(
           path = path,
           recursive = !isFALSE(parsed$params$recursive)
@@ -343,16 +396,14 @@ execute_acp_request <- function(input, session_id = NULL) {
         )
       },
       "auto" = {
-        path <- parsed$params$path
-        if (is.null(path)) path <- "."
+        path <- acp_scan_path(parsed$params$path)
         put_auto(
           path = path,
           recursive = !isFALSE(parsed$params$recursive)
         )
       },
       "generate" = {
-        path <- parsed$params$path
-        if (is.null(path)) path <- "."
+        path <- acp_scan_path(parsed$params$path)
         annotations <- put_generate(
           path = path,
           output = "raw",
@@ -361,8 +412,7 @@ execute_acp_request <- function(input, session_id = NULL) {
         paste(annotations, collapse = "\n")
       },
       "merge" = {
-        path <- parsed$params$path
-        if (is.null(path)) path <- "."
+        path <- acp_scan_path(parsed$params$path)
         put_merge(
           path = path,
           recursive = !isFALSE(parsed$params$recursive)

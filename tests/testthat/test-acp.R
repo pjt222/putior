@@ -155,6 +155,42 @@ test_that("extract_parameters extracts unquoted paths without the space before t
   expect_null(putior:::extract_parameters("scan everything")$path)
 })
 
+test_that("ACP requests name paths in every common form (#109)", {
+  old_wd <- setwd(tempdir())
+  on.exit(setwd(old_wd), add = TRUE)
+  dir.create(file.path("acp_paths", "R"), recursive = TRUE, showWarnings = FALSE)
+  on.exit(unlink("acp_paths", recursive = TRUE), add = TRUE)
+  expected_paths <- list(
+    "scan D:/dev/p/putior/R for annotations" = "D:/dev/p/putior/R",
+    "generate a diagram for D:/dev/p/putior/R" = "D:/dev/p/putior/R",
+    "scan C:\\Users\\me\\project" = "C:\\Users\\me\\project",
+    "scan ~/project" = "~/project",
+    "scan ~" = "~",
+    "scan acp_paths/R" = "acp_paths/R",
+    "scan (./R/), please" = "./R/",
+    "Let's scan './R/'" = "./R/",
+    "generate a diagram with theme 'dark' for ./R/" = "./R/",
+    "direction \"LR\" diagram for ./R/" = "./R/",
+    "scan \"D:/my project/R\"" = "D:/my project/R",
+    "scan ..\\secret" = "..\\secret"
+  )
+  for (request in names(expected_paths)) {
+    expect_equal(putior:::extract_path(request), expected_paths[[request]], label = request)
+  }
+  # Plain words, prose with a slash and URLs are not paths
+  for (request in c("scan src", "scan R files and/or tests", "fetch https://x.org/a")) {
+    expect_null(putior:::extract_path(request), label = request)
+  }
+})
+
+test_that("a scan without a path says that it read the working directory (#109)", {
+  body <- list(input = list(list(role = "user", parts = list(list(
+    content = "scan for annotations", content_type = "text/plain"
+  )))))
+  expect_no_warning(parts <- putior:::acp_create_run_handler(body)$output[[1]]$parts)
+  expect_match(parts[[length(parts)]]$content, "No path was found in the request", fixed = TRUE)
+})
+
 test_that("extract_parameters extracts path from single quotes", {
   params <- putior:::extract_parameters("scan './R/' for annotations")
   expect_equal(params$path, "./R/")

@@ -254,6 +254,13 @@
   recognized, so it is rejected too instead of being ignored.
 * Unquoted paths in a request work: `scan ./R/` read the path as ` ./R/`,
   with the space in front, and reported that it does not exist.
+* Requests name paths in more forms: Windows paths (`D:/data`,
+  `C:\Users\me`), `~` paths, and relative paths such as `R/` that exist.
+  A quoted value that belongs to a parameter (`theme 'dark'`) is no longer
+  taken for the path, nor an apostrophe ("Let's"). A scan with no path in
+  the request still reads the server's working directory, but now says so;
+  before, an unrecognized path silently gave the results of another
+  folder. (#109)
 * Warnings that R raises during a run (invalid annotations, a `<` in a
   label, ...) come as a second `text/plain` part of the output; the
   server only logged them.

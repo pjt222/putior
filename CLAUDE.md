@@ -263,7 +263,7 @@ putior::putior_acp_server(host = "0.0.0.0", port = 9000)
 | `/runs` | POST | Execute a putior operation |
 | `/runs/:run_id` | GET | Get status/results of a previous run |
 
-A run's output gets a second `text/plain` part with the warnings R raised (`collect_warnings()`, shared with the MCP server). A path with `..` or control characters ends the run with "Error: ACP path rejected: ..." instead of scanning `.`.
+The path is a quoted value (not one that belongs to `theme`, `direction`, ...) or an unquoted word that starts like a path (`/`, `./`, `../`, `~`, `D:/`, `C:\`) or contains a slash and exists (`extract_path()`); without one, a scan reads the server's working directory and says so (#109). A run's output gets a second `text/plain` part with the warnings R raised (`collect_warnings()`, shared with the MCP server). A path with `..` or control characters ends the run with "Error: ACP path rejected: ..." instead of scanning `.`.
 
 ### Testing with curl
 
