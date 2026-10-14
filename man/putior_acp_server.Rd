@@ -65,8 +65,9 @@ it through DNS rebinding. With \code{host = "0.0.0.0"} or another
 address, set \code{token}.
 \item \code{POST /runs} needs \code{Content-Type: application/json},
 which a web page cannot send to another site without the server's
-consent, and a body of at most 1 MB. These checks, the Host and the
-token are checked before the body is read.
+consent. A \code{Content-Length} over 1 MB is refused (a body sent
+in chunks is not limited); on a server that other machines can
+reach, use a proxy that limits the request size.
 \item Run IDs are 128 random bits (from the openssl package, which
 plumber2 needs), so a client cannot guess the ID of another
 client's run.

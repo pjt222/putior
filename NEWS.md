@@ -257,8 +257,9 @@
   `/runs`; a server on an address other than a loopback one refuses to
   start without one. Without a token, the server answers only requests
   addressed to a loopback name (against DNS rebinding). `POST /runs`
-  needs `Content-Type: application/json` and at most 1 MB, checked with
-  the Host and the token before the body is read. Run IDs are 128 random
+  needs `Content-Type: application/json`, and a `Content-Length` over
+  1 MB is refused; these checks, the Host and the token come before the
+  request is handled. Run IDs are 128 random
   bits from openssl, also without the uuid package, where they were a
   timestamp and a counter that another client could guess.
   `?putior_acp_server` describes the security model. (#111)

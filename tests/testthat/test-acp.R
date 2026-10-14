@@ -1070,16 +1070,20 @@ test_that("a scan skips files that links inside the root lead outside to (#111)"
   on.exit(unlink(c(root, outside), recursive = TRUE), add = TRUE)
   writeLines('# put id:"inside", label:"Inside"', file.path(root, "ok.R"))
   writeLines('# put id:"secret", label:"OUTSIDE SECRET"', file.path(outside, "leak.R"))
+  # A link name with regular expression metacharacters, as the exclude
+  # patterns must escape them
+  link_name <- "l(i)n[k]+$"
   linked <- if (.Platform$OS.type == "windows") {
-    Sys.junction(outside, file.path(root, "junc"))
+    Sys.junction(outside, file.path(root, link_name))
   } else {
-    file.symlink(outside, file.path(root, "link")) &&
+    file.symlink(outside, file.path(root, link_name)) &&
       file.symlink(file.path(outside, "leak.R"), file.path(root, "filelink.R"))
   }
   skip_if_not(isTRUE(linked), "cannot make links")
   restore_root <- set_acp_root(root)
   on.exit(restore_root(), add = TRUE)
-  for (request in c("scan for annotations", "auto-detect the workflow", "merge annotations")) {
+  for (request in c("scan for annotations", "auto-detect the workflow", "merge annotations",
+                    "generate annotation suggestions", "generate a diagram for ./")) {
     body <- list(input = list(list(role = "user", parts = list(list(
       content = request, content_type = "text/plain"
     )))))
@@ -1174,4 +1178,48 @@ test_that("the server refuses foreign hosts, other content types and odd bodies 
   big_body <- paste0('{"input":[{"role":"user","parts":[{"content":"',
                      strrep("x", 2e6), '"}]}]}')
   expect_equal(server$request("/runs", big_body)$status, 413L)
+})
+
+test_that("a link to a large outside tree does not stall the scan (#111)", {
+  skip_on_cran()
+  root <- file.path(tempdir(), "acp_big_root")
+  outside <- file.path(tempdir(), "acp_big_outside")
+  dir.create(root, showWarnings = FALSE)
+  dir.create(outside, showWarnings = FALSE)
+  on.exit(unlink(c(root, outside), recursive = TRUE), add = TRUE)
+  writeLines('# put id:"inside", label:"Inside"', file.path(root, "ok.R"))
+  invisible(file.create(file.path(outside, sprintf("f%04d.R", seq_len(2000)))))
+  linked <- if (.Platform$OS.type == "windows") {
+    Sys.junction(outside, file.path(root, "cache"))
+  } else {
+    file.symlink(outside, file.path(root, "cache"))
+  }
+  skip_if_not(isTRUE(linked), "cannot make links")
+  restore_root <- set_acp_root(root)
+  on.exit(restore_root(), add = TRUE)
+  normalized_root <- normalizePath(root, winslash = "/")
+  # One pattern for the link, not one per file
+  expect_warning(patterns <- putior:::acp_outside_excludes(normalized_root), "2000 files")
+  expect_length(patterns, 2)
+  timing <- system.time(suppressWarnings(
+    put(normalized_root, exclude = patterns)
+  ))
+  expect_lt(timing[["elapsed"]], 20)
+})
+
+test_that("the root is redacted only where it ends at a path boundary (#111)", {
+  root <- file.path(tempdir(), "acp_redact")
+  dir.create(root, showWarnings = FALSE)
+  on.exit(unlink(root, recursive = TRUE), add = TRUE)
+  restore_root <- set_acp_root(root)
+  on.exit(restore_root(), add = TRUE)
+  normalized_root <- normalizePath(root, winslash = "/")
+  expect_equal(putior:::redact_acp_root(paste0("Path does not exist: '", normalized_root, "/x'")),
+               "Path does not exist: '<root>/x'")
+  sibling <- paste0(normalized_root, "tra/secret.R")
+  expect_equal(putior:::redact_acp_root(sibling), sibling)
+  # A file system root would be every path's start: left alone
+  restore_root()
+  restore_root <- set_acp_root("/")
+  expect_equal(putior:::redact_acp_root("Found /etc/x and a/b"), "Found /etc/x and a/b")
 })

@@ -400,10 +400,14 @@ confine_acp_path <- function(path) {
 #' A recursive scan follows symbolic links and Windows junctions inside the
 #' scanned folder (list.files() does), so a link inside the root could
 #' expose files outside it. This lists what the scan could read, resolves
-#' each file, and returns exclude patterns for put() and its siblings that
-#' match exactly the files outside the root, with a warning that says how
-#' many are skipped. A folder with links into a cache outside the root,
-#' such as an renv library, can still be scanned.
+#' each file, finds the link each outside file is reached through (the
+#' shortest part of its listed path that resolves outside the root), and
+#' returns one exclude pattern per link for put() and its siblings, with a
+#' warning that says how many files are skipped. One pattern per link, not
+#' per file: put() matches every pattern against every file, and 5,000
+#' files behind one link took 70 s with a pattern each. A folder with links
+#' into a cache outside the root, such as an renv library, can still be
+#' scanned.
 #' @param path The confined path to scan
 #' @param recursive Whether the scan is recursive
 #' @return Exclude patterns, or NULL when every file is inside the root
@@ -428,10 +432,26 @@ acp_outside_excludes <- function(path, recursive = TRUE) {
     if (length(outside) == 1) "was" else "were", " skipped.",
     call. = FALSE
   )
-  # Exact patterns. "^$" matches no file; with it, put() does not split a
-  # single pattern at its commas.
-  escaped <- gsub("([.\\\\|()\\[\\]{}^$*+?])", "\\\\\\1", outside, perl = TRUE)
-  c(paste0("^", escaped, "$"), "^$")
+  # The listed path of the link that each outside file is reached through
+  link_paths <- character()
+  for (file in sort(outside)) {
+    if (any(startsWith(file, paste0(link_paths, "/")))) {
+      next
+    }
+    relative_parts <- strsplit(substring(file, nchar(path) + 2L), "/", fixed = TRUE)[[1]]
+    prefix <- path
+    for (part in relative_parts) {
+      prefix <- paste0(prefix, "/", part)
+      if (!is_inside_folder(normalizePath(prefix, winslash = "/", mustWork = FALSE), root)) {
+        break
+      }
+    }
+    link_paths <- c(link_paths, prefix)
+  }
+  # One pattern per link, escaped. "^$" matches no file; with it, put() does
+  # not split a single pattern at its commas.
+  escaped <- gsub("([.\\\\|()\\[\\]{}^$*+?])", "\\\\\\1", unique(link_paths), perl = TRUE)
+  c(paste0("^", escaped, "(/|$)"), "^$")
 }
 
 #' Extract parameters from message content
@@ -845,8 +865,14 @@ acp_refuse_request <- function(request, response, needs_json = FALSE) {
 #' @noRd
 redact_acp_root <- function(text) {
   root <- acp_root()
+  # A drive or file system root would be every path's start
+  if (grepl("^([A-Za-z]:)?/?$", root)) {
+    return(text)
+  }
   for (root_form in unique(c(root, gsub("/", "\\\\", root)))) {
-    text <- gsub(root_form, "<root>", text, fixed = TRUE)
+    escaped <- gsub("([.\\\\|()\\[\\]{}^$*+?])", "\\\\\\1", root_form, perl = TRUE)
+    # Only where the root ends at a path boundary ("<root>/x", not "<root>tra")
+    text <- gsub(paste0(escaped, "(?=[/\\\\'\"\\s]|$)"), "<root>", text, perl = TRUE)
   }
   text
 }
@@ -864,8 +890,10 @@ acp_unauthorized <- function(response) {
 #' Header handler for POST /runs: refuse before reading the body (#111)
 #'
 #' Checks the Host, the token, the content type and the size from the
-#' Content-Length header, so that a refused request's body is never read or
-#' parsed. plumber2's own max_request_size had no effect (plumber2 0.2.0).
+#' Content-Length header, so that a refused request is answered before its
+#' body is handled. plumber2's own max_request_size had no effect (plumber2
+#' 0.2.0). The size limit is best-effort: a body sent in chunks has no
+#' Content-Length, and the web server may buffer a body before this runs.
 #' @noRd
 acp_runs_header_handler <- function(request, response) {
   refusal <- acp_refuse_request(request, response, needs_json = TRUE)
@@ -996,8 +1024,9 @@ acp_get_run_handler <- function(run_id, request = NULL, response = NULL) {
 #'     address, set \code{token}.
 #'   \item \code{POST /runs} needs \code{Content-Type: application/json},
 #'     which a web page cannot send to another site without the server's
-#'     consent, and a body of at most 1 MB. These checks, the Host and the
-#'     token are checked before the body is read.
+#'     consent. A \code{Content-Length} over 1 MB is refused (a body sent
+#'     in chunks is not limited); on a server that other machines can
+#'     reach, use a proxy that limits the request size.
 #'   \item Run IDs are 128 random bits (from the openssl package, which
 #'     plumber2 needs), so a client cannot guess the ID of another
 #'     client's run.
