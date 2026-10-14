@@ -257,7 +257,7 @@ put_diagram(workflow, theme = "cividis")  # Blue-yellow (max accessibility)
 # Interactive features
 put_diagram(workflow,
   enable_clicks = TRUE,       # Clickable nodes; need a renderer with securityLevel "loose" (not GitHub/GitLab/Quarto defaults)
-  click_protocol = "vscode",  # vscode, rstudio, or file
+  click_protocol = "vscode",  # vscode or file
   show_source_info = TRUE     # Show source file in nodes
 )
 

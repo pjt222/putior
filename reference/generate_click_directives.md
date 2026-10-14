@@ -18,8 +18,7 @@ generate_click_directives(workflow, protocol = "vscode")
 
 - protocol:
 
-  Character string specifying the click protocol ("vscode", "file",
-  "rstudio")
+  Character string specifying the click protocol ("vscode" or "file")
 
 ## Value
 

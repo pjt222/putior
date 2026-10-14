@@ -173,7 +173,8 @@ put_diagram(
 
   - "file" - Standard file:// protocol
 
-  - "rstudio" - RStudio IDE (rstudio://open-file?path=)
+  RStudio has no URL scheme for opening files, so there is no "rstudio"
+  protocol; "rstudio" gives a warning and file:// links.
 
 - artifact_edges:
 
@@ -329,8 +330,8 @@ put_diagram(workflow, show_source_info = TRUE, source_info_style = "subgraph")
 # Enable clickable nodes (opens in VS Code)
 put_diagram(workflow, enable_clicks = TRUE)
 
-# Enable clickable nodes with RStudio protocol
-put_diagram(workflow, enable_clicks = TRUE, click_protocol = "rstudio")
+# Enable clickable nodes with file:// links
+put_diagram(workflow, enable_clicks = TRUE, click_protocol = "file")
 
 # Use a custom color palette
 my_theme <- put_theme(base = "dark",

@@ -149,7 +149,7 @@ put_diagram(
 | `show_source_info` | logical | `FALSE` | Display source file info in nodes. See [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#show_source_info---display-file-information) |
 | `source_info_style` | character | `"inline"` | Source info style: “inline”, “subgraph” |
 | `enable_clicks` | logical | `FALSE` | Make nodes clickable. See [Features Tour](https://pjt222.github.io/putior/articles/features-tour.html#enable_clicks---clickable-nodes) |
-| `click_protocol` | character | `"vscode"` | Click protocol: “vscode”, “rstudio”, “file” |
+| `click_protocol` | character | `"vscode"` | Click protocol: “vscode” or “file” |
 | `artifact_edges` | character | `"replace"` | With `show_artifacts`: “replace” draws each data hop once, through the file; “both” also draws the direct edge |
 | `mermaid_config` | character or list | `"classic"` | Mermaid configuration in the frontmatter: “classic”, “none” or a named list |
 | `accessibility` | logical | `TRUE` | Write `accTitle` (from `title`) and `accDescr` for screen readers |
@@ -183,7 +183,7 @@ put_diagram(workflow, show_artifacts = TRUE, show_files = TRUE)
 put_diagram(workflow,
             show_source_info = TRUE,
             enable_clicks = TRUE,
-            click_protocol = "rstudio")
+            click_protocol = "file")
 
 # Save to file
 put_diagram(workflow, output = "file", file = "workflow.md", title = "My Pipeline")

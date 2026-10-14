@@ -422,20 +422,19 @@ workflow <- put("./src/", include_line_numbers = TRUE)
 # Enable clicks with VS Code protocol
 put_diagram(workflow, enable_clicks = TRUE)
 
-# Use RStudio protocol
-put_diagram(workflow, enable_clicks = TRUE, click_protocol = "rstudio")
-
 # Use standard file:// protocol
 put_diagram(workflow, enable_clicks = TRUE, click_protocol = "file")
 ```
 
 **Supported Protocols:**
 
-| Protocol  | URL Format                  | Use With        |
-|-----------|-----------------------------|-----------------|
-| `vscode`  | `vscode://file/path:line`   | VS Code, Cursor |
-| `rstudio` | `rstudio://open-file?path=` | RStudio IDE     |
-| `file`    | `file:///path`              | System default  |
+| Protocol | URL Format                | Use With        |
+|----------|---------------------------|-----------------|
+| `vscode` | `vscode://file/path:line` | VS Code, Cursor |
+| `file`   | `file:///path`            | System default  |
+
+RStudio has no URL scheme for opening files, so there is no `rstudio`
+protocol.
 
 **Combined Interactive Features:**
 

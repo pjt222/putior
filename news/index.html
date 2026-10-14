@@ -329,7 +329,8 @@
 <div class="section level4">
 <h4 id="clickable-hyperlinks-0-2-0">Clickable Hyperlinks<a class="anchor" aria-label="anchor" href="#clickable-hyperlinks-0-2-0"></a></h4>
 <ul><li>Added <code>enable_clicks</code> parameter to <code><a href="../reference/put_diagram.html">put_diagram()</a></code> for making nodes clickable</li>
-<li>Added <code>click_protocol</code> parameter: “vscode”, “file”, “rstudio”</li>
+<li>Added <code>click_protocol</code> parameter: “vscode” or “file”. The development version also offered “rstudio”, which was removed before release: RStudio has no URL scheme for opening files, so <code>rstudio://</code> links did nothing. <code>click_protocol = "rstudio"</code> now warns and writes <code>file://</code> links. (<a href="https://github.com/pjt222/putior/issues/101" class="external-link">#101</a>)</li>
+<li>Click tooltips name the line (“Open a.R at line 3”) only for <code>vscode://</code> links, which open that line; <code>file://</code> links have no line number.</li>
 <li>Click directives include line numbers when available</li>
 </ul></div>
 <div class="section level4">

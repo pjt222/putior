@@ -26,8 +26,6 @@ generate_click_url(file_path, line_number = NULL, protocol = "vscode")
 
   - "file" - Standard file:// protocol
 
-  - "rstudio" - RStudio IDE (rstudio://open-file?path=)
-
 ## Value
 
 URL string for the specified protocol
