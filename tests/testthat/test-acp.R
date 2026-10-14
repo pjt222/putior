@@ -1245,6 +1245,9 @@ test_that("the root is redacted only where it ends at a path boundary (#111)", {
   }
   expect_equal(putior:::redact_acp_root("vscode://file/srv/my%20root/a.R:1", root_with_space),
                "vscode://file<root>/a.R:1")
+  # With backslashes, as Windows messages write it
+  expect_equal(putior:::redact_acp_root("see D:\\my root\\a.R.", "D:/my root"),
+               "see <root>\\a.R.")
   # A longer name is another file or folder
   for (text in c("/srv/my root.txt", "/srv/my rootxtra/a", "/srv/my root-2", "/srv/my root%20b")) {
     expect_equal(putior:::redact_acp_root(text, root_with_space), text, label = text)

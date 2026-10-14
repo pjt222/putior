@@ -958,6 +958,9 @@ test_that("MCP tools over HTTP scan only inside the root (#111)", {
   # Click links would name the files by their path on the server
   expect_error(tools$put_diagram(path = ".", enable_clicks = TRUE),
                "enable_clicks is not available over HTTP", fixed = TRUE)
+  # Anything but FALSE, as a client may send another value
+  expect_error(mcp_put_diagram(path = ".", enable_clicks = "yes"),
+               "enable_clicks is not available over HTTP", fixed = TRUE)
   expect_match(tools$put(path = "etl.R"), "clean", fixed = TRUE)
   expect_match(tools$put_diagram(path = "."), "flowchart", fixed = TRUE)
   # Outside the root: an error naming the root as <root>, for every scanning tool
