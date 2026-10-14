@@ -180,15 +180,17 @@ detect_operation <- function(content) {
 extract_parameters <- function(content) {
   params <- list()
 
-  # Extract path (look for quoted paths or common patterns)
+  # Extract path: a quoted string, or a word that starts with "/", "./" or
+  # "../". Only the captured path counts: the whole match of an unquoted
+  # path began with the space before it (" ./R/" did not exist). "../"
+  # paths are extracted so that sanitize_acp_path() rejects them, instead
+  # of the run scanning "." without one.
   path_match <- regmatches(
     content,
-    regexpr('["\']([^"\']+)["\']|(?:^|\\s)(\\.?/[^\\s]+)', content, perl = TRUE)
-  )
-  if (length(path_match) > 0 && nchar(path_match[1]) > 0) {
-    # Clean up the path
-    path <- gsub('^["\']|["\']$', '', path_match[1])
-    params$path <- path
+    regexec('["\']([^"\']+)["\']|(?:^|\\s)(\\.{0,2}/[^\\s]+)', content, perl = TRUE)
+  )[[1]]
+  if (length(path_match) > 0) {
+    params$path <- if (nzchar(path_match[2])) path_match[2] else path_match[3]
   }
 
   # Extract topic for help
@@ -256,10 +258,12 @@ parse_acp_message <- function(input) {
 #'
 #' Validates and normalizes file paths to prevent directory traversal attacks
 #' and other path injection issues. Rejects paths with control characters
-#' or directory traversal components ("..").
+#' or directory traversal components (".."). A rejected path is an error:
+#' it used to become "." with a warning that only the server log showed,
+#' so the run scanned the server's working directory instead.
 #'
 #' @param path Character string of the file path to sanitize
-#' @return Sanitized path string, or "." if the path is invalid
+#' @return The path, or "." when no path is given
 #' @noRd
 sanitize_acp_path <- function(path) {
   if (is.null(path) || !is.character(path) || length(path) != 1 || nchar(path) == 0) {
@@ -268,8 +272,7 @@ sanitize_acp_path <- function(path) {
 
   # Reject paths with control characters (including null bytes)
   if (grepl("[[:cntrl:]]", path)) {
-    warning("ACP path rejected: contains control characters", call. = FALSE)
-    return(".")
+    stop("ACP path rejected: contains control characters", call. = FALSE)
   }
 
   # Normalize path separators for traversal check
@@ -277,8 +280,7 @@ sanitize_acp_path <- function(path) {
 
   # Reject directory traversal attempts
   if (grepl("(^|/)\\.\\.(/|$)", normalized)) {
-    warning("ACP path rejected: directory traversal not allowed: ", path, call. = FALSE)
-    return(".")
+    stop("ACP path rejected: directory traversal not allowed: ", path, call. = FALSE)
   }
 
   path
@@ -302,12 +304,12 @@ sanitize_acp_path <- function(path) {
 execute_acp_request <- function(input, session_id = NULL) {
   parsed <- parse_acp_message(input)
 
-  # Sanitize path from network input
-  if (!is.null(parsed$params$path)) {
-    parsed$params$path <- sanitize_acp_path(parsed$params$path)
-  }
-
   result <- tryCatch({
+    # Sanitize path from network input; a rejected path ends the run with
+    # an error message
+    if (!is.null(parsed$params$path)) {
+      parsed$params$path <- sanitize_acp_path(parsed$params$path)
+    }
     switch(parsed$operation,
       "scan" = {
         path <- parsed$params$path
@@ -415,20 +417,19 @@ format_result_as_text <- function(result) {
     lines <- c(lines, paste0("Found ", nrow(result), " workflow node(s):"))
     lines <- c(lines, "")
 
+    # A workflow has only the columns its annotations use: one without any
+    # input has no input column, which stopped the run (row$input is NULL)
+    field_text <- function(row, field) {
+      value <- if (field %in% names(row)) row[[field]] else NA
+      if (length(value) == 1 && !is.na(value) && nzchar(value)) as.character(value) else NULL
+    }
+    field_labels <- c(label = "Label", file_name = "Source", input = "Input", output = "Output")
     for (i in seq_len(nrow(result))) {
       row <- result[i, ]
       lines <- c(lines, paste0("Node ", i, ": ", row$id))
-      if (!is.na(row$label) && nchar(row$label) > 0) {
-        lines <- c(lines, paste0("  Label: ", row$label))
-      }
-      if ("file_name" %in% names(row) && !is.na(row$file_name)) {
-        lines <- c(lines, paste0("  Source: ", row$file_name))
-      }
-      if (!is.na(row$input) && nchar(row$input) > 0) {
-        lines <- c(lines, paste0("  Input: ", row$input))
-      }
-      if (!is.na(row$output) && nchar(row$output) > 0) {
-        lines <- c(lines, paste0("  Output: ", row$output))
+      for (field in names(field_labels)) {
+        value <- field_text(row, field)
+        if (!is.null(value)) lines <- c(lines, paste0("  ", field_labels[[field]], ": ", value))
       }
       lines <- c(lines, "")
     }
@@ -448,17 +449,29 @@ format_result_as_text <- function(result) {
 }
 
 #' Format putior result for ACP output message
+#'
+#' The warnings that R raised during the run follow as a second part: the
+#' plumber2 server only logs them, so the client would never see them.
+#' @param result The run's result
+#' @param warning_messages Warnings collected with collect_warnings()
 #' @noRd
-format_acp_output <- function(result) {
+format_acp_output <- function(result, warning_messages = character()) {
+  parts <- list(
+    list(
+      content = format_result_as_text(result),
+      content_type = "text/plain"
+    )
+  )
+  if (length(warning_messages) > 0) {
+    parts <- c(parts, list(list(
+      content = sub("^\n+", "", format_warning_block(warning_messages)),
+      content_type = "text/plain"
+    )))
+  }
   list(
     list(
       role = "assistant",
-      parts = list(
-        list(
-          content = format_result_as_text(result),
-          content_type = "text/plain"
-        )
-      )
+      parts = parts
     )
   )
 }
@@ -482,8 +495,8 @@ acp_create_run_handler <- function(body) {
   input <- body$input
   session_id <- body$session_id
 
-  # Execute the request
-  result <- execute_acp_request(input, session_id)
+  # Execute the request, keeping the warnings R raises for the output
+  collected <- collect_warnings(execute_acp_request(input, session_id))
 
   # Create run record
   run_data <- list(
@@ -491,7 +504,7 @@ acp_create_run_handler <- function(body) {
     agent_name = "putior",
     session_id = session_id,
     status = "completed",
-    output = format_acp_output(result),
+    output = format_acp_output(collected$value, collected$warnings),
     created_at = Sys.time()
   )
 

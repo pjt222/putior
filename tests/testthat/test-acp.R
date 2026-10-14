@@ -145,6 +145,16 @@ test_that("extract_parameters extracts path from quoted string", {
   expect_equal(params$path, "./R/")
 })
 
+test_that("extract_parameters extracts unquoted paths without the space before them", {
+  expect_equal(putior:::extract_parameters("scan ./R/")$path, "./R/")
+  expect_equal(putior:::extract_parameters("generate diagram for ./R/ please")$path, "./R/")
+  expect_equal(putior:::extract_parameters("scan /tmp/x")$path, "/tmp/x")
+  expect_equal(putior:::extract_parameters("./R/ only")$path, "./R/")
+  # So that sanitize_acp_path() can reject them
+  expect_equal(putior:::extract_parameters("scan ../secret")$path, "../secret")
+  expect_null(putior:::extract_parameters("scan everything")$path)
+})
+
 test_that("extract_parameters extracts path from single quotes", {
   params <- putior:::extract_parameters("scan './R/' for annotations")
   expect_equal(params$path, "./R/")
@@ -557,39 +567,56 @@ test_that("sanitize_acp_path allows absolute paths", {
   expect_equal(putior:::sanitize_acp_path("C:/Users/project"), "C:/Users/project")
 })
 
-test_that("sanitize_acp_path rejects directory traversal", {
-  expect_warning(result <- putior:::sanitize_acp_path("../secret"), "directory traversal")
-  expect_equal(result, ".")
-
-  expect_warning(result <- putior:::sanitize_acp_path("foo/../bar"), "directory traversal")
-  expect_equal(result, ".")
-
-  expect_warning(result <- putior:::sanitize_acp_path("../../etc/passwd"), "directory traversal")
-  expect_equal(result, ".")
-
-  expect_warning(result <- putior:::sanitize_acp_path("foo/.."), "directory traversal")
-  expect_equal(result, ".")
+test_that("sanitize_acp_path rejects directory traversal with an error", {
+  # Before, it warned (only in the server log) and scanned "." instead
+  for (path in c("../secret", "foo/../bar", "../../etc/passwd", "foo/..", "..\\secret",
+                 "foo\\..\\bar")) {
+    expect_error(putior:::sanitize_acp_path(path), "directory traversal")
+  }
 })
 
-test_that("sanitize_acp_path rejects backslash directory traversal", {
-  expect_warning(result <- putior:::sanitize_acp_path("..\\secret"), "directory traversal")
-  expect_equal(result, ".")
-
-  expect_warning(result <- putior:::sanitize_acp_path("foo\\..\\bar"), "directory traversal")
-  expect_equal(result, ".")
-})
-
-test_that("sanitize_acp_path rejects control characters", {
+test_that("sanitize_acp_path rejects control characters with an error", {
   # Construct strings with control chars at runtime to avoid null bytes in source
   null_path <- paste0("file", rawToChar(as.raw(0x01)), "name")
-  expect_warning(result <- putior:::sanitize_acp_path(null_path), "control characters")
-  expect_equal(result, ".")
+  for (path in c(null_path, "file\nname", "file\tname")) {
+    expect_error(putior:::sanitize_acp_path(path), "control characters")
+  }
+})
 
-  expect_warning(result <- putior:::sanitize_acp_path("file\nname"), "control characters")
-  expect_equal(result, ".")
+test_that("a rejected path ends the run with an error, not a scan of '.'", {
+  for (text in c("scan ../secret", "scan '../secret' for annotations")) {
+    body <- list(input = list(list(role = "user",
+                                   parts = list(list(content = text, content_type = "text/plain")))))
+    parts <- putior:::acp_create_run_handler(body)$output[[1]]$parts
+    expect_match(parts[[1]]$content, "^Error: ACP path rejected: directory traversal")
+  }
+})
 
-  expect_warning(result <- putior:::sanitize_acp_path("file\tname"), "control characters")
-  expect_equal(result, ".")
+test_that("ACP runs return R's warnings as a second part", {
+  warn_dir <- file.path(tempdir(), "putior_acp_warn")
+  unlink(warn_dir, recursive = TRUE)
+  dir.create(warn_dir)
+  on.exit(unlink(warn_dir, recursive = TRUE), add = TRUE)
+  writeLines('# put id:"a", label:"A", node_type:"oops"', file.path(warn_dir, "a.R"))
+  body <- list(input = list(list(role = "user", parts = list(list(
+    content = paste0("scan '", warn_dir, "' for annotations"), content_type = "text/plain"
+  )))))
+  expect_no_warning(result <- putior:::acp_create_run_handler(body))
+  parts <- result$output[[1]]$parts
+  expect_length(parts, 2)
+  expect_match(parts[[1]]$content, "Found 1 workflow node", fixed = TRUE)
+  expect_match(parts[[2]]$content, "^putior warnings \\(1\\), not part of the result above:\n- ")
+  expect_match(parts[[2]]$content, "oops", fixed = TRUE)
+  expect_equal(parts[[2]]$content_type, "text/plain")
+
+  # A workflow without an input column is listed, not an error
+  expect_false(grepl("Input:", parts[[1]]$content, fixed = TRUE))
+  expect_match(putior:::format_result_as_text(data.frame(id = "a", label = "A")),
+               "Node 1: a\n  Label: A", fixed = TRUE)
+
+  # Without warnings one part, as before
+  expect_length(putior:::format_acp_output("result"), 1)
+  expect_length(putior:::format_acp_output("result")[[1]]$parts, 1)
 })
 
 test_that("sanitize_acp_path handles NULL, empty, and invalid input", {

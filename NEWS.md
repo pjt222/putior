@@ -241,7 +241,18 @@
   communication via REST API
 * Added `putior_acp_manifest()` for agent discovery
 * Supports natural language requests for all core operations
-* Input path sanitization to prevent directory traversal attacks
+* Input path sanitization to prevent directory traversal attacks. A path
+  with `..` or control characters ends the run with an error; it used to
+  be replaced by `.` with a warning in the server log, so the run scanned
+  the server's working directory. An unquoted `../` path is now
+  recognized, so it is rejected too instead of being ignored.
+* Unquoted paths in a request work: `scan ./R/` read the path as ` ./R/`,
+  with the space in front, and reported that it does not exist.
+* Warnings that R raises during a run (invalid annotations, a `<` in a
+  label, ...) come as a second `text/plain` part of the output; the
+  server only logged them.
+* A scan whose annotations name no input (or no label) is listed; the run
+  stopped with "missing value where TRUE/FALSE needed".
 
 ### Multi-Language Comment Syntax (30+ Languages)
 * Added support for 30+ programming languages with automatic comment prefix detection
