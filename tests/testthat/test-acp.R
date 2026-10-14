@@ -5,6 +5,23 @@
 # Agent Manifest Tests
 # =============================================================================
 
+# Let the server scan a folder for one test (#111); returns a function that
+# restores the previous root
+set_acp_root <- function(root) {
+  acp_state <- putior:::.acp_state
+  previous_root <- acp_state$root
+  acp_state$root <- root
+  function() acp_state$root <- previous_root
+}
+
+# Require a token for one test (#111); returns a restore function
+set_acp_token <- function(token) {
+  acp_state <- putior:::.acp_state
+  previous_token <- acp_state$token
+  acp_state$token <- token
+  function() acp_state$token <- previous_token
+}
+
 test_that("putior_acp_manifest returns correct structure", {
   manifest <- putior_acp_manifest()
 
@@ -533,6 +550,8 @@ test_that("execute_acp_request handles scan operation with temp file", {
   ), tmp_file)
 
   on.exit(unlink(tmp_file))
+  restore_root <- set_acp_root(tmp_dir)
+  on.exit(restore_root(), add = TRUE)
 
   input <- list(
     list(
@@ -699,6 +718,8 @@ test_that("ACP runs return R's warnings as a second part", {
   unlink(warn_dir, recursive = TRUE)
   dir.create(warn_dir)
   on.exit(unlink(warn_dir, recursive = TRUE), add = TRUE)
+  restore_root <- set_acp_root(warn_dir)
+  on.exit(restore_root(), add = TRUE)
   writeLines('# put id:"a", label:"A", node_type:"oops"', file.path(warn_dir, "a.R"))
   body <- list(input = list(list(role = "user", parts = list(list(
     content = paste0("scan '", warn_dir, "' for annotations"), content_type = "text/plain"
@@ -753,7 +774,7 @@ test_that("acp_get_run_handler returns 404 for missing run", {
   mock_response <- new.env(parent = emptyenv())
   mock_response$status <- 200L
 
-  result <- putior:::acp_get_run_handler("nonexistent_id", mock_response)
+  result <- putior:::acp_get_run_handler("nonexistent_id", response = mock_response)
 
   expect_equal(mock_response$status, 404L)
   expect_equal(result$error, "Run not found")
@@ -902,4 +923,136 @@ test_that("acp_records() turns a parsed data frame into records (#113)", {
   expect_equal(putior:::extract_text_content(parsed$input), "scan ./R/")
   plain <- list(list(role = "user", parts = list(list(content = "a"), list(content = "b"))))
   expect_equal(putior:::extract_text_content(plain), "a b")
+})
+
+# =============================================================================
+# Scan root, token and run ids (#111)
+# =============================================================================
+
+test_that("requests may scan only inside the server's root folder (#111)", {
+  root <- file.path(tempdir(), "acp_root")
+  sibling <- file.path(tempdir(), "acp_root2")
+  dir.create(file.path(root, "R"), recursive = TRUE, showWarnings = FALSE)
+  dir.create(sibling, showWarnings = FALSE)
+  on.exit(unlink(c(root, sibling), recursive = TRUE), add = TRUE)
+  restore_root <- set_acp_root(root)
+  on.exit(restore_root(), add = TRUE)
+  normalized_root <- normalizePath(root, winslash = "/")
+
+  # Inside: relative paths are taken from the root, absolute ones must lie in it
+  expect_equal(putior:::confine_acp_path("R"), paste0(normalized_root, "/R"))
+  expect_equal(putior:::confine_acp_path(paste0(normalized_root, "/R")), paste0(normalized_root, "/R"))
+  expect_equal(putior:::confine_acp_path(normalized_root), normalized_root)
+  expect_equal(putior:::confine_acp_path("not_there_yet"), paste0(normalized_root, "/not_there_yet"))
+  # Outside: another folder, a sibling whose name starts like the root, home
+  for (path in c(normalizePath(tempdir(), winslash = "/"), normalizePath(sibling, winslash = "/"),
+                 "~", "/")) {
+    expect_error(putior:::confine_acp_path(path), "outside the folder this server scans",
+                 label = path)
+  }
+  # Through a request: an error message, not a scan
+  body <- list(input = list(list(role = "user", parts = list(list(
+    content = paste0("scan '", normalizePath(sibling, winslash = "/"), "'"),
+    content_type = "text/plain"
+  )))))
+  parts <- putior:::acp_create_run_handler(body)$output[[1]]$parts
+  expect_match(parts[[1]]$content, "^Error: ACP path rejected: outside the folder")
+})
+
+test_that("a link out of the root does not get out (#111)", {
+  skip_on_os("windows")
+  root <- file.path(tempdir(), "acp_link_root")
+  outside <- file.path(tempdir(), "acp_link_target")
+  dir.create(root, showWarnings = FALSE)
+  dir.create(outside, showWarnings = FALSE)
+  on.exit(unlink(c(root, outside), recursive = TRUE), add = TRUE)
+  skip_if_not(file.symlink(outside, file.path(root, "link")), "cannot make a link")
+  restore_root <- set_acp_root(root)
+  on.exit(restore_root(), add = TRUE)
+  expect_error(putior:::confine_acp_path("link"), "outside the folder this server scans")
+})
+
+test_that("a scan without a path reads the root folder (#111)", {
+  root <- file.path(tempdir(), "acp_default_root")
+  dir.create(root, showWarnings = FALSE)
+  on.exit(unlink(root, recursive = TRUE), add = TRUE)
+  writeLines('# put id:"in_root", label:"In root"', file.path(root, "a.R"))
+  restore_root <- set_acp_root(root)
+  on.exit(restore_root(), add = TRUE)
+  body <- list(input = list(list(role = "user", parts = list(list(
+    content = "scan for annotations", content_type = "text/plain"
+  )))))
+  parts <- putior:::acp_create_run_handler(body)$output[[1]]$parts
+  expect_match(parts[[1]]$content, "Node 1: in_root", fixed = TRUE)
+  expect_match(parts[[2]]$content, "server's root folder was scanned", fixed = TRUE)
+})
+
+test_that("with a token, requests need it (#111)", {
+  restore_token <- set_acp_token("0123456789abcdef-secret")
+  on.exit(restore_token(), add = TRUE)
+  fake_request <- function(header) list(get_header = function(name) header)
+  expect_true(putior:::acp_authorized(fake_request("Bearer 0123456789abcdef-secret")))
+  expect_false(putior:::acp_authorized(fake_request("Bearer wrong")))
+  expect_false(putior:::acp_authorized(fake_request(NULL)))
+  expect_false(putior:::acp_authorized(NULL))
+  response <- new.env()
+  response$set_header <- function(name, value) response$header <- c(name, value)
+  result <- putior:::acp_create_run_handler(list(input = list()), request = fake_request(NULL),
+                                            response = response)
+  expect_equal(response$status, 401L)
+  expect_equal(response$header, c("WWW-Authenticate", "Bearer"))
+  expect_match(result$error, "Unauthorized", fixed = TRUE)
+  # Without a token, a request needs none
+  restore_token()
+  expect_true(putior:::acp_authorized(fake_request(NULL)))
+})
+
+test_that("putior_acp_server() checks root and token, and needs a token off loopback (#111)", {
+  skip_if_not_installed("plumber2")
+  local_mocked_bindings(api_run = function(...) "ran", .package = "plumber2")
+  quietly <- function(code) suppressMessages(code)
+  expect_error(quietly(putior_acp_server(root = file.path(tempdir(), "no_such_folder"))),
+               "'root' must be an existing folder")
+  expect_error(quietly(putior_acp_server(token = "short")), "at least 16 characters")
+  expect_error(quietly(putior_acp_server(host = "0.0.0.0")), "needs a token")
+  expect_error(quietly(putior_acp_server(host = "192.168.1.5")), "needs a token")
+  expect_warning(quietly(putior_acp_server(host = "0.0.0.0", token = strrep("x", 20))),
+                 "requests need the token")
+  expect_no_warning(quietly(putior_acp_server(host = "localhost")))
+  # The settings apply only while the server runs
+  expect_null(putior:::.acp_state$root)
+  expect_null(putior:::.acp_state$token)
+})
+
+test_that("run ids are not guessable, and leave the RNG alone (#111, #67)", {
+  skip_if_not_installed("openssl")
+  had_seed <- exists(".Random.seed", envir = globalenv())
+  seed_before <- if (had_seed) get(".Random.seed", envir = globalenv())
+  ids <- vapply(seq_len(50), function(i) putior:::generate_run_id(), character(1))
+  expect_match(ids, "^run_[0-9a-f]{32}$")
+  expect_false(anyDuplicated(ids) > 0)
+  expect_identical(exists(".Random.seed", envir = globalenv()), had_seed)
+  if (had_seed) expect_identical(get(".Random.seed", envir = globalenv()), seed_before)
+})
+
+test_that("a server with a token rejects requests without it over HTTP (#111)", {
+  skip_on_cran()
+  skip_if_not_installed("plumber2")
+  skip_if_not_installed("curl")
+  skip_if_not_installed("later")
+  skip_if_not_installed("jsonlite")
+  token <- "0123456789abcdef-secret"
+  restore_token <- set_acp_token(token)
+  on.exit(restore_token(), add = TRUE)
+  server <- start_acp_server()
+  on.exit(server$stop(), add = TRUE)
+  body <- '{"input":[{"role":"user","parts":[{"content":"help"}]}]}'
+  expect_equal(server$request("/agents")$status, 200L)
+  expect_equal(server$request("/runs", body)$status, 401L)
+  expect_equal(server$request("/runs", body, "Authorization: Bearer wrong")$status, 401L)
+  run <- server$request("/runs", body, paste("Authorization: Bearer", token))
+  expect_equal(run$status, 200L)
+  expect_equal(server$request(paste0("/runs/", run$json$run_id))$status, 401L)
+  expect_equal(server$request(paste0("/runs/", run$json$run_id),
+                              headers = paste("Authorization: Bearer", token))$status, 200L)
 })

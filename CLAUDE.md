@@ -251,8 +251,9 @@ putior also exposes its functionality as an ACP (Agent Communication Protocol) a
 # Start ACP server on default port (8080)
 putior::putior_acp_server()
 
-# Custom host/port
-putior::putior_acp_server(host = "0.0.0.0", port = 9000)
+# Custom host/port; another host than a loopback one needs a token (#111)
+putior::putior_acp_server(host = "0.0.0.0", port = 9000, root = "~/projects",
+                          token = Sys.getenv("PUTIOR_ACP_TOKEN"))
 ```
 
 ### ACP Endpoints
@@ -263,7 +264,7 @@ putior::putior_acp_server(host = "0.0.0.0", port = 9000)
 | `/runs` | POST | Execute a putior operation |
 | `/runs/:run_id` | GET | Get status/results of a previous run |
 
-`extract_path()` takes, best first: a quoted value that starts like a path, an unquoted word that starts like one (`/x`, `./`, `../`, `~/`, `D:/x`, `C:\x`; not a lone `/`, `\`, `~` or drive), an existing word with a slash, an existing quoted value, then any other quoted value except theme and direction names; it reads only the first 10,000 characters (cut at a word) and looks up on disk only words with a slash and quoted values. Without a path, a scan reads the server's working directory and says so (#109). A run's output gets a second `text/plain` part with the warnings R raised (`collect_warnings()`, shared with the MCP server). A path with `..` or control characters ends the run with "Error: ACP path rejected: ..." instead of scanning `.`.
+`extract_path()` takes, best first: a quoted value that starts like a path, an unquoted word that starts like one (`/x`, `./`, `../`, `~/`, `D:/x`, `C:\x`; not a lone `/`, `\`, `~` or drive), an existing word with a slash, an existing quoted value, then any other quoted value except theme and direction names; it reads only the first 10,000 characters (cut at a word) and looks up on disk only words with a slash and quoted values. Without a path, a scan reads the server's working directory and says so (#109). **Security (#111):** requests may scan only `root` (default `getwd()`; `confine_acp_path()` resolves symlinks, rejects paths outside); `token` (>= 16 chars) requires `Authorization: Bearer <token>` on `/runs` (`acp_authorized()`), and a non-loopback `host` refuses to start without one; run ids are `run_` + 32 hex chars from `openssl::rand_bytes()`. The live-server tests (`start_acp_server()` in test-acp.R, off CRAN) send real HTTP requests (#113). A run's output gets a second `text/plain` part with the warnings R raised (`collect_warnings()`, shared with the MCP server). A path with `..` or control characters ends the run with "Error: ACP path rejected: ..." instead of scanning `.`.
 
 ### Testing with curl
 

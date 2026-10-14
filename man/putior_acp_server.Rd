@@ -4,7 +4,12 @@
 \alias{putior_acp_server}
 \title{Start putior ACP Server}
 \usage{
-putior_acp_server(host = "127.0.0.1", port = 8080L)
+putior_acp_server(
+  host = "127.0.0.1",
+  port = 8080L,
+  root = getwd(),
+  token = NULL
+)
 }
 \arguments{
 \item{host}{Character string specifying the host address.
@@ -12,6 +17,19 @@ Default: "127.0.0.1" (localhost only)}
 
 \item{port}{Integer specifying the port number.
 Default: 8080}
+
+\item{root}{The folder that requests may scan (default: the working
+directory). A request's relative path is taken from it, and a path
+outside it, also through a symbolic link, is rejected. A request
+without a path scans this folder.}
+
+\item{token}{\code{NULL} (default) or a string of at least 16
+characters. With a token, \code{POST /runs} and \code{GET /runs/<id>}
+need the header \code{Authorization: Bearer <token>}. A server on an
+address other than a loopback one (\code{127.0.0.1}, \code{localhost},
+\code{::1}) needs a token. Passing it from an environment variable,
+as \code{token = Sys.getenv("PUTIOR_ACP_TOKEN")}, keeps it out of
+scripts and the R history.}
 }
 \value{
 This function does not return; it runs the server until terminated.
@@ -25,9 +43,22 @@ The ACP server exposes the following endpoints:
 \describe{
 \item{GET /agents}{Returns the agent manifest for discovery}
 \item{POST /runs}{Execute a putior operation}
-\item{GET /runs/:run_id}{Get the status/result of a previous run}
+\item{GET /runs/<run_id>}{Get the status/result of a previous run}
 }
 }
+\section{Security}{
+
+A request can scan only the \code{root} folder and what lies below it,
+and it sees the file names, labels and paths found there. Paths with
+\code{..} or control characters are rejected as well. Without a token
+the server answers anyone who can reach its port, so it then accepts
+only a loopback \code{host}; with \code{host = "0.0.0.0"} or another
+address, set \code{token}. Run IDs are 128 random bits (from the
+openssl package, which plumber2 needs), so a client cannot guess the ID
+of another client's run. The server does not use TLS: across a network,
+put it behind a proxy that does, or the token travels in clear text.
+}
+
 \section{Message Format}{
 
 POST /runs expects a JSON body with this structure:
@@ -74,6 +105,12 @@ curl http://localhost:8080/agents
 curl -X POST http://localhost:8080/runs \\
   -H "Content-Type: application/json" \\
   -d '{"input": [{"role": "user", "parts": [{"content": "scan ./R/"}]}]}'
+
+# With a token
+curl -X POST http://localhost:8080/runs \\
+  -H "Authorization: Bearer $PUTIOR_ACP_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"input": [{"role": "user", "parts": [{"content": "scan ./R/"}]}]}'
 }
 }
 
@@ -83,7 +120,10 @@ curl -X POST http://localhost:8080/runs \\
 putior_acp_server()
 
 # Start on custom host/port
-putior_acp_server(host = "0.0.0.0", port = 9000)
+# Reachable from other machines: needs a token, sent by clients as
+# "Authorization: Bearer <token>"
+putior_acp_server(host = "0.0.0.0", port = 9000, root = "~/projects",
+                  token = Sys.getenv("PUTIOR_ACP_TOKEN"))
 }
 
 }

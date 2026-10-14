@@ -21,23 +21,34 @@ NULL
 # A request is searched for its path in this many characters (#109)
 .ACP_MAX_PATH_SEARCH <- 10000L
 
-# Counter for run IDs made without the uuid package
+# Counter for run IDs made without openssl or uuid
 .acp_run_counter <- new.env(parent = emptyenv())
 
+# The server's settings: the folder it scans (root) and its token (#111)
+.acp_state <- new.env(parent = emptyenv())
+
 #' Generate a unique run ID
+#'
+#' A run's result can be read by anyone who knows its ID (GET
+#' /runs/<run_id>), so IDs must not be guessable (#111). openssl, which
+#' plumber2 and so the server always has, gives 128 random bits without
+#' touching the session's random-number stream (#67).
 #' @noRd
 generate_run_id <- function() {
-  if (requireNamespace("uuid", quietly = TRUE)) {
+  if (requireNamespace("openssl", quietly = TRUE)) {
+    paste0("run_", paste(openssl::rand_bytes(16), collapse = ""))
+  } else if (requireNamespace("uuid", quietly = TRUE)) {
     uuid::UUIDgenerate()
   } else {
     fallback_run_id()
   }
 }
 
-#' Run ID for when the uuid package is not installed
+#' Run ID for when neither openssl nor uuid is installed
 #'
 #' A timestamp plus a counter that only increases, so IDs made in the same
 #' second still differ, and the session's random-number stream is left alone.
+#' Such IDs are guessable; the server itself always has openssl.
 #' @noRd
 fallback_run_id <- function() {
   .acp_run_counter$value <- (.acp_run_counter$value %||% 0L) + 1L
@@ -303,12 +314,14 @@ strip_word_punctuation <- function(words) {
   words
 }
 
-#' The path a scan uses: the request's, or "." with a note (#109)
+#' The path a scan uses: the request's, or the root folder with a note
 #'
-#' Without a path in the request, a scan reads the server's working
-#' directory. That used to happen without a word, so a request with a path
-#' the parser did not recognize got results for another folder. The note
-#' is a warning, which reaches the client as a second part of the output.
+#' Without a path in the request, a scan reads the server's root folder
+#' (#109, #111). That used to happen without a word, so a request with a
+#' path the parser did not recognize got results for another folder. The
+#' note is a warning, which reaches the client as a second part of the
+#' output.
+#' @param path The path from the request, already confined, or NULL
 #' @noRd
 acp_scan_path <- function(path) {
   if (!is.null(path)) {
@@ -316,11 +329,56 @@ acp_scan_path <- function(path) {
   }
   warning(
     "No path was found in the request (in its first ",
-    format(.ACP_MAX_PATH_SEARCH, big.mark = ","), " characters), so the server's working directory was scanned. Name the ",
-    "folder to scan another one, in quotes if it contains spaces.",
+    format(.ACP_MAX_PATH_SEARCH, big.mark = ","), " characters), so the ",
+    "server's root folder was scanned. Name the folder to scan another one, ",
+    "in quotes if it contains spaces.",
     call. = FALSE
   )
-  "."
+  acp_root()
+}
+
+#' The folder the ACP server may scan (#111)
+#' @return Its normalized path; the working directory if none was set
+#' @noRd
+acp_root <- function() {
+  normalizePath(.acp_state$root %||% getwd(), winslash = "/", mustWork = TRUE)
+}
+
+#' Is a normalized path the folder or inside it?
+#'
+#' Compares whole path components ("D:/data2" is not inside "D:/data"), and
+#' ignores case on Windows, whose file systems do.
+#' @noRd
+is_inside_folder <- function(path, folder) {
+  if (.Platform$OS.type == "windows") {
+    path <- tolower(path)
+    folder <- tolower(folder)
+  }
+  folder <- sub("/+$", "", folder)
+  identical(path, folder) || startsWith(path, paste0(folder, "/"))
+}
+
+#' Keep a request's path inside the server's root folder (#111)
+#'
+#' A relative path is taken from the root folder, "~" is expanded, and the
+#' result is normalized, which also resolves symbolic links and Windows
+#' junctions of existing folders, so that a link out of the root does not
+#' get out. A path outside the root is an error: the server used to scan
+#' any absolute path its R process could read.
+#' @param path A path that passed sanitize_acp_path()
+#' @return The normalized absolute path
+#' @noRd
+confine_acp_path <- function(path) {
+  root <- acp_root()
+  candidate <- path.expand(path)
+  if (!grepl("^([A-Za-z]:)?[/\\\\]", candidate)) {
+    candidate <- file.path(root, candidate)
+  }
+  resolved <- normalizePath(candidate, winslash = "/", mustWork = FALSE)
+  if (!is_inside_folder(resolved, root)) {
+    stop("ACP path rejected: outside the folder this server scans: ", path, call. = FALSE)
+  }
+  resolved
 }
 
 #' Extract parameters from message content
@@ -449,7 +507,7 @@ execute_acp_request <- function(input, session_id = NULL) {
     # an error message. Help and guide requests use no path.
     uses_path <- parsed$operation %in% c("scan", "diagram", "auto", "generate", "merge")
     if (uses_path && !is.null(parsed$params$path)) {
-      parsed$params$path <- sanitize_acp_path(parsed$params$path)
+      parsed$params$path <- confine_acp_path(sanitize_acp_path(parsed$params$path))
     }
     switch(parsed$operation,
       "scan" = {
@@ -619,8 +677,8 @@ format_acp_output <- function(result, warning_messages = character()) {
 
 #' The plumber2 API of the ACP server
 #'
-#' JSON with scalars unboxed ("name": "putior", not ["putior"]), as ACP
-#' clients expect (#113).
+#' JSON with scalars unboxed (a name as a string, not an array of one
+#' string), as ACP clients expect (#113).
 #' @noRd
 acp_api <- function() {
   json_serializer <- plumber2::get_serializers("unboxedJSON")
@@ -639,9 +697,48 @@ acp_list_agents_handler <- function() {
   list(agents = list(putior_acp_manifest()))
 }
 
+#' Does a request carry the server's token? (#111)
+#'
+#' Without a token every request is allowed (a server on a loopback
+#' address). With one, the request needs "Authorization: Bearer <token>".
+#' The comparison is of SHA-256 digests, so that its time does not depend
+#' on how much of the token a guess gets right.
+#' @param request A reqres::Request, or NULL when a handler is called
+#'   directly
+#' @noRd
+acp_authorized <- function(request) {
+  token <- .acp_state$token
+  if (is.null(token)) {
+    return(TRUE)
+  }
+  header <- if (is.null(request)) NULL else request$get_header("Authorization")
+  if (is.null(header) || length(header) != 1) {
+    return(FALSE)
+  }
+  expected <- paste("Bearer", token)
+  if (requireNamespace("openssl", quietly = TRUE)) {
+    identical(as.character(openssl::sha256(header)), as.character(openssl::sha256(expected)))
+  } else {
+    identical(header, expected)
+  }
+}
+
+#' The answer to a request without the server's token (#111)
+#' @noRd
+acp_unauthorized <- function(response) {
+  if (!is.null(response)) {
+    response$status <- 401L
+    response$set_header("WWW-Authenticate", "Bearer")
+  }
+  list(error = "Unauthorized: send the server's token as 'Authorization: Bearer <token>'")
+}
+
 #' Handler for POST /runs endpoint
 #' @noRd
-acp_create_run_handler <- function(body) {
+acp_create_run_handler <- function(body, request = NULL, response = NULL) {
+  if (!acp_authorized(request)) {
+    return(acp_unauthorized(response))
+  }
   run_id <- generate_run_id()
 
   # Extract input and session_id from body
@@ -670,7 +767,10 @@ acp_create_run_handler <- function(body) {
 
 #' Handler for GET /runs/:run_id endpoint
 #' @noRd
-acp_get_run_handler <- function(run_id, response) {
+acp_get_run_handler <- function(run_id, request = NULL, response = NULL) {
+  if (!acp_authorized(request)) {
+    return(acp_unauthorized(response))
+  }
   run <- get_run_by_id(run_id)
 
   if (is.null(run)) {
@@ -694,14 +794,36 @@ acp_get_run_handler <- function(run_id, response) {
 #'   Default: "127.0.0.1" (localhost only)
 #' @param port Integer specifying the port number.
 #'   Default: 8080
+#' @param root The folder that requests may scan (default: the working
+#'   directory). A request's relative path is taken from it, and a path
+#'   outside it, also through a symbolic link, is rejected. A request
+#'   without a path scans this folder.
+#' @param token \code{NULL} (default) or a string of at least 16
+#'   characters. With a token, \code{POST /runs} and \code{GET /runs/<id>}
+#'   need the header \code{Authorization: Bearer <token>}. A server on an
+#'   address other than a loopback one (\code{127.0.0.1}, \code{localhost},
+#'   \code{::1}) needs a token. Passing it from an environment variable,
+#'   as \code{token = Sys.getenv("PUTIOR_ACP_TOKEN")}, keeps it out of
+#'   scripts and the R history.
 #'
 #' @details
 #' The ACP server exposes the following endpoints:
 #' \describe{
 #'   \item{GET /agents}{Returns the agent manifest for discovery}
 #'   \item{POST /runs}{Execute a putior operation}
-#'   \item{GET /runs/:run_id}{Get the status/result of a previous run}
+#'   \item{GET /runs/<run_id>}{Get the status/result of a previous run}
 #' }
+#'
+#' @section Security:
+#' A request can scan only the \code{root} folder and what lies below it,
+#' and it sees the file names, labels and paths found there. Paths with
+#' \code{..} or control characters are rejected as well. Without a token
+#' the server answers anyone who can reach its port, so it then accepts
+#' only a loopback \code{host}; with \code{host = "0.0.0.0"} or another
+#' address, set \code{token}. Run IDs are 128 random bits (from the
+#' openssl package, which plumber2 needs), so a client cannot guess the ID
+#' of another client's run. The server does not use TLS: across a network,
+#' put it behind a proxy that does, or the token travels in clear text.
 #'
 #' @section Message Format:
 #' POST /runs expects a JSON body with this structure:
@@ -744,6 +866,12 @@ acp_get_run_handler <- function(run_id, response) {
 #' curl -X POST http://localhost:8080/runs \\
 #'   -H "Content-Type: application/json" \\
 #'   -d '{"input": [{"role": "user", "parts": [{"content": "scan ./R/"}]}]}'
+#'
+#' # With a token
+#' curl -X POST http://localhost:8080/runs \\
+#'   -H "Authorization: Bearer $PUTIOR_ACP_TOKEN" \\
+#'   -H "Content-Type: application/json" \\
+#'   -d '{"input": [{"role": "user", "parts": [{"content": "scan ./R/"}]}]}'
 #' }
 #'
 #' @return This function does not return; it runs the server until terminated.
@@ -757,13 +885,17 @@ acp_get_run_handler <- function(run_id, response) {
 #' putior_acp_server()
 #'
 #' # Start on custom host/port
-#' putior_acp_server(host = "0.0.0.0", port = 9000)
+#' # Reachable from other machines: needs a token, sent by clients as
+#' # "Authorization: Bearer <token>"
+#' putior_acp_server(host = "0.0.0.0", port = 9000, root = "~/projects",
+#'                   token = Sys.getenv("PUTIOR_ACP_TOKEN"))
 #' }
 #'
 #' @seealso
 #' \code{\link{putior_acp_manifest}} for the agent definition,
 #' \code{\link{putior_mcp_server}} for MCP (Model-to-tool) integration
-putior_acp_server <- function(host = "127.0.0.1", port = 8080L) {
+putior_acp_server <- function(host = "127.0.0.1", port = 8080L, root = getwd(),
+                              token = NULL) {
   # Check for plumber2 dependency
   if (!requireNamespace("plumber2", quietly = TRUE)) {
     stop(
@@ -782,25 +914,52 @@ putior_acp_server <- function(host = "127.0.0.1", port = 8080L) {
     stop("'port' must be an integer between 1 and 65535.", call. = FALSE)
   }
 
-  # Warn if binding to all interfaces
-  if (host == "0.0.0.0") {
-    warning(
-      "Binding to 0.0.0.0 exposes the ACP server to all network interfaces.\n",
-      "This may allow remote access. Use host = \"127.0.0.1\" for local-only access.",
+  # The folder the server may scan (#111)
+  if (!is.character(root) || length(root) != 1 || is.na(root) || !dir.exists(root)) {
+    stop("'root' must be an existing folder.", call. = FALSE)
+  }
+  root <- normalizePath(root, winslash = "/", mustWork = TRUE)
+
+  # A token, required unless only this machine can reach the server (#111)
+  if (!is.null(token) &&
+      (!is.character(token) || length(token) != 1 || is.na(token) || nchar(token) < 16)) {
+    stop("'token' must be a string of at least 16 characters, or NULL.", call. = FALSE)
+  }
+  is_loopback <- grepl("^127\\.", host) || host %in% c("localhost", "::1")
+  if (!is_loopback && is.null(token)) {
+    stop(
+      "A server on ", host, " can be reached from other machines, so it needs ",
+      "a token: putior_acp_server(host = \"", host, "\", token = \"<at least 16 ",
+      "random characters>\"). Clients then send 'Authorization: Bearer <token>'.",
       call. = FALSE
     )
   }
+  if (host == "0.0.0.0") {
+    warning(
+      "Binding to 0.0.0.0 exposes the ACP server to all network interfaces; ",
+      "requests need the token. Use host = \"127.0.0.1\" for local-only access.",
+      call. = FALSE
+    )
+  }
+  .acp_state$root <- root
+  .acp_state$token <- token
+  on.exit({
+    .acp_state$root <- NULL
+    .acp_state$token <- NULL
+  }, add = TRUE)
 
   pa <- acp_api()
 
   message("Starting putior ACP server...")
   message("  Host: ", host)
   message("  Port: ", port)
+  message("  Root: ", root, " (requests may scan only this folder)")
+  message("  Token: ", if (is.null(token)) "none (local requests only)" else "required")
   message("")
   message("Endpoints:")
   message("  GET  /agents       - Discover this agent")
   message("  POST /runs         - Execute an operation")
-  message("  GET  /runs/:run_id - Get run status/results")
+  message("  GET  /runs/<id>    - Get run status/results")
   message("")
   message("Press Ctrl+C to stop the server.")
 
