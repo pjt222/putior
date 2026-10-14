@@ -114,12 +114,19 @@ outside the root is an error, also through a symbolic link or
 junction; a recursive scan skips the files that links inside the
 root lead outside to; a path with a \code{..} component, control
 characters or a network or device form is rejected. Results and
-messages show the root as \code{<root>}, so the links that
-\code{enable_clicks} adds open files only over stdio.
+messages show the root as \code{<root>}, and \code{put_diagram}
+refuses \code{enable_clicks}, whose links name files by their path
+on the server.
 \item Without a token, the server runs only on a loopback \code{host}
 and answers only requests addressed to a loopback name, so that a
 web page cannot reach it through DNS rebinding; mcptools also
 rejects requests from web pages of other origins.
+\item mcptools' own settings stay in force: hosts trusted through the
+option \code{mcptools.http_trusted_hosts} or the environment
+variable \code{MCPTOOLS_HTTP_TRUSTED_HOSTS} are answered too, and a
+secret set through \code{mcptools.http_shared_secret} or
+\code{plumber2.sharedSecret} is required when \code{token} is
+\code{NULL}.
 \item To serve other machines, set \code{token}; mcptools then answers
 only requests that send it:
 \preformatted{

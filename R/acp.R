@@ -909,17 +909,21 @@ acp_refuse_request <- function(request, response, needs_json = FALSE) {
 #' Replace the server's root folder in a message with "<root>" (#111)
 #'
 #' Error messages and warnings name absolute paths, which would tell a
-#' client where the root lies and how the disk is laid out.
+#' client where the root lies and how the disk is laid out. The root is
+#' replaced as written, with backslashes, and percent-encoded as in a URL.
 #' @noRd
 redact_acp_root <- function(text, root = acp_root()) {
   # A drive or file system root would be every path's start
   if (grepl("^([A-Za-z]:)?/?$", root)) {
     return(text)
   }
-  for (root_form in unique(c(root, gsub("/", "\\\\", root)))) {
+  root_forms <- unique(c(root, gsub("/", "\\\\", root), encode_url_path(root)))
+  for (root_form in root_forms) {
     escaped <- gsub("([.\\\\|()\\[\\]{}^$*+?])", "\\\\\\1", root_form, perl = TRUE)
-    # Only where the root ends at a path boundary ("<root>/x", not "<root>tra")
-    text <- gsub(paste0(escaped, "(?=[/\\\\'\"\\s]|$)"), "<root>", text, perl = TRUE)
+    # Only where the root ends, not where a longer name goes on ("<root>/x",
+    # "(<root>)", "<root>." but not "<root>tra", "<root>.txt" or "<root>%20x")
+    text <- gsub(paste0(escaped, "(?![\\p{L}\\p{N}_%-]|\\.[\\p{L}\\p{N}_%-])"), "<root>",
+                 text, perl = TRUE)
   }
   text
 }

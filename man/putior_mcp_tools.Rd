@@ -26,6 +26,12 @@ can be exposed via MCP. This function is primarily used internally by
 \code{\link{putior_mcp_server}}, but can also be used directly for
 inspection or custom MCP server implementations.
 }
+\details{
+The tools confine scans to a folder only in a server started by
+\code{putior_mcp_server(type = "http")} (see its Security section). In
+a custom server that other programs can reach, they scan any folder
+that the R process can read.
+}
 \examples{
 \dontrun{
 # Get all putior MCP tools

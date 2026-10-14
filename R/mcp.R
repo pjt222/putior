@@ -100,12 +100,19 @@ NULL
 #'     junction; a recursive scan skips the files that links inside the
 #'     root lead outside to; a path with a \code{..} component, control
 #'     characters or a network or device form is rejected. Results and
-#'     messages show the root as \code{<root>}, so the links that
-#'     \code{enable_clicks} adds open files only over stdio.
+#'     messages show the root as \code{<root>}, and \code{put_diagram}
+#'     refuses \code{enable_clicks}, whose links name files by their path
+#'     on the server.
 #'   \item Without a token, the server runs only on a loopback \code{host}
 #'     and answers only requests addressed to a loopback name, so that a
 #'     web page cannot reach it through DNS rebinding; mcptools also
 #'     rejects requests from web pages of other origins.
+#'   \item mcptools' own settings stay in force: hosts trusted through the
+#'     option \code{mcptools.http_trusted_hosts} or the environment
+#'     variable \code{MCPTOOLS_HTTP_TRUSTED_HOSTS} are answered too, and a
+#'     secret set through \code{mcptools.http_shared_secret} or
+#'     \code{plumber2.sharedSecret} is required when \code{token} is
+#'     \code{NULL}.
 #'   \item To serve other machines, set \code{token}; mcptools then answers
 #'     only requests that send it:
 #' \preformatted{
@@ -188,12 +195,18 @@ putior_mcp_server <- function(type = c("stdio", "http"),
   if (type == "http") {
     root <- check_server_root(root)
     check_server_token(token, host, "Plumber-Shared-Secret: <token>")
-    # Without a token, only requests addressed to this machine by a loopback
-    # name are answered (no DNS rebinding); mcptools also rejects browser
-    # pages from other origins
-    trusted_hosts <- if (is.null(token)) mcp_loopback_hosts(host, port) else character()
-    old_options <- options(mcptools.http_shared_secret = token %||% "",
-                           mcptools.http_trusted_hosts = trusted_hosts)
+    # With a token, mcptools answers only requests that send it. Without
+    # one, only requests addressed to this machine by a loopback name (no
+    # DNS rebinding), next to the hosts mcptools is told to trust;
+    # mcptools also rejects browser pages from other origins. Settings of
+    # mcptools' own stay in force.
+    old_options <- if (is.null(token)) {
+      options(mcptools.http_trusted_hosts = unique(c(
+        getOption("mcptools.http_trusted_hosts"), mcp_loopback_hosts(host, port)
+      )))
+    } else {
+      options(mcptools.http_shared_secret = token)
+    }
     on.exit(options(old_options), add = TRUE)
     .mcp_state$root <- root
     on.exit(.mcp_state$root <- NULL, add = TRUE)
@@ -228,6 +241,11 @@ putior_mcp_server <- function(type = c("stdio", "http"),
 #' can be exposed via MCP. This function is primarily used internally by
 #' \code{\link{putior_mcp_server}}, but can also be used directly for
 #' inspection or custom MCP server implementations.
+#'
+#' The tools confine scans to a folder only in a server started by
+#' \code{putior_mcp_server(type = "http")} (see its Security section). In
+#' a custom server that other programs can reach, they scan any folder
+#' that the R process can read.
 #'
 #' @param include Character vector of tool names to include. If NULL (default),
 #'   all available tools are included.
@@ -509,6 +527,11 @@ mcp_put_diagram <- function(path, source = "annotations",
   if (length(source) != 1 || !source %in% c("annotations", "auto", "merge")) {
     stop('source must be "annotations", "auto" or "merge", not ',
          deparse(source), call. = FALSE)
+  }
+  # Click links name the files by their full path on the server (#111)
+  if (!is.null(.mcp_state$root) && !isFALSE(enable_clicks)) {
+    stop("enable_clicks is not available over HTTP: its links would name ",
+         "files by their path on the server.", call. = FALSE)
   }
   mcp_reply(style = "mermaid", {
     scan <- mcp_confine_scan(path, recursive, exclude)
@@ -827,7 +850,7 @@ make_tool_put_diagram <- function() {
         required = FALSE
       ),
       enable_clicks = ellmer::type_boolean(
-        description = "Make nodes clickable (default: FALSE)",
+        description = "Make nodes clickable (default: FALSE; not over HTTP)",
         required = FALSE
       ),
       click_protocol = ellmer::type_enum(

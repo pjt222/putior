@@ -835,12 +835,13 @@ test_that("putior_mcp_server() over HTTP sets a root, secret and trusted hosts (
   expect_null(recorded$root)
   expect_identical(recorded$secret, "theirs")
 
-  # Without a token: only loopback names, with and without the port
+  # Without a token: the loopback names, with and without the port, next to
+  # the hosts already trusted; a secret set for mcptools stays in force
   putior_mcp_server(type = "http", port = 8123, root = root)
   expect_identical(recorded$root, normalizePath(root, winslash = "/"))
-  expect_identical(recorded$secret, "")
+  expect_identical(recorded$secret, "theirs")
   expect_setequal(recorded$trusted_hosts, c(
-    "127.0.0.1:8123", "localhost:8123", "[::1]:8123", "127.0.0.1", "localhost", "[::1]"
+    "theirs", "127.0.0.1:8123", "localhost:8123", "[::1]:8123", "127.0.0.1", "localhost", "[::1]"
   ))
   # Another loopback address and IPv6 are written as clients send them
   putior_mcp_server(type = "http", host = "127.0.0.2", port = 8123, root = root)
@@ -852,14 +853,15 @@ test_that("putior_mcp_server() over HTTP sets a root, secret and trusted hosts (
   expect_identical(getOption("mcptools.http_shared_secret"), "theirs")
   expect_identical(getOption("mcptools.http_trusted_hosts"), "theirs")
 
-  # With a token: any Host, but every request must send the token
+  # With a token: every request must send it; trusted hosts stay as set
   token <- "0123456789abcdef0123"
   expect_warning(
     putior_mcp_server(type = "http", host = "0.0.0.0", port = 8123, root = root, token = token),
     "0.0.0.0", fixed = TRUE
   )
   expect_identical(recorded$secret, token)
-  expect_length(recorded$trusted_hosts, 0)
+  expect_identical(recorded$trusted_hosts, "theirs")
+  expect_identical(getOption("mcptools.http_shared_secret"), "theirs")
 })
 
 test_that("putior_mcp_server() over HTTP refuses an unsafe setup (#111)", {
@@ -888,7 +890,11 @@ test_that("mcptools refuses requests that the setup does not allow (#111)", {
   root <- file.path(tempdir(), "mcp_http_requests")
   dir.create(root, showWarnings = FALSE)
   on.exit(unlink(root, recursive = TRUE), add = TRUE)
-  # Hosts trusted through the environment would be added to putior's list
+  # Without mcptools settings of the session's: they would add to putior's
+  old_options <- options(mcptools.http_shared_secret = NULL,
+                         mcptools.http_trusted_hosts = NULL,
+                         plumber2.sharedSecret = NULL)
+  on.exit(options(old_options), add = TRUE)
   old_trusted_hosts <- Sys.getenv("MCPTOOLS_HTTP_TRUSTED_HOSTS", NA)
   Sys.unsetenv("MCPTOOLS_HTTP_TRUSTED_HOSTS")
   if (!is.na(old_trusted_hosts)) {
@@ -949,6 +955,9 @@ test_that("MCP tools over HTTP scan only inside the root (#111)", {
   expect_false(grepl(.mcp_state$root, scan_reply, fixed = TRUE))
   dir.create(file.path(project_dir, "empty"), showWarnings = FALSE)
   expect_error(tools$put_diagram(path = "empty"), "found in: <root>/empty", fixed = TRUE)
+  # Click links would name the files by their path on the server
+  expect_error(tools$put_diagram(path = ".", enable_clicks = TRUE),
+               "enable_clicks is not available over HTTP", fixed = TRUE)
   expect_match(tools$put(path = "etl.R"), "clean", fixed = TRUE)
   expect_match(tools$put_diagram(path = "."), "flowchart", fixed = TRUE)
   # Outside the root: an error naming the root as <root>, for every scanning tool
@@ -985,4 +994,23 @@ test_that("mcp_confine_scan() adds the excludes for links out of the root (#111)
   expect_identical(mcp_confine_scan(".", TRUE, NULL)$exclude, "^outside/")
   local_mocked_bindings(acp_outside_excludes = function(...) NULL)
   expect_identical(mcp_confine_scan(".", TRUE, "a,b")$exclude, "a,b")
+})
+
+test_that("MCP warnings over HTTP show the root as <root> (#111)", {
+  skip_if_not_installed("ellmer")
+  skip_if_not_installed("jsonlite")
+  root <- file.path(tempdir(), "mcp warn root")
+  dir.create(root, showWarnings = FALSE)
+  on.exit(unlink(root, recursive = TRUE), add = TRUE)
+  normalized_root <- normalizePath(root, winslash = "/")
+  .mcp_state$root <- normalized_root
+  on.exit(.mcp_state$root <- NULL, add = TRUE)
+  local_mocked_bindings(put = function(...) {
+    warning("Cannot read ", normalized_root, "/a.R (", normalized_root, ")")
+    data.frame(id = "a", label = "A", stringsAsFactors = FALSE)
+  })
+  reply <- putior_mcp_tools()$put(path = ".")
+  expect_length(reply, 2)
+  expect_match(reply[[2]]@text, "Cannot read <root>/a.R (<root>)", fixed = TRUE)
+  expect_false(grepl(normalized_root, reply[[2]]@text, fixed = TRUE))
 })

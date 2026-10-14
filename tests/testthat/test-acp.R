@@ -1235,6 +1235,20 @@ test_that("the root is redacted only where it ends at a path boundary (#111)", {
   restore_root()
   restore_root <- set_acp_root("/")
   expect_equal(putior:::redact_acp_root("Found /etc/x and a/b"), "Found /etc/x and a/b")
+
+  # Followed by punctuation, and percent-encoded in a URL (a root with a space)
+  root_with_space <- "/srv/my root"
+  for (text in c("in (/srv/my root).", "at /srv/my root: x", "[/srv/my root]",
+                 "a,/srv/my root,b", "dir=/srv/my root;", "{/srv/my root}")) {
+    expect_false(grepl(root_with_space, putior:::redact_acp_root(text, root_with_space), fixed = TRUE),
+                 label = text)
+  }
+  expect_equal(putior:::redact_acp_root("vscode://file/srv/my%20root/a.R:1", root_with_space),
+               "vscode://file<root>/a.R:1")
+  # A longer name is another file or folder
+  for (text in c("/srv/my root.txt", "/srv/my rootxtra/a", "/srv/my root-2", "/srv/my root%20b")) {
+    expect_equal(putior:::redact_acp_root(text, root_with_space), text, label = text)
+  }
 })
 
 test_that("a scan with too many links out of the root is refused (#111)", {
