@@ -20,8 +20,9 @@ Default: 8080}
 
 \item{root}{The folder that requests may scan (default: the working
 directory). A request's relative path is taken from it, and a path
-outside it, also through a symbolic link, is rejected. A request
-without a path scans this folder.}
+outside it, also through a symbolic link, is rejected; a scan skips
+files that links inside it lead outside to. A request without a path
+scans this folder.}
 
 \item{token}{\code{NULL} (default) or a string of at least 16
 characters. With a token, \code{POST /runs} and \code{GET /runs/<id>}
@@ -48,15 +49,30 @@ The ACP server exposes the following endpoints:
 }
 \section{Security}{
 
-A request can scan only the \code{root} folder and what lies below it,
-and it sees the file names, labels and paths found there. Paths with
-\code{..} or control characters are rejected as well. Without a token
-the server answers anyone who can reach its port, so it then accepts
-only a loopback \code{host}; with \code{host = "0.0.0.0"} or another
-address, set \code{token}. Run IDs are 128 random bits (from the
-openssl package, which plumber2 needs), so a client cannot guess the ID
-of another client's run. The server does not use TLS: across a network,
-put it behind a proxy that does, or the token travels in clear text.
+\itemize{
+\item A request can scan only the \code{root} folder and what lies
+below it, and it sees the file names and labels found there. A path
+outside the root is rejected, also when a symbolic link or junction
+leads there; a recursive scan skips the files that links inside the
+root lead outside to. A path with a \code{..} component, control
+characters, or a network or device form (\code{\\\\server\\share},
+\code{//server/share}) is rejected before the disk is touched.
+Messages show the root as \code{<root>}.
+\item Without a token, the server runs only on a loopback \code{host}
+(\code{127.x.x.x}, \code{localhost}, \code{::1}) and answers only
+requests addressed to such a name, so that a web page cannot reach
+it through DNS rebinding. With \code{host = "0.0.0.0"} or another
+address, set \code{token}.
+\item \code{POST /runs} needs \code{Content-Type: application/json},
+which a web page cannot send to another site without the server's
+consent, and a body of at most 1 MB. These checks, the Host and the
+token are checked before the body is read.
+\item Run IDs are 128 random bits (from the openssl package, which
+plumber2 needs), so a client cannot guess the ID of another
+client's run.
+\item The server does not use TLS: across a network, put it behind a
+proxy that does, or the token travels in clear text.
+}
 }
 
 \section{Message Format}{

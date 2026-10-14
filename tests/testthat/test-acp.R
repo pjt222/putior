@@ -795,7 +795,7 @@ test_that("acp_get_run_handler returns run data for existing run", {
   mock_response <- new.env(parent = emptyenv())
   mock_response$status <- 200L
 
-  result <- putior:::acp_get_run_handler(run_id, mock_response)
+  result <- putior:::acp_get_run_handler(run_id, response = mock_response)
 
   # Status should remain 200 (not changed to 404)
   expect_equal(mock_response$status, 200L)
@@ -862,12 +862,14 @@ start_acp_server <- function() {
     }
   }
   if (is.na(port)) skip("no free port for the ACP server")
-  request <- function(path, body = NULL, headers = character()) {
+  request <- function(path, body = NULL, headers = character(),
+                      content_type = "application/json") {
     handle <- curl::new_handle()
     header_lines <- headers
     if (!is.null(body)) {
       curl::handle_setopt(handle, postfields = body)
-      header_lines <- c(header_lines, "Content-Type: application/json")
+      # An empty value makes curl send no Content-Type at all
+      header_lines <- c(header_lines, paste0("Content-Type: ", content_type))
     }
     if (length(header_lines) > 0) curl::handle_setopt(handle, httpheader = header_lines)
     done <- FALSE
@@ -883,8 +885,11 @@ start_acp_server <- function() {
       curl::multi_run(timeout = 0.05, poll = TRUE)
     }
     if (!is.list(result)) stop("request failed: ", paste(result, collapse = " "))
+    text <- rawToChar(result$content)
     list(status = result$status_code,
-         json = jsonlite::fromJSON(rawToChar(result$content), simplifyVector = FALSE))
+         json = if (nzchar(text) && jsonlite::validate(text)) {
+           jsonlite::fromJSON(text, simplifyVector = FALSE)
+         })
   }
   list(request = request, stop = function() plumber2::api_stop(api))
 }
@@ -1055,4 +1060,118 @@ test_that("a server with a token rejects requests without it over HTTP (#111)", 
   expect_equal(server$request(paste0("/runs/", run$json$run_id))$status, 401L)
   expect_equal(server$request(paste0("/runs/", run$json$run_id),
                               headers = paste("Authorization: Bearer", token))$status, 200L)
+})
+
+test_that("a scan skips files that links inside the root lead outside to (#111)", {
+  root <- file.path(tempdir(), "acp_links_root")
+  outside <- file.path(tempdir(), "acp_links_outside")
+  dir.create(root, showWarnings = FALSE)
+  dir.create(outside, showWarnings = FALSE)
+  on.exit(unlink(c(root, outside), recursive = TRUE), add = TRUE)
+  writeLines('# put id:"inside", label:"Inside"', file.path(root, "ok.R"))
+  writeLines('# put id:"secret", label:"OUTSIDE SECRET"', file.path(outside, "leak.R"))
+  linked <- if (.Platform$OS.type == "windows") {
+    Sys.junction(outside, file.path(root, "junc"))
+  } else {
+    file.symlink(outside, file.path(root, "link")) &&
+      file.symlink(file.path(outside, "leak.R"), file.path(root, "filelink.R"))
+  }
+  skip_if_not(isTRUE(linked), "cannot make links")
+  restore_root <- set_acp_root(root)
+  on.exit(restore_root(), add = TRUE)
+  for (request in c("scan for annotations", "auto-detect the workflow", "merge annotations")) {
+    body <- list(input = list(list(role = "user", parts = list(list(
+      content = request, content_type = "text/plain"
+    )))))
+    parts <- putior:::acp_create_run_handler(body)$output[[1]]$parts
+    all_text <- paste(vapply(parts, function(part) part$content, ""), collapse = "\n")
+    expect_false(grepl("OUTSIDE SECRET|leak\\.R|secret", all_text), label = request)
+    expect_match(all_text, "lead outside the server's root folder", fixed = TRUE, label = request)
+  }
+})
+
+test_that("network and device paths are rejected before any file access (#111)", {
+  for (path in c("\\\\server\\share\\x", "//server/share/x", "\\\\?\\C:\\x", "\\\\.\\pipe\\x")) {
+    expect_error(putior:::sanitize_acp_path(path), "network and device paths", label = path)
+  }
+  expect_null(putior:::extract_path("scan \\\\10.255.255.2\\share\\x please"))
+  body <- list(input = list(list(role = "user", parts = list(list(
+    content = "scan '//10.255.255.1/share/x'", content_type = "text/plain"
+  )))))
+  parts <- putior:::acp_create_run_handler(body)$output[[1]]$parts
+  expect_match(parts[[1]]$content, "network and device paths", fixed = TRUE)
+})
+
+test_that("paths are recognized and resolved relative to the root (#111)", {
+  root <- file.path(tempdir(), "acp_relative_root")
+  dir.create(file.path(root, "proj"), recursive = TRUE, showWarnings = FALSE)
+  on.exit(unlink(root, recursive = TRUE), add = TRUE)
+  writeLines('# put id:"p", label:"P"', file.path(root, "proj", "p.R"))
+  restore_root <- set_acp_root(root)
+  on.exit(restore_root(), add = TRUE)
+  # The working directory is elsewhere; the word exists only under the root
+  expect_false(file.exists("proj/p.R"))
+  expect_equal(putior:::extract_path("scan proj/p.R"), "proj/p.R")
+  # Messages name the root as <root>, not its absolute path
+  body <- list(input = list(list(role = "user", parts = list(list(
+    content = "scan ./nothere", content_type = "text/plain"
+  )))))
+  parts <- putior:::acp_create_run_handler(body)$output[[1]]$parts
+  expect_match(parts[[1]]$content, "<root>", fixed = TRUE)
+  expect_false(grepl(normalizePath(root, winslash = "/"), parts[[1]]$content, fixed = TRUE))
+})
+
+test_that("only real loopback hosts run without a token, and tokens have no spaces (#111)", {
+  skip_if_not_installed("plumber2")
+  local_mocked_bindings(api_run = function(...) "ran", .package = "plumber2")
+  quietly <- function(code) suppressMessages(code)
+  for (host in c("127.0.0.1.evil.example", "127.attacker.com", "localhost.evil")) {
+    expect_error(quietly(putior_acp_server(host = host)), "needs a token", label = host)
+  }
+  for (host in c("127.0.0.1", "127.1.2.3", "LOCALHOST", "::1")) {
+    expect_no_error(quietly(putior_acp_server(host = host)))
+  }
+  expect_error(quietly(putior_acp_server(token = strrep(" ", 20))), "at least 16 characters")
+  expect_error(quietly(putior_acp_server(token = "0123456789 abcdef")), "without spaces")
+})
+
+test_that("the Bearer scheme is case-insensitive, the token is not (#111)", {
+  restore_token <- set_acp_token("0123456789abcdef-secret")
+  on.exit(restore_token(), add = TRUE)
+  fake_request <- function(header) list(get_header = function(name) header)
+  expect_true(putior:::acp_authorized(fake_request("bearer 0123456789abcdef-secret")))
+  expect_true(putior:::acp_authorized(fake_request("BEARER 0123456789abcdef-secret")))
+  expect_false(putior:::acp_authorized(fake_request("Bearer 0123456789ABCDEF-SECRET")))
+  expect_false(putior:::acp_authorized(fake_request("Basic 0123456789abcdef-secret")))
+})
+
+test_that("folder matching is case-sensitive except on Windows (#111)", {
+  skip_on_os("windows")
+  expect_false(putior:::is_inside_folder("/a/Root/x", "/a/root"))
+  expect_true(putior:::is_inside_folder("/a/root/x", "/a/root"))
+})
+
+test_that("the server refuses foreign hosts, other content types and odd bodies (#111)", {
+  skip_on_cran()
+  skip_if_not_installed("plumber2")
+  skip_if_not_installed("curl")
+  skip_if_not_installed("later")
+  skip_if_not_installed("jsonlite")
+  server <- start_acp_server()
+  on.exit(server$stop(), add = TRUE)
+  body <- '{"input":[{"role":"user","parts":[{"content":"help"}]}]}'
+  # DNS rebinding: a name of the attacker's that resolves to 127.0.0.1
+  expect_equal(server$request("/agents", headers = "Host: evil.example")$status, 403L)
+  expect_equal(server$request("/runs", body, "Host: evil.example:8080")$status, 403L)
+  expect_equal(server$request("/runs", body, "Host: localhost")$status, 200L)
+  # A cross-site form or text post
+  expect_equal(server$request("/runs", body, content_type = "text/plain")$status, 415L)
+  expect_equal(server$request("/runs", body, content_type = "")$status, 415L)
+  # Bodies that are not an object with an input array
+  expect_equal(server$request("/runs", '"abc"')$status, 400L)
+  expect_equal(server$request("/runs", '{"input":"scan"}')$status, 400L)
+  # Large bodies are not read
+  big_body <- paste0('{"input":[{"role":"user","parts":[{"content":"',
+                     strrep("x", 2e6), '"}]}]}')
+  expect_equal(server$request("/runs", big_body)$status, 413L)
 })

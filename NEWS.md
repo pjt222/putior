@@ -249,13 +249,19 @@
 * Supports natural language requests for all core operations
 * Requests may scan only the folder given as `root` (default: the working
   directory) and what lies below it; a path outside it, also through a
-  symbolic link, is rejected. Before, a request could name any absolute
-  path the server's R process could read. A `token` makes the server
-  require `Authorization: Bearer <token>` on `/runs`; a server on an
-  address other than a loopback one refuses to start without one. Run
-  IDs are 128 random bits from openssl, also without the uuid package,
-  where they were a timestamp and a counter that another client could
-  guess. `?putior_acp_server` describes the security model. (#111)
+  symbolic link, is rejected, and a scan skips files that links inside it
+  lead outside to. Before, a request could name any absolute path the
+  server's R process could read. Network and device paths are rejected
+  before the disk is touched, and messages show the root as `<root>`. A
+  `token` makes the server require `Authorization: Bearer <token>` on
+  `/runs`; a server on an address other than a loopback one refuses to
+  start without one. Without a token, the server answers only requests
+  addressed to a loopback name (against DNS rebinding). `POST /runs`
+  needs `Content-Type: application/json` and at most 1 MB, checked with
+  the Host and the token before the body is read. Run IDs are 128 random
+  bits from openssl, also without the uuid package, where they were a
+  timestamp and a counter that another client could guess.
+  `?putior_acp_server` describes the security model. (#111)
 * Input path sanitization to prevent directory traversal attacks. A path
   with `..` or control characters ends the run with an error; it used to
   be replaced by `.` with a warning in the server log, so the run scanned

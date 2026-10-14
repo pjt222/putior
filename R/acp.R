@@ -21,6 +21,9 @@ NULL
 # A request is searched for its path in this many characters (#109)
 .ACP_MAX_PATH_SEARCH <- 10000L
 
+# The largest request body the server reads, in bytes (#111)
+.ACP_MAX_REQUEST_BYTES <- 1e6
+
 # Counter for run IDs made without openssl or uuid
 .acp_run_counter <- new.env(parent = emptyenv())
 
@@ -247,7 +250,18 @@ extract_path <- function(content) {
   is_bare_root <- function(x) {
     grepl("^(/+(\\./*)*|~(/+(\\./*)*)?|[A-Za-z]:(/+(\\./*)*)?)$", gsub("\\\\", "/", x))
   }
-  path_exists <- function(x) suppressWarnings(file.exists(x))
+  # Relative to the server's root, as the scan resolves them (#111); never
+  # for network or device paths, which would contact another host
+  root <- acp_root()
+  path_exists <- function(x) {
+    is_network <- grepl("^[/\\\\]{2}", x)
+    is_absolute <- grepl("^([A-Za-z]:)?[/\\\\]", x) | startsWith(x, "~")
+    full_paths <- x
+    full_paths[!is_absolute] <- file.path(root, x[!is_absolute])
+    exists_now <- logical(length(x))
+    exists_now[!is_network] <- suppressWarnings(file.exists(full_paths[!is_network]))
+    exists_now
+  }
   parameter_values <- tolower(c(.VALID_THEMES, "td", "tb", "lr", "bt", "rl"))
 
   # (*UCP): an apostrophe after a non-ASCII letter is no quote either
@@ -381,6 +395,45 @@ confine_acp_path <- function(path) {
   resolved
 }
 
+#' Exclude patterns for the files a scan would reach outside the root (#111)
+#'
+#' A recursive scan follows symbolic links and Windows junctions inside the
+#' scanned folder (list.files() does), so a link inside the root could
+#' expose files outside it. This lists what the scan could read, resolves
+#' each file, and returns exclude patterns for put() and its siblings that
+#' match exactly the files outside the root, with a warning that says how
+#' many are skipped. A folder with links into a cache outside the root,
+#' such as an renv library, can still be scanned.
+#' @param path The confined path to scan
+#' @param recursive Whether the scan is recursive
+#' @return Exclude patterns, or NULL when every file is inside the root
+#' @noRd
+acp_outside_excludes <- function(path, recursive = TRUE) {
+  if (!dir.exists(path)) {
+    return(NULL)
+  }
+  files <- list.files(path, full.names = TRUE, recursive = recursive)
+  if (length(files) == 0) {
+    return(NULL)
+  }
+  root <- acp_root()
+  resolved <- normalizePath(files, winslash = "/", mustWork = FALSE)
+  outside <- files[!vapply(resolved, is_inside_folder, logical(1), folder = root)]
+  if (length(outside) == 0) {
+    return(NULL)
+  }
+  warning(
+    length(outside), if (length(outside) == 1) " file" else " files",
+    " reached through links that lead outside the server's root folder ",
+    if (length(outside) == 1) "was" else "were", " skipped.",
+    call. = FALSE
+  )
+  # Exact patterns. "^$" matches no file; with it, put() does not split a
+  # single pattern at its commas.
+  escaped <- gsub("([.\\\\|()\\[\\]{}^$*+?])", "\\\\\\1", outside, perl = TRUE)
+  c(paste0("^", escaped, "$"), "^$")
+}
+
 #' Extract parameters from message content
 #' @noRd
 extract_parameters <- function(content) {
@@ -476,6 +529,12 @@ sanitize_acp_path <- function(path) {
   # Normalize path separators for traversal check
   normalized <- gsub("\\\\", "/", path)
 
+  # Network and device paths (\\\\server\\share, //server/share, \\\\?\\): a
+  # file system call on one would make the server contact that host (#111)
+  if (startsWith(normalized, "//")) {
+    stop("ACP path rejected: network and device paths are not allowed: ", path, call. = FALSE)
+  }
+
   # Reject directory traversal attempts, also after a drive ("D:..\\x")
   if (grepl("(^|[/:])\\.\\.(/|$)", normalized)) {
     stop("ACP path rejected: directory traversal not allowed: ", path, call. = FALSE)
@@ -500,9 +559,8 @@ sanitize_acp_path <- function(path) {
 #'
 #' @noRd
 execute_acp_request <- function(input, session_id = NULL) {
-  parsed <- parse_acp_message(input)
-
   result <- tryCatch({
+    parsed <- parse_acp_message(input)
     # Sanitize path from network input; a rejected path ends the run with
     # an error message. Help and guide requests use no path.
     uses_path <- parsed$operation %in% c("scan", "diagram", "auto", "generate", "merge")
@@ -512,17 +570,18 @@ execute_acp_request <- function(input, session_id = NULL) {
     switch(parsed$operation,
       "scan" = {
         path <- acp_scan_path(parsed$params$path)
-        put(
-          path = path,
-          recursive = !isFALSE(parsed$params$recursive)
-        )
+        recursive <- !isFALSE(parsed$params$recursive)
+        put(path = path, recursive = recursive,
+            exclude = acp_outside_excludes(path, recursive))
       },
       "diagram" = {
         # For diagram, we need workflow data
         # If path provided, scan first
         path <- parsed$params$path
         if (!is.null(path)) {
-          workflow <- put(path, recursive = !isFALSE(parsed$params$recursive))
+          recursive <- !isFALSE(parsed$params$recursive)
+          workflow <- put(path, recursive = recursive,
+                          exclude = acp_outside_excludes(path, recursive))
         } else {
           # Return instructions
           return(paste0(
@@ -542,26 +601,22 @@ execute_acp_request <- function(input, session_id = NULL) {
       },
       "auto" = {
         path <- acp_scan_path(parsed$params$path)
-        put_auto(
-          path = path,
-          recursive = !isFALSE(parsed$params$recursive)
-        )
+        recursive <- !isFALSE(parsed$params$recursive)
+        put_auto(path = path, recursive = recursive,
+                 exclude = acp_outside_excludes(path, recursive))
       },
       "generate" = {
         path <- acp_scan_path(parsed$params$path)
-        annotations <- put_generate(
-          path = path,
-          output = "raw",
-          recursive = !isFALSE(parsed$params$recursive)
-        )
+        recursive <- !isFALSE(parsed$params$recursive)
+        annotations <- put_generate(path = path, output = "raw", recursive = recursive,
+                                    exclude = acp_outside_excludes(path, recursive))
         paste(annotations, collapse = "\n")
       },
       "merge" = {
         path <- acp_scan_path(parsed$params$path)
-        put_merge(
-          path = path,
-          recursive = !isFALSE(parsed$params$recursive)
-        )
+        recursive <- !isFALSE(parsed$params$recursive)
+        put_merge(path = path, recursive = recursive,
+                  exclude = acp_outside_excludes(path, recursive))
       },
       "help" = {
         # Capture help output
@@ -685,6 +740,9 @@ acp_api <- function() {
   plumber2::api() |>
     plumber2::api_get("/agents", acp_list_agents_handler,
                       serializers = json_serializer) |>
+    # Refusals happen before the body is read (#111)
+    plumber2::api_post_header("/runs", acp_runs_header_handler,
+                              serializers = json_serializer) |>
     plumber2::api_post("/runs", acp_create_run_handler,
                        serializers = json_serializer) |>
     plumber2::api_get("/runs/<run_id>", acp_get_run_handler,
@@ -693,7 +751,11 @@ acp_api <- function() {
 
 #' Handler for GET /agents endpoint
 #' @noRd
-acp_list_agents_handler <- function() {
+acp_list_agents_handler <- function(request = NULL, response = NULL) {
+  if (!acp_host_allowed(request)) {
+    if (!is.null(response)) response$status <- 403L
+    return(list(error = "Forbidden: this server answers only requests to localhost"))
+  }
   list(agents = list(putior_acp_manifest()))
 }
 
@@ -712,15 +774,81 @@ acp_authorized <- function(request) {
     return(TRUE)
   }
   header <- if (is.null(request)) NULL else request$get_header("Authorization")
-  if (is.null(header) || length(header) != 1) {
+  if (is.null(header) || length(header) != 1 || !grepl("^[Bb][Ee][Aa][Rr][Ee][Rr] ", header)) {
     return(FALSE)
   }
-  expected <- paste("Bearer", token)
+  # The scheme is case-insensitive (RFC 7235); the token is not
+  given_token <- substring(header, 8L)
   if (requireNamespace("openssl", quietly = TRUE)) {
-    identical(as.character(openssl::sha256(header)), as.character(openssl::sha256(expected)))
+    identical(as.character(openssl::sha256(given_token)), as.character(openssl::sha256(token)))
   } else {
-    identical(header, expected)
+    identical(given_token, token)
   }
+}
+
+#' Is a request's Host one of this machine's loopback names? (#111)
+#'
+#' A server without a token answers only requests addressed to 127.x,
+#' localhost or ::1. Otherwise a web page the user visits could reach it
+#' through DNS rebinding (a name of the attacker's that resolves to
+#' 127.0.0.1) and read scan results. With a token that is not needed: the
+#' page does not know the token.
+#' @noRd
+acp_host_allowed <- function(request) {
+  if (is.null(request) || !is.null(.acp_state$token)) {
+    return(TRUE)
+  }
+  host <- tolower(request$get_header("Host") %||% "")
+  host <- sub(":[0-9]+$", "", host)
+  is_loopback_host(host) || host == "[::1]"
+}
+
+#' Is a host name or address a loopback one?
+#' @noRd
+is_loopback_host <- function(host) {
+  host <- tolower(host)
+  grepl("^127(\\.[0-9]{1,3}){3}$", host) || host %in% c("localhost", "::1")
+}
+
+#' A request that the server refuses before running it (#111)
+#'
+#' Sets the status and returns the body of the answer, or NULL when the
+#' request may run. Called with request = NULL, as the tests call the
+#' handlers directly, nothing is checked.
+#' @noRd
+acp_refuse_request <- function(request, response, needs_json = FALSE) {
+  refusal <- function(status, message) {
+    if (!is.null(response)) response$status <- status
+    list(error = message)
+  }
+  if (!acp_host_allowed(request)) {
+    return(refusal(403L, "Forbidden: this server answers only requests to localhost"))
+  }
+  if (!acp_authorized(request)) {
+    return(acp_unauthorized(response))
+  }
+  # A browser can send a cross-site POST without a preflight only with a
+  # "simple" content type, never application/json
+  if (needs_json && !is.null(request)) {
+    content_type <- tolower(request$get_header("Content-Type") %||% "")
+    if (!startsWith(content_type, "application/json")) {
+      return(refusal(415L, "Unsupported Media Type: send the request as application/json"))
+    }
+  }
+  NULL
+}
+
+#' Replace the server's root folder in a message with "<root>" (#111)
+#'
+#' Error messages and warnings name absolute paths, which would tell a
+#' client where the root lies and how the disk is laid out.
+#' @noRd
+redact_acp_root <- function(text) {
+  root <- acp_root()
+  for (root_form in unique(c(root, gsub("/", "\\\\", root)))) {
+    text <- gsub(root_form, "<root>", text, fixed = TRUE)
+  }
+  text
 }
 
 #' The answer to a request without the server's token (#111)
@@ -733,11 +861,44 @@ acp_unauthorized <- function(response) {
   list(error = "Unauthorized: send the server's token as 'Authorization: Bearer <token>'")
 }
 
+#' Header handler for POST /runs: refuse before reading the body (#111)
+#'
+#' Checks the Host, the token, the content type and the size from the
+#' Content-Length header, so that a refused request's body is never read or
+#' parsed. plumber2's own max_request_size had no effect (plumber2 0.2.0).
+#' @noRd
+acp_runs_header_handler <- function(request, response) {
+  refusal <- acp_refuse_request(request, response, needs_json = TRUE)
+  if (!is.null(refusal)) {
+    return(refusal)
+  }
+  content_length <- suppressWarnings(as.numeric(request$get_header("Content-Length")))
+  if (length(content_length) == 1 && !is.na(content_length) &&
+      content_length > .ACP_MAX_REQUEST_BYTES) {
+    response$status <- 413L
+    return(list(error = paste0(
+      "Payload Too Large: a request may have at most ",
+      format(.ACP_MAX_REQUEST_BYTES, big.mark = ",", scientific = FALSE), " bytes"
+    )))
+  }
+  plumber2::Next
+}
+
 #' Handler for POST /runs endpoint
 #' @noRd
 acp_create_run_handler <- function(body, request = NULL, response = NULL) {
-  if (!acp_authorized(request)) {
-    return(acp_unauthorized(response))
+  refusal <- acp_refuse_request(request, response, needs_json = TRUE)
+  if (!is.null(refusal)) {
+    return(refusal)
+  }
+  # A body that is not an object with an input array is the client's error
+  input_valid <- is.list(body) && tryCatch({
+    extract_text_content(body$input)
+    TRUE
+  }, error = function(e) FALSE)
+  if (!input_valid) {
+    if (!is.null(response)) response$status <- 400L
+    return(list(error = "Bad Request: send a JSON object with an input array of messages"))
   }
   run_id <- generate_run_id()
 
@@ -748,6 +909,8 @@ acp_create_run_handler <- function(body, request = NULL, response = NULL) {
 
   # Execute the request, keeping the warnings R raises for the output
   collected <- collect_warnings(execute_acp_request(input, session_id))
+  if (is.character(collected$value)) collected$value <- redact_acp_root(collected$value)
+  collected$warnings <- redact_acp_root(collected$warnings)
 
   # Create run record
   run_data <- list(
@@ -768,8 +931,9 @@ acp_create_run_handler <- function(body, request = NULL, response = NULL) {
 #' Handler for GET /runs/:run_id endpoint
 #' @noRd
 acp_get_run_handler <- function(run_id, request = NULL, response = NULL) {
-  if (!acp_authorized(request)) {
-    return(acp_unauthorized(response))
+  refusal <- acp_refuse_request(request, response)
+  if (!is.null(refusal)) {
+    return(refusal)
   }
   run <- get_run_by_id(run_id)
 
@@ -796,8 +960,9 @@ acp_get_run_handler <- function(run_id, request = NULL, response = NULL) {
 #'   Default: 8080
 #' @param root The folder that requests may scan (default: the working
 #'   directory). A request's relative path is taken from it, and a path
-#'   outside it, also through a symbolic link, is rejected. A request
-#'   without a path scans this folder.
+#'   outside it, also through a symbolic link, is rejected; a scan skips
+#'   files that links inside it lead outside to. A request without a path
+#'   scans this folder.
 #' @param token \code{NULL} (default) or a string of at least 16
 #'   characters. With a token, \code{POST /runs} and \code{GET /runs/<id>}
 #'   need the header \code{Authorization: Bearer <token>}. A server on an
@@ -815,15 +980,30 @@ acp_get_run_handler <- function(run_id, request = NULL, response = NULL) {
 #' }
 #'
 #' @section Security:
-#' A request can scan only the \code{root} folder and what lies below it,
-#' and it sees the file names, labels and paths found there. Paths with
-#' \code{..} or control characters are rejected as well. Without a token
-#' the server answers anyone who can reach its port, so it then accepts
-#' only a loopback \code{host}; with \code{host = "0.0.0.0"} or another
-#' address, set \code{token}. Run IDs are 128 random bits (from the
-#' openssl package, which plumber2 needs), so a client cannot guess the ID
-#' of another client's run. The server does not use TLS: across a network,
-#' put it behind a proxy that does, or the token travels in clear text.
+#' \itemize{
+#'   \item A request can scan only the \code{root} folder and what lies
+#'     below it, and it sees the file names and labels found there. A path
+#'     outside the root is rejected, also when a symbolic link or junction
+#'     leads there; a recursive scan skips the files that links inside the
+#'     root lead outside to. A path with a \code{..} component, control
+#'     characters, or a network or device form (\code{\\\\server\\share},
+#'     \code{//server/share}) is rejected before the disk is touched.
+#'     Messages show the root as \code{<root>}.
+#'   \item Without a token, the server runs only on a loopback \code{host}
+#'     (\code{127.x.x.x}, \code{localhost}, \code{::1}) and answers only
+#'     requests addressed to such a name, so that a web page cannot reach
+#'     it through DNS rebinding. With \code{host = "0.0.0.0"} or another
+#'     address, set \code{token}.
+#'   \item \code{POST /runs} needs \code{Content-Type: application/json},
+#'     which a web page cannot send to another site without the server's
+#'     consent, and a body of at most 1 MB. These checks, the Host and the
+#'     token are checked before the body is read.
+#'   \item Run IDs are 128 random bits (from the openssl package, which
+#'     plumber2 needs), so a client cannot guess the ID of another
+#'     client's run.
+#'   \item The server does not use TLS: across a network, put it behind a
+#'     proxy that does, or the token travels in clear text.
+#' }
 #'
 #' @section Message Format:
 #' POST /runs expects a JSON body with this structure:
@@ -922,11 +1102,12 @@ putior_acp_server <- function(host = "127.0.0.1", port = 8080L, root = getwd(),
 
   # A token, required unless only this machine can reach the server (#111)
   if (!is.null(token) &&
-      (!is.character(token) || length(token) != 1 || is.na(token) || nchar(token) < 16)) {
-    stop("'token' must be a string of at least 16 characters, or NULL.", call. = FALSE)
+      (!is.character(token) || length(token) != 1 || is.na(token) ||
+         nchar(trimws(token)) < 16 || grepl("[[:space:]]", token))) {
+    stop("'token' must be a string of at least 16 characters without spaces, or NULL.",
+         call. = FALSE)
   }
-  is_loopback <- grepl("^127\\.", host) || host %in% c("localhost", "::1")
-  if (!is_loopback && is.null(token)) {
+  if (!is_loopback_host(host) && is.null(token)) {
     stop(
       "A server on ", host, " can be reached from other machines, so it needs ",
       "a token: putior_acp_server(host = \"", host, "\", token = \"<at least 16 ",
