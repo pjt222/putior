@@ -251,7 +251,9 @@
   loopback one refuses to start without one. Without a token, the
   server answers only requests addressed to a loopback name (against DNS
   rebinding). mcptools' own settings (trusted hosts, shared secret) stay
-  in force. Over stdio nothing changes. `?putior_mcp_server` describes
+  in force. Before serving, the server tests that mcptools refuses
+  requests without the token or from an untrusted Host, and does not
+  start if it does not. Over stdio nothing changes. `?putior_mcp_server` describes
   the security model. (#111)
 
 ### ACP Server Integration

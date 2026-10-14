@@ -107,6 +107,10 @@ NULL
 #'     and answers only requests addressed to a loopback name, so that a
 #'     web page cannot reach it through DNS rebinding; mcptools also
 #'     rejects requests from web pages of other origins.
+#'   \item mcptools checks the token and the Host, through options that
+#'     putior sets. Before serving, the server tests that mcptools refuses
+#'     requests without the token or from an untrusted Host; if it does not
+#'     (a version that reads other settings), the server does not start.
 #'   \item mcptools' own settings stay in force: hosts trusted through the
 #'     option \code{mcptools.http_trusted_hosts} or the environment
 #'     variable \code{MCPTOOLS_HTTP_TRUSTED_HOSTS} are answered too, and a
@@ -195,6 +199,7 @@ putior_mcp_server <- function(type = c("stdio", "http"),
   if (type == "http") {
     root <- check_server_root(root)
     check_server_token(token, host, "Plumber-Shared-Secret: <token>")
+    mcp_check_http_security()
     # With a token, mcptools answers only requests that send it. Without
     # one, only requests addressed to this machine by a loopback name (no
     # DNS rebinding), next to the hosts mcptools is told to trust;
@@ -416,6 +421,56 @@ mcp_reply <- function(code, style = "text") {
   " If putior warned, a second text part lists the warnings; ",
   "tell the user about them."
 )
+
+#' Check that mcptools enforces the token and trusted hosts (#111)
+#'
+#' Over HTTP, mcptools checks each request's token and Host, reading the
+#' options mcptools.http_shared_secret and mcptools.http_trusted_hosts that
+#' putior_mcp_server() sets. These options are not part of mcptools'
+#' documented interface: a version that read other ones would serve every
+#' request, with no error. So before serving, this sends mcptools' request
+#' handler test requests under test settings: it must refuse a request
+#' without the token, with a wrong one and with an untrusted Host, and let
+#' a valid one through to the method check. An unknown method is used, so
+#' no request reaches a tool. If mcptools answers otherwise, or has no such
+#' handler, the server does not start.
+#' @return NULL, invisibly; an error if mcptools does not enforce the settings
+#' @noRd
+mcp_check_http_security <- function() {
+  request_handler <- tryCatch(
+    utils::getFromNamespace("handle_http_request", "mcptools"),
+    error = function(error_condition) NULL
+  )
+  test_secret <- "putior-self-check-secret"
+  test_host <- "putior-self-check.invalid"
+  old_options <- options(mcptools.http_shared_secret = test_secret,
+                         mcptools.http_trusted_hosts = test_host)
+  on.exit(options(old_options), add = TRUE)
+  status_of <- function(host, secret = NULL) {
+    request <- list(REQUEST_METHOD = "PUTIOR-SELF-CHECK", HTTP_HOST = host)
+    request$HTTP_PLUMBER_SHARED_SECRET <- secret
+    tryCatch(as.integer(request_handler(request)$status)[1],
+             error = function(error_condition) NA_integer_)
+  }
+  refused <- function(status) isTRUE(status %in% c(401L, 403L))
+  enforced <- is.function(request_handler) &&
+    !is.na(status_of(test_host, test_secret)) &&
+    !refused(status_of(test_host, test_secret)) &&
+    refused(status_of(test_host)) &&
+    refused(status_of(test_host, "wrong-secret")) &&
+    refused(status_of("putior-untrusted.invalid", test_secret))
+  if (!enforced) {
+    stop(
+      "putior's MCP server over HTTP needs mcptools to check the token and ",
+      "the Host of each request, and mcptools ", utils::packageVersion("mcptools"),
+      " did not refuse putior's test requests: it may read other settings ",
+      "than mcptools 1.0. The server was not started. Use the stdio ",
+      "transport, or a putior version that supports this mcptools.",
+      call. = FALSE
+    )
+  }
+  invisible(NULL)
+}
 
 #' The Host headers that an MCP server without a token answers (#111)
 #'

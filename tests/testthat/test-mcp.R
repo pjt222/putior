@@ -1017,3 +1017,30 @@ test_that("MCP warnings over HTTP show the root as <root> (#111)", {
   expect_match(reply[[2]]@text, "Cannot read <root>/a.R (<root>)", fixed = TRUE)
   expect_false(grepl(normalized_root, reply[[2]]@text, fixed = TRUE))
 })
+
+test_that("the MCP server over HTTP does not start if mcptools ignores its settings (#111)", {
+  skip_if_not_installed("mcptools", "1.0.0")
+  skip_if_not_installed("ellmer")
+  # The installed mcptools enforces them
+  expect_no_error(mcp_check_http_security())
+
+  recorded <- record_mcp_server_setup()
+  old_options <- options(mcptools.http_shared_secret = "theirs",
+                         mcptools.http_trusted_hosts = "theirs")
+  on.exit(options(old_options), add = TRUE)
+  # A version that serves every request, or whose handler has changed
+  for (handler in list(function(request) list(status = 405L),
+                       function(request) stop("no such field"),
+                       function(request) list(status = 403L))) {
+    local_mocked_bindings(handle_http_request = handler, .package = "mcptools")
+    expect_error(putior_mcp_server(type = "http", port = 8123),
+                 "did not refuse putior's test requests", fixed = TRUE)
+    expect_null(recorded$arguments)
+    expect_null(.mcp_state$root)
+    expect_identical(getOption("mcptools.http_shared_secret"), "theirs")
+    expect_identical(getOption("mcptools.http_trusted_hosts"), "theirs")
+  }
+  # Over stdio mcptools checks nothing, so the check is not made
+  putior_mcp_server()
+  expect_false(is.null(recorded$arguments))
+})

@@ -121,6 +121,10 @@ on the server.
 and answers only requests addressed to a loopback name, so that a
 web page cannot reach it through DNS rebinding; mcptools also
 rejects requests from web pages of other origins.
+\item mcptools checks the token and the Host, through options that
+putior sets. Before serving, the server tests that mcptools refuses
+requests without the token or from an untrusted Host; if it does not
+(a version that reads other settings), the server does not start.
 \item mcptools' own settings stay in force: hosts trusted through the
 option \code{mcptools.http_trusted_hosts} or the environment
 variable \code{MCPTOOLS_HTTP_TRUSTED_HOSTS} are answered too, and a
