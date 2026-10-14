@@ -57,7 +57,8 @@ validate_path_arg <- function(path, caller) {
 
   # Reject directory traversal attempts (defense-in-depth)
   normalized <- gsub("\\\\", "/", path)
-  if (grepl("(^|/)\\.\\.(/|$)", normalized)) {
+  # Also after a drive ("D:..\\x")
+  if (grepl("(^|[/:])\\.\\.(/|$)", normalized)) {
     stop(
       "Path rejected: directory traversal ('..') not allowed: '", path, "'",
       call. = FALSE
@@ -240,7 +241,8 @@ format_warning_block <- function(warning_messages, style = c("text", "mermaid"),
                                  before_error = FALSE) {
   style <- match.arg(style)
   shown_messages <- warning_messages[seq_len(min(length(warning_messages), .MAX_REPORTED_WARNINGS))]
-  # allowNA: a warning with invalid UTF-8 is listed, not an error
+  # Invalid UTF-8 bytes are shown as "<ff>", so that the warning is listed
+  shown_messages <- iconv(shown_messages, "UTF-8", "UTF-8", sub = "byte")
   message_lengths <- nchar(shown_messages, allowNA = TRUE)
   is_long <- !is.na(message_lengths) & message_lengths > .MAX_WARNING_CHARACTERS
   shown_messages[is_long] <- paste0(

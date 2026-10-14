@@ -156,39 +156,78 @@ test_that("extract_parameters extracts unquoted paths without the space before t
 })
 
 test_that("ACP requests name paths in every common form (#109)", {
-  old_wd <- setwd(tempdir())
-  on.exit(setwd(old_wd), add = TRUE)
-  dir.create(file.path("acp_paths", "R"), recursive = TRUE, showWarnings = FALSE)
-  on.exit(unlink("acp_paths", recursive = TRUE), add = TRUE)
+  path_root <- file.path(tempdir(), "acp_paths")
+  dir.create(file.path(path_root, "R"), recursive = TRUE, showWarnings = FALSE)
+  on.exit(unlink(path_root, recursive = TRUE), add = TRUE)
+  old_wd <- setwd(path_root)
+  on.exit(setwd(old_wd), add = TRUE, after = FALSE)
   expected_paths <- list(
     "scan D:/dev/p/putior/R for annotations" = "D:/dev/p/putior/R",
     "generate a diagram for D:/dev/p/putior/R" = "D:/dev/p/putior/R",
     "scan C:\\Users\\me\\project" = "C:\\Users\\me\\project",
     "scan ~/project" = "~/project",
-    "scan ~" = "~",
-    "scan acp_paths/R" = "acp_paths/R",
+    "scan R/" = "R/",
+    "scan ." = ".",
     "scan (./R/), please" = "./R/",
+    "Can you scan ./R?" = "./R",
+    "scan ./R." = "./R",
     "Let's scan './R/'" = "./R/",
-    "generate a diagram with theme 'dark' for ./R/" = "./R/",
-    "direction \"LR\" diagram for ./R/" = "./R/",
+    "scan `./R/`" = "./R/",
+    "scan \u2018./R/\u2019" = "./R/",
+    "scan \u201c./R/\u201d" = "./R/",
+    "caf\u00e9's './R/'" = "./R/",
     "scan \"D:/my project/R\"" = "D:/my project/R",
-    "scan ..\\secret" = "..\\secret"
+    "scan '/'" = "/",
+    "scan ..\\secret" = "..\\secret",
+    # An unquoted path wins over a quoted word that is not one
+    "generate a diagram for ./R/ using the 'dark' theme" = "./R/",
+    "scan for 'put' annotations in ./R/" = "./R/",
+    "diagram titled \"ETL pipeline\" for ./R/" = "./R/",
+    "scan source \"./R/\"" = "./R/",
+    # A lone "/" or "~" in prose is not the root
+    "scan R / Python files in ./src" = "./src",
+    "scan ~ 5 files in ./R/" = "./R/",
+    # A quoted value that is no path gives an error later, not a scan of "."
+    "scan 'nope'" = "nope"
   )
   for (request in names(expected_paths)) {
     expect_equal(putior:::extract_path(request), expected_paths[[request]], label = request)
   }
-  # Plain words, prose with a slash and URLs are not paths
-  for (request in c("scan src", "scan R files and/or tests", "fetch https://x.org/a")) {
+  # Plain words, prose with a slash, URLs, bare roots and parameter values
+  for (request in c("scan src", "scan R files and/or tests", "fetch https://x.org/a", "scan /",
+                    "scan ~", "scan D:/", "generate a diagram with the theme set to 'dark'",
+                    "direction 'LR' please")) {
     expect_null(putior:::extract_path(request), label = request)
   }
 })
 
 test_that("a scan without a path says that it read the working directory (#109)", {
+  # An empty working directory: the scans read "." recursively
+  empty_dir <- file.path(tempdir(), "acp_no_path")
+  dir.create(empty_dir, showWarnings = FALSE)
+  on.exit(unlink(empty_dir, recursive = TRUE), add = TRUE)
+  old_wd <- setwd(empty_dir)
+  on.exit(setwd(old_wd), add = TRUE, after = FALSE)
+  for (request in c("scan for annotations", "auto-detect the workflow",
+                    "generate annotation suggestions", "merge annotations")) {
+    body <- list(input = list(list(role = "user", parts = list(list(
+      content = request, content_type = "text/plain"
+    )))))
+    expect_no_warning(parts <- putior:::acp_create_run_handler(body)$output[[1]]$parts)
+    expect_match(parts[[length(parts)]]$content, "No path was found in the request", fixed = TRUE,
+                 label = request)
+  }
+})
+
+test_that("a drive-relative .. path is rejected, and help needs no path", {
+  expect_error(putior:::sanitize_acp_path("D:..\\x"), "directory traversal")
+  expect_error(putior:::sanitize_acp_path("D:../x"), "directory traversal")
+  expect_error(validate_path_arg("D:..\\x", "test"), "traversal")
   body <- list(input = list(list(role = "user", parts = list(list(
-    content = "scan for annotations", content_type = "text/plain"
+    content = "help with annotation syntax for D:/x/../y", content_type = "text/plain"
   )))))
-  expect_no_warning(parts <- putior:::acp_create_run_handler(body)$output[[1]]$parts)
-  expect_match(parts[[length(parts)]]$content, "No path was found in the request", fixed = TRUE)
+  parts <- putior:::acp_create_run_handler(body)$output[[1]]$parts
+  expect_false(grepl("rejected", parts[[1]]$content, fixed = TRUE))
 })
 
 test_that("extract_parameters extracts path from single quotes", {

@@ -177,44 +177,59 @@ detect_operation <- function(content) {
 
 #' Find the path in an ACP request (#109)
 #'
-#' A quoted value counts, unless it belongs to a parameter ("theme 'dark'").
-#' So does an unquoted word that starts like a path: "/", "./", "../", "~"
-#' or a Windows drive ("D:/", "C:\\"), with either kind of slash. A word
-#' that only contains a slash ("R/", "src/x.R") counts if it exists, so
-#' that "and/or" is not taken for a path. A plain word ("src") is not a
-#' path. "../" paths are found so that sanitize_acp_path() rejects them.
+#' Candidates, best first:
+#' \enumerate{
+#'   \item a quoted value that looks like a path (it starts like one or
+#'     contains a slash);
+#'   \item an unquoted word that starts like a path: "/", "./", "../", "~/"
+#'     or a Windows drive ("D:/", "C:\\"), with something after the root, so
+#'     that a lone "/" or "~" in prose ("R / Python files") is not taken
+#'     for the root of the drive or the home directory;
+#'   \item an unquoted word with a slash that exists ("R/", "src/x.R"; not
+#'     "and/or");
+#'   \item a quoted value that exists ("'src'");
+#'   \item any other quoted value, so that a missing folder gives an error,
+#'     except a theme or direction name ("theme 'dark'").
+#' }
+#' Quotes may be straight, curly or backticks; an apostrophe inside a word
+#' ("Let's") is not one. A plain word ("src") is not a path. "../" paths
+#' are found so that sanitize_acp_path() rejects them.
 #' @param content The request text
 #' @return The path, or NULL
 #' @noRd
 extract_path <- function(content) {
-  # Not an apostrophe inside a word ("Let's")
-  quoted_matches <- gregexpr("(?<!\\w)[\"']([^\"']+)[\"'](?!\\w)", content, perl = TRUE)[[1]]
-  if (quoted_matches[1] > 0) {
-    quoted_values <- regmatches(content, list(quoted_matches))[[1]]
-    for (match_index in seq_along(quoted_values)) {
-      text_before <- substr(content, 1L, quoted_matches[match_index] - 1L)
-      belongs_to_parameter <- grepl(
-        "(?i)\\b(theme|direction|topic|style|strategy|source)\\s*[=:]?\\s*$",
-        text_before, perl = TRUE
-      )
-      if (!belongs_to_parameter) {
-        quoted_value <- quoted_values[match_index]
-        return(substr(quoted_value, 2L, nchar(quoted_value) - 1L))
-      }
-    }
-  }
-  # Unquoted words, without brackets or punctuation around them
+  content <- gsub("[\u2018\u2019]", "'", content)
+  content <- gsub("[\u201c\u201d]", '"', content)
+  root_pattern <- "^(/|\\.{1,2}([/\\\\]|$)|~[/\\\\]|[A-Za-z]:[/\\\\])"
+  # A lone "/", "~/" or drive root is prose or too much to scan unquoted
+  is_bare_root <- function(x) grepl("^(/|~|~[/\\\\]|[A-Za-z]:[/\\\\]?)$", x)
+  starts_like_path <- function(x) grepl(root_pattern, x) & !is_bare_root(x)
+  path_exists <- function(x) suppressWarnings(file.exists(x))
+
+  # (*UCP): an apostrophe after a non-ASCII letter is no quote either
+  quoted_values <- regmatches(content, gregexpr(
+    "(*UCP)(?<!\\w)(['\"`])((?:(?!\\1).)+)\\1", content, perl = TRUE
+  ))[[1]]
+  quoted_values <- substr(quoted_values, 2L, nchar(quoted_values) - 1L)
+
   words <- strsplit(trimws(content), "\\s+")[[1]]
-  words <- sub("[],;)]+$", "", sub("^[[(]+", "", words))
-  is_url <- grepl("^[A-Za-z][A-Za-z0-9+.-]*://", words)
-  starts_like_path <- !is_url &
-    grepl("^(/|\\.{1,2}[/\\\\]|~([/\\\\]|$)|[A-Za-z]:[/\\\\])", words)
-  if (any(starts_like_path)) {
-    return(words[starts_like_path][1])
+  words <- sub("^[[({]+", "", sub("[]?!,;:)}]+$", "", words))
+  # A single trailing period ends the sentence ("scan ./R."), not the path
+  words <- sub("([^./])\\.$", "\\1", words)
+  words <- words[nzchar(words)]
+
+  parameter_values <- tolower(c(.VALID_THEMES, "td", "tb", "lr", "bt", "rl"))
+  candidates <- list(
+    quoted_values[grepl(root_pattern, quoted_values) | grepl("[/\\\\]", quoted_values)],
+    words[starts_like_path(words)],
+    words[grepl("[/\\\\]", words) & !is_bare_root(words) & path_exists(words)],
+    quoted_values[path_exists(quoted_values) & !tolower(quoted_values) %in% parameter_values],
+    quoted_values[!tolower(quoted_values) %in% parameter_values]
+  )
+  for (candidate in candidates) {
+    if (length(candidate) > 0) return(candidate[1])
   }
-  has_slash <- !is_url & grepl("[/\\\\]", words)
-  existing <- words[has_slash][file.exists(words[has_slash])]
-  if (length(existing) > 0) existing[1] else NULL
+  NULL
 }
 
 #' The path a scan uses: the request's, or "." with a note (#109)
@@ -332,8 +347,8 @@ sanitize_acp_path <- function(path) {
   # Normalize path separators for traversal check
   normalized <- gsub("\\\\", "/", path)
 
-  # Reject directory traversal attempts
-  if (grepl("(^|/)\\.\\.(/|$)", normalized)) {
+  # Reject directory traversal attempts, also after a drive ("D:..\\x")
+  if (grepl("(^|[/:])\\.\\.(/|$)", normalized)) {
     stop("ACP path rejected: directory traversal not allowed: ", path, call. = FALSE)
   }
 
@@ -360,8 +375,9 @@ execute_acp_request <- function(input, session_id = NULL) {
 
   result <- tryCatch({
     # Sanitize path from network input; a rejected path ends the run with
-    # an error message
-    if (!is.null(parsed$params$path)) {
+    # an error message. Help and guide requests use no path.
+    uses_path <- parsed$operation %in% c("scan", "diagram", "auto", "generate", "merge")
+    if (uses_path && !is.null(parsed$params$path)) {
       parsed$params$path <- sanitize_acp_path(parsed$params$path)
     }
     switch(parsed$operation,

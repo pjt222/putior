@@ -255,12 +255,17 @@
 * Unquoted paths in a request work: `scan ./R/` read the path as ` ./R/`,
   with the space in front, and reported that it does not exist.
 * Requests name paths in more forms: Windows paths (`D:/data`,
-  `C:\Users\me`), `~` paths, and relative paths such as `R/` that exist.
-  A quoted value that belongs to a parameter (`theme 'dark'`) is no longer
-  taken for the path, nor an apostrophe ("Let's"). A scan with no path in
-  the request still reads the server's working directory, but now says so;
-  before, an unrecognized path silently gave the results of another
-  folder. (#109)
+  `C:\Users\me`), `~/` paths, relative paths such as `R/` that exist,
+  and paths in backticks or curly quotes; punctuation after a path
+  (`./R?`) is dropped. A path-like word wins over a quoted word that is
+  not one (`for ./R/ using the 'dark' theme`, `titled "ETL" for ./R/`), a
+  theme or direction name is never the path, and an apostrophe ("Let's")
+  is no quote. A lone `/` or `~` in prose is not taken for the root. A
+  scan with no path in the request still reads the server's working
+  directory, but now says so; before, an unrecognized path silently gave
+  the results of another folder. A `..` after a drive (`D:..\x`) is
+  rejected like any other, also by the path checks of the other
+  functions. (#109)
 * Warnings that R raises during a run (invalid annotations, a `<` in a
   label, ...) come as a second `text/plain` part of the output; the
   server only logged them.
