@@ -1141,6 +1141,7 @@ accessibility_lines <- function(workflow, title) {
 #' @return text with both separators replaced by spaces
 #' @noRd
 replace_line_separators <- function(text) {
+  if (length(text) == 0L) return(text)
   encoding_marks <- Encoding(text)
   replaced <- gsub("\u2028|\u2029", " ", text, useBytes = TRUE)
   Encoding(replaced) <- encoding_marks

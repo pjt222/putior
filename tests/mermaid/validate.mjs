@@ -262,12 +262,15 @@ function compareTitles(entry, result) {
   // ASCII whitespace only: JavaScript's \s also matches U+2028 and U+2029,
   // which putior must replace (#104)
   const normalize = (text) => (text ?? '').replace(/[ \t\n\r\f\v]+/g, ' ').replace(/^ | $/g, '');
+  // Characters outside printable ASCII as \uXXXX, so that a U+2028 shows
+  const show = (text) => JSON.stringify(text)
+    .replace(/[^\x20-\x7e]/g, (character) => `\\u${character.charCodeAt(0).toString(16).padStart(4, '0')}`);
   const problems = [];
   const fields = [['expected_title', 'title'], ['expected_acc_title', 'accTitle'], ['expected_acc_descr', 'accDescr']];
   for (const [field, element] of fields) {
     if (entry[field] === undefined) continue;
     if (normalize(result[element]) !== normalize(entry[field])) {
-      problems.push(`text: ${element} shows ${JSON.stringify(result[element])}, expected ${JSON.stringify(entry[field])}`);
+      problems.push(`text: ${element} shows ${show(result[element])}, expected ${show(entry[field])}`);
     }
   }
   return problems;

@@ -529,6 +529,9 @@ test_that("U+2028 and U+2029 are written as spaces (#104)", {
   expect_equal(sanitize_mermaid_label("a\u2029%% b"), '"a %% b"')
   expect_equal(yaml_quote("T\u2028%% u"), '"T %% u"')
   expect_equal(click_tooltip("a\u2029b.R"), "Open a b.R")
+  # Empty input stays empty
+  expect_identical(replace_line_separators(character(0)), character(0))
+  expect_equal(yaml_quote(character(0)), '""')
   # Encoding marks are kept, and other non-ASCII text is left alone
   expect_identical(Encoding(sanitize_mermaid_label("caf\u00e9\u2028x")), "UTF-8")
   expect_equal(yaml_quote("caf\u00e9 \u00fcber"), "\"caf\u00e9 \u00fcber\"")
