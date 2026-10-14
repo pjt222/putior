@@ -267,6 +267,14 @@
   line shows the title as written.
   ([\#98](https://github.com/pjt222/putior/issues/98))
 
+- A label with U+2028 or U+2029 (line and paragraph separator) followed
+  by `%%` made the diagram fail to parse: Mermaid removes comment lines
+  with a JavaScript regex that treats these characters as line ends.
+  They are now written as spaces, as line breaks are. The title, the
+  accTitle line and click tooltips already replaced them, except in the
+  C locale; they now do so there too.
+  ([\#104](https://github.com/pjt222/putior/issues/104))
+
 ### New Features
 
 #### MCP Server Integration
