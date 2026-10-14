@@ -352,7 +352,9 @@
   loopback one refuses to start without one. Without a token, the server
   answers only requests addressed to a loopback name (against DNS
   rebinding). mcptools’ own settings (trusted hosts, shared secret) stay
-  in force. Over stdio nothing changes.
+  in force. Before serving, the server tests that mcptools refuses
+  requests without the token or from an untrusted Host, and does not
+  start if it does not. Over stdio nothing changes.
   [`?putior_mcp_server`](https://pjt222.github.io/putior/reference/putior_mcp_server.md)
   describes the security model.
   ([\#111](https://github.com/pjt222/putior/issues/111))
@@ -404,8 +406,7 @@
   path in the request still reads the server’s working directory, but
   now says so; before, an unrecognized path silently gave the results of
   another folder. A `..` after a drive (`D:..\x`) is rejected like any
-  other, also by the path checks of the other functions.
-  ([\#109](https://github.com/pjt222/putior/issues/109))
+  other. ([\#109](https://github.com/pjt222/putior/issues/109))
 - The server works over HTTP. Every `POST /runs` failed with “500
   Internal Server Error”: plumber2’s JSON parser turns the request’s
   `input` into a data frame, which the request handling did not expect.
