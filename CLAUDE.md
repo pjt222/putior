@@ -701,7 +701,7 @@ put_diagram(workflow, show_source_info = TRUE, enable_clicks = TRUE)
 ```
 
 **Notes:**
-- Line numbers are included when available from annotations
+- Line numbers are included when available from annotations (vscode:// links jump to the line; file:// links cannot)
 - Artifact nodes (data files) are excluded from click directives
 - Both features are backward compatible (off by default)
 

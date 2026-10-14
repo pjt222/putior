@@ -146,7 +146,7 @@ cat("   - The file paths are accessible from your system\n\n")
 
 cat("3. Line numbers are included when available:\n")
 cat("   - The put() function extracts line_number from annotations\n")
-cat("   - Click URLs will jump to the specific line\n\n")
+cat("   - vscode:// links jump to that line (file:// links cannot)\n\n")
 
 cat("4. For subgraph style, nodes are grouped by file:\n")
 cat("   - Useful for large workflows spanning many files\n")

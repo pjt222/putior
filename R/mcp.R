@@ -265,10 +265,36 @@ mcp_scan <- function(scan) {
   result
 }
 
+#' Give null arguments their defaults
+#'
+#' MCP clients may send null for an argument they leave out, and ellmer
+#' passes it on as NULL, which most putior arguments reject ("argument is
+#' of length zero"). In the calling wrapper, every argument that is NULL
+#' but has a non-NULL default gets that default.
+#' @param env The wrapper's environment
+#' @return NULL, invisibly; called for its effect on env
+#' @noRd
+use_defaults_for_null <- function(env = parent.frame()) {
+  argument_defaults <- formals(sys.function(sys.parent()))
+  for (argument_name in names(argument_defaults)) {
+    # Arguments without a default (path; not assigned to a variable, which
+    # would then count as missing) and those that default to NULL
+    if (is.symbol(argument_defaults[[argument_name]]) ||
+        is.null(argument_defaults[[argument_name]])) {
+      next
+    }
+    if (is.null(get(argument_name, envir = env))) {
+      assign(argument_name, eval(argument_defaults[[argument_name]], env), envir = env)
+    }
+  }
+  invisible(NULL)
+}
+
 #' @noRd
 mcp_put <- function(path, pattern = NULL, recursive = TRUE,
                     include_line_numbers = FALSE, validate = TRUE,
                     exclude = NULL, log_level = NULL) {
+  use_defaults_for_null()
   mcp_json(mcp_scan(put(
     path, pattern = pattern, recursive = recursive,
     include_line_numbers = include_line_numbers, validate = validate,
@@ -297,11 +323,7 @@ mcp_put_diagram <- function(path, source = "annotations",
                             mermaid_config = "classic",
                             accessibility = TRUE,
                             log_level = NULL) {
-  # Clients may send null for an argument they leave out
-  mermaid_config <- mermaid_config %||% "classic"
-  source <- source %||% "annotations"
-  merge_strategy <- merge_strategy %||% "manual_priority"
-  click_protocol <- click_protocol %||% "vscode"
+  use_defaults_for_null()
   if (length(source) != 1 || !source %in% c("annotations", "auto", "merge")) {
     stop('source must be "annotations", "auto" or "merge", not ',
          deparse(source), call. = FALSE)
@@ -356,7 +378,7 @@ mcp_put_diagram <- function(path, source = "annotations",
     style_nodes = style_nodes, theme = theme,
     show_source_info = show_source_info,
     source_info_style = source_info_style, enable_clicks = enable_clicks,
-    click_protocol = click_protocol, artifact_edges = artifact_edges %||% "replace",
+    click_protocol = click_protocol, artifact_edges = artifact_edges,
     mermaid_config = mermaid_config,
     accessibility = !isFALSE(accessibility), log_level = log_level
   )
@@ -368,6 +390,7 @@ mcp_put_auto <- function(path, pattern = NULL, recursive = TRUE,
                          detect_dependencies = TRUE,
                          include_line_numbers = FALSE, exclude = NULL,
                          log_level = NULL) {
+  use_defaults_for_null()
   mcp_json(mcp_scan(put_auto(
     path, pattern = pattern, recursive = recursive,
     detect_inputs = detect_inputs, detect_outputs = detect_outputs,
@@ -381,6 +404,7 @@ mcp_put_auto <- function(path, pattern = NULL, recursive = TRUE,
 mcp_put_generate <- function(path, pattern = NULL, recursive = TRUE,
                              style = "multiline", exclude = NULL,
                              log_level = NULL) {
+  use_defaults_for_null()
   annotations <- mcp_scan(put_generate(
     path, pattern = pattern, recursive = recursive, output = "raw",
     insert = FALSE, style = style, exclude = exclude, log_level = log_level
@@ -393,9 +417,10 @@ mcp_put_merge <- function(path, pattern = NULL, recursive = TRUE,
                           merge_strategy = "manual_priority",
                           include_line_numbers = FALSE, exclude = NULL,
                           log_level = NULL) {
+  use_defaults_for_null()
   mcp_json(mcp_scan(put_merge(
     path, pattern = pattern, recursive = recursive,
-    merge_strategy = merge_strategy %||% "manual_priority",
+    merge_strategy = merge_strategy,
     include_line_numbers = include_line_numbers, exclude = exclude,
     log_level = log_level
   )))
@@ -425,8 +450,15 @@ mcp_putior_help <- function(topic = NULL) {
 #' set_putior_log_level() returns the previous level; say what changed
 #' @noRd
 mcp_set_putior_log_level <- function(level = "WARN") {
+  use_defaults_for_null()
   previous_level <- set_putior_log_level(level)
   paste0("Log level set to ", toupper(level), " (was ", previous_level, ")")
+}
+
+#' @noRd
+mcp_list_supported_languages <- function(detection_only = FALSE) {
+  use_defaults_for_null()
+  list_supported_languages(detection_only = detection_only)
 }
 
 #' ext_to_language() returns NULL for unknown extensions, which reaches the
@@ -839,7 +871,7 @@ make_tool_get_supported_extensions <- function() {
 #' @noRd
 make_tool_list_supported_languages <- function() {
   ellmer::tool(
-    fun = list_supported_languages,
+    fun = mcp_list_supported_languages,
     description = paste0(
       "Get all programming languages supported by putior. ",
       "Set detection_only=TRUE to get only languages with auto-detection patterns."

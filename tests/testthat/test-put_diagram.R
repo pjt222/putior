@@ -729,9 +729,17 @@ test_that("an empty or vector click_protocol warns and uses vscode", {
     expect_true(grepl("vscode://", code, fixed = TRUE))
   }
   # A factor or named value is used as its text
-  expect_no_warning(code <- put_diagram(workflow, enable_clicks = TRUE,
-                                        click_protocol = factor("file"), output = "raw"))
-  expect_true(grepl("file:///", code, fixed = TRUE))
+  for (protocol in list(factor("file"), c(ide = "file"))) {
+    expect_no_warning(code <- put_diagram(workflow, enable_clicks = TRUE,
+                                          click_protocol = protocol, output = "raw"))
+    expect_true(grepl("file:///", code, fixed = TRUE))
+  }
+  # The warning names an empty or vector value as R code
+  expect_warning(put_diagram(workflow, enable_clicks = TRUE, click_protocol = NULL, output = "raw"),
+                 "Invalid click_protocol 'NULL'", fixed = TRUE)
+  expect_warning(put_diagram(workflow, enable_clicks = TRUE, click_protocol = c("vscode", "file"),
+                             output = "raw"),
+                 "Invalid click_protocol 'c(\"vscode\", \"file\")'", fixed = TRUE)
 })
 
 test_that("only vscode tooltips name the line, as only vscode links carry it", {

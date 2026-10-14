@@ -356,7 +356,11 @@ put_diagram <- function(workflow,
       )
       click_protocol <- "file"
     } else if (!protocol_text %in% .VALID_CLICK_PROTOCOLS) {
-      shown_protocol <- paste(as.character(click_protocol), collapse = ", ")
+      shown_protocol <- if (length(click_protocol) == 1) {
+        as.character(click_protocol)
+      } else {
+        paste(deparse(click_protocol), collapse = "")
+      }
       warning(
         "Invalid click_protocol '", shown_protocol, "'. Using 'vscode'.\n",
         "Valid protocols: ", paste(.VALID_CLICK_PROTOCOLS, collapse = ", "), "\n",
@@ -1589,8 +1593,8 @@ generate_click_directives <- function(workflow, protocol = "vscode") {
     if (url != "") {
       # Mermaid click directive format: click nodeId "url" "tooltip"
       line_start <- paste0('    click ', node_id, ' "', url, '" ')
-      # Only vscode:// links carry the line, so only their tooltips name it
-      tooltip_line <- if (identical(protocol, "vscode")) line_number else NULL
+      # file:// links carry no line, so their tooltips do not name it
+      tooltip_line <- if (identical(protocol, "file")) NULL else line_number
       tooltip <- escape_mermaid_text(click_tooltip(node$file_name, tooltip_line),
                                      line_start, escape_quotes = TRUE)
       click_lines <- c(click_lines, paste0(line_start, '"', tooltip, '"'))

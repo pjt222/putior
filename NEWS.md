@@ -224,6 +224,9 @@
   `put_diagram` says what is missing for its `source`: no annotations
   (and it suggests `source = "auto"`), or no file that `put_auto()` can
   analyze. (#73)
+* An argument that a client sends as `null` gets its default. Before, most
+  arguments of the scan and diagram tools and of `list_supported_languages`
+  then stopped the call with "argument is of length zero".
 
 ### ACP Server Integration
 * Added `putior_acp_server()` to expose putior as an ACP agent for inter-agent

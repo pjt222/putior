@@ -546,6 +546,18 @@ test_that("MCP put_diagram draws put_auto() and put_merge() results", {
     mcp_put_diagram(project_dir, enable_clicks = TRUE, click_protocol = NULL),
     tools$put_diagram(path = project_dir, enable_clicks = TRUE)
   )
+  # Every argument a client sends as null gets its default
+  null_arguments <- function(wrapper) {
+    argument_names <- setdiff(names(formals(wrapper)), "path")
+    stats::setNames(rep(list(NULL), length(argument_names)), argument_names)
+  }
+  expect_identical(do.call(mcp_put_diagram, c(list(project_dir), null_arguments(mcp_put_diagram))),
+                   mcp_put_diagram(project_dir))
+  for (wrapper in list(mcp_put, mcp_put_auto, mcp_put_generate, mcp_put_merge)) {
+    expect_identical(do.call(wrapper, c(list(project_dir), null_arguments(wrapper))),
+                     wrapper(project_dir))
+  }
+  expect_identical(mcp_list_supported_languages(NULL), list_supported_languages())
   # The tool offers the protocols put_diagram() accepts (#101)
   click_argument <- putior_mcp_tools(include = "put_diagram")[[1]]@arguments@properties$click_protocol
   expect_identical(click_argument@values, .VALID_CLICK_PROTOCOLS)
