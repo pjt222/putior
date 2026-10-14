@@ -49,6 +49,10 @@
 
 ## New Features
 
+Everything in this section is new since putior 0.1.0. Where an entry
+says what changed or what happened before, it describes development
+versions of 0.2.0, not putior 0.1.0.
+
 ### MCP Server Integration
 * Added `putior_mcp_server()` to expose putior functions as MCP tools for AI assistants
 * Added `putior_mcp_tools()` to get/filter tool definitions for custom MCP integrations
@@ -294,8 +298,9 @@
 ## Improvements
 
 * `put_diagram()` checks `direction`: it takes `"TD"`, `"TB"`, `"LR"`,
-  `"BT"` or `"RL"`, and other values give an error. 0.1.0 wrote any value
-  into the diagram, which Mermaid then could not parse.
+  `"BT"` or `"RL"` (or an unambiguous abbreviation, such as `"L"`), and
+  other values give an error. 0.1.0 wrote any value into the diagram,
+  which Mermaid then could not parse.
 * `put_diagram()` warns when a diagram is over Mermaid's default limits
   of 500 edges (`maxEdges`) or 50,000 characters (`maxTextSize`).
   Renderers such as GitHub, GitLab and Quarto then show an error or an
@@ -418,9 +423,9 @@
 
 ## Fixes to features that are new in 0.2.0
 
-These features were not in putior 0.1.0. The entries describe changes
-made during development and matter only to users of a development
-version.
+These entries fix features that were not in putior 0.1.0, or checks
+added while 0.2.0 was developed. They matter only to users of a
+development version.
 
 * Renamed `putior_skills()` to `putior_guide()`. The function, its MCP tool
   (`putior_guide`), and its ACP operation (`guide`) all use the new name.

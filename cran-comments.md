@@ -6,9 +6,10 @@ This is a minor-version update from putior 0.1.0 (on CRAN since 2025-06-19) to
 ## R CMD check results
 
 Local (Windows 11, R 4.6.1), `R CMD check --as-cran` on a freshly built
-`putior_0.2.0.tar.gz` with all Suggests installed, including the PDF manual:
+`putior_0.2.0.tar.gz` with all Suggests installed, including the PDF manual,
+without the remote incoming checks (`_R_CHECK_CRAN_INCOMING_REMOTE_=FALSE`):
 
-0 errors | 0 warnings | 0 notes (2026-10-14)
+0 errors | 0 warnings | 0 notes (2026-10-14, at b6f9521)
 
 ## Test environments
 

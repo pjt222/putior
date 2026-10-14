@@ -58,11 +58,11 @@ putior is an R package that extracts structured annotations from source code fil
 ## Quality Assurance
 
 ### R CMD Check Status
-- **Local `--as-cran`** (Windows R 4.6.1, 2026-10-12, at 0ab2303): 0 errors, 0 warnings, 0 notes, including the PDF manual. Re-run at the final 0.2.0 commit before submitting.
+- **Local `--as-cran`** (Windows R 4.6.1, 2026-10-14, at b6f9521, `Rscript dev/cran/build-and-check.R`): 0 errors, 0 warnings, 0 notes, including the PDF manual (TinyTeX). The script sets `_R_CHECK_CRAN_INCOMING_REMOTE_=FALSE`, so the remote incoming and URL checks did not run; win-builder runs them. Re-run at the final 0.2.0 commit before submitting.
 - **Win-builder (0.2.0)**: pending. The 0.1.0 results ("1 NOTE, new submission") are out of date; 0.2.0 is an update.
 - **R-hub**: no result for 0.2.0. Both `rhub.yaml` runs (22953633249, 22950885436) were cancelled on 2026-03-11.
 - All vignettes build successfully with Pandoc
-- All tests pass: 5419 expectations in 656 tests (Windows R 4.6.1 inside renv, all Suggests, 2026-10-14; 3 skips are the POSIX-only link and case tests, which run on the Linux and macOS CI)
+- All tests pass: 5467 expectations in 659 tests (Windows R 4.6.1 inside renv, all Suggests, 2026-10-14; 3 skips are the POSIX-only link and case tests, which run on the Linux and macOS CI)
 - Comprehensive multiline PUT annotation support implemented
 
 ### Mermaid Output Check (`tests/mermaid/`)
