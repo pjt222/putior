@@ -522,6 +522,27 @@ test_that("the start of a Mermaid directive in a label is escaped (#98)", {
   expect_match(diagram, '"Open 50#37;%{x.R', fixed = TRUE)
 })
 
+test_that("U+2028 and U+2029 are written as spaces (#104)", {
+  # Mermaid's comment regex treats them as line ends, so "%%" after one
+  # removed the rest of the line
+  expect_equal(sanitize_mermaid_label("a\u2028%% b"), '"a %% b"')
+  expect_equal(sanitize_mermaid_label("a\u2029%% b"), '"a %% b"')
+  expect_equal(yaml_quote("T\u2028%% u"), '"T %% u"')
+  expect_equal(click_tooltip("a\u2029b.R"), "Open a b.R")
+
+  workflow <- data.frame(
+    id = c("a", "b"), label = c("a\u2028%% b", "B"),
+    file_name = c("a\u2028x.R", "b.R"), file_path = c("a\u2028x.R", "b.R"),
+    input = c(NA, "x\u2029y.csv"), output = c("x\u2029y.csv", NA), stringsAsFactors = FALSE
+  )
+  diagram <- put_diagram(workflow, output = "raw", title = "T\u2028u", show_files = TRUE,
+                         show_source_info = TRUE, source_info_style = "subgraph",
+                         enable_clicks = TRUE)
+  expect_false(grepl("[\u2028\u2029]", diagram))
+  expect_match(diagram, 'a["a %% b"]', fixed = TRUE)
+  expect_match(diagram, "accTitle: T u", fixed = TRUE)
+})
+
 test_that("direction = \"TB\" is accepted (#79)", {
   workflow <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
 

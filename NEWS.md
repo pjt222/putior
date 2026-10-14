@@ -184,8 +184,13 @@
   lost. `put_diagram()` now also warns when the `title` contains a `<`:
   the drawn title then shows HTML entities such as `&lt;`, `&gt;` and
   `&amp;` and drops text that looks like an HTML tag, and no escape avoids
-  that. The `accTitle` line shows
-  the title as written. (#98)
+  that. The `accTitle` line shows the title as written. (#98)
+* A label with U+2028 or U+2029 (line and paragraph separator) followed
+  by `%%` made the diagram fail to parse: Mermaid removes comment lines
+  with a JavaScript regex that treats these characters as line ends. They
+  are now written as spaces, as line breaks are. The title, the accTitle
+  line and click tooltips already replaced them, but only in a UTF-8
+  locale; they now do so in any locale. (#104)
 
 ## New Features
 

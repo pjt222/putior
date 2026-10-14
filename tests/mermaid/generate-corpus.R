@@ -183,6 +183,18 @@ add_case("directive_starts_in_edge_and_subgraph_labels", scan_fixture("directive
   "use.R" = '# put id:"use", label:"Use", input:"50%%{y.csv"'
 )), show_files = TRUE, show_source_info = TRUE, source_info_style = "subgraph",
    expected_texts = c("50%%{x.R", "50%%{y.csv"))
+# Mermaid removes comment lines with a JavaScript regex whose "^" also
+# matches after U+2028 and U+2029, so "%%" after one cut the line short and
+# the diagram failed to parse (#104). Built by hand: such characters are
+# awkward in file names on disk.
+add_case("line_separators_in_labels", data.frame(
+  id = c("a", "b"), label = c("a\u2028%% b", "B"),
+  file_name = c("a\u2028%%x.R", "b.R"), file_path = c("a\u2028%%x.R", "b.R"),
+  input = c(NA, "x\u2029%% y.csv"), output = c("x\u2029%% y.csv", NA),
+  stringsAsFactors = FALSE
+), title = "T\u2028%% u", show_files = TRUE, show_source_info = TRUE,
+   source_info_style = "subgraph", enable_clicks = TRUE,
+   expected_texts = c("a %% b", "x %% y.csv", "a %%x.R"), expected_tooltips = "Open a %%x.R")
 add_case("direction_words_in_edge_and_subgraph_labels", scan_fixture("syntax_file_names", list(
   "direction LR.R" = '# put id:"make", label:"Make", output:"direction TB.csv"',
   "use.R" = '# put id:"use", label:"Use", input:"direction TB.csv"'
@@ -390,12 +402,14 @@ manifest <- lapply(cases, function(case) {
     # Screen reader text (#50): the title as given, with control characters
     # as spaces, and the summary as written
     if (!is.null(case$args$title)) {
-      acc_title <- trimws(gsub("[[:cntrl:]]+", " ", case$args$title))
+      # As putior writes them: [[:cntrl:]] matches U+2028 and U+2029 only
+      # in a UTF-8 locale (#104)
+      acc_title <- trimws(gsub("[[:cntrl:]\u2028\u2029]+", " ", case$args$title))
       if (nzchar(acc_title)) entry$expected_acc_title <- acc_title
       # The drawn title shows the title as written, unless it has a "<",
       # which no escape gets through Mermaid's DOMPurify step (#98)
       if (!grepl("<", case$args$title, fixed = TRUE)) {
-        entry$expected_title <- gsub("[[:cntrl:]]+", " ", case$args$title)
+        entry$expected_title <- gsub("[[:cntrl:]\u2028\u2029]+", " ", case$args$title)
       }
     }
     acc_descr <- sub("^    accDescr: ", "", grep("^    accDescr: ", code_lines, value = TRUE))
