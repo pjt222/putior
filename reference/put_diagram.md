@@ -146,7 +146,17 @@ put_diagram(
 
   Logical indicating whether to add click directives to nodes. When
   TRUE, nodes become clickable links that open the source file in an
-  editor. Default is FALSE for backward compatibility.
+  editor. The link uses the path the scan recorded (`file_path`); a
+  relative path is resolved against the working directory when the
+  diagram is made. Default is FALSE. Mermaid keeps these links only with
+  `securityLevel: "loose"`; with its default `"strict"` and GitHub's
+  `"antiscript"`, the nodes are not clickable. So clicks do not work on
+  GitHub, GitLab or in Quarto with their default settings, nor on
+  putior's pkgdown site or in the sandbox, which stay `"strict"` because
+  `"loose"` would also let click callbacks run JavaScript. They work
+  where you render the diagram yourself with
+  `mermaid.initialize({ securityLevel: "loose" })`; browsers open
+  `file://` links only from a page that is itself a local file.
 
 - click_protocol:
 

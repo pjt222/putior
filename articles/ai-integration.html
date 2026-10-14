@@ -69,6 +69,10 @@
     var colors = isDarkMode() ? mermaidThemes.dark : mermaidThemes.light;
     return {
       startOnLoad: false,
+      // Stays 'strict' (Mermaid's default): 'loose' would make
+      // enable_clicks links work, but also let click callbacks run
+      // JavaScript (#47)
+      securityLevel: 'strict',
       // Mermaid 12 defaults to the ELK layout and the neo look, wraps labels
       // at 120px and makes nodes at least 120px wide. Keep Mermaid 11's
       // classic rendering, which putior's themes are made for and which
@@ -639,7 +643,7 @@ PHP, WGSL</td>
 <span></span>
 <span><span class="co"># Interactive features</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>,</span>
-<span>  enable_clicks <span class="op">=</span> <span class="cn">TRUE</span>,       <span class="co"># Make nodes clickable</span></span>
+<span>  enable_clicks <span class="op">=</span> <span class="cn">TRUE</span>,       <span class="co"># Clickable nodes; need a renderer with securityLevel "loose" (not GitHub/GitLab/Quarto defaults)</span></span>
 <span>  click_protocol <span class="op">=</span> <span class="st">"vscode"</span>,  <span class="co"># vscode, rstudio, or file</span></span>
 <span>  show_source_info <span class="op">=</span> <span class="cn">TRUE</span>     <span class="co"># Show source file in nodes</span></span>
 <span><span class="op">)</span></span>

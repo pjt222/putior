@@ -72,13 +72,31 @@
 
 ### Bug Fixes
 
+- Click links (`enable_clicks = TRUE`) now use the path the scan
+  recorded (`file_path`) instead of the file’s base name, which was
+  resolved against the working directory at the time the diagram was
+  made. Absolute Unix paths give `vscode://file/home/...` and
+  `file:///home/...` instead of a doubled or quadrupled slash, UNC paths
+  (`//server/share/...`) give `vscode://file//server/...` and
+  `file://server/...`, and a relative path to a missing file is made
+  absolute. Paths are percent-encoded, and tooltips escaped like labels:
+  a quote in a file name made the diagram fail to parse, and a name such
+  as `direction LR.R` made Mermaid drop the click line. The docs now say
+  that Mermaid keeps click links only with `securityLevel: "loose"`, so
+  they do not work on GitHub, GitLab or in Quarto with default settings.
+  The pkgdown site and the sandbox stay `"strict"`, because `"loose"`
+  would also let click callbacks run JavaScript.
+  ([\#47](https://github.com/pjt222/putior/issues/47))
+
 - Fixed `show_source_info = TRUE` using `<small>` HTML tags that are
   unsupported by GitHub’s Mermaid renderer. Source file names are now
   shown without HTML formatting tags.
   ([\#32](https://github.com/pjt222/putior/issues/32))
+
 - Fixed pipe characters (`|`) in node labels breaking Mermaid diagram
   parsing. Pipes are now escaped using the `#124;` entity.
   ([\#33](https://github.com/pjt222/putior/issues/33))
+
 - [`put()`](https://pjt222.github.io/putior/reference/put.md) now gives
   annotations without an `id` a fallback id (`node_1`, `node_2`, …) when
   the uuid package is not installed. Before, such annotations had no id:
@@ -90,6 +108,7 @@
   The sandbox now also shows diagram errors in its status line instead
   of a blank preview.
   ([\#58](https://github.com/pjt222/putior/issues/58))
+
 - Fixed logging, which wrote nothing with logger 0.3 or later: every log
   call failed inside logger and the error was hidden. The
   `putior.log_level` option, set by
@@ -99,9 +118,11 @@
   installed, WARN-level messages now appear on stderr next to the
   matching R warnings.
   ([\#70](https://github.com/pjt222/putior/issues/70))
+
 - Fixed single-line block comment annotations (`/* put ... */`) silently
   losing their last property, which could drop an output and its edge.
   ([\#72](https://github.com/pjt222/putior/issues/72))
+
 - [`put_merge()`](https://pjt222.github.io/putior/reference/put_merge.md)
   no longer merges a manual annotation and an auto-detected file into
   one node when their ids meet: auto-detected rows get a suffix when
@@ -113,6 +134,7 @@
   `merge_strategy = "supplement"` or `"union"` no longer takes the
   inputs and outputs detected in the other file.
   ([\#74](https://github.com/pjt222/putior/issues/74))
+
 - Annotation values may now contain the other kind of quote:
   `label:"Don't panic"` and `label:'Say "hi"'` keep their labels.
   Before, [`put()`](https://pjt222.github.io/putior/reference/put.md)
@@ -133,6 +155,7 @@
   [`put()`](https://pjt222.github.io/putior/reference/put.md) reads its
   suggestions back unchanged.
   ([\#91](https://github.com/pjt222/putior/issues/91))
+
 - A comment may now follow the values of an annotation, as the
   [`put()`](https://pjt222.github.io/putior/reference/put.md) help page,
   the vignettes and the cheatsheet have always shown
@@ -142,6 +165,7 @@
   comment. In a multiline annotation, a comment may also come before the
   continuation `\` of a line.
   ([\#91](https://github.com/pjt222/putior/issues/91))
+
 - [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
   gives every node one Mermaid id and uses it in the node definition,
   edges, `class` lines and click directives. Before, edges to an
@@ -164,6 +188,7 @@
   file it belongs to; when a file in between gave no annotation, the
   next one went into the wrong `.put` file.
   ([\#46](https://github.com/pjt222/putior/issues/46))
+
 - Node ids that are Mermaid keywords (`end`, `graph`, `flowchart`,
   `subgraph`, `style`, `class`, `classDef`, `click`, `linkStyle`,
   `call`, `href`, `interpolate`, and the link targets `_self`, `_blank`,
@@ -171,6 +196,7 @@
   written as `node_end` and so on. `id:"end"` is a natural name for a
   pipeline’s last step.
   ([\#45](https://github.com/pjt222/putior/issues/45))
+
 - With `source_info_style = "subgraph"`, subgraph ids are now
   `file_<name>` and never equal a node id. Before, a file `load.R` with
   a node `id:"load"` failed to render (“would create a cycle”) on
@@ -181,16 +207,19 @@
   (`x/load.R`, `a/x/load.R`).
   ([\#45](https://github.com/pjt222/putior/issues/45),
   [\#46](https://github.com/pjt222/putior/issues/46))
+
 - With `show_files = TRUE`, edge labels are now quoted and escaped like
   node labels (`-->|"raw data (v2).csv"|`). A file name with parentheses
   or other special characters made the diagram fail to parse.
   ([\#45](https://github.com/pjt222/putior/issues/45))
+
 - The `title` of
   [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
   is now written as a quoted YAML string. A title with `:` (such as
   `"ETL: stage 1"`) made the diagram fail to parse, and text after `#`
   was dropped as a YAML comment.
   ([\#45](https://github.com/pjt222/putior/issues/45))
+
 - A `#` in a label that Mermaid would read as a character entity is now
   escaped as `#35;`. Mermaid decodes `#<name>;` and `#<digits>;`, so a
   label such as
@@ -201,11 +230,13 @@
   [`?put_diagram`](https://pjt222.github.io/putior/reference/put_diagram.md)
   now describes how labels and ids are written.
   ([\#45](https://github.com/pjt222/putior/issues/45))
+
 - [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
   and the MCP and ACP servers accept `direction = "TB"`, Mermaid’s
   synonym for `"TD"`. GUIDE.md named `TB` as the default, but `"TB"` was
   rejected with an error.
   ([\#79](https://github.com/pjt222/putior/issues/79))
+
 - Labels that contain Mermaid syntax are now written so that Mermaid
   shows them as written. Mermaid read a line with `direction`,
   whitespace and `TB`, `BT`, `RL` or `LR` (and `TD` from Mermaid 11.17.2

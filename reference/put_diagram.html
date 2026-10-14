@@ -50,6 +50,10 @@ the flow of data through your analysis pipeline."><meta property="og:image" cont
     var colors = isDarkMode() ? mermaidThemes.dark : mermaidThemes.light;
     return {
       startOnLoad: false,
+      // Stays 'strict' (Mermaid's default): 'loose' would make
+      // enable_clicks links work, but also let click callbacks run
+      // JavaScript (#47)
+      securityLevel: 'strict',
       // Mermaid 12 defaults to the ELK layout and the neo look, wraps labels
       // at 120px and makes nodes at least 120px wide. Keep Mermaid 11's
       // classic rendering, which putior's themes are made for and which
@@ -316,8 +320,19 @@ file name. Default is FALSE for backward compatibility.</p></dd>
 
 <dt id="arg-enable-clicks">enable_clicks<a class="anchor" aria-label="anchor" href="#arg-enable-clicks"></a></dt>
 <dd><p>Logical indicating whether to add click directives to nodes.
-When TRUE, nodes become clickable links that open the source file in an editor.
-Default is FALSE for backward compatibility.</p></dd>
+When TRUE, nodes become clickable links that open the source file in an
+editor. The link uses the path the scan recorded (<code>file_path</code>);
+a relative path is resolved against the working directory when the
+diagram is made. Default is FALSE. Mermaid
+keeps these links only with <code>securityLevel: "loose"</code>; with its
+default <code>"strict"</code> and GitHub's <code>"antiscript"</code>, the nodes are
+not clickable. So clicks do not work on GitHub, GitLab or in Quarto
+with their default settings, nor on putior's pkgdown site or in the
+sandbox, which stay <code>"strict"</code> because <code>"loose"</code> would also
+let click callbacks run JavaScript. They work where you render the
+diagram yourself with <code>mermaid.initialize({ securityLevel:
+"loose" })</code>; browsers open <code>file://</code> links only from a page that
+is itself a local file.</p></dd>
 
 
 <dt id="arg-click-protocol">click_protocol<a class="anchor" aria-label="anchor" href="#arg-click-protocol"></a></dt>

@@ -76,7 +76,7 @@ A data frame in the same format as
 
 - file_name: Name of the source file
 
-- file_path: Full path to the file
+- file_path: Path to the file, as the scan found it
 
 - file_type: File extension (r, py, sql, etc.)
 

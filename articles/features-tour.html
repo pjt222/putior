@@ -69,6 +69,10 @@
     var colors = isDarkMode() ? mermaidThemes.dark : mermaidThemes.light;
     return {
       startOnLoad: false,
+      // Stays 'strict' (Mermaid's default): 'loose' would make
+      // enable_clicks links work, but also let click callbacks run
+      // JavaScript (#47)
+      securityLevel: 'strict',
       // Mermaid 12 defaults to the ELK layout and the neo look, wraps labels
       // at 120px and makes nodes at least 120px wide. Keep Mermaid 11's
       // classic rendering, which putior's themes are made for and which
@@ -679,6 +683,18 @@ flowchart TD
 <p>Make diagram nodes clickable to open the source file directly in your
 editor. <em>(<a href="api-reference.html#put_diagram---generate-mermaid-diagram">API
 Reference</a>)</em></p>
+<p>The links use the path the scan recorded (<code>file_path</code> from
+<code><a href="../reference/put.html">put()</a></code>; a relative path is resolved against the working
+directory when the diagram is made). Mermaid keeps them only when the
+page renders the diagram with <code>securityLevel: "loose"</code>. With
+its default (<code>"strict"</code>) and on GitHub
+(<code>"antiscript"</code>) the nodes are not clickable, so clicks do
+not work on GitHub, GitLab or in Quarto with their default settings, nor
+on this site. They work in a page or tool where you set
+<code>mermaid.initialize({ securityLevel: "loose" })</code> yourself;
+<code>"loose"</code> also lets click callbacks run JavaScript, so use it
+only for diagrams you trust. Browsers open <code>file://</code> links
+only from a page that is itself a local file.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, include_line_numbers <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>

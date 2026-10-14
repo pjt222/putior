@@ -50,6 +50,10 @@ putior's capabilities to other AI agents."><meta property="og:image" content="ht
     var colors = isDarkMode() ? mermaidThemes.dark : mermaidThemes.light;
     return {
       startOnLoad: false,
+      // Stays 'strict' (Mermaid's default): 'loose' would make
+      // enable_clicks links work, but also let click callbacks run
+      // JavaScript (#47)
+      securityLevel: 'strict',
       // Mermaid 12 defaults to the ELK layout and the neo look, wraps labels
       // at 120px and makes nodes at least 120px wide. Keep Mermaid 11's
       // classic rendering, which putior's themes are made for and which

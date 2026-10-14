@@ -402,6 +402,19 @@ Make diagram nodes clickable to open the source file directly in your
 editor. *([API
 Reference](https://pjt222.github.io/putior/articles/api-reference.html#put_diagram---generate-mermaid-diagram))*
 
+The links use the path the scan recorded (`file_path` from
+[`put()`](https://pjt222.github.io/putior/reference/put.md); a relative
+path is resolved against the working directory when the diagram is
+made). Mermaid keeps them only when the page renders the diagram with
+`securityLevel: "loose"`. With its default (`"strict"`) and on GitHub
+(`"antiscript"`) the nodes are not clickable, so clicks do not work on
+GitHub, GitLab or in Quarto with their default settings, nor on this
+site. They work in a page or tool where you set
+`mermaid.initialize({ securityLevel: "loose" })` yourself; `"loose"`
+also lets click callbacks run JavaScript, so use it only for diagrams
+you trust. Browsers open `file://` links only from a page that is itself
+a local file.
+
 ``` r
 
 workflow <- put("./src/", include_line_numbers = TRUE)

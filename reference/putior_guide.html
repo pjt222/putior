@@ -50,6 +50,10 @@
     var colors = isDarkMode() ? mermaidThemes.dark : mermaidThemes.light;
     return {
       startOnLoad: false,
+      // Stays 'strict' (Mermaid's default): 'loose' would make
+      // enable_clicks links work, but also let click callbacks run
+      // JavaScript (#47)
+      securityLevel: 'strict',
       // Mermaid 12 defaults to the ELK layout and the neo look, wraps labels
       // at 120px and makes nodes at least 120px wide. Keep Mermaid 11's
       // classic rendering, which putior's themes are made for and which
@@ -413,7 +417,7 @@ which provides 6 skills for the complete putior workflow.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # Interactive features</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> put_diagram(workflow,</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   enable_clicks = TRUE,       # Make nodes clickable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   enable_clicks = TRUE,       # Clickable nodes; need a renderer with securityLevel "loose" (not GitHub/GitLab/Quarto defaults)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   click_protocol = "vscode",  # vscode, rstudio, or file</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   show_source_info = TRUE     # Show source file in nodes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> )</span>

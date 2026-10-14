@@ -107,13 +107,13 @@ config:
 ---
 flowchart TD
     accDescr: Workflow with 3 steps and 3 data files.
-    node_32f9fb04_2bbf_4cf0_aa32_11f49dfb8f08["Extract"]
-    node_20931c5b_d1fa_416f_a986_6883f2c0e03e["Transform"]
-    node_723a1247_98e3_4f88_8a1e_ef7f73430e9b["Load"]
+    node_28270947_2455_42c0_9dca_cf5f209d3e8b["Extract"]
+    node_3c83c9e5_5bca_4960_9260_26ea5951b081["Transform"]
+    node_6b724fb6_9ba1_49aa_b154_da7243ff5d3f["Load"]
 
     %% Connections
-    node_32f9fb04_2bbf_4cf0_aa32_11f49dfb8f08 --> node_20931c5b_d1fa_416f_a986_6883f2c0e03e
-    node_20931c5b_d1fa_416f_a986_6883f2c0e03e --> node_723a1247_98e3_4f88_8a1e_ef7f73430e9b
+    node_28270947_2455_42c0_9dca_cf5f209d3e8b --> node_3c83c9e5_5bca_4960_9260_26ea5951b081
+    node_3c83c9e5_5bca_4960_9260_26ea5951b081 --> node_6b724fb6_9ba1_49aa_b154_da7243ff5d3f
 ```
 
 ------------------------------------------------------------------------

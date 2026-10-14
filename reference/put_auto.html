@@ -56,6 +56,10 @@ This is similar to how roxygen2 auto-generates documentation skeletons."><meta p
     var colors = isDarkMode() ? mermaidThemes.dark : mermaidThemes.light;
     return {
       startOnLoad: false,
+      // Stays 'strict' (Mermaid's default): 'loose' would make
+      // enable_clicks links work, but also let click callbacks run
+      // JavaScript (#47)
+      securityLevel: 'strict',
       // Mermaid 12 defaults to the ELK layout and the neo look, wraps labels
       // at 120px and makes nodes at least 120px wide. Keep Mermaid 11's
       // classic rendering, which putior's themes are made for and which
@@ -272,7 +276,7 @@ Options: "DEBUG", "INFO", "WARN", "ERROR". See <code><a href="set_putior_log_lev
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A data frame in the same format as <code><a href="put.html">put()</a></code>, containing:</p><ul><li><p>file_name: Name of the source file</p></li>
-<li><p>file_path: Full path to the file</p></li>
+<li><p>file_path: Path to the file, as the scan found it</p></li>
 <li><p>file_type: File extension (r, py, sql, etc.)</p></li>
 <li><p>id: Auto-generated node identifier (based on file name)</p></li>
 <li><p>label: Human-readable label (file name without extension)</p></li>
