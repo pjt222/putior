@@ -1028,10 +1028,29 @@ test_that("the MCP server over HTTP does not start if mcptools ignores its setti
   old_options <- options(mcptools.http_shared_secret = "theirs",
                          mcptools.http_trusted_hosts = "theirs")
   on.exit(options(old_options), add = TRUE)
-  # A version that serves every request, or whose handler has changed
+  # A version that serves every request, or whose handler has changed, or
+  # that skips one of the checks
+  trusted <- function(request) identical(request$HTTP_HOST, getOption("mcptools.http_trusted_hosts"))
+  right_secret <- function(request) {
+    identical(request$HTTP_PLUMBER_SHARED_SECRET, getOption("mcptools.http_shared_secret"))
+  }
+  status_if <- function(allowed) list(status = if (allowed) 405L else 403L)
   for (handler in list(function(request) list(status = 405L),
                        function(request) stop("no such field"),
-                       function(request) list(status = 403L))) {
+                       function(request) list(status = 403L),
+                       # Ignores the secret
+                       function(request) status_if(trusted(request)),
+                       # Takes a request without a secret
+                       function(request) {
+                         status_if(trusted(request) &&
+                                     (is.null(request$HTTP_PLUMBER_SHARED_SECRET) || right_secret(request)))
+                       },
+                       # Takes any secret
+                       function(request) {
+                         status_if(trusted(request) && !is.null(request$HTTP_PLUMBER_SHARED_SECRET))
+                       },
+                       # Ignores the Host
+                       function(request) status_if(right_secret(request)))) {
     local_mocked_bindings(handle_http_request = handler, .package = "mcptools")
     expect_error(putior_mcp_server(type = "http", port = 8123),
                  "did not refuse putior's test requests", fixed = TRUE)
