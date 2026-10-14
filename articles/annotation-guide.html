@@ -616,7 +616,21 @@ used:</p>
 <code>|</code>, a <code>#</code> that Mermaid would read as a character
 entity (such as <code>#35;</code>) and a <code>%%{</code>, which would
 start a Mermaid directive. Mermaid still renders HTML tags such as
-<code>&lt;br/&gt;</code> and <code>$$...$$</code> math in labels.</p>
+<code>&lt;br/&gt;</code> and <code>$$...$$</code> math in labels. So a
+<code>&lt;</code> followed by a letter, <code>/</code>, <code>!</code>
+or <code>?</code> starts a tag, and the text up to the next
+<code>&gt;</code> disappears (<code>a&lt;b and c&gt;d</code> shows
+“ad”); write <code>&amp;lt;</code> for a <code>&lt;</code> that should
+show (<code>label:"n &amp;lt;threshold"</code>), and <code>\lt</code>
+inside <code>$$...$$</code> math, where <code>&amp;lt;</code> breaks
+KaTeX. <code><a href="../reference/put_diagram.html">put_diagram()</a></code> warns about such a <code>&lt;</code>,
+unless it starts one of the tags <code>br</code>, <code>b</code>,
+<code>i</code>, <code>em</code>, <code>strong</code>, <code>sub</code>,
+<code>sup</code>, <code>code</code> or <code>span</code>. Their
+attribute values need single quotes
+(<code>&lt;span style='color:red'&gt;</code>): double quotes are
+escaped, and Mermaid then keeps them in the value, so the attribute has
+no effect.</p>
 </div>
 <div class="section level3">
 <h3 id="standard-node-types">Standard Node Types<a class="anchor" aria-label="anchor" href="#standard-node-types"></a>

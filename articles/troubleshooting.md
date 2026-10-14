@@ -521,6 +521,32 @@ cat(mermaid_code)
     writes them as `node_end` and `node_class`, so they work; only the
     id in the Mermaid code differs.
 
+### Label Loses Text After `<`
+
+**Problem**: Part of a label is missing, and
+[`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+warned that a label contains a `<` before a letter, `/`, `!` or `?`.
+
+**Cause**: Mermaid draws labels as HTML, so `<` followed by a letter (or
+by `/`, `!` or `?`) starts an HTML tag. A tag it does not know, such as
+`<draft>`, disappears, and so does text that looks like the attributes
+of a real tag: `a<b and c>d` shows “ad”.
+
+**Solution**: Write `&lt;` for a `<` that should show:
+
+``` r
+
+# put id:"filter", label:"Keep rows with n &lt;threshold"
+```
+
+A `<` followed by a space, a digit or `-` (`x < 5`, `x<5`, `x <- y`)
+shows as written. Inside `$$...$$` math, write `\lt`: `&lt;` and a plain
+`<` make KaTeX fail. Labels may still contain the tags `br`, `b`, `i`,
+`em`, `strong`, `sub`, `sup`, `code` and `span` on purpose;
+[`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+does not warn about them. Give their attributes single quotes
+(`<span style='color:red'>`).
+
 ### Title Shows `&lt;` or Loses Text
 
 **Problem**: The title above the diagram shows `&lt;`, `&gt;` or

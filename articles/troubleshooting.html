@@ -693,6 +693,34 @@ differs.</li>
 </ol>
 </div>
 <div class="section level3">
+<h3 id="label-loses-text-after">Label Loses Text After <code>&lt;</code><a class="anchor" aria-label="anchor" href="#label-loses-text-after"></a>
+</h3>
+<p><strong>Problem</strong>: Part of a label is missing, and
+<code><a href="../reference/put_diagram.html">put_diagram()</a></code> warned that a label contains a
+<code>&lt;</code> before a letter, <code>/</code>, <code>!</code> or
+<code>?</code>.</p>
+<p><strong>Cause</strong>: Mermaid draws labels as HTML, so
+<code>&lt;</code> followed by a letter (or by <code>/</code>,
+<code>!</code> or <code>?</code>) starts an HTML tag. A tag it does not
+know, such as <code>&lt;draft&gt;</code>, disappears, and so does text
+that looks like the attributes of a real tag:
+<code>a&lt;b and c&gt;d</code> shows “ad”.</p>
+<p><strong>Solution</strong>: Write <code>&amp;lt;</code> for a
+<code>&lt;</code> that should show:</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># put id:"filter", label:"Keep rows with n &amp;lt;threshold"</span></span></code></pre></div>
+<p>A <code>&lt;</code> followed by a space, a digit or <code>-</code>
+(<code>x &lt; 5</code>, <code>x&lt;5</code>, <code>x &lt;- y</code>)
+shows as written. Inside <code>$$...$$</code> math, write
+<code>\lt</code>: <code>&amp;lt;</code> and a plain <code>&lt;</code>
+make KaTeX fail. Labels may still contain the tags <code>br</code>,
+<code>b</code>, <code>i</code>, <code>em</code>, <code>strong</code>,
+<code>sub</code>, <code>sup</code>, <code>code</code> and
+<code>span</code> on purpose; <code><a href="../reference/put_diagram.html">put_diagram()</a></code> does not warn
+about them. Give their attributes single quotes
+(<code>&lt;span style='color:red'&gt;</code>).</p>
+</div>
+<div class="section level3">
 <h3 id="title-shows-lt-or-loses-text">Title Shows <code>&amp;lt;</code> or Loses Text<a class="anchor" aria-label="anchor" href="#title-shows-lt-or-loses-text"></a>
 </h3>
 <p><strong>Problem</strong>: The title above the diagram shows
@@ -714,13 +742,13 @@ title, or write “less than”. The title that screen readers announce
 </h3>
 <p><strong>Problem</strong>: Diagram colors don’t appear or look
 wrong.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check available themes</span></span>
 <span><span class="fu"><a href="../reference/get_diagram_themes.html">get_diagram_themes</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $light, $dark, $auto, $minimal, $github</span></span>
 <span><span class="co">#&gt; $viridis, $magma, $plasma, $cividis (colorblind-safe)</span></span></code></pre></div>
 <p><strong>Solutions</strong>:</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Try a different theme</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"github"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"minimal"</span><span class="op">)</span></span>
@@ -741,7 +769,7 @@ wrong.</p>
 them.</p>
 <p><strong>Cause</strong>: Input/output values don’t match between
 nodes.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Problem: Typo in file name</span></span>
 <span><span class="co"># put id:"step1", output:"data.csv"</span></span>
 <span><span class="co"># put id:"step2", input:"Data.csv"  # Case mismatch!</span></span>
@@ -750,7 +778,7 @@ nodes.</p>
 <span><span class="co"># put id:"step1", output:"data.csv"</span></span>
 <span><span class="co"># put id:"step2", input:"data.csv"</span></span></code></pre></div>
 <p><strong>Diagnostic</strong>:</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check what inputs and outputs are defined</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id"</span>, <span class="st">"input"</span>, <span class="st">"output"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
@@ -760,7 +788,7 @@ nodes.</p>
 </h3>
 <p><strong>Problem</strong>: Data files (artifacts) don’t appear in
 diagram.</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Enable artifacts display</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_artifacts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
@@ -780,7 +808,7 @@ diagram cannot raise them, and GitHub, GitLab and Quarto keep the
 defaults. <code><a href="../reference/put_diagram.html">put_diagram()</a></code> warns when its output is over
 either limit.</p>
 <p><strong>Solutions</strong>:</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fewer edges: leave out the file nodes</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, show_artifacts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
@@ -803,18 +831,18 @@ either limit.</p>
 or other files.</p>
 <p><strong>Cause</strong>: Using wrong comment syntax for the
 language.</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="co">-- WRONG for SQL - using hash instead of dash</span></span>
-<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a># put <span class="kw">id</span>:<span class="ot">"query"</span>, <span class="kw">label</span>:<span class="ot">"Run Query"</span></span>
-<span id="cb39-3"><a href="#cb39-3" tabindex="-1"></a></span>
-<span id="cb39-4"><a href="#cb39-4" tabindex="-1"></a><span class="co">-- CORRECT for SQL</span></span>
-<span id="cb39-5"><a href="#cb39-5" tabindex="-1"></a><span class="co">-- put id:"query", label:"Run Query"</span></span></code></pre></div>
-<div class="sourceCode" id="cb40"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a><span class="co">// WRONG for JavaScript - using hash</span></span>
-<span id="cb40-2"><a href="#cb40-2" tabindex="-1"></a># put id<span class="op">:</span><span class="st">"handler"</span><span class="op">,</span> label<span class="op">:</span><span class="st">"Handle Request"</span></span>
+<div class="sourceCode" id="cb40"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a><span class="co">-- WRONG for SQL - using hash instead of dash</span></span>
+<span id="cb40-2"><a href="#cb40-2" tabindex="-1"></a># put <span class="kw">id</span>:<span class="ot">"query"</span>, <span class="kw">label</span>:<span class="ot">"Run Query"</span></span>
 <span id="cb40-3"><a href="#cb40-3" tabindex="-1"></a></span>
-<span id="cb40-4"><a href="#cb40-4" tabindex="-1"></a><span class="co">// CORRECT for JavaScript</span></span>
-<span id="cb40-5"><a href="#cb40-5" tabindex="-1"></a><span class="co">// put id:"handler", label:"Handle Request"</span></span></code></pre></div>
+<span id="cb40-4"><a href="#cb40-4" tabindex="-1"></a><span class="co">-- CORRECT for SQL</span></span>
+<span id="cb40-5"><a href="#cb40-5" tabindex="-1"></a><span class="co">-- put id:"query", label:"Run Query"</span></span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="co">// WRONG for JavaScript - using hash</span></span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a># put id<span class="op">:</span><span class="st">"handler"</span><span class="op">,</span> label<span class="op">:</span><span class="st">"Handle Request"</span></span>
+<span id="cb41-3"><a href="#cb41-3" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="#cb41-4" tabindex="-1"></a><span class="co">// CORRECT for JavaScript</span></span>
+<span id="cb41-5"><a href="#cb41-5" tabindex="-1"></a><span class="co">// put id:"handler", label:"Handle Request"</span></span></code></pre></div>
 <p><strong>Check the correct prefix</strong>:</p>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get comment prefix for any extension</span></span>
 <span><span class="fu"><a href="../reference/get_comment_prefix.html">get_comment_prefix</a></span><span class="op">(</span><span class="st">"sql"</span><span class="op">)</span>   <span class="co"># "--"</span></span>
 <span><span class="fu"><a href="../reference/get_comment_prefix.html">get_comment_prefix</a></span><span class="op">(</span><span class="st">"js"</span><span class="op">)</span>    <span class="co"># "//"</span></span>
@@ -895,7 +923,7 @@ language.</p>
 <h3 id="unsupported-extension">Unsupported Extension<a class="anchor" aria-label="anchor" href="#unsupported-extension"></a>
 </h3>
 <p><strong>Problem</strong>: File type not automatically recognized.</p>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check if extension is supported</span></span>
 <span><span class="va">ext</span> <span class="op">&lt;-</span> <span class="st">"xyz"</span></span>
 <span><span class="fu"><a href="../reference/get_comment_prefix.html">get_comment_prefix</a></span><span class="op">(</span><span class="va">ext</span><span class="op">)</span>  <span class="co"># Returns "#" as fallback</span></span>
@@ -908,7 +936,7 @@ your language supports <code>#</code> comments)</p>
 <pre><code><span><span class="co"># In your .xyz file (if it supports # comments)</span></span>
 <span><span class="co"># put id:"step1", label:"Process Data"</span></span></code></pre>
 <p><strong>Option 2: Create a wrapper annotation file</strong></p>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># workflow-annotations.R</span></span>
 <span><span class="co"># This file documents the workflow for unsupported file types</span></span>
 <span></span>
@@ -918,7 +946,7 @@ your language supports <code>#</code> comments)</p>
 <span><span class="co"># Then scan this file instead</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"workflow-annotations.R"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Option 3: Use text input for ad-hoc annotations</strong></p>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define workflow without files</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">'</span></span>
 <span><span class="st"># put id:"step1", label:"Custom Step 1", output:"data.xyz"</span></span>
@@ -942,7 +970,7 @@ auto-detection)</p>
 <p><strong>Problem</strong>: <code><a href="../reference/put.html">put()</a></code> takes too long on large
 projects.</p>
 <p><strong>Solutions</strong>:</p>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Limit to specific directories</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/core/"</span><span class="op">)</span>  <span class="co"># Instead of ./</span></span>
 <span></span>
@@ -961,7 +989,7 @@ projects.</p>
 <p><strong>Problem</strong>: Many nodes cause memory or rendering
 issues.</p>
 <p><strong>Solutions</strong>:</p>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Split into smaller subgraphs</span></span>
 <span><span class="va">workflow_etl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/etl/"</span><span class="op">)</span></span>
 <span><span class="va">workflow_ml</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/ml/"</span><span class="op">)</span></span>
@@ -980,7 +1008,7 @@ issues.</p>
 <h3 id="reducing-annotation-overhead">Reducing Annotation Overhead<a class="anchor" aria-label="anchor" href="#reducing-annotation-overhead"></a>
 </h3>
 <p><strong>Best Practices</strong>:</p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Annotate key steps only, not every function</span></span>
 <span><span class="co"># Good: Major pipeline stages</span></span>
 <span><span class="co"># put id:"ingest", label:"Data Ingestion", node_type:"input"</span></span>
@@ -998,7 +1026,7 @@ issues.</p>
 <div class="section level3">
 <h3 id="enable-detailed-logging">Enable Detailed Logging<a class="anchor" aria-label="anchor" href="#enable-detailed-logging"></a>
 </h3>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install logger package (optional but recommended)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"logger"</span><span class="op">)</span></span>
 <span></span>
@@ -1011,7 +1039,7 @@ issues.</p>
 <div class="section level3">
 <h3 id="per-call-logging">Per-Call Logging<a class="anchor" aria-label="anchor" href="#per-call-logging"></a>
 </h3>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Override log level for a single call</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, log_level <span class="op">=</span> <span class="st">"DEBUG"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, log_level <span class="op">=</span> <span class="st">"INFO"</span><span class="op">)</span></span></code></pre></div>
@@ -1051,7 +1079,7 @@ issues.</p>
 <div class="section level3">
 <h3 id="debugging-example">Debugging Example<a class="anchor" aria-label="anchor" href="#debugging-example"></a>
 </h3>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Problem: Annotations not being found</span></span>
 <span></span>
 <span><span class="co"># 1. Enable debug logging</span></span>
@@ -1073,7 +1101,7 @@ issues.</p>
 </h3>
 <p>If you don’t have the <code>logger</code> package installed, putior
 works silently without logging. Install it for debugging:</p>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"logger"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Verify it's working</span></span>
@@ -1105,7 +1133,7 @@ works silently without logging. Install it for debugging:</p>
 <strong>Typo in “put”</strong> keyword (must be lowercase:
 <code># put</code> not <code># PUT</code>)</li>
 </ol>
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Validate syntax</span></span>
 <span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'# put id:"test", label:"Test"'</span><span class="op">)</span>  <span class="co"># TRUE</span></span>
 <span><span class="fu"><a href="../reference/is_valid_put_annotation.html">is_valid_put_annotation</a></span><span class="op">(</span><span class="st">'# PUT id:"test", label:"Test"'</span><span class="op">)</span>  <span class="co"># FALSE (uppercase)</span></span></code></pre></div>
@@ -1114,7 +1142,7 @@ works silently without logging. Install it for debugging:</p>
 <h3 id="q-how-do-i-connect-nodes-between-files">Q: How do I connect nodes between files?<a class="anchor" aria-label="anchor" href="#q-how-do-i-connect-nodes-between-files"></a>
 </h3>
 <p><strong>A</strong>: Use matching input/output file names:</p>
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># In 01_load.R</span></span>
 <span><span class="co"># put id:"load", label:"Load Data", output:"raw_data.csv"</span></span>
 <span></span>
@@ -1126,7 +1154,7 @@ works silently without logging. Install it for debugging:</p>
 </h3>
 <p><strong>A</strong>: putior automatically uses the file name as the
 output.</p>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># In process_data.R</span></span>
 <span><span class="co"># put id:"process", label:"Process Data", input:"raw.csv"</span></span>
 <span><span class="co"># Output defaults to "process_data.R"</span></span>
@@ -1139,7 +1167,7 @@ output.</p>
 <h3 id="q-can-i-use-putior-in-cicd">Q: Can I use putior in CI/CD?<a class="anchor" aria-label="anchor" href="#q-can-i-use-putior-in-cicd"></a>
 </h3>
 <p><strong>A</strong>: Yes, putior works in headless environments:</p>
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generate diagram file for documentation</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>,</span>
@@ -1151,7 +1179,7 @@ output.</p>
 <h3 id="q-how-do-i-track-in-memory-variables">Q: How do I track in-memory variables?<a class="anchor" aria-label="anchor" href="#q-how-do-i-track-in-memory-variables"></a>
 </h3>
 <p><strong>A</strong>: Use the <code>.internal</code> extension:</p>
-<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Variables created during script execution</span></span>
 <span><span class="co"># put id:"create", output:"dataset.internal, dataset.RData"</span></span>
 <span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">)</span></span>
@@ -1169,7 +1197,7 @@ outputs, never inputs between scripts.</p>
 </h3>
 <p><strong>A</strong>: Different Mermaid renderers interpret themes
 differently.</p>
-<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For GitHub README</span></span>
 <span><span class="fu"><a href="../reference/put_diagram.html">put_diagram</a></span><span class="op">(</span><span class="va">workflow</span>, theme <span class="op">=</span> <span class="st">"github"</span><span class="op">)</span></span>
 <span></span>
@@ -1184,13 +1212,13 @@ differently.</p>
 </h3>
 <p><strong>A</strong>: Yes, putior preserves any properties you
 define:</p>
-<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># put id:"train", label:"Train Model", \</span></span>
 <span><span class="co">#     node_type:"process", \</span></span>
 <span><span class="co">#     runtime:"2h", \</span></span>
 <span><span class="co">#     gpu:"required", \</span></span>
 <span><span class="co">#     priority:"high"</span></span></code></pre></div>
-<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">$</span><span class="va">runtime</span><span class="op">)</span>   <span class="co"># "2h"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">workflow</span><span class="op">$</span><span class="va">gpu</span><span class="op">)</span>       <span class="co"># "required"</span></span>
@@ -1200,7 +1228,7 @@ define:</p>
 <h3 id="q-how-do-i-suppress-validation-warnings">Q: How do I suppress validation warnings?<a class="anchor" aria-label="anchor" href="#q-how-do-i-suppress-validation-warnings"></a>
 </h3>
 <p><strong>A</strong>: Disable validation:</p>
-<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Suppress all validation warnings</span></span>
 <span><span class="va">workflow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/put.html">put</a></span><span class="op">(</span><span class="st">"./src/"</span>, validate <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
@@ -1236,7 +1264,7 @@ docs</li>
 </li>
 <li>
 <p><strong>Use the sandbox</strong>:</p>
-<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/run_sandbox.html">run_sandbox</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># Interactive experimentation</span></span></code></pre></div>
 </li>
 <li><p><strong>Enable debug logging</strong> and check output
@@ -1251,7 +1279,7 @@ carefully</p></li>
 </ul>
 </li>
 </ol>
-<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Gather diagnostic info</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"putior"</span><span class="op">)</span></span>

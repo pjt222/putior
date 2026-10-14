@@ -275,6 +275,15 @@
   C locale; they now do so there too.
   ([\#104](https://github.com/pjt222/putior/issues/104))
 
+- [`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+  now warns when a drawn label contains a `<` before a letter, `/`, `!`
+  or `?`, such as `n<threshold` or `<draft>`: Mermaid draws labels as
+  HTML and reads it as the start of a tag, so the text up to the next
+  `>` disappears (`a<b and c>d` shows “ad”). The docs show `&lt;` for a
+  `<` that should show (`\lt` in `$$...$$` math). The tags `br`, `b`,
+  `i`, `em`, `strong`, `sub`, `sup`, `code` and `span` still count as
+  intended HTML. ([\#102](https://github.com/pjt222/putior/issues/102))
+
 ### New Features
 
 #### MCP Server Integration

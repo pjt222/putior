@@ -419,8 +419,16 @@ Where Mermaid 11.17.2 and later draw SVG text instead
 (<code>htmlLabels: false</code> for all labels, or
 <code>flowchart.htmlLabels: false</code> for edge labels and subgraph titles),
 they show the entity as written; Mermaid 11.12.0 can garble it there.
-Mermaid still interprets HTML
-tags such as <code>&lt;br/&gt;</code> and <code>$$...$$</code> (KaTeX math) inside labels.</p>
+Mermaid still interprets HTML tags such as <code>&lt;br/&gt;</code> and
+<code>$$...$$</code> (KaTeX math) inside labels. So a <code>&lt;</code> followed by a
+letter, <code>/</code>, <code>!</code> or <code>?</code> starts a tag, and the text up to
+the next <code>&gt;</code> disappears (<code>a&lt;b and c&gt;d</code> shows <code>ad</code>); write
+<code>&amp;lt;</code> for a <code>&lt;</code> that should show (in math, <code>\lt</code>).
+<code>put_diagram()</code> warns about such a <code>&lt;</code>, unless it starts one
+of the tags <code>br</code>, <code>b</code>, <code>i</code>, <code>em</code>, <code>strong</code>,
+<code>sub</code>, <code>sup</code>, <code>code</code> or <code>span</code>. Their attribute
+values need single quotes: double quotes are escaped, and Mermaid then
+keeps them in the value, so the attribute has no effect.</p>
 <p>Node ids are reduced to letters, digits and underscores. An id that starts
 with a digit or is a Mermaid keyword (such as <code>end</code> or <code>class</code>)
 gets a <code>node_</code> prefix. Ids that only differ in punctuation (<code>a-b</code>

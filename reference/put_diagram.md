@@ -250,7 +250,14 @@ in HTML labels. Where Mermaid 11.17.2 and later draw SVG text instead
 (`htmlLabels: false` for all labels, or `flowchart.htmlLabels: false`
 for edge labels and subgraph titles), they show the entity as written;
 Mermaid 11.12.0 can garble it there. Mermaid still interprets HTML tags
-such as `<br/>` and `$$...$$` (KaTeX math) inside labels.
+such as `<br/>` and `$$...$$` (KaTeX math) inside labels. So a `<`
+followed by a letter, `/`, `!` or `?` starts a tag, and the text up to
+the next `>` disappears (`a<b and c>d` shows `ad`); write `&lt;` for a
+`<` that should show (in math, `\lt`). `put_diagram()` warns about such
+a `<`, unless it starts one of the tags `br`, `b`, `i`, `em`, `strong`,
+`sub`, `sup`, `code` or `span`. Their attribute values need single
+quotes: double quotes are escaped, and Mermaid then keeps them in the
+value, so the attribute has no effect.
 
 Node ids are reduced to letters, digits and underscores. An id that
 starts with a digit or is a Mermaid keyword (such as `end` or `class`)
