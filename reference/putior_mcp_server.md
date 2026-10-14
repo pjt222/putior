@@ -8,7 +8,13 @@ functions.
 ## Usage
 
 ``` r
-putior_mcp_server(type = c("stdio", "http"), host = "127.0.0.1", port = 8080L)
+putior_mcp_server(
+  type = c("stdio", "http"),
+  host = "127.0.0.1",
+  port = 8080L,
+  root = getwd(),
+  token = NULL
+)
 ```
 
 ## Arguments
@@ -29,6 +35,22 @@ putior_mcp_server(type = c("stdio", "http"), host = "127.0.0.1", port = 8080L)
 - port:
 
   Integer specifying the port for HTTP transport. Default: 8080
+
+- root:
+
+  For HTTP transport: the folder that the tools may scan (default: the
+  working directory). A relative path is taken from it, a path outside
+  it is an error, and a recursive scan skips the files that links inside
+  it lead outside to. Over stdio the client is the local program that
+  started the server, and paths are not limited.
+
+- token:
+
+  For HTTP transport: `NULL` (default) or a string of at least 16
+  characters without spaces that clients must send as the header
+  `Plumber-Shared-Secret: <token>`. A server on an address other than a
+  loopback one (`127.0.0.1`, `localhost`, `::1`) needs a token. Without
+  one, only requests addressed to a loopback name are answered.
 
 ## Value
 
@@ -103,6 +125,50 @@ raised before the error follow its message.
       }
     }
 
+## Security
+
+Over stdio nothing below applies: the client is the program that started
+the server. Over HTTP:
+
+- A tool can scan only the `root` folder and what lies below it, and
+  returns the file names, labels and annotations found there, with the
+  same rules as
+  [`putior_acp_server`](https://pjt222.github.io/putior/reference/putior_acp_server.md):
+  a path outside the root is an error, also through a symbolic link or
+  junction; a recursive scan skips the files that links inside the root
+  lead outside to; a path with a `..` component, control characters or a
+  network or device form is rejected. Results and messages show the root
+  as `<root>`, and `put_diagram` refuses `enable_clicks`, whose links
+  name files by their path on the server.
+
+- Without a token, the server runs only on a loopback `host` and answers
+  only requests addressed to a loopback name, so that a web page cannot
+  reach it through DNS rebinding; mcptools also rejects requests from
+  web pages of other origins.
+
+- mcptools' own settings stay in force: hosts trusted through the option
+  `mcptools.http_trusted_hosts` or the environment variable
+  `MCPTOOLS_HTTP_TRUSTED_HOSTS` are answered too, and a secret set
+  through `mcptools.http_shared_secret` or `plumber2.sharedSecret` is
+  required when `token` is `NULL`.
+
+- To serve other machines, set `token`; mcptools then answers only
+  requests that send it:
+
+
+      # R
+      putior_mcp_server(type = "http", host = "0.0.0.0", port = 8080,
+                        root = "path/to/project",
+                        token = Sys.getenv("PUTIOR_MCP_TOKEN"))
+
+      # Claude Code
+      claude mcp add --transport http putior http://<server>:8080/ \
+        --header "Plumber-Shared-Secret: <token>"
+
+- The server does not use TLS and mcptools does not limit the request
+  size: across a network, put it behind a proxy that serves HTTPS and
+  limits the size, or the token travels in clear text.
+
 ## See also
 
 [`putior_mcp_tools`](https://pjt222.github.io/putior/reference/putior_mcp_tools.md)
@@ -122,7 +188,7 @@ if (FALSE) { # \dontrun{
 # Start MCP server with default stdio transport
 putior_mcp_server()
 
-# Start MCP server with HTTP transport
+# Start MCP server with HTTP transport, scanning only the current folder
 putior_mcp_server(type = "http", port = 8080)
 } # }
 ```

@@ -33,6 +33,13 @@ R warned, it returns a list of two
 [`ellmer::ContentText`](https://ellmer.tidyverse.org/reference/Content.html)
 objects instead: the result and the warnings.
 
+## Details
+
+The tools confine scans to a folder only in a server started by
+`putior_mcp_server(type = "http")` (see its Security section). In a
+custom server that other programs can reach, they scan any folder that
+the R process can read.
+
 ## See also
 
 [`putior_mcp_server`](https://pjt222.github.io/putior/reference/putior_mcp_server.md)

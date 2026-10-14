@@ -204,7 +204,12 @@ putior as an agent that other AI agents can discover and call.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">putior_acp_server</span><span class="op">(</span>host <span class="op">=</span> <span class="st">"127.0.0.1"</span>, port <span class="op">=</span> <span class="fl">8080L</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">putior_acp_server</span><span class="op">(</span></span>
+<span>  host <span class="op">=</span> <span class="st">"127.0.0.1"</span>,</span>
+<span>  port <span class="op">=</span> <span class="fl">8080L</span>,</span>
+<span>  root <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  token <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -220,6 +225,24 @@ Default: "127.0.0.1" (localhost only)</p></dd>
 <dd><p>Integer specifying the port number.
 Default: 8080</p></dd>
 
+
+<dt id="arg-root">root<a class="anchor" aria-label="anchor" href="#arg-root"></a></dt>
+<dd><p>The folder that requests may scan (default: the working
+directory). A request's relative path is taken from it, and a path
+outside it, also through a symbolic link, is rejected; a scan skips
+files that links inside it lead outside to. A request without a path
+scans this folder.</p></dd>
+
+
+<dt id="arg-token">token<a class="anchor" aria-label="anchor" href="#arg-token"></a></dt>
+<dd><p><code>NULL</code> (default) or a string of at least 16
+characters. With a token, <code>POST /runs</code> and <code>GET /runs/&lt;id&gt;</code>
+need the header <code>Authorization: Bearer &lt;token&gt;</code>. A server on an
+address other than a loopback one (<code>127.0.0.1</code>, <code>localhost</code>,
+<code>::1</code>) needs a token. Passing it from an environment variable,
+as <code>token = Sys.getenv("PUTIOR_ACP_TOKEN")</code>, keeps it out of
+scripts and the R history.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -233,11 +256,40 @@ Default: 8080</p></dd>
 <dt>POST /runs</dt>
 <dd><p>Execute a putior operation</p></dd>
 
-<dt>GET /runs/:run_id</dt>
+<dt>GET /runs/&lt;run_id&gt;</dt>
 <dd><p>Get the status/result of a previous run</p></dd>
 
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="security">Security<a class="anchor" aria-label="anchor" href="#security"></a></h2>
+
+
+<ul><li><p>A request can scan only the <code>root</code> folder and what lies
+below it, and it sees the file names and labels found there. A path
+outside the root is rejected, also when a symbolic link or junction
+leads there; a recursive scan skips the files that links inside the
+root lead outside to, and refuses a folder with more than 200 such
+links. A path with a <code>..</code> component, control
+characters, or a network or device form (<code>\\server\share</code>,
+<code>//server/share</code>) is rejected before the disk is touched.
+Messages show the root as <code>&lt;root&gt;</code>.</p></li>
+<li><p>Without a token, the server runs only on a loopback <code>host</code>
+(<code>127.x.x.x</code>, <code>localhost</code>, <code>::1</code>) and answers only
+requests addressed to such a name, so that a web page cannot reach
+it through DNS rebinding. With <code>host = "0.0.0.0"</code> or another
+address, set <code>token</code>.</p></li>
+<li><p><code>POST /runs</code> needs <code>Content-Type: application/json</code>,
+which a web page cannot send to another site without the server's
+consent. A <code>Content-Length</code> over 1 MB is refused (a body sent
+in chunks is not limited); on a server that other machines can
+reach, use a proxy that limits the request size.</p></li>
+<li><p>Run IDs are 128 random bits (from the openssl package, which
+plumber2 needs), so a client cannot guess the ID of another
+client's run.</p></li>
+<li><p>The server does not use TLS: across a network, put it behind a
+proxy that does, or the token travels in clear text.</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="message-format">Message Format<a class="anchor" aria-label="anchor" href="#message-format"></a></h2>
 
@@ -284,6 +336,12 @@ curl http://localhost:8080/agents
 curl -X POST http://localhost:8080/runs \
   -H "Content-Type: application/json" \
   -d '{"input": [{"role": "user", "parts": [{"content": "scan ./R/"}]}]}'
+
+# With a token
+curl -X POST http://localhost:8080/runs \
+  -H "Authorization: Bearer $PUTIOR_ACP_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"input": [{"role": "user", "parts": [{"content": "scan ./R/"}]}]}'
 </code></pre></div>
 
     </div>
@@ -306,7 +364,10 @@ curl -X POST http://localhost:8080/runs \
 <span class="r-in"><span><span class="fu">putior_acp_server</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Start on custom host/port</span></span></span>
-<span class="r-in"><span><span class="fu">putior_acp_server</span><span class="op">(</span>host <span class="op">=</span> <span class="st">"0.0.0.0"</span>, port <span class="op">=</span> <span class="fl">9000</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Reachable from other machines: needs a token, sent by clients as</span></span></span>
+<span class="r-in"><span><span class="co"># "Authorization: Bearer &lt;token&gt;"</span></span></span>
+<span class="r-in"><span><span class="fu">putior_acp_server</span><span class="op">(</span>host <span class="op">=</span> <span class="st">"0.0.0.0"</span>, port <span class="op">=</span> <span class="fl">9000</span>, root <span class="op">=</span> <span class="st">"~/projects"</span>,</span></span>
+<span class="r-in"><span>                  token <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"PUTIOR_ACP_TOKEN"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

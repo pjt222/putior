@@ -236,6 +236,13 @@ Mermaid code or Markdown); when R warned, it returns a list of two
 warnings.</p>
     </div>
     <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The tools confine scans to a folder only in a server started by
+<code>putior_mcp_server(type = "http")</code> (see its Security section). In
+a custom server that other programs can reach, they scan any folder
+that the R process can read.</p>
+    </div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="putior_mcp_server.html">putior_mcp_server</a></code> for starting the MCP server</p>
 <p>Other integration:

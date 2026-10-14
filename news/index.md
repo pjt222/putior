@@ -335,13 +335,27 @@
   diagram still renders when a client joins both items, and a `%%{` in a
   quoted label cannot act as a directive. An error lists the warnings
   raised before it. The MCP server needs mcptools 1.0.0 or later, which
-  passes such a list on; older versions turned it into “
-  ” text.
+  passes such a list on; older versions turned it into `"<object>"`
+  text.
 - [`putior_mcp_server()`](https://pjt222.github.io/putior/reference/putior_mcp_server.md)
   serves only its 16 tools. mcptools’ tools for choosing a running R
   session (`list_r_sessions`, `select_r_session`) were on as well, so
   clients saw 18 tools, and a call could run in a user’s live R session
   instead of the server’s own process.
+- Over HTTP (`type = "http"`), the tools scan only the folder given as
+  `root` (default: the working directory), with the ACP server’s rules,
+  and replies show the root as `<root>`; before, a client could scan any
+  folder the server’s R process could read. `put_diagram` refuses
+  `enable_clicks` over HTTP, as its links name files by their path on
+  the server. A `token` makes mcptools require the header
+  `Plumber-Shared-Secret: <token>`; a server on an address other than a
+  loopback one refuses to start without one. Without a token, the server
+  answers only requests addressed to a loopback name (against DNS
+  rebinding). mcptools’ own settings (trusted hosts, shared secret) stay
+  in force. Over stdio nothing changes.
+  [`?putior_mcp_server`](https://pjt222.github.io/putior/reference/putior_mcp_server.md)
+  describes the security model.
+  ([\#111](https://github.com/pjt222/putior/issues/111))
 
 #### ACP Server Integration
 
@@ -353,6 +367,25 @@
   [`putior_acp_manifest()`](https://pjt222.github.io/putior/reference/putior_acp_manifest.md)
   for agent discovery
 - Supports natural language requests for all core operations
+- Requests may scan only the folder given as `root` (default: the
+  working directory) and what lies below it; a path outside it, also
+  through a symbolic link, is rejected, and a scan skips files that
+  links inside it lead outside to (a folder with more than 200 such
+  links is refused). Before, a request could name any absolute path the
+  server’s R process could read. Network and device paths are rejected
+  before the disk is touched, and messages show the root as `<root>`. A
+  `token` makes the server require `Authorization: Bearer <token>` on
+  `/runs`; a server on an address other than a loopback one refuses to
+  start without one. Without a token, the server answers only requests
+  addressed to a loopback name (against DNS rebinding). `POST /runs`
+  needs `Content-Type: application/json`, and a `Content-Length` over 1
+  MB is refused; these checks, the Host and the token come before the
+  request is handled. Run IDs are 128 random bits from openssl, also
+  without the uuid package, where they were a timestamp and a counter
+  that another client could guess.
+  [`?putior_acp_server`](https://pjt222.github.io/putior/reference/putior_acp_server.md)
+  describes the security model.
+  ([\#111](https://github.com/pjt222/putior/issues/111))
 - Input path sanitization to prevent directory traversal attacks. A path
   with `..` or control characters ends the run with an error; it used to
   be replaced by `.` with a warning in the server log, so the run
@@ -373,6 +406,14 @@
   another folder. A `..` after a drive (`D:..\x`) is rejected like any
   other, also by the path checks of the other functions.
   ([\#109](https://github.com/pjt222/putior/issues/109))
+- The server works over HTTP. Every `POST /runs` failed with “500
+  Internal Server Error”: plumber2’s JSON parser turns the request’s
+  `input` into a data frame, which the request handling did not expect.
+  The tests had called the handlers directly; a test now sends real
+  requests to a running server. Responses now give scalars as JSON
+  scalars (`"name": "putior"`, not `["putior"]`), a missing session id
+  as `null`, and `GET /runs/<run_id>` returns a stored run.
+  ([\#113](https://github.com/pjt222/putior/issues/113))
 - Warnings that R raises during a run (invalid annotations, a `<` in a
   label, …) come as a second `text/plain` part of the output; the server
   only logged them.
