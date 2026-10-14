@@ -58,7 +58,14 @@ put_diagram(
 
 - title:
 
-  Character string for diagram title (optional)
+  Character string for diagram title (optional). The drawn title shows
+  it as written, except when it contains a `<`: Mermaid then shows HTML
+  entities such as `&lt;`, `&gt;` and `&amp;` in it and drops text that
+  looks like an HTML tag, and `put_diagram()` warns. No escape avoids
+  that in the drawn title. The `accTitle` line (see `accessibility`)
+  shows it as written. (Measured with the security levels `strict`,
+  `antiscript` and `loose`; with `sandbox`, Mermaid before 11.17.2
+  writes entities into every title.)
 
 - direction:
 
@@ -224,11 +231,19 @@ Character string containing the mermaid diagram code
 
 Labels are quoted, and double quotes, `|` and a `#` that Mermaid would
 read as a character entity (as in `#35;`) are escaped. So is text that
-Mermaid would read as syntax: the space in `direction LR` (or `TB`,
-`BT`, `RL`, `TD`), which Mermaid takes for a direction statement, and,
-on a line where `style` or `classDef` comes before it, a `:` followed by
-an escaped character, which would let Mermaid cut that entity short. An
-edge to an id that ends in `direction` ends with `;`. The escapes are
+Mermaid would read as syntax:
+
+- the first `%` of `%%{`, which starts a directive that Mermaid removes
+  from the diagram text;
+
+- the space in `direction LR` (or `TB`, `BT`, `RL`, `TD`), which Mermaid
+  takes for a direction statement;
+
+- on a line where `style` or `classDef` comes before it, a `:` followed
+  by an escaped character, which would let Mermaid cut that entity
+  short.
+
+An edge to an id that ends in `direction` ends with `;`. The escapes are
 Mermaid entities such as `#quot;`. Mermaid shows them as the character
 in HTML labels. Where Mermaid 11.17.2 and later draw SVG text instead
 (`htmlLabels: false` for all labels, or `flowchart.htmlLabels: false`

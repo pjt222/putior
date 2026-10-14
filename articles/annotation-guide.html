@@ -613,10 +613,10 @@ used:</p>
 </tbody>
 </table>
 <p><code><a href="../reference/put_diagram.html">put_diagram()</a></code> quotes each label and escapes quotes,
-<code>|</code> and a <code>#</code> that Mermaid would read as a
-character entity (such as <code>#35;</code>). Mermaid still renders HTML
-tags such as <code>&lt;br/&gt;</code> and <code>$$...$$</code> math in
-labels.</p>
+<code>|</code>, a <code>#</code> that Mermaid would read as a character
+entity (such as <code>#35;</code>) and a <code>%%{</code>, which would
+start a Mermaid directive. Mermaid still renders HTML tags such as
+<code>&lt;br/&gt;</code> and <code>$$...$$</code> math in labels.</p>
 </div>
 <div class="section level3">
 <h3 id="standard-node-types">Standard Node Types<a class="anchor" aria-label="anchor" href="#standard-node-types"></a>

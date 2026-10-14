@@ -521,6 +521,21 @@ cat(mermaid_code)
     writes them as `node_end` and `node_class`, so they work; only the
     id in the Mermaid code differs.
 
+### Title Shows `&lt;` or Loses Text
+
+**Problem**: The title above the diagram shows `&lt;`, `&gt;` or
+`&amp;`, or part of it is missing, and
+[`put_diagram()`](https://pjt222.github.io/putior/reference/put_diagram.md)
+warned that the title contains `<`.
+
+**Cause**: Mermaid passes the title through an HTML sanitizer. When the
+title contains a `<`, the drawn title shows HTML entities such as
+`&lt;`, `&gt;` and `&amp;` for `<`, `>` and `&`, and text that looks
+like an HTML tag (such as `<draft>`) disappears. No escape avoids that.
+
+**Solution**: Leave the `<` out of the title, or write “less than”. The
+title that screen readers announce (`accTitle`) shows it as written.
+
 ### Theme Issues
 
 **Problem**: Diagram colors don’t appear or look wrong.

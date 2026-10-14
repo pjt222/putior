@@ -693,6 +693,23 @@ differs.</li>
 </ol>
 </div>
 <div class="section level3">
+<h3 id="title-shows-lt-or-loses-text">Title Shows <code>&amp;lt;</code> or Loses Text<a class="anchor" aria-label="anchor" href="#title-shows-lt-or-loses-text"></a>
+</h3>
+<p><strong>Problem</strong>: The title above the diagram shows
+<code>&amp;lt;</code>, <code>&amp;gt;</code> or <code>&amp;amp;</code>,
+or part of it is missing, and <code><a href="../reference/put_diagram.html">put_diagram()</a></code> warned that the
+title contains <code>&lt;</code>.</p>
+<p><strong>Cause</strong>: Mermaid passes the title through an HTML
+sanitizer. When the title contains a <code>&lt;</code>, the drawn title
+shows HTML entities such as <code>&amp;lt;</code>, <code>&amp;gt;</code>
+and <code>&amp;amp;</code> for <code>&lt;</code>, <code>&gt;</code> and
+<code>&amp;</code>, and text that looks like an HTML tag (such as
+<code>&lt;draft&gt;</code>) disappears. No escape avoids that.</p>
+<p><strong>Solution</strong>: Leave the <code>&lt;</code> out of the
+title, or write “less than”. The title that screen readers announce
+(<code>accTitle</code>) shows it as written.</p>
+</div>
+<div class="section level3">
 <h3 id="theme-issues">Theme Issues<a class="anchor" aria-label="anchor" href="#theme-issues"></a>
 </h3>
 <p><strong>Problem</strong>: Diagram colors don’t appear or look
