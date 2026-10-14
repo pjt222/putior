@@ -167,15 +167,13 @@ test_that("ACP requests name paths in every common form (#109)", {
     "scan C:\\Users\\me\\project" = "C:\\Users\\me\\project",
     "scan ~/project" = "~/project",
     "scan R/" = "R/",
-    "scan ." = ".",
     "scan (./R/), please" = "./R/",
+    "scan ./R/(old)" = "./R/(old)",
+    "Hi . scan ./R/ please" = "./R/",
     "Can you scan ./R?" = "./R",
     "scan ./R." = "./R",
     "Let's scan './R/'" = "./R/",
     "scan `./R/`" = "./R/",
-    "scan \u2018./R/\u2019" = "./R/",
-    "scan \u201c./R/\u201d" = "./R/",
-    "caf\u00e9's './R/'" = "./R/",
     "scan \"D:/my project/R\"" = "D:/my project/R",
     "scan '/'" = "/",
     "scan ..\\secret" = "..\\secret",
@@ -183,6 +181,10 @@ test_that("ACP requests name paths in every common form (#109)", {
     "generate a diagram for ./R/ using the 'dark' theme" = "./R/",
     "scan for 'put' annotations in ./R/" = "./R/",
     "diagram titled \"ETL pipeline\" for ./R/" = "./R/",
+    "generate a diagram for ./R/ like \"https://github.com/pjt222/putior\"" = "./R/",
+    "scan ./R/ and show 'and/or' edges" = "./R/",
+    # A quoted value that exists before one that does not
+    "scan 'nope' or 'R'" = "R",
     "scan source \"./R/\"" = "./R/",
     # A lone "/" or "~" in prose is not the root
     "scan R / Python files in ./src" = "./src",
@@ -195,9 +197,18 @@ test_that("ACP requests name paths in every common form (#109)", {
   }
   # Plain words, prose with a slash, URLs, bare roots and parameter values
   for (request in c("scan src", "scan R files and/or tests", "fetch https://x.org/a", "scan /",
-                    "scan ~", "scan D:/", "generate a diagram with the theme set to 'dark'",
-                    "direction 'LR' please")) {
+                    "scan ~", "scan D:/", "scan .", "scan R \\ Python files", "scan //",
+                    "scan /.", "scan ~/.", "scan D:/.",
+                    "generate a diagram with the theme set to 'dark'", "direction 'LR' please")) {
     expect_null(putior:::extract_path(request), label = request)
+  }
+})
+
+test_that("curly quotes and non-ASCII words around a path work (#109)", {
+  # The strings need a UTF-8 locale to exist in R
+  skip_if_not(l10n_info()[["UTF-8"]], "needs a UTF-8 locale")
+  for (request in c("scan \u2018./R/\u2019", "scan \u201c./R/\u201d", "caf\u00e9's './R/'")) {
+    expect_equal(putior:::extract_path(request), "./R/", label = request)
   }
 })
 

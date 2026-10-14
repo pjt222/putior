@@ -179,57 +179,89 @@ detect_operation <- function(content) {
 #'
 #' Candidates, best first:
 #' \enumerate{
-#'   \item a quoted value that looks like a path (it starts like one or
-#'     contains a slash);
-#'   \item an unquoted word that starts like a path: "/", "./", "../", "~/"
-#'     or a Windows drive ("D:/", "C:\\"), with something after the root, so
-#'     that a lone "/" or "~" in prose ("R / Python files") is not taken
-#'     for the root of the drive or the home directory;
+#'   \item a quoted value that starts like a path: "/", "./", "../", "~/"
+#'     or a Windows drive ("D:/", "C:\\"), with either slash;
+#'   \item an unquoted word that starts like a path;
 #'   \item an unquoted word with a slash that exists ("R/", "src/x.R"; not
 #'     "and/or");
-#'   \item a quoted value that exists ("'src'");
+#'   \item a quoted value that exists ("'src'", "'R/x.R'");
 #'   \item any other quoted value, so that a missing folder gives an error,
 #'     except a theme or direction name ("theme 'dark'").
 #' }
-#' Quotes may be straight, curly or backticks; an apostrophe inside a word
-#' ("Let's") is not one. A plain word ("src") is not a path. "../" paths
-#' are found so that sanitize_acp_path() rejects them.
+#' An unquoted root alone ("/", "\\", "~", "D:/", also with "/." after it)
+#' is not a path: in prose ("R / Python files", "R \\ Python") it would
+#' make the server scan a whole drive or home directory. "." alone is not
+#' one either. Quotes may be straight, curly or backticks; an apostrophe
+#' inside a word ("Let's") is not one. A plain word ("src") is not a path.
+#' "../" paths are found so that sanitize_acp_path() rejects them. Each
+#' candidate is looked for only if the ones before it found nothing, and
+#' only words with a slash are looked up on disk.
 #' @param content The request text
 #' @return The path, or NULL
 #' @noRd
 extract_path <- function(content) {
+  # A request names its path early; this bounds the work for a huge one
+  content <- substr(content, 1L, 10000L)
   content <- gsub("[\u2018\u2019]", "'", content)
   content <- gsub("[\u201c\u201d]", '"', content)
-  root_pattern <- "^(/|\\.{1,2}([/\\\\]|$)|~[/\\\\]|[A-Za-z]:[/\\\\])"
-  # A lone "/", "~/" or drive root is prose or too much to scan unquoted
-  is_bare_root <- function(x) grepl("^(/|~|~[/\\\\]|[A-Za-z]:[/\\\\]?)$", x)
-  starts_like_path <- function(x) grepl(root_pattern, x) & !is_bare_root(x)
+  starts_like_path <- function(x) {
+    grepl("^(/|\\.{1,2}[/\\\\]|~[/\\\\]|[A-Za-z]:[/\\\\])", x) & !is_bare_root(x)
+  }
+  is_bare_root <- function(x) {
+    grepl("^(/+\\.?|~(/\\.?)?|[A-Za-z]:(/+\\.?)?)$", gsub("\\\\", "/", x))
+  }
   path_exists <- function(x) suppressWarnings(file.exists(x))
+  parameter_values <- tolower(c(.VALID_THEMES, "td", "tb", "lr", "bt", "rl"))
 
   # (*UCP): an apostrophe after a non-ASCII letter is no quote either
   quoted_values <- regmatches(content, gregexpr(
     "(*UCP)(?<!\\w)(['\"`])((?:(?!\\1).)+)\\1", content, perl = TRUE
   ))[[1]]
   quoted_values <- substr(quoted_values, 2L, nchar(quoted_values) - 1L)
+  quoted_path <- quoted_values[grepl("^(/|\\.{1,2}[/\\\\]|~[/\\\\]|[A-Za-z]:[/\\\\])", quoted_values)]
+  if (length(quoted_path) > 0) return(quoted_path[1])
 
-  words <- strsplit(trimws(content), "\\s+")[[1]]
-  words <- sub("^[[({]+", "", sub("[]?!,;:)}]+$", "", words))
-  # A single trailing period ends the sentence ("scan ./R."), not the path
-  words <- sub("([^./])\\.$", "\\1", words)
+  words <- strip_word_punctuation(strsplit(trimws(content), "\\s+")[[1]])
   words <- words[nzchar(words)]
+  path_words <- words[starts_like_path(words)]
+  if (length(path_words) > 0) return(path_words[1])
+  slash_words <- words[grepl("[/\\\\]", words) & !is_bare_root(words)]
+  slash_words <- unique(slash_words)
+  slash_words <- slash_words[path_exists(slash_words)]
+  if (length(slash_words) > 0) return(slash_words[1])
 
-  parameter_values <- tolower(c(.VALID_THEMES, "td", "tb", "lr", "bt", "rl"))
-  candidates <- list(
-    quoted_values[grepl(root_pattern, quoted_values) | grepl("[/\\\\]", quoted_values)],
-    words[starts_like_path(words)],
-    words[grepl("[/\\\\]", words) & !is_bare_root(words) & path_exists(words)],
-    quoted_values[path_exists(quoted_values) & !tolower(quoted_values) %in% parameter_values],
-    quoted_values[!tolower(quoted_values) %in% parameter_values]
-  )
-  for (candidate in candidates) {
-    if (length(candidate) > 0) return(candidate[1])
-  }
+  quoted_values <- unique(quoted_values[!tolower(quoted_values) %in% parameter_values])
+  existing_values <- quoted_values[path_exists(quoted_values)]
+  if (length(existing_values) > 0) return(existing_values[1])
+  if (length(quoted_values) > 0) return(quoted_values[1])
   NULL
+}
+
+#' Drop the punctuation around the words of an ACP request
+#'
+#' Brackets before a word; "?", "!", ",", ";", ":" and brackets after it,
+#' but a closing bracket only without its opening one ("./R/(old)" keeps
+#' it); and one sentence-final period ("scan ./R.").
+#' @param words Character vector of words
+#' @return The words without that punctuation
+#' @noRd
+strip_word_punctuation <- function(words) {
+  words <- sub("^[[({]+", "", words)
+  words <- sub("[?!,;:]+$", "", words)
+  for (index in which(grepl("[])}]$", words))) {
+    word <- words[index]
+    repeat {
+      closing <- substr(word, nchar(word), nchar(word))
+      opening <- c(")" = "(", "]" = "[", "}" = "{")[[closing]]
+      opening_count <- lengths(regmatches(word, gregexpr(opening, word, fixed = TRUE)))
+      closing_count <- lengths(regmatches(word, gregexpr(closing, word, fixed = TRUE)))
+      if (opening_count >= closing_count) break
+      word <- sub("[?!,;:]+$", "", substr(word, 1L, nchar(word) - 1L))
+      if (!grepl("[])}]$", word)) break
+    }
+    words[index] <- word
+  }
+  sub("([^./])\\.$", "\\1", words)
 }
 
 #' The path a scan uses: the request's, or "." with a note (#109)

@@ -260,7 +260,8 @@
   (`./R?`) is dropped. A path-like word wins over a quoted word that is
   not one (`for ./R/ using the 'dark' theme`, `titled "ETL" for ./R/`), a
   theme or direction name is never the path, and an apostrophe ("Let's")
-  is no quote. A lone `/` or `~` in prose is not taken for the root. A
+  is no quote. A lone `/`, `\`, `~` or drive in prose is not taken for
+  the root of a drive or the home directory. A
   scan with no path in the request still reads the server's working
   directory, but now says so; before, an unrecognized path silently gave
   the results of another folder. A `..` after a drive (`D:..\x`) is

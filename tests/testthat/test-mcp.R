@@ -764,6 +764,13 @@ test_that("every MCP tool that can warn returns its warnings", {
   expect_match(replies$put_generate[[1]]@text, '# put id:"a"', fixed = TRUE)
 })
 
+test_that("a warning with invalid UTF-8 is listed with its bytes", {
+  bad_text <- rawToChar(as.raw(c(0x61, 0xff, 0x62)))
+  Encoding(bad_text) <- "UTF-8"
+  expect_no_warning(block <- format_warning_block(bad_text))
+  expect_match(block, "- a<ff>b", fixed = TRUE)
+})
+
 test_that("long warnings are cut in the block", {
   block <- format_warning_block(strrep("x", 1500))
   expect_match(block, paste0("- ", strrep("x", 1000), " ... (500 more characters)"), fixed = TRUE)
