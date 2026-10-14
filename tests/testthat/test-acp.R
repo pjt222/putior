@@ -819,3 +819,87 @@ test_that("store_run evicts oldest entries when over capacity", {
     expect_false(is.null(putior:::get_run_by_id(paste0("evict_test_", i))))
   }
 })
+
+# =============================================================================
+# The server over HTTP (#113)
+# =============================================================================
+
+# Start the ACP API on a free local port; returns a function that sends
+# real requests to it, and stop() to end the server
+start_acp_server <- function() {
+  api <- putior:::acp_api()
+  port <- NA_integer_
+  for (candidate in sample(30000:39999, 20)) {
+    started <- tryCatch({
+      plumber2::api_run(api, host = "127.0.0.1", port = candidate, block = FALSE,
+                        showcase = FALSE, silent = TRUE)
+      TRUE
+    }, error = function(e) FALSE)
+    if (started) {
+      port <- candidate
+      break
+    }
+  }
+  if (is.na(port)) skip("no free port for the ACP server")
+  request <- function(path, body = NULL, headers = character()) {
+    handle <- curl::new_handle()
+    header_lines <- headers
+    if (!is.null(body)) {
+      curl::handle_setopt(handle, postfields = body)
+      header_lines <- c(header_lines, "Content-Type: application/json")
+    }
+    if (length(header_lines) > 0) curl::handle_setopt(handle, httpheader = header_lines)
+    done <- FALSE
+    result <- NULL
+    curl::curl_fetch_multi(
+      paste0("http://127.0.0.1:", port, path), handle = handle,
+      done = function(response) { result <<- response; done <<- TRUE },
+      fail = function(message) { result <<- message; done <<- TRUE }
+    )
+    deadline <- Sys.time() + 30
+    while (!done && Sys.time() < deadline) {
+      later::run_now(0.05)
+      curl::multi_run(timeout = 0.05, poll = TRUE)
+    }
+    if (!is.list(result)) stop("request failed: ", paste(result, collapse = " "))
+    list(status = result$status_code,
+         json = jsonlite::fromJSON(rawToChar(result$content), simplifyVector = FALSE))
+  }
+  list(request = request, stop = function() plumber2::api_stop(api))
+}
+
+test_that("the ACP server answers real HTTP requests (#113)", {
+  skip_on_cran()
+  skip_if_not_installed("plumber2")
+  skip_if_not_installed("curl")
+  skip_if_not_installed("later")
+  skip_if_not_installed("jsonlite")
+  server <- start_acp_server()
+  on.exit(server$stop(), add = TRUE)
+  request <- server$request
+
+  agents <- request("/agents")
+  expect_equal(agents$status, 200L)
+  # Scalars are unboxed for ACP clients
+  expect_identical(agents$json$agents[[1]]$name, "putior")
+
+  # The parser turns this body into a data frame; it used to fail with 500
+  run <- request("/runs", '{"input":[{"role":"user","parts":[{"content":"help"}]}]}')
+  expect_equal(run$status, 200L)
+  expect_identical(run$json$status, "completed")
+  expect_null(run$json$session_id)
+  expect_match(run$json$output[[1]]$parts[[1]]$content, "putior", fixed = TRUE)
+
+  stored <- request(paste0("/runs/", run$json$run_id))
+  expect_equal(stored$status, 200L)
+  expect_identical(stored$json$run_id, run$json$run_id)
+  expect_equal(request("/runs/no_such_run")$status, 404L)
+})
+
+test_that("acp_records() turns a parsed data frame into records (#113)", {
+  parsed <- jsonlite::fromJSON('{"input":[{"role":"user","parts":[{"content":"scan ./R/"}]}]}')
+  expect_true(is.data.frame(parsed$input))
+  expect_equal(putior:::extract_text_content(parsed$input), "scan ./R/")
+  plain <- list(list(role = "user", parts = list(list(content = "a"), list(content = "b"))))
+  expect_equal(putior:::extract_text_content(plain), "a b")
+})

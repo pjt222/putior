@@ -267,6 +267,13 @@
   the results of another folder. A `..` after a drive (`D:..\x`) is
   rejected like any other, also by the path checks of the other
   functions. (#109)
+* The server works over HTTP. Every `POST /runs` failed with "500
+  Internal Server Error": plumber2's JSON parser turns the request's
+  `input` into a data frame, which the request handling did not expect.
+  The tests had called the handlers directly; a test now sends real
+  requests to a running server. Responses now give scalars as JSON
+  scalars (`"name": "putior"`, not `["putior"]`), a missing session id
+  as `null`, and `GET /runs/<run_id>` returns a stored run. (#113)
 * Warnings that R raises during a run (invalid annotations, a `<` in a
   label, ...) come as a second `text/plain` part of the output; the
   server only logged them.

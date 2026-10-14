@@ -122,6 +122,25 @@ putior_acp_manifest <- function() {
 # ACP Message Parsing
 # =============================================================================
 
+#' ACP records as a list of lists (#113)
+#'
+#' plumber2's JSON parser simplifies a request body: an array of objects
+#' arrives as a data frame, whose list columns hold further data frames.
+#' Every POST /runs then failed ("$ operator is invalid for atomic
+#' vectors"). This turns such a data frame into a list of records, so that
+#' the code sees the plain JSON shape either way.
+#' @param records A data frame or a list of records
+#' @return A list of records
+#' @noRd
+acp_records <- function(records) {
+  if (!is.data.frame(records)) {
+    return(records)
+  }
+  lapply(seq_len(nrow(records)), function(row_index) {
+    lapply(records, function(column) column[[row_index]])
+  })
+}
+
 #' Extract text content from ACP message input
 #' @noRd
 extract_text_content <- function(input) {
@@ -132,9 +151,9 @@ extract_text_content <- function(input) {
   # ACP messages have structure: input: [{role, parts: [{content, content_type}]}]
   content_parts <- character(0)
 
-  for (msg in input) {
+  for (msg in acp_records(input)) {
     if (!is.null(msg$parts)) {
-      for (part in msg$parts) {
+      for (part in acp_records(msg$parts)) {
         if (!is.null(part$content)) {
           content_parts <- c(content_parts, part$content)
         }
@@ -598,6 +617,22 @@ format_acp_output <- function(result, warning_messages = character()) {
 # ACP Endpoint Handlers
 # =============================================================================
 
+#' The plumber2 API of the ACP server
+#'
+#' JSON with scalars unboxed ("name": "putior", not ["putior"]), as ACP
+#' clients expect (#113).
+#' @noRd
+acp_api <- function() {
+  json_serializer <- plumber2::get_serializers("unboxedJSON")
+  plumber2::api() |>
+    plumber2::api_get("/agents", acp_list_agents_handler,
+                      serializers = json_serializer) |>
+    plumber2::api_post("/runs", acp_create_run_handler,
+                       serializers = json_serializer) |>
+    plumber2::api_get("/runs/<run_id>", acp_get_run_handler,
+                      serializers = json_serializer)
+}
+
 #' Handler for GET /agents endpoint
 #' @noRd
 acp_list_agents_handler <- function() {
@@ -611,7 +646,8 @@ acp_create_run_handler <- function(body) {
 
   # Extract input and session_id from body
   input <- body$input
-  session_id <- body$session_id
+  # NA, so that a missing session id is sent as null rather than {}
+  session_id <- body$session_id %||% NA_character_
 
   # Execute the request, keeping the warnings R raises for the output
   collected <- collect_warnings(execute_acp_request(input, session_id))
@@ -755,17 +791,7 @@ putior_acp_server <- function(host = "127.0.0.1", port = 8080L) {
     )
   }
 
-  # Get JSON serializer
-  json_serializer <- plumber2::get_serializers("json")
-
-  # Create plumber2 API with ACP endpoints
-  pa <- plumber2::api() |>
-    plumber2::api_get("/agents", acp_list_agents_handler,
-                      serializer = json_serializer) |>
-    plumber2::api_post("/runs", acp_create_run_handler,
-                       serializer = json_serializer) |>
-    plumber2::api_get("/runs/:run_id", acp_get_run_handler,
-                      serializer = json_serializer)
+  pa <- acp_api()
 
   message("Starting putior ACP server...")
   message("  Host: ", host)
