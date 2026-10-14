@@ -730,3 +730,16 @@ test_that("collect_warnings() keeps the value and appends warnings to errors", {
   }), error = conditionMessage)
   expect_equal(failure, "it failed\n\nputior warnings (1), not part of the result above:\n- first")
 })
+
+test_that("putior_mcp_server() serves only putior's tools", {
+  skip_if_not_installed("mcptools")
+  skip_if_not_installed("ellmer")
+  server_arguments <- NULL
+  local_mocked_bindings(
+    mcp_server = function(...) server_arguments <<- list(...),
+    .package = "mcptools"
+  )
+  putior_mcp_server()
+  expect_false(server_arguments$session_tools)
+  expect_length(server_arguments$tools, 16)
+})

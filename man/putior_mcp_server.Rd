@@ -48,6 +48,10 @@ The MCP server exposes the following putior functions as tools:
 \item \code{ext_to_language} - Extension to language name
 }
 
+Only these tools are served: mcptools' tools for choosing a running R
+session (\code{list_r_sessions}, \code{select_r_session}) are turned off,
+so every call runs in the server's own R process.
+
 Over stdio, R warnings would never reach the client. When R warns while
 a tool runs (invalid annotations, a \code{<} in a title or label, a
 diagram over Mermaid's size limits, ...), the tool returns the warnings

@@ -235,6 +235,10 @@
   comment lines, so the diagram still renders when a client joins both
   items, and a `%%{` in a quoted label cannot act as a directive. An error
   lists the warnings raised before it.
+* `putior_mcp_server()` serves only its 16 tools. mcptools' tools for
+  choosing a running R session (`list_r_sessions`, `select_r_session`)
+  were on as well, so clients saw 18 tools, and a call could run in a
+  user's live R session instead of the server's own process.
 
 ### ACP Server Integration
 * Added `putior_acp_server()` to expose putior as an ACP agent for inter-agent
