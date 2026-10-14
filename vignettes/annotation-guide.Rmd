@@ -287,7 +287,7 @@ While putior accepts any properties you define, these are commonly used:
 | `input` | Input files | `"raw_data.csv"`, `"data/*.json"` |
 | `output` | Output files | `"processed_data.csv"` |
 
-`put_diagram()` quotes each label and escapes quotes, `|`, a `#` that Mermaid would read as a character entity (such as `#35;`) and a `%%{`, which would start a Mermaid directive. Mermaid still renders HTML tags such as `<br/>` and `$$...$$` math in labels. So a `<` followed by a letter starts a tag, and the text up to the next `>` disappears (`a<b and c>d` shows "ad"); write `&lt;` for a `<` that should show (`label:"n &lt;threshold"`). `put_diagram()` warns about such a `<`, unless it starts one of the tags `br`, `b`, `i`, `em`, `strong`, `sub`, `sup`, `code` or `span`.
+`put_diagram()` quotes each label and escapes quotes, `|`, a `#` that Mermaid would read as a character entity (such as `#35;`) and a `%%{`, which would start a Mermaid directive. Mermaid still renders HTML tags such as `<br/>` and `$$...$$` math in labels. So a `<` followed by a letter, `/`, `!` or `?` starts a tag, and the text up to the next `>` disappears (`a<b and c>d` shows "ad"); write `&lt;` for a `<` that should show (`label:"n &lt;threshold"`), and `\lt` inside `$$...$$` math, where `&lt;` breaks KaTeX. `put_diagram()` warns about such a `<`, unless it starts one of the tags `br`, `b`, `i`, `em`, `strong`, `sub`, `sup`, `code` or `span`. Their attribute values need single quotes (`<span style='color:red'>`): double quotes are escaped, and Mermaid then drops the value.
 
 ### Standard Node Types
 

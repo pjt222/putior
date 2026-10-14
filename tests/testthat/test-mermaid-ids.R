@@ -556,13 +556,14 @@ test_that("put_diagram() warns about a < that starts an HTML tag in a label (#10
     paste0('flowchart TD\n    a[', sanitize_mermaid_label(label), ']')
   }
   # A "<" before a letter that starts no intended tag
-  for (label in c("a<b and c>d", "<draft> Report", "n<threshold", "x </foo> y", "<bold>", "ok a<b")) {
+  for (label in c("a<b and c>d", "<draft> Report", "n<threshold", "x </foo> y", "<bold>", "ok a<b",
+                  "a<!b c> d", "a<!-- c --> d", "a<?b c> d", "a </ b c> d", "a</5 c> d")) {
     expect_length(find_html_in_labels(label_code(label)), 1)
   }
   # Intended tags, with attribute values; "<" before a space or a digit; "&lt;"
   for (label in c("<b>x</b>", "a<br/>b", "a<BR />b", "<span style='color:red'>x</span>",
                   "<sub>2</sub> <sup>3</sup> <code>c</code> <em>e</em> <strong>s</strong> <i>i</i>",
-                  "x < 5", "x<5", "a &lt;b")) {
+                  "x < 5", "x<5", "a &lt;b", "x <- y", "a<=b")) {
     expect_length(find_html_in_labels(label_code(label)), 0)
   }
   # Entities are decoded for the message
@@ -588,6 +589,21 @@ test_that("put_diagram() warns about a < that starts an HTML tag in a label (#10
   plain <- data.frame(id = "a", label = "A", file_name = "a.R", stringsAsFactors = FALSE)
   expect_no_warning(put_diagram(plain, output = "raw", show_source_info = TRUE,
                                 title = 'Say "hi on a 5" screen'))
+  # A "<" in the title gives only the title warning (#98), not this one too
+  title_warnings <- character()
+  withCallingHandlers(
+    put_diagram(plain, output = "raw", title = "a<b c"),
+    warning = function(warning_condition) {
+      title_warnings <<- c(title_warnings, conditionMessage(warning_condition))
+      invokeRestart("muffleWarning")
+    }
+  )
+  expect_length(title_warnings, 1)
+  expect_match(title_warnings, "The title contains", fixed = TRUE)
+  # A label drawn twice is listed once
+  twice <- data.frame(id = c("a", "b"), label = c("same <x>", "same <x>"),
+                      file_name = "a.R", stringsAsFactors = FALSE)
+  expect_warning(put_diagram(twice, output = "raw"), "^A label contains")
 })
 
 test_that("direction = \"TB\" is accepted (#79)", {

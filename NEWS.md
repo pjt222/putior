@@ -192,11 +192,12 @@
   line and click tooltips already replaced them, except in the C locale;
   they now do so there too. (#104)
 * `put_diagram()` now warns when a drawn label contains a `<` before a
-  letter, such as `n<threshold` or `<draft>`: Mermaid draws labels as HTML
-  and reads it as the start of a tag, so the text up to the next `>`
-  disappears (`a<b and c>d` shows "ad"). The docs show `&lt;` for a `<`
-  that should show. The tags `br`, `b`, `i`, `em`, `strong`, `sub`, `sup`,
-  `code` and `span` still count as intended HTML. (#102)
+  letter, `/`, `!` or `?`, such as `n<threshold` or `<draft>`: Mermaid
+  draws labels as HTML and reads it as the start of a tag, so the text up
+  to the next `>` disappears (`a<b and c>d` shows "ad"). The docs show
+  `&lt;` for a `<` that should show (`\lt` in `$$...$$` math). The tags
+  `br`, `b`, `i`, `em`, `strong`, `sub`, `sup`, `code` and `span` still
+  count as intended HTML. (#102)
 
 ## New Features
 

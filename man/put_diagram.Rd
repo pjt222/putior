@@ -193,12 +193,14 @@ Where Mermaid 11.17.2 and later draw SVG text instead
 they show the entity as written; Mermaid 11.12.0 can garble it there.
 Mermaid still interprets HTML tags such as \code{<br/>} and
 \code{$$...$$} (KaTeX math) inside labels. So a \code{<} followed by a
-letter starts a tag, and the text up to the next \code{>} disappears
-(\code{a<b and c>d} shows \code{ad}); write \code{&lt;} for a \code{<}
-that should show. \code{put_diagram()} warns about such a \code{<},
-unless it starts one of the tags \code{br}, \code{b}, \code{i},
-\code{em}, \code{strong}, \code{sub}, \code{sup}, \code{code} or
-\code{span}.
+letter, \code{/}, \code{!} or \code{?} starts a tag, and the text up to
+the next \code{>} disappears (\code{a<b and c>d} shows \code{ad}); write
+\code{&lt;} for a \code{<} that should show (in math, \code{\\lt}).
+\code{put_diagram()} warns about such a \code{<}, unless it starts one
+of the tags \code{br}, \code{b}, \code{i}, \code{em}, \code{strong},
+\code{sub}, \code{sup}, \code{code} or \code{span}. Their attribute
+values need single quotes: double quotes are escaped, and Mermaid then
+drops the value.
 
 Node ids are reduced to letters, digits and underscores. An id that starts
 with a digit or is a Mermaid keyword (such as \code{end} or \code{class})
