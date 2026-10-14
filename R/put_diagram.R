@@ -81,8 +81,9 @@
 #'   \itemize{
 #'     \item "vscode" - VS Code editor (vscode://file/path:line) (default)
 #'     \item "file" - Standard file:// protocol
-#'     \item "rstudio" - RStudio IDE (rstudio://open-file?path=)
 #'   }
+#'   RStudio has no URL scheme for opening files, so there is no
+#'   "rstudio" protocol; "rstudio" gives a warning and file:// links.
 #' @param artifact_edges With \code{show_artifacts = TRUE}, how two scripts
 #'   that a data file connects are drawn: "replace" (default) draws only the
 #'   path through the file's node; "both" also draws the direct
@@ -212,8 +213,8 @@
 #' # Enable clickable nodes (opens in VS Code)
 #' put_diagram(workflow, enable_clicks = TRUE)
 #'
-#' # Enable clickable nodes with RStudio protocol
-#' put_diagram(workflow, enable_clicks = TRUE, click_protocol = "rstudio")
+#' # Enable clickable nodes with file:// links
+#' put_diagram(workflow, enable_clicks = TRUE, click_protocol = "file")
 #'
 #' # Use a custom color palette
 #' my_theme <- put_theme(base = "dark",
@@ -329,15 +330,24 @@ put_diagram <- function(workflow,
     source_info_style <- "inline"
   }
 
-  # Validate click_protocol
-  valid_protocols <- c("vscode", "file", "rstudio")
-  if (enable_clicks && !click_protocol %in% valid_protocols) {
+  # Validate click_protocol. RStudio registers no rstudio:// URL handler on
+  # any platform (checked in its source for Windows, macOS and Linux), so
+  # such links did nothing; "rstudio" was removed before release (#101).
+  valid_protocols <- c("vscode", "file")
+  if (enable_clicks && identical(click_protocol, "rstudio")) {
+    warning(
+      "click_protocol = \"rstudio\" is not supported: RStudio has no URL ",
+      "scheme for opening files, so rstudio:// links do nothing. Using ",
+      "\"file\"; use \"vscode\" for VS Code.",
+      call. = FALSE
+    )
+    click_protocol <- "file"
+  } else if (enable_clicks && !click_protocol %in% valid_protocols) {
     warning(
       "Invalid click_protocol '", click_protocol, "'. Using 'vscode'.\n",
       "Valid protocols: ", paste(valid_protocols, collapse = ", "), "\n",
       "- vscode: VS Code editor (vscode://file/path:line)\n",
-      "- file: Standard file:// protocol\n",
-      "- rstudio: RStudio IDE (rstudio://open-file?path=)",
+      "- file: Standard file:// protocol",
       call. = FALSE
     )
     click_protocol <- "vscode"
@@ -1389,7 +1399,6 @@ normalize_path_for_url <- function(file_path) {
 #'   \itemize{
 #'     \item "vscode" - VS Code editor (vscode://file/path:line)
 #'     \item "file" - Standard file:// protocol
-#'     \item "rstudio" - RStudio IDE (rstudio://open-file?path=)
 #'   }
 #' @return URL string for the specified protocol
 #' @keywords internal
@@ -1422,16 +1431,6 @@ generate_click_url <- function(file_path, line_number = NULL, protocol = "vscode
       # file:// URLs have no line number
       if (is_unc_path) paste0("file:", encode_url_path(normalized_path)) else paste0("file:///", url_path)
     },
-    "rstudio" = {
-      # RStudio URL scheme; the path is a query value, so "&", "=" and "?"
-      # are encoded too
-      base_url <- paste0("rstudio://open-file?path=", encode_url_path(normalized_path))
-      if (!is.null(line_number) && !is.na(line_number)) {
-        paste0(base_url, "&line=", line_number)
-      } else {
-        base_url
-      }
-    },
     # Default to vscode
     {
       base_url <- paste0("vscode://file/", url_path)
@@ -1454,7 +1453,7 @@ generate_click_url <- function(file_path, line_number = NULL, protocol = "vscode
 #' @param workflow Data frame containing workflow nodes with file_name and
 #'   optionally line_number columns
 #' @param protocol Character string specifying the click protocol
-#'   ("vscode", "file", "rstudio")
+#'   ("vscode" or "file")
 #' @return Character vector of Mermaid click directive lines
 #' @keywords internal
 generate_click_directives <- function(workflow, protocol = "vscode") {

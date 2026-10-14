@@ -696,18 +696,19 @@ test_that("click_protocol='file' generates correct URLs", {
   expect_true(grepl("file:///", diagram_code))
 })
 
-test_that("click_protocol='rstudio' generates correct URLs", {
+test_that("click_protocol = 'rstudio' warns and writes file:// links (#101)", {
   workflow <- create_test_workflow()
 
-  diagram_code <- put_diagram(
-    workflow,
-    enable_clicks = TRUE,
-    click_protocol = "rstudio",
-    output = "raw"
+  # RStudio has no rstudio:// URL handler, so the protocol was removed
+  expect_warning(
+    diagram_code <- put_diagram(workflow, enable_clicks = TRUE,
+                                click_protocol = "rstudio", output = "raw"),
+    'click_protocol = "rstudio" is not supported', fixed = TRUE
   )
-
-  # Should have rstudio:// protocol
-  expect_true(grepl("rstudio://open-file\\?path=", diagram_code))
+  expect_true(grepl("file:///", diagram_code, fixed = TRUE))
+  expect_false(grepl("rstudio://", diagram_code, fixed = TRUE))
+  # Without enable_clicks the protocol is not used, so there is no warning
+  expect_no_warning(put_diagram(workflow, click_protocol = "rstudio", output = "raw"))
 })
 
 test_that("enable_clicks with invalid protocol warns and uses default", {
@@ -743,14 +744,6 @@ test_that("generate_click_url creates proper URLs for each protocol", {
   # File protocol
   url_file <- generate_click_url("test.R", protocol = "file")
   expect_true(grepl("file:///", url_file))
-
-  # RStudio protocol
-  url_rstudio <- generate_click_url("test.R", protocol = "rstudio")
-  expect_true(grepl("rstudio://open-file\\?path=", url_rstudio))
-
-  # RStudio with line number
-  url_rstudio_line <- generate_click_url("test.R", line_number = 10, protocol = "rstudio")
-  expect_true(grepl("&line=10", url_rstudio_line))
 })
 
 test_that("click URLs use the given path, with one slash for Unix paths (#47)", {
@@ -760,8 +753,6 @@ test_that("click URLs use the given path, with one slash for Unix paths (#47)", 
   expect_equal(generate_click_url("/home/u/proj/a.R", 3, "file"), "file:///home/u/proj/a.R")
   expect_equal(generate_click_url("D:/p/a.R", 3, "vscode"), "vscode://file/D:/p/a.R:3")
   expect_equal(generate_click_url("D:/p/a.R", NULL, "file"), "file:///D:/p/a.R")
-  expect_equal(generate_click_url("/home/u/a.R", 3, "rstudio"),
-               "rstudio://open-file?path=/home/u/a.R&line=3")
   # Spaces, quotes, # and ; are percent-encoded, as is non-ASCII text
   expect_equal(generate_click_url('/p/say "hi" #1;.R', 3, "vscode"),
                "vscode://file/p/say%20%22hi%22%20%231%3B.R:3")
@@ -771,9 +762,9 @@ test_that("click URLs use the given path, with one slash for Unix paths (#47)", 
                "vscode://file//server/share/a%20b.R:2")
   expect_equal(generate_click_url("//wsl.localhost/Ubuntu/home/a.R", NULL, "file"),
                "file://wsl.localhost/Ubuntu/home/a.R")
-  # The RStudio query value is encoded with the same rules
-  expect_equal(generate_click_url('/p/a "b" %41 &x.R', 1, "rstudio"),
-               "rstudio://open-file?path=/p/a%20%22b%22%20%2541%20%26x.R&line=1")
+  # A "%" is encoded too, also in front of two hex digits
+  expect_equal(generate_click_url('/p/a "b" %41 &x.R', 1, "vscode"),
+               "vscode://file/p/a%20%22b%22%20%2541%20%26x.R:1")
 })
 
 test_that("normalize_path_for_url() makes a relative path absolute (#47)", {

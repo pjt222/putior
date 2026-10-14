@@ -15,7 +15,6 @@ generate_click_url(file_path, line_number = NULL, protocol = "vscode")
 \itemize{
 \item "vscode" - VS Code editor (vscode://file/path:line)
 \item "file" - Standard file:// protocol
-\item "rstudio" - RStudio IDE (rstudio://open-file?path=)
 }}
 }
 \value{

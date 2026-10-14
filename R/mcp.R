@@ -599,8 +599,8 @@ make_tool_put_diagram <- function() {
         required = FALSE
       ),
       click_protocol = ellmer::type_enum(
-        description = "URL protocol for clickable nodes: vscode, file, rstudio (default: vscode)",
-        values = c("vscode", "file", "rstudio"),
+        description = "URL protocol for clickable nodes: vscode or file (default: vscode)",
+        values = c("vscode", "file"),
         required = FALSE
       ),
       artifact_edges = ellmer::type_enum(

@@ -80,17 +80,8 @@ put_diagram(
   click_protocol = "vscode"  # default
 )
 
-# RStudio protocol
-cat("\n\n4. RStudio clickable nodes:\n")
-cat("   Clicking a node opens the file in RStudio\n\n")
-put_diagram(
-  sample_workflow,
-  enable_clicks = TRUE,
-  click_protocol = "rstudio"
-)
-
 # File protocol (browser/system default)
-cat("\n\n5. Standard file:// protocol:\n")
+cat("\n\n4. Standard file:// protocol:\n")
 cat("   Opens files using the system's default handler\n\n")
 put_diagram(
   sample_workflow,
@@ -104,7 +95,7 @@ put_diagram(
 
 cat("\n\n=== Combined Features ===\n\n")
 
-cat("6. Full interactive diagram with source info and clicks:\n")
+cat("5. Full interactive diagram with source info and clicks:\n")
 cat("   Shows file info inline AND makes nodes clickable\n\n")
 put_diagram(
   sample_workflow,

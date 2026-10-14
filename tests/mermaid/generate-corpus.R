@@ -91,7 +91,7 @@ add_case("no_workflow_boundaries", pipeline, show_workflow_boundaries = FALSE)
 add_case("no_node_styles", pipeline, style_nodes = FALSE)
 add_case("source_info_inline", pipeline, show_source_info = TRUE)
 add_case("source_info_subgraph", pipeline, show_source_info = TRUE, source_info_style = "subgraph")
-for (protocol in c("vscode", "file", "rstudio")) {
+for (protocol in c("vscode", "file")) {
   add_case(paste0("clicks_", protocol), pipeline, enable_clicks = TRUE, click_protocol = protocol)
 }
 add_case("title", pipeline, title = "Sales Pipeline")

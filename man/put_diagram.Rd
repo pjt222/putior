@@ -120,8 +120,9 @@ is itself a local file.}
 \itemize{
 \item "vscode" - VS Code editor (vscode://file/path:line) (default)
 \item "file" - Standard file:// protocol
-\item "rstudio" - RStudio IDE (rstudio://open-file?path=)
-}}
+}
+RStudio has no URL scheme for opening files, so there is no
+"rstudio" protocol; "rstudio" gives a warning and file:// links.}
 
 \item{artifact_edges}{With \code{show_artifacts = TRUE}, how two scripts
 that a data file connects are drawn: "replace" (default) draws only the
@@ -264,8 +265,8 @@ put_diagram(workflow, show_source_info = TRUE, source_info_style = "subgraph")
 # Enable clickable nodes (opens in VS Code)
 put_diagram(workflow, enable_clicks = TRUE)
 
-# Enable clickable nodes with RStudio protocol
-put_diagram(workflow, enable_clicks = TRUE, click_protocol = "rstudio")
+# Enable clickable nodes with file:// links
+put_diagram(workflow, enable_clicks = TRUE, click_protocol = "file")
 
 # Use a custom color palette
 my_theme <- put_theme(base = "dark",

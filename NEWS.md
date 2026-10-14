@@ -298,7 +298,11 @@
 
 ### Clickable Hyperlinks
 * Added `enable_clicks` parameter to `put_diagram()` for making nodes clickable
-* Added `click_protocol` parameter: "vscode", "file", "rstudio"
+* Added `click_protocol` parameter: "vscode" or "file". The development
+  version also offered "rstudio", which was removed before release:
+  RStudio has no URL scheme for opening files, so `rstudio://` links did
+  nothing. `click_protocol = "rstudio"` now warns and writes `file://`
+  links. (#101)
 * Click directives include line numbers when available
 
 ### Structured Logging

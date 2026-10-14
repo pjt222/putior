@@ -11,7 +11,7 @@ generate_click_directives(workflow, protocol = "vscode")
 optionally line_number columns}
 
 \item{protocol}{Character string specifying the click protocol
-("vscode", "file", "rstudio")}
+("vscode" or "file")}
 }
 \value{
 Character vector of Mermaid click directive lines

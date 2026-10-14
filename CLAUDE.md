@@ -681,20 +681,20 @@ Makes diagram nodes clickable to open source files directly in your preferred ed
 
 **Parameters:**
 - `enable_clicks = TRUE/FALSE` (default: FALSE) - Enable/disable clickable nodes
-- `click_protocol = "vscode"/"file"/"rstudio"` (default: "vscode") - URL protocol
+- `click_protocol = "vscode"/"file"` (default: "vscode") - URL protocol
 
 **Supported Protocols:**
 - `"vscode"` - VS Code (vscode://file/path:line)
 - `"file"` - Standard file:// protocol
-- `"rstudio"` - RStudio (rstudio://open-file?path=)
+- No `"rstudio"`: RStudio has no URL scheme for opening files (#101); `"rstudio"` warns and gives file:// links
 
 **Usage:**
 ```r
 # Enable VS Code clicks
 put_diagram(workflow, enable_clicks = TRUE)
 
-# Use RStudio protocol
-put_diagram(workflow, enable_clicks = TRUE, click_protocol = "rstudio")
+# Use file:// links
+put_diagram(workflow, enable_clicks = TRUE, click_protocol = "file")
 
 # Combine with source info
 put_diagram(workflow, show_source_info = TRUE, enable_clicks = TRUE)
