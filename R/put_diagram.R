@@ -149,7 +149,7 @@
 #' of the tags \code{br}, \code{b}, \code{i}, \code{em}, \code{strong},
 #' \code{sub}, \code{sup}, \code{code} or \code{span}. Their attribute
 #' values need single quotes: double quotes are escaped, and Mermaid then
-#' drops the value.
+#' keeps them in the value, so the attribute has no effect.
 #'
 #' Node ids are reduced to letters, digits and underscores. An id that starts
 #' with a digit or is a Mermaid keyword (such as \code{end} or \code{class})
@@ -1040,7 +1040,8 @@ find_html_in_labels <- function(mermaid_code) {
     "(?:\\s+[A-Za-z_:][-A-Za-z0-9_:.]*\\s*=\\s*(?:'[^']*'|[^\\s'>]+))*\\s*/?>"
   )
   has_stray_tag <- vapply(labels, function(label) {
-    tag_starts <- gregexpr("<[A-Za-z/!?]", label, perl = TRUE)[[1]]
+    # A "</" at the very end stays text
+    tag_starts <- gregexpr("<(?:[A-Za-z!?]|/(?!$))", label, perl = TRUE)[[1]]
     if (tag_starts[1] < 0) return(FALSE)
     any(!grepl(intended_tag, substring(label, tag_starts), perl = TRUE, ignore.case = TRUE))
   }, logical(1), USE.NAMES = FALSE)
@@ -1076,7 +1077,8 @@ warn_about_html_in_labels <- function(mermaid_code) {
     " a \"<\" before a letter, \"/\", \"!\" or \"?\", which Mermaid reads as the ",
     "start of an HTML tag, so the text up to the next \">\" disappears: ", shown_labels,
     if (length(labels) > 3) ", ..." else "", ". Write \"&lt;\" for a \"<\" that ",
-    "should show. Only the tags ", paste(.LABEL_HTML_TAGS, collapse = ", "),
+    "should show (\"\\lt\" in $$...$$ math). Only the tags ",
+    paste(.LABEL_HTML_TAGS, collapse = ", "),
     " count as intended HTML.",
     call. = FALSE
   )

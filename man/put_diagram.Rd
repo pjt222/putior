@@ -200,7 +200,7 @@ the next \code{>} disappears (\code{a<b and c>d} shows \code{ad}); write
 of the tags \code{br}, \code{b}, \code{i}, \code{em}, \code{strong},
 \code{sub}, \code{sup}, \code{code} or \code{span}. Their attribute
 values need single quotes: double quotes are escaped, and Mermaid then
-drops the value.
+keeps them in the value, so the attribute has no effect.
 
 Node ids are reduced to letters, digits and underscores. An id that starts
 with a digit or is a Mermaid keyword (such as \code{end} or \code{class})

@@ -488,7 +488,7 @@ cat(mermaid_code)
 ### Label Loses Text After `<`
 
 **Problem**: Part of a label is missing, and `put_diagram()` warned that a
-label contains a `<` before a letter.
+label contains a `<` before a letter, `/`, `!` or `?`.
 
 **Cause**: Mermaid draws labels as HTML, so `<` followed by a letter (or by
 `/`, `!` or `?`) starts an HTML tag. A tag it does not know, such as `<draft>`, disappears, and so

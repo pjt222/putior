@@ -563,7 +563,7 @@ test_that("put_diagram() warns about a < that starts an HTML tag in a label (#10
   # Intended tags, with attribute values; "<" before a space or a digit; "&lt;"
   for (label in c("<b>x</b>", "a<br/>b", "a<BR />b", "<span style='color:red'>x</span>",
                   "<sub>2</sub> <sup>3</sup> <code>c</code> <em>e</em> <strong>s</strong> <i>i</i>",
-                  "x < 5", "x<5", "a &lt;b", "x <- y", "a<=b")) {
+                  "x < 5", "x<5", "a &lt;b", "x <- y", "a<=b", "path a</")) {
     expect_length(find_html_in_labels(label_code(label)), 0)
   }
   # Entities are decoded for the message
