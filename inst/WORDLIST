@@ -1,3 +1,5 @@
+accDescr
+accTitle
 ACP
 Almende
 analytics
@@ -12,6 +14,7 @@ bioinformatics
 Bioinformatics
 BT
 bufio
+CDN
 centric
 Cheatsheet
 ChatAnthropic
@@ -19,6 +22,7 @@ ChatGoogleGenerativeAI
 ChatGPT
 ChatOllama
 ChatOpenAI
+cheatsheet
 cividis
 CLI
 clipr
@@ -33,13 +37,16 @@ cpp
 csv
 Csárdi
 cv
+dagre
 DAGs
 DataFrames
 deduplicated
+DeepWiki
 deps
 deuteranopia
 DiagrammeR
 dm
+DNS
 Dockerfile
 doi
 EDA
@@ -50,6 +57,7 @@ ETL
 extensionless
 FASTA
 Foraita
+frontmatter
 fs
 Gábor
 Gandrud
@@ -75,11 +83,13 @@ JDBC
 jl
 JLD
 js
+jsdelivr
 JSDoc
 json
 jsonlite
 julia
 Jupyter
+KaTeX
 Keras
 knitr
 langchain
@@ -90,6 +100,7 @@ LiteLLM
 LLM
 LLMChain
 LLMs
+loopback
 Lua
 lua
 magma
@@ -97,6 +108,7 @@ Makefile
 matlab
 matplotlib
 MCP
+mcptools
 md
 Mermaid
 MLflow
@@ -105,6 +117,7 @@ Monorepo
 monorepos
 naga
 natively
+neo
 Nepusz
 networkD
 Nextflow
@@ -117,6 +130,7 @@ onboarding
 ONNX
 openai
 OpenAI
+openssl
 orchestrator
 os
 Pedersen
@@ -127,6 +141,7 @@ polars
 pretrained
 protanopia
 putior's
+px
 py
 PyTorch
 readr
@@ -134,6 +149,7 @@ readxl
 README
 redirections
 renderer
+renderer's
 reqwest
 RL
 roxygen
@@ -148,19 +164,26 @@ Shoutout
 Spallek
 sql
 sqlx
+stderr
 styler
 subgraphs
+Subresource
 Sveidqvist
+SVG's
 Tamás
 TensorFlow
 tidyllm
 tidyverse
+TLS
 TOML
 tokenizer
 Transformers
 tritanopia
 TypeScript
 UIs
+unannotated
+UNC
+unclosed
 UUID
 utput
 uuid
