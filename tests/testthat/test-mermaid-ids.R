@@ -529,7 +529,12 @@ test_that("U+2028 and U+2029 are written as spaces (#104)", {
   expect_equal(sanitize_mermaid_label("a\u2029%% b"), '"a %% b"')
   expect_equal(yaml_quote("T\u2028%% u"), '"T %% u"')
   expect_equal(click_tooltip("a\u2029b.R"), "Open a b.R")
+  # Encoding marks are kept, and other non-ASCII text is left alone
+  expect_identical(Encoding(sanitize_mermaid_label("caf\u00e9\u2028x")), "UTF-8")
+  expect_equal(yaml_quote("caf\u00e9 \u00fcber"), "\"caf\u00e9 \u00fcber\"")
 
+  # base R's basename() cannot translate these file names in a C locale
+  skip_if_not(l10n_info()[["UTF-8"]], "needs a UTF-8 locale")
   workflow <- data.frame(
     id = c("a", "b"), label = c("a\u2028%% b", "B"),
     file_name = c("a\u2028x.R", "b.R"), file_path = c("a\u2028x.R", "b.R"),

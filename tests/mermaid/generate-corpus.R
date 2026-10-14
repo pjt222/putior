@@ -402,8 +402,8 @@ manifest <- lapply(cases, function(case) {
     # Screen reader text (#50): the title as given, with control characters
     # as spaces, and the summary as written
     if (!is.null(case$args$title)) {
-      # As putior writes them: [[:cntrl:]] matches U+2028 and U+2029 only
-      # in a UTF-8 locale (#104)
+      # As putior writes them: [[:cntrl:]] misses U+2028 and U+2029 in the
+      # C locale (#104)
       acc_title <- trimws(gsub("[[:cntrl:]\u2028\u2029]+", " ", case$args$title))
       if (nzchar(acc_title)) entry$expected_acc_title <- acc_title
       # The drawn title shows the title as written, unless it has a "<",

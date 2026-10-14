@@ -259,7 +259,9 @@ function compareLook(entry, looks) {
 // The drawn title and the SVG's <title> and <desc> must show the title,
 // accTitle and accDescr as written
 function compareTitles(entry, result) {
-  const normalize = (text) => (text ?? '').replace(/\s+/g, ' ').trim();
+  // ASCII whitespace only: JavaScript's \s also matches U+2028 and U+2029,
+  // which putior must replace (#104)
+  const normalize = (text) => (text ?? '').replace(/[ \t\n\r\f\v]+/g, ' ').replace(/^ | $/g, '');
   const problems = [];
   const fields = [['expected_title', 'title'], ['expected_acc_title', 'accTitle'], ['expected_acc_descr', 'accDescr']];
   for (const [field, element] of fields) {

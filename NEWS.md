@@ -189,8 +189,8 @@
   by `%%` made the diagram fail to parse: Mermaid removes comment lines
   with a JavaScript regex that treats these characters as line ends. They
   are now written as spaces, as line breaks are. The title, the accTitle
-  line and click tooltips already replaced them, but only in a UTF-8
-  locale; they now do so in any locale. (#104)
+  line and click tooltips already replaced them, except in the C locale;
+  they now do so there too. (#104)
 
 ## New Features
 

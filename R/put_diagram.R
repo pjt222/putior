@@ -815,7 +815,7 @@ resolve_label <- function(node, node_labels, suffix = NULL) {
 yaml_quote <- function(text) {
   # Mermaid's frontmatter parser rejects control characters ("expected valid
   # JSON character"), and line breaks would end the YAML line
-  text <- gsub(.CONTROL_CHARS, " ", as.character(text))
+  text <- replace_control_chars(as.character(text))
   text <- gsub("\\", "\\\\", text, fixed = TRUE)
   text <- gsub('"', '\\"', text, fixed = TRUE)
   paste0('"', text, '"')
@@ -997,7 +997,7 @@ warn_about_mermaid_limits <- function(mermaid_code, show_artifacts) {
 sanitize_mermaid_label <- function(label, line_start = NULL, line_end = NULL) {
   if (is_empty_string(label)) return(label)
   # Line breaks would end the Mermaid line, U+2028 and U+2029 included (#104)
-  label <- gsub(.LINE_BREAKS, " ", label)
+  label <- replace_line_separators(gsub("[\r\n]", " ", label))
   # A # that Mermaid would read as an entity (#45); runs before the escapes
   # below, which write entities themselves
   label <- escape_entity_hashes(label)
@@ -1092,7 +1092,7 @@ encode_url_path <- function(path) {
 accessibility_lines <- function(workflow, title) {
   lines <- character()
   if (!is_empty_string(title)) {
-    title_text <- trimws(gsub(.CONTROL_CHARS, " ", as.character(title)))
+    title_text <- trimws(replace_control_chars(as.character(title)))
     if (nzchar(title_text)) {
       title_text <- escape_mermaid_text(title_text, "    accTitle")
       lines <- c(lines, paste0("    accTitle: ", title_text))
@@ -1118,13 +1118,30 @@ accessibility_lines <- function(workflow, title) {
 # spaces. The \u escapes make the pattern UTF-8, so PCRE runs in UTF mode.
 .JS_WHITESPACE <- "\\t\\n\\x{0B}\\f\\r \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff"
 
-# Line breaks for Mermaid. The JavaScript regex with which Mermaid removes
-# comment lines treats U+2028 and U+2029 as line ends too, so a label with
-# U+2028 followed by "%%" lost the rest of its line and the diagram failed
-# to parse (#104). [[:cntrl:]] matches them only in a UTF-8 locale, so both
-# patterns list them explicitly.
-.LINE_BREAKS <- "[\r\n\u2028\u2029]"
-.CONTROL_CHARS <- "[[:cntrl:]\u2028\u2029]+"
+#' Replace U+2028 and U+2029 with spaces (#104)
+#'
+#' The JavaScript regex with which Mermaid removes comment lines treats the
+#' line and paragraph separators as line ends, so a label with one of them
+#' followed by "%%" lost the rest of its line and the diagram failed to
+#' parse. The cntrl character class matches them, but not in the C locale.
+#' A pattern with the characters themselves is UTF-8 and fails there on
+#' unmarked non-ASCII text ("input string 1 is invalid"), so this replaces
+#' their UTF-8 bytes and keeps the encoding marks.
+#' @param text Character vector
+#' @return text with both separators replaced by spaces
+#' @noRd
+replace_line_separators <- function(text) {
+  encoding_marks <- Encoding(text)
+  replaced <- gsub("\u2028|\u2029", " ", text, useBytes = TRUE)
+  Encoding(replaced) <- encoding_marks
+  replaced
+}
+
+#' Replace control characters and line separators with spaces
+#' @noRd
+replace_control_chars <- function(text) {
+  replace_line_separators(gsub("[[:cntrl:]]+", " ", text))
+}
 
 #' Escape words that Mermaid reads as a direction statement inside a label
 #'
@@ -1490,7 +1507,7 @@ generate_click_directives <- function(workflow, protocol = "vscode") {
 #' @return "Open <file>" or "Open <file> at line <n>", without line breaks
 #' @noRd
 click_tooltip <- function(file_name, line_number = NULL) {
-  tooltip <- paste0("Open ", gsub(.CONTROL_CHARS, " ", file_name))
+  tooltip <- paste0("Open ", replace_control_chars(file_name))
   if (!is.null(line_number) && !is.na(line_number)) {
     tooltip <- paste0(tooltip, " at line ", line_number)
   }
