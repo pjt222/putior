@@ -66,10 +66,10 @@ self_workflow <- suppressWarnings(put("R"))
 
 cases <- list()
 add_case <- function(case_name, workflow, ..., expected_texts = NULL, wide_texts = NULL,
-                     must_fail = NULL) {
+                     must_fail = NULL, must_fail_message = NULL) {
   cases[[length(cases) + 1]] <<- list(
     name = case_name, workflow = workflow, args = list(...), expected_texts = expected_texts,
-    wide_texts = wide_texts, must_fail = must_fail
+    wide_texts = wide_texts, must_fail = must_fail, must_fail_message = must_fail_message
   )
 }
 
@@ -201,7 +201,8 @@ chain_steps <- function(step_count) {
   )
 }
 add_case("edges_at_limit", chain_steps(501))
-add_case("edges_over_limit", chain_steps(502), must_fail = c("parse", "render"))
+add_case("edges_over_limit", chain_steps(502), must_fail = c("parse", "render"),
+         must_fail_message = "Edge limit exceeded")
 one_step <- function(label) {
   data.frame(id = "a", label = label, file_name = "a.R", stringsAsFactors = FALSE)
 }
@@ -215,7 +216,8 @@ text_size <- function(workflow) {
 size_label <- strrep("x", 50000 - text_size(one_step("x")) + 1)
 stopifnot(text_size(one_step(size_label)) == 50000)
 add_case("text_at_limit", one_step(size_label))
-add_case("text_over_limit", one_step(paste0(size_label, "x")), must_fail = "render")
+add_case("text_over_limit", one_step(paste0(size_label, "x")), must_fail = "render",
+         must_fail_message = "over maxTextSize")
 
 # Edge cases from the Mermaid gap analysis
 add_case("keyword_node_id", scan_fixture("keyword_id", list(
@@ -332,6 +334,7 @@ manifest <- lapply(cases, function(case) {
   if (length(warning_messages) > 0) entry$warnings <- warning_messages
   if (!is.null(case$expected_texts)) entry$expected_texts <- I(case$expected_texts)
   if (!is.null(case$must_fail)) entry$must_fail <- I(case$must_fail)
+  if (!is.null(case$must_fail_message)) entry$must_fail_message <- case$must_fail_message
   if (!is.null(diagram)) {
     entry$file <- paste0(case$name, ".mmd")
     # A binary connection writes LF line endings on Windows too

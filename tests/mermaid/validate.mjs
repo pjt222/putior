@@ -22,8 +22,9 @@
 // accDescr text.
 //
 // A case whose manifest entry lists must_fail kinds is over one of
-// Mermaid's limits on purpose and must fail with only those kinds; if it
-// draws, the check fails, because putior's warning would then be wrong.
+// Mermaid's limits on purpose and must fail with only those kinds, with
+// its must_fail_message, on every version and configuration; if it draws
+// anywhere, the check fails, because putior's warning would then be wrong.
 //
 // Cases in expected-failures.json are known bugs. Each entry names its issue
 // and the kinds of problem it is known to cause ("generate", "parse",
@@ -101,7 +102,7 @@ const mermaidConfigs = {
 
 const manifest = readJson(path.join(corpusDir, 'manifest.json'));
 const expectedFailures = readJson(path.join(harnessDir, 'expected-failures.json'));
-const problemKinds = ['generate', 'parse', 'render', 'nodes', 'edges', 'subgraphs', 'text', 'look', 'wrap'];
+const problemKinds = ['generate', 'parse', 'render', 'nodes', 'edges', 'subgraphs', 'text', 'look', 'wrap', 'limit'];
 
 for (const [caseName, expected] of Object.entries(expectedFailures)) {
   if (!manifest.some((entry) => entry.name === caseName)) {
@@ -322,6 +323,10 @@ try {
           if (result.labelTexts) problems.push(...compareAccessibility(entry, result));
         }
         for (const problem of problems) problemsByCase.get(entry.name).push(`${label} ${problem}`);
+        // An over-limit case must fail for that reason here, too
+        if (entry.must_fail_message && !problems.some((problem) => problem.includes(entry.must_fail_message))) {
+          problemsByCase.get(entry.name).push(`${label} limit: drew or failed otherwise, although it is over a Mermaid limit ("${entry.must_fail_message}" expected)`);
+        }
       }
       await page.close();
     }

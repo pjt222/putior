@@ -341,9 +341,11 @@
   of 500 edges (`maxEdges`) or 50,000 characters (`maxTextSize`).
   Renderers such as GitHub, GitLab and Quarto then show an error or an
   empty placeholder, and the diagram cannot raise either limit itself.
-  The size is counted as Mermaid counts it (without the frontmatter and
-  comments, with the newline that ends a code block), and the Mermaid
-  check confirms both limits at the boundary. The warning names the
+  The size is counted as `mermaid.render()` counts it (without the
+  frontmatter and comments, with the newline that ends a code block), and
+  the Mermaid check confirms both limits at the boundary. Hosts that use
+  `mermaid.run()`, such as pkgdown sites, count up to a few characters
+  less, so the warning there can come a little early, never late. The warning names the
   options; `?put_diagram` and the troubleshooting vignette describe both
   limits. Large diagrams are also much faster to generate: a 500-step
   chain took about two minutes, because every input looked through every

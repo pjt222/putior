@@ -1078,6 +1078,8 @@ test_that("mermaid_text_size() measures what Mermaid compares (#56)", {
   expect_equal(mermaid_text_size(put_diagram(workflow, output = "raw")), 99)
   # A character outside the BMP is two UTF-16 code units, as in JavaScript
   expect_equal(mermaid_text_size("a\U0001F600b"), 4)
+  # mermaid.run() rewrites <br> to <br/> before counting
+  expect_equal(mermaid_text_size("a<br>b<BR>c<br/>d"), nchar("a<br/>b<br/>c<br/>d"))
 })
 
 test_that("put_diagram() warns above Mermaid's 50,000 characters (#56)", {

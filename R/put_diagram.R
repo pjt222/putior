@@ -894,6 +894,10 @@ mermaid_text_size <- function(mermaid_code) {
   body <- sub("(?s)^-{3}\\s*[\n\r](.*?)[\n\r]-{3}\\s*[\n\r]+", "", mermaid_code, perl = TRUE)
   body <- gsub("(?m)^\\s*%%(?!\\{)[^\n]+\n?", "", body, perl = TRUE)
   body <- sub("^\\s+", "", body, perl = TRUE)
+  # mermaid.run(), which pkgdown sites and the sandbox use, rewrites <br>
+  # to <br/> before it counts; count that too, so that the warning is never
+  # late (it can then be a few characters early with mermaid.render())
+  body <- gsub("<br>", "<br/>", body, ignore.case = TRUE)
   code_points <- utf8ToInt(enc2utf8(body))
   length(code_points) + sum(code_points > 65535)
 }
