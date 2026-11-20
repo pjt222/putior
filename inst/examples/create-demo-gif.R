@@ -10,8 +10,10 @@ stopifnot(
 library(magick)
 
 # Mermaid CLI and Mermaid, both pinned (#57). mermaid-cli 12.0.0 accepts
-# Mermaid ^12.0.0, so Mermaid is pinned next to it, to the version that the
-# pkgdown site and the sandbox use; tests/mermaid/validate.mjs checks that
+# Mermaid ^12.0.0, so Mermaid is pinned next to it, to the same version as
+# inst/cheatsheet/generate-diagrams.R, so both asset scripts draw alike
+# (man/figures/demo.gif was drawn before these pins). The pkgdown site and
+# the sandbox may load a newer one. tests/mermaid/validate.mjs checks that
 # this pin is a tested version. The first run downloads the CLI and a
 # Chrome for puppeteer (about 1.4 GB) and needs Node.js 22.13 or later.
 # mermaid-config.json gives Mermaid 11's drawing (dagre layout, classic
