@@ -192,8 +192,8 @@ ui <- fluidPage(
     # Include Mermaid.js. Keep this pin and its integrity hash in sync with
     # _pkgdown.yml.
     tags$script(
-      src = "https://cdn.jsdelivr.net/npm/mermaid@12.2.0/dist/mermaid.min.js",
-      integrity = "sha384-8xUhuLNMjW/cI2Dacg3DR4WliYznvIg0LVG1stctThKD/YVrJFI9TNCFxft5NYgp",
+      src = "https://cdn.jsdelivr.net/npm/mermaid@12.3.0/dist/mermaid.min.js",
+      integrity = "sha384-HHW54r639fK42Ip0coGF3mz8oSiGn0eEoWNTLs75X7H63pLSDBa0Tqs0RwGmLlXE",
       crossorigin = "anonymous"
     ),
     tags$script(HTML("

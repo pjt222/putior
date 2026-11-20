@@ -172,10 +172,10 @@
 #' The output uses only classic Mermaid syntax, so that every current
 #' renderer draws it. The frontmatter (title and \code{mermaid_config})
 #' needs Mermaid 9.3.0 or later, \code{accTitle}/\code{accDescr} 9.1.0 or
-#' later (measured). CI draws every diagram option on Mermaid 11.12.0, 11.17.2, 12.1.0
-#' and 12.2.0; 10.9.8 was checked once. Renderers (2026-10-12): GitHub
+#' later (measured). CI draws every diagram option on Mermaid 11.12.0, 11.17.2, 12.1.0,
+#' 12.2.0 and 12.3.0; 10.9.8 was checked once. Renderers (2026-10-12): GitHub
 #' 12.1.0 (measured), Quarto 1.10 and 1.11 11.12.0, GitLab 11.16.1, VS Code
-#' 11.17.0, Positron 11.15.0; the pkgdown site and the sandbox load 12.2.0.
+#' 11.17.0, Positron 11.15.0; the pkgdown site and the sandbox load 12.3.0.
 #' Newer syntax such as \code{@\{ shape: ... \}} needs Mermaid 11.3 or
 #' later and is not used while Quarto ships 11.12.0.
 #'
