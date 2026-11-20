@@ -115,7 +115,7 @@ For R code: - **Inputs**:
 [`read.csv()`](https://rdrr.io/r/utils/read.table.html), `read_csv()`,
 [`readRDS()`](https://rdrr.io/r/base/readRDS.html),
 [`load()`](https://rdrr.io/r/base/load.html), `fread()`, `read_excel()`,
-[`fromJSON()`](https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html),
+[`fromJSON()`](https://rdrr.io/pkg/jsonlite/man/fromJSON.html),
 `read_parquet()`, database connections, etc. - **Outputs**:
 [`write.csv()`](https://rdrr.io/r/utils/write.table.html),
 [`saveRDS()`](https://rdrr.io/r/base/readRDS.html), `ggsave()`,

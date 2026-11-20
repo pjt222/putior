@@ -244,13 +244,13 @@ putior_guide()
 #> | Renderer | Mermaid (2026-10-12) | Source |
 #> |----------|----------------------|--------|
 #> | GitHub | 12.1.0 | measured on github.com |
-#> | pkgdown site, sandbox | 12.2.0 | putior's pin |
+#> | pkgdown site, sandbox | 12.3.0 | putior's pin (set 2026-11-20) |
 #> | Quarto 1.10, 1.11 | 11.12.0 | bundle (RStudio's Quarto 1.9.38 ships it too, measured) |
 #> | VS Code | 11.17.0 | package lock |
 #> | GitLab | 11.16.1 | package.json |
 #> | Positron | 11.15.0 | package lock |
 #> 
-#> CI draws every diagram option on Mermaid 11.12.0, 11.17.2, 12.1.0 and 12.2.0 (`tests/mermaid/`). Newer syntax such as `@{ shape: ... }` (Mermaid 11.3+) is not used while Quarto ships 11.12.0.
+#> CI draws every diagram option on Mermaid 11.12.0, 11.17.2, 12.1.0, 12.2.0 and 12.3.0 (`tests/mermaid/`). Newer syntax such as `@{ shape: ... }` (Mermaid 11.3+) is not used while Quarto ships 11.12.0.
 #> 
 #> ### `put_auto()` - Auto-Detect Workflow
 #> 
