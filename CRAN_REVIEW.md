@@ -173,7 +173,7 @@ There is no confirmed finding that would cause an R CMD check ERROR/WARNING, a C
 
 ### T3-5 · mermaid-02 — No accessibility directives (`accTitle`/`accDescr`) emitted
 - **file:line:** `R/put_diagram.R:253-261`
-- **Evidence:** No `accTitle`/`accDescr`/`aria` anywhere in `R/`. Package markets 4 colorblind-safe themes but emits no machine-readable accessible title/description. `accTitle`/`accDescr` shipped in Mermaid v9.0.0 (2022) — safe under the pinned 12.2.0 (12.1.0 since 2026-10-12, #48; 12.2.0 since 2026-10-13) and on GitHub.
+- **Evidence:** No `accTitle`/`accDescr`/`aria` anywhere in `R/`. Package markets 4 colorblind-safe themes but emits no machine-readable accessible title/description. `accTitle`/`accDescr` shipped in Mermaid v9.0.0 (2022) — safe under the pinned 12.3.0 (12.1.0 since 2026-10-12, #48; 12.2.0 since 2026-10-13; 12.3.0 since 2026-11-20) and on GitHub.
 - **Fix (optional, additive):** When `title` is supplied, also emit `accTitle: <title>` and an `accDescr:` after the `flowchart <direction>` line. Optional `acc_descr` param.
 - **Status:** Resolved 2026-10-13 (#50). `put_diagram(accessibility = TRUE)`, the default, writes `accTitle` from the title (when given) and an `accDescr` summary ("Workflow with N steps and M data files.") after the `flowchart` line. The title text is escaped like labels (entity `#`, direction words, colons), but quotes and pipes are kept; the review added `<` (DOMPurify) and `%%{` (directives); measured to round-trip into the SVG `<title>` on Mermaid 10.9.8, 11.12.0, 11.17.2, 12.1.0 and 12.2.0. A frontmatter `title:` alone sets no `<title>`/`aria-labelledby` from Mermaid 10.5.0 on. `accTitle`/`accDescr` parse from Mermaid 9.1.0 (bisected; the Evidence line's 9.0.0 was not verified and is wrong).
 
